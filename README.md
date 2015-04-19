@@ -1,4 +1,4 @@
-# SkLLmods
+# SkyrimLL mods
 This personal compilation of Skyrim mods created for LL includes:
 
 * [SexLab Alicia Painslut](http://www.loverslab.com/topic/19216-sexlab-alicia-painslut-2014-09-03/)
