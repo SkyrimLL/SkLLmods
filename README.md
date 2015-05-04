@@ -1,11 +1,11 @@
-# SkLLmods
+# SkyrimLL mods
 This personal compilation of Skyrim mods created for LL includes:
 
-* SexLab Alicia Painslut
-* SexLab Hormones
-* SexLab Mind Control
-* SexLab Stories and Stories Devious
-* SexLab Dibella Sisterhood and Sisters customization add-on
+* [SexLab Alicia Painslut](http://www.loverslab.com/topic/19216-sexlab-alicia-painslut-2014-09-03/)
+* [SexLab Hormones](http://www.loverslab.com/topic/22195-sexlab-hormones-2015-01-17/)
+* [SexLab Mind Control](http://www.loverslab.com/topic/21334-sexlab-mind-control-2014-06-04/)
+* [SexLab Stories and Stories Devious](http://www.loverslab.com/topic/31581-sexlab-stories-2014-09-07/)
+* [SexLab Dibella Sisterhood and Sisters customization add-on](http://www.loverslab.com/topic/21873-the-sisterhood-of-dibella-2015-03-14/)
 
 ## Why a single repo for multiple mods?
 
