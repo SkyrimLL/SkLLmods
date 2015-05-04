@@ -20,6 +20,7 @@ Debug.Notification("You give " + SatchelItemsCount.GetValue() as Int + " items t
 
 If (Self.GetOwningQuest().GetStage() == 10)
 	Self.GetOwningQuest().SetStage(15)
+
 EndIf
 
 Self.GetOwningQuest().ModObjectiveGlobal( iNumDonations , TempleDonations, 10, 10, True, True, True )

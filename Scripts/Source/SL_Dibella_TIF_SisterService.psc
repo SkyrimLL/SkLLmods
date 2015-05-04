@@ -62,7 +62,7 @@ Else
 
 EndIf
 
-Game.GetPlayer().RemoveItem(Gold001, 50)
+Game.GetPlayer().RemoveItem(Gold001, 20)
 ;END CODE
 EndFunction
 ;END FRAGMENT

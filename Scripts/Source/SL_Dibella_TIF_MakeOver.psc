@@ -6,9 +6,15 @@ Scriptname SL_Dibella_TIF_MakeOver Extends TopicInfo Hidden
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
-Game.ShowLimitedRaceMenu()
+Int IButton = _SLSD_RaceMenu.Show()
+
+If IButton == 0  ; Show the thing.
+	Game.ShowLimitedRaceMenu()
+EndIf
 ;END CODE
 EndFunction
 ;END FRAGMENT
 
 ;END FRAGMENT CODE - Do not edit anything between this and the begin comment
+
+Message Property _SLSD_RaceMenu Auto
