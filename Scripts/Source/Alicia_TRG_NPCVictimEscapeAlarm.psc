@@ -21,6 +21,8 @@ Event  OnTriggerEnter(ObjectReference akActionRef)
     ElseIf ( (akActionRef == Game.GetPlayer())  && (AliciaInit.Getvalue() == 0)) ; First time player walks in
  	   (DialogueFollower as DialogueFollowerScript).SetFollower(AliciaREF)
  	   Debug.MessageBox("Muffled moans of pain or pleasure seem to be coming from under the house...")
+
+ 	   StorageUtil.SetIntValue(AliciaActor, "_SD_iRelationshipType" , 5 )
 	EndIf
 
 EndEvent

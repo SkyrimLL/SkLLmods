@@ -49,7 +49,7 @@ Auto STATE Waiting
 		AliciaControlQuest.SetObjectiveDisplayed(40,false)
 
 		AliciaStoryQuest.SetStage(60)
-		AliciaStoryQuest.SetObjectiveDisplayed(60, true)
+		AliciaStoryQuest.SetObjectiveDisplayed(60, false)
  
 
 		If (AliciaDaedricSoulLocked.GetValue() == 1) && (AliciaSoulLocked.GetValue() == 1)     ; both souls locked - Alicia is cured
@@ -57,20 +57,27 @@ Auto STATE Waiting
 			AliciaControlQuest.SetStage(40)
 			AliciaControlQuest.SetObjectiveDisplayed(40)
 
-            If !(AliciaDaedricActor.IsInFaction(pDismissedFollower))
-                (pDialogueFollower as DialogueFollowerScript).DismissFollower(0, 0)
-            EndIf
+            ; If !(AliciaDaedricActor.IsInFaction(pDismissedFollower))
+            ;    (pDialogueFollower as DialogueFollowerScript).DismissFollower(0, 0)
+            ; EndIf
 
             AliciaDaedricActor.AddToFaction(pDismissedFollower)
             AliciaDaedricActor.SetPlayerTeammate(false)
             AliciaDaedricActor.RemoveFromFaction(pCurrentHireling)
             AliciaDaedricActor.SetAV("WaitingForPlayer", 0) 
 
+        ; Review follower dismiss code 
+
+		;	pFollowerAlias.Clear()
+		;	iFollowerDismiss = 0
+		;	pPlayerFollowerCount.SetValue(0)
+
+
             Utility.Wait(1.0)
 
-            If !(AliciaActor.IsInFaction(pDismissedFollower))
-                (pDialogueFollower as DialogueFollowerScript).DismissFollower(0, 0)
-            EndIf
+            ; If !(AliciaActor.IsInFaction(pDismissedFollower))
+            ;   (pDialogueFollower as DialogueFollowerScript).DismissFollower(0, 0)
+            ; EndIf
 
             AliciaActor.AddToFaction(pDismissedFollower)
             AliciaActor.SetPlayerTeammate(false)
@@ -136,7 +143,7 @@ Auto STATE Waiting
 			AliciaControlQuest.SetObjectiveDisplayed(10)
 			
 			AliciaREF.enable()
-			AliciaDaedricREF.enable()
+			AliciaDaedricREF.disable()
 			AliciaGhostREF.enable()
 			AliciaCuredREF.disable()
 		EndIf

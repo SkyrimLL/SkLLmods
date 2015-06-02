@@ -80,6 +80,16 @@ Event OnTriggerEnter(ObjectReference akActionRef)
 
         AliciaStory.SetStage(55)  ; Prevent repeated triggers of scene between alicia and ali
 
+        AliciaStory.SetObjectiveDisplayed(5, false)
+        AliciaStory.SetObjectiveDisplayed(6, false)
+        AliciaStory.SetObjectiveDisplayed(10, false)
+        AliciaStory.SetObjectiveDisplayed(20, false)
+        AliciaStory.SetObjectiveDisplayed(25, false)
+        AliciaStory.SetObjectiveDisplayed(30, false)
+        AliciaStory.SetObjectiveDisplayed(40, false)
+        AliciaStory.SetObjectiveDisplayed(50, false)
+        AliciaStory.SetObjectiveDisplayed(60, true)
+
     endif
 
 EndEvent
