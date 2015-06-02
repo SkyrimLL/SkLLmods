@@ -5,6 +5,19 @@ Import Math
 
 SexLabFramework     property SexLab Auto
 
+
+SOS_API _SOS
+
+SOS_API Property SOS
+  SOS_API Function Get()
+    If !_SOS
+      _SOS = SOS_API.Get()
+    EndIf
+    Return _SOS
+  EndFunction
+EndProperty
+
+
 Sound Property SLH_MoanMarkerBreast  Auto
 Sound Property SLH_MoanMarkerBelly  Auto
 Sound Property SLH_MoanMarkerButt  Auto
@@ -19,6 +32,9 @@ bool property bBeeingFemale = false auto
 bool property bEstrusChaurus = false auto
 spell property BeeingFemalePregnancy auto
 spell property ChaurusBreeder auto
+
+int Property MAX_PRESETS = 4 AutoReadOnly
+int Property MAX_MORPHS = 19 AutoReadOnly
 
 Bool	 bInit 
 String[] skillList
@@ -68,10 +84,16 @@ Function Maintenance()
 	ActorBase pActorBase = PlayerActor.GetActorBase()
 	
 	; UnregisterForAllModEvents()
-	Debug.Trace("SexLab Hormones: Reset SexLab events")
+	Debug.Trace("[SLH]  Reset SexLab events")
 	RegisterForModEvent("AnimationStart", "OnSexLabStart")
 	RegisterForModEvent("AnimationEnd",   "OnSexLabEnd")
 	RegisterForModEvent("OrgasmStart",    "OnSexLabOrgasm")
+	RegisterForModEvent("SLHRefresh",    "OnRefreshShapeEvent")
+	RegisterForModEvent("SLHSetShape",    "OnSetShapeEvent")
+	RegisterForModEvent("SLHResetShape",    "OnResetShapeEvent")
+	RegisterForModEvent("SLHSetSchlong",    "OnSetSchlongEvent")
+	RegisterForModEvent("SLHRemoveSchlong",    "OnRemoveSchlongEvent")
+
 	RegisterForSleep()
 	RegisterForSingleUpdate(5)
 
@@ -113,7 +135,7 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 	Debug.Trace("Player wants to wake up at: " + Utility.GameTimeToString(afDesiredSleepEndTime))
 
 	fRefreshAfterSleep = (afDesiredSleepEndTime - afSleepStartTime)
-	Debug.Trace("SexLab Hormones: fRefreshAfterSleep: " + fRefreshAfterSleep)
+	Debug.Trace("[SLH]  fRefreshAfterSleep: " + fRefreshAfterSleep)
 endEvent
 
 Event OnSleepStop(bool abInterrupted)
@@ -165,7 +187,7 @@ Event OnUpdate()
 
 		kTarget = PlayerActor
 
-		Debug.Trace("SexLab Hormones: Add spell")
+		Debug.Trace("[SLH]  Add spell")
 		PlayerActor.AddSpell( SLH_Masturbation )
 		PlayerActor.AddSpell( SLH_Undress )
 
@@ -175,7 +197,7 @@ Event OnUpdate()
 		; 	Utility.Wait( 1.0 )
 		; endWhile
 
-		Debug.Trace("SexLab Hormones: Save body state baseline")
+		Debug.Trace("[SLH]  Save body state baseline")
 
 		if (pActorBase.GetSex() == 1) ; female
 			bIsFemale = True
@@ -192,15 +214,20 @@ Event OnUpdate()
 			_initHormonesState()
 		EndIf
 
-		Debug.Trace("SexLab Hormones: Registering SexLab events")
+		Debug.Trace("[SLH]  Registering SexLab events")
 		RegisterForModEvent("AnimationStart", "OnSexLabStart")
 		RegisterForModEvent("AnimationEnd",   "OnSexLabEnd")
 		RegisterForModEvent("OrgasmStart",    "OnSexLabOrgasm")
+		RegisterForModEvent("SLHRefresh",    "OnRefreshShapeEvent")
+		RegisterForModEvent("SLHSetShape",    "OnSetShapeEvent")
+		RegisterForModEvent("SLHResetShape",    "OnResetShapeEvent")
+		RegisterForModEvent("SLHSetSchlong",    "OnSetSchlongEvent")
+		RegisterForModEvent("SLHRemoveSchlong",    "OnRemoveSchlongEvent")
 
 		StorageUtil.SetIntValue(Game.GetPlayer(), "Puppet_SpellON", -1)
 		StorageUtil.SetIntValue(Game.GetPlayer(), "PSQ_SpellON", -1)
 
-		Debug.Trace("SexLab Hormones: Initialization of body")
+		Debug.Trace("[SLH]  Initialization of body")
 		_alterBodyAfterRest()
 		_setHormonesState()	
 
@@ -228,30 +255,14 @@ Event OnUpdate()
  	
  	; Debug.Notification("SexLab Hormones: NextAllowed " + NextAllowed)
 
-	; Debug.Trace("SexLab Hormones: Forced refresh flag: " + StorageUtil.GetIntValue(none, "_SLH_iForcedRefresh"))
+	; Debug.Trace("[SLH]  Forced refresh flag: " + StorageUtil.GetIntValue(none, "_SLH_iForcedRefresh"))
 
 	If ( StorageUtil.GetIntValue(none, "_SLH_iForcedRefresh") == 1)
 		; Forced refresh from PapyrusUtils (API)
-		Debug.Trace("SexLab Hormones: Forced refresh from API")	
 
-		If ( StorageUtil.GetIntValue(none, "_SLH_iForcedRairLoss") == 1)
-			_shaveHair ( )		
-			StorageUtil.SetIntValue(none, "_SLH_iForcedRairLoss", 0) 
-		Endif
+		Debug.Trace("[SLH]  Forced refresh from API - storageUtil trigger - deprecated for mod event")	
 
-		_getShapeState()
-
-		Utility.Wait(1.0)
-
-		_refreshBodyShape()
-		_setHormonesState()
-
-		If !( bExternalChangeModActive ) && (NextAllowed!= -1)
-			_applyBodyShapeChanges()
-		EndIf
-		
-		StorageUtil.SetIntValue(none, "_SLH_iForcedRefresh", 0) 
-		GV_forcedRefresh.SetValue(0)
+		SendModEvent("SLHRefresh")
 
 	ElseIf (iDaysSinceLastCheck > 0) || (fRefreshAfterSleep > 0.02)
 		; Manage sex effect ==================================================
@@ -263,7 +274,7 @@ Event OnUpdate()
 
 		fRefreshAfterSleep = 0.0
 
-		Debug.Trace("SexLab Hormones: Days since Sex acts : " + iDaysSinceLastSex)
+		Debug.Trace("[SLH]  Days since Sex acts : " + iDaysSinceLastSex)
 		; Check if body modifications are applicable
 			
 		_getShapeState()
@@ -282,9 +293,9 @@ Event OnUpdate()
 	Else
 		RandomNum = Utility.RandomInt(0,100)
 		If (RandomNum>90)
-			; Debug.Trace("SexLab Hormones: Today: Sex acts: " + iSexCountToday + " - Orgasms: " + iOrgasmsCountToday)
-			; Debug.Trace("SexLab Hormones: Sex dates: " + Game.QueryStat("Days Passed") + " - " + iGameDateLastSex + " = " + iDaysSinceLastSex)
-			; Debug.Trace("SexLab Hormones: Check dates: " + Game.QueryStat("Days Passed") + " - " + iGameDateLastCheck + " = " + iDaysSinceLastCheck)
+			; Debug.Trace("[SLH]  Today: Sex acts: " + iSexCountToday + " - Orgasms: " + iOrgasmsCountToday)
+			; Debug.Trace("[SLH]  Sex dates: " + Game.QueryStat("Days Passed") + " - " + iGameDateLastSex + " = " + iDaysSinceLastSex)
+			; Debug.Trace("[SLH]  Check dates: " + Game.QueryStat("Days Passed") + " - " + iGameDateLastCheck + " = " + iDaysSinceLastCheck)
 		EndIf
 
 		; Debug.Notification("[Hormones] Next: " + NextAllowed)
@@ -360,7 +371,7 @@ Event OnUpdate()
 
 			If ( _isExternalChangeModActive(PlayerActor) )
 
-				Debug.Trace("SexLab Hormones: Update ignored. PC is changing from another mod.")
+				Debug.Trace("[SLH]  Update ignored. PC is changing from another mod.")
 				; GV_changeOverrideToggle.SetValue(0)
 
 				; Refreshing values in case of any external change from other mods
@@ -373,7 +384,7 @@ Event OnUpdate()
 			Else
 				; GV_changeOverrideToggle.SetValue(1)
 
-				Debug.Trace("SexLab Hormones: Updating shape.")
+				Debug.Trace("[SLH]  Updating shape.")
 				; Debug.Notification("SexLab Hormones: Before: " + fBelly + " from " + NetImmerse.GetNodeScale(PlayerActor, NINODE_BELLY, false) )
 
 				; Refreshing values in case of any external change from other mods
@@ -406,7 +417,7 @@ EndEvent
 Event OnObjectEquipped(Form akBaseObject, ObjectReference akReference)
   if akBaseObject as Armor
 
-	StorageUtil.SetIntValue(none, "_SLH_iForcedRefresh", 1)
+		SendModEvent("SLHRefresh")
 
   endIf
 endEvent
@@ -414,15 +425,116 @@ endEvent
 Event OnObjectUnequipped(Form akBaseObject, ObjectReference akReference)
   if akBaseObject as Armor
 
-	StorageUtil.SetIntValue(none, "_SLH_iForcedRefresh", 1)
+		SendModEvent("SLHRefresh")
 
   endIf
 endEvent
 
+Event OnRefreshShapeEvent(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+ 	Actor PlayerActor = Game.getPlayer() as Actor
+	Bool bExternalChangeModActive = _isExternalChangeModActive(PlayerActor)
+
+	Debug.Trace("[SLH] Receiving 'refresh shape' event" )
+
+	If ( StorageUtil.GetIntValue(none, "_SLH_iForcedRairLoss") == 1)
+		_shaveHair ( )		
+		StorageUtil.SetIntValue(none, "_SLH_iForcedRairLoss", 0) 
+	Endif
+
+	_getShapeState()
+
+	Utility.Wait(1.0)
+
+	_refreshBodyShape()
+	_setHormonesState()
+
+	If !( bExternalChangeModActive ) && (NextAllowed!= -1)
+		_applyBodyShapeChanges()
+	EndIf
+	
+	StorageUtil.SetIntValue(none, "_SLH_iForcedRefresh", 0) 
+	GV_forcedRefresh.SetValue(0)
+
+	
+EndEvent
+
+Event OnSetShapeEvent(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+ 	Actor PlayerActor = Game.getPlayer() as Actor
+
+	Debug.Trace("[SLH] Receiving 'set shape' event" )
+
+	_setHormonesStateDefault()
+	
+EndEvent
+
+Event OnResetShapeEvent(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+ 	Actor PlayerActor = Game.getPlayer() as Actor
+
+	Debug.Trace("[SLH] Receiving 'reset shape' event" )
+
+	_resetHormonesState()
+	
+EndEvent
+
+Event OnSetSchlongEvent(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+ 	Actor PlayerActor = Game.getPlayer() as Actor
+   	Form schlong
+
+	Debug.Trace("[SLH] Receiving 'set schlong' event" )
+
+	if (_args == "Any") || (_args == "")
+		schlong =  SOS_Data.GetAddon(0)
+	else
+		; Get first addon available for now... add code to better select later
+		schlong = SOS.FindSchlongByName(_args)
+	endif
+ 
+ 	if (schlong != None)
+    	SOS.SetSchlong(kActor, schlong)
+    endIf
+
+    ;/
+    Other ways for getting a schlong ref
+    Form schlong = sos.GetSchlong(Game.GetPlayer())
+    Form schlong = Quest.GetQuest("SOS_Addon_VectorPlexusMuscular_Quest") ; or Game.GetFormFromFile()
+    Form schlong = SOS_Data.GetAddon(i) ; to iterate installed schlongs, where i between 0 and SOS_Data.CountAddons()
+    /;
+	
+EndEvent
+
+Event OnRemoveSchlongEvent(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+ 	Actor PlayerActor = Game.getPlayer() as Actor
+
+	Debug.Trace("[SLH] Receiving 'remove schlong' event" )
+
+	Form schlong = sos.GetSchlong(kActor)
+ 
+ 	if (schlong != None)
+    	SOS.RemoveSchlong(kActor)
+    endIf
+
+    ;/
+    Other ways for getting a schlong ref
+    Form schlong = sos.GetSchlong(Game.GetPlayer())
+    Form schlong = Quest.GetQuest("SOS_Addon_VectorPlexusMuscular_Quest") ; or Game.GetFormFromFile()
+    Form schlong = SOS_Data.GetAddon(i) ; to iterate installed schlongs, where i between 0 and SOS_Data.CountAddons()
+    /;
+	
+EndEvent
+
+
+Bool Function isSchlongSet(Actor akActor)
+	Return SOS.isSchlonged(akActor)
+Endfunction
 
 Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 	if !Self || !SexLab 
-		Debug.Trace("SexLab Hormones: Critical error on SexLab Start")
+		Debug.Trace("[SLH] Critical error on SexLab Start")
 		Return
 	EndIf
 	
@@ -459,7 +571,7 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 	kPlayer = PlayerActor
 
 	if !Self || !SexLab 
-		Debug.Trace("SexLab Hormones: Critical error on SexLab End")
+		Debug.Trace("[SLH] Critical error on SexLab End")
 		Return
 	EndIf
 
@@ -474,7 +586,7 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 	; EndIf
 
 	If (_hasPlayer(actors))
-	    Debug.Trace("SexLab Hormones: Sex end: " + animation.name)
+	    Debug.Trace("[SLH]  Sex end: " + animation.name)
 
 		If victim  ;none consensual
 			;
@@ -593,7 +705,9 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 		if (iDaedricInfluence >1) && (GV_allowSuccubus.GetValue()==1) && (GV_isSuccubus.GetValue()==0)
 			iSuccubus = 1
 			GV_isSuccubus.SetValue(1)
-			_SLH_QST_Succubus.Start()
+			; _SLH_QST_Succubus.Start()
+			_SLH_QST_Succubus.SetStage(10)
+
 		elseif (iDaedricInfluence >1) && (GV_allowSuccubus.GetValue()==1) && (GV_isSuccubus.GetValue()==1)
 			if (_SLH_QST_Succubus.GetStage()<=10) && (iDaedricInfluence >=10)
 				_SLH_QST_Succubus.SetStage(20)
@@ -604,6 +718,7 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 			elseif (_SLH_QST_Succubus.GetStage()<=40) && (iDaedricInfluence >=40)
 				_SLH_QST_Succubus.SetStage(50)
 				StorageUtil.SetIntValue(Game.GetPlayer(), "PSQ_SpellON", 1)
+				SendModEvent("SLHisSuccubus")
 			Endif
 		else
 			iSuccubus = 0
@@ -628,14 +743,31 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 
 		if animation.HasTag("Masturbation") || animation.HasTag("Solo") 
 			SLH_Libido.SetValue( iMin( iMax( (SLH_Libido.GetValue() as Int) + 1, -100), 100) )
-			Debug.Trace( "SexLab Hormones: Set Libido to " + SLH_Libido.GetValue() as Int )	  
+			Debug.Trace("[SLH]  Set Libido to " + SLH_Libido.GetValue() as Int )	  
 	    EndIf
 
 	    ; Chance of rape if sex in public 
 
 	    ; Test if kPervert is in actors[] - small chance of repeat from current partner
 
-		actor kPervert = SexLab.FindAvailableActor(SexLab.PlayerRef as ObjectReference, 200.0)  	
+		actor kPervert = SexLab.FindAvailableActor(SexLab.PlayerRef as ObjectReference, 200.0)  
+
+		If (GV_allowBimbo.GetValue()==1) || (GV_allowHRT.GetValue()==1) || (GV_allowTG.GetValue()==1) 
+			If (GV_isBimbo.GetValue()==0) && (GV_isHRT.GetValue()==0) && (GV_isTG.GetValue()==0) && ( (_hasRace(actors, _SLH_DremoraOutcastRace) || _hasRace(actors, _SLH_BimboRace)))
+
+				kPervert = None
+				Debug.Trace("[SLH] Cast Bimbo Curse" )	  
+				; PolymorphBimbo.Cast(PlayerActor,PlayerActor)
+				PlayerActor.DoCombatSpellApply(PolymorphBimbo, PlayerActor)
+
+				If _hasRace(actors, _SLH_BimboRace)
+					_SLH_QST_Bimbo.SetStage(10)
+					iDaedricInfluence   = iDaedricInfluence   + 5
+				else
+					_SLH_QST_Bimbo.SetStage(11)
+				endif
+			Endif
+		Endif		
 
 		If (kPervert) 
 			Bool isCurrentPartner = _hasActor(actors, kPervert)
@@ -651,11 +783,11 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 						SexLab.QuickStart(SexLab.PlayerRef, kPervert, Victim = SexLab.PlayerRef, AnimationTags = "Aggressive")
 					EndIf
 				Else
-					Debug.Trace( "SexLab Hormones: Pervert found but not ready [SexLab not ready]" )
+					Debug.Trace("[SLH]  Pervert found but not ready [SexLab not ready]" )
 				EndIf
 			EndIf
 		Else
-			Debug.Trace( "SexLab Hormones: No pervert found " )
+			Debug.Trace("[SLH]  No pervert found " )
 
 		EndIf
 
@@ -669,7 +801,7 @@ Event OnSexLabOrgasm(String _eventName, String _args, Float _argc, Form _sender)
 	Actor PlayerActor= PlayerAlias.GetReference() as Actor
 
 	if !Self || !SexLab 
-		Debug.Trace("SexLab Hormones: Critical error on SexLab Orgasm")
+		Debug.Trace("[SLH]  Critical error on SexLab Orgasm")
 		Return
 	EndIf
 
@@ -683,7 +815,7 @@ Event OnSexLabOrgasm(String _eventName, String _args, Float _argc, Form _sender)
 	; endif
 
 	If (_hasPlayer(actors))
-		Debug.Trace("SexLab Hormones: Orgasm!")
+		Debug.Trace("[SLH]  Orgasm!")
 
 		; Manage orgasms count ==================================================
 		If (iGameDateLastSex  == 0) 
@@ -746,7 +878,7 @@ Function _alterBodyAfterRest()
 	
 	If (kOrigRace != None) 
 		If (thisRace != kOrigRace)
-			Debug.Trace("SexLab Hormones: Race change detected - aborting")
+			Debug.Trace("[SLH]  Race change detected - aborting")
 			return
 		EndIf
 	EndIf
@@ -792,7 +924,12 @@ Function _alterBodyAfterRest()
 	;	SLH_Libido.SetValue(-90)
 
 	SLH_Libido.SetValue( iMin( iMax( (SLH_Libido.GetValue() as Int), -100), 100) )
-	Debug.Trace( "SexLab Hormones: Set Libido to " + SLH_Libido.GetValue() as Int )
+
+	If (GV_isBimbo.GetValue()==1)
+		SLH_Libido.SetValue( iMin( iMax( (SLH_Libido.GetValue() as Int) + 5, 50), 100) )
+	EndIf
+
+	Debug.Trace("[SLH]  Set Libido to " + SLH_Libido.GetValue() as Int )
 
 	if (GV_useWeight.GetValue() == 1)
 		Debug.Trace( "[SLH] _alterBodyAfterRest Weight")
@@ -803,10 +940,10 @@ Function _alterBodyAfterRest()
 		; WEIGHT CHANGE ====================================================
 		Float fCurrentWeight = pActorBase.GetWeight()
 		fWeight = fMin(fMax( fCurrentWeight + ( fSwellFactor * (110 - fCurrentWeight) / 100.0 ) * fWeightSwellMod  , fWeightMin), fWeightMax)
-		Debug.Trace( "SexLab Hormones: Set weight to " + fWeight + " from " + fCurrentWeight)
+		Debug.Trace("[SLH]  Set weight to " + fWeight + " from " + fCurrentWeight)
 		_alterWeight( fWeight, fCurrentWeight  )
 
-		; Debug.Notification( "SexLab Hormones: Set weight to " + fWeight + " from " + fCurrentWeight)
+		; Debug.Notification("[SLH]  Set weight to " + fWeight + " from " + fCurrentWeight)
 
 	EndIf
 
@@ -825,8 +962,8 @@ Function _alterBodyAfterRest()
 					fBreast = ( fCurrentBreast + ( fSwellFactor * (fNodeMax + fBreastMin  - fCurrentBreast) / 100.0 ) * fBreastSwellMod )  * fApparelMod
 				EndIf
 
-				; Debug.Trace( "SexLab Hormones: Breast swell mod:  " + fBreastSwellMod)
-				; Debug.Trace( "SexLab Hormones: Set breast to " + fBreast + " from " + fCurrentBreast)
+				; Debug.Trace("[SLH]  Breast swell mod:  " + fBreastSwellMod)
+				; Debug.Trace("[SLH]  Set breast to " + fBreast + " from " + fCurrentBreast)
 
 				_alterBreastNode( fBreast )	
 
@@ -892,7 +1029,7 @@ Function _alterBodyAfterRest()
 	EndIf
 
 	if (GV_useColors.GetValue() == 1)
-		Debug.Trace( "SexLab Hormones: Set skin color"  )
+		Debug.Trace("[SLH]  Set skin color"  )
 		; SKIN TONE =======================================================
 
 		; Types
@@ -914,8 +1051,8 @@ Function _alterBodyAfterRest()
 
 		Float fColorOffset = ( fSwellFactor * 0.2 / 100.0 ) ; max 0.2 increments
 		Int rgbColorOffset = ( (fSwellFactor as Int) * 10 / 100 ) ; max 10 increments
-		Debug.Trace("SexLab Hormones: fColorOffset: " + fColorOffset )
-		Debug.Trace("SexLab Hormones: rgbColorOffset: " + rgbColorOffset )
+		Debug.Trace("[SLH]  fColorOffset: " + fColorOffset )
+		Debug.Trace("[SLH]  rgbColorOffset: " + rgbColorOffset )
 
 		; skin
 		; _alterTintMask(type = 6, alpha = (255.0 * colorFactor) as Int, red = 236, green =194, blue = 184)
@@ -1006,7 +1143,7 @@ Function _alterBodyAfterSex(Bool bOral = False, Bool bVaginal = False, Bool bAna
 	
 	If (kOrigRace != None) 
 		If (thisRace != kOrigRace)
-			Debug.Notification("SexLab Hormones: Race change detected - aborting")
+			Debug.Trace("[SLH]  Race change detected - aborting")
 			return
 		EndIf
 	EndIf
@@ -1025,7 +1162,12 @@ Function _alterBodyAfterSex(Bool bOral = False, Bool bVaginal = False, Bool bAna
 	fSwellFactor    = GV_baseSwellFactor.GetValue() / GV_sexActivityThreshold.GetValue()
 
 	SLH_Libido.SetValue( iMin( iMax( (SLH_Libido.GetValue() as Int) + 1, -100), 100) )
-	Debug.Trace( "SexLab Hormones: Set Libido to " + SLH_Libido.GetValue() as Int )
+
+	If (GV_isBimbo.GetValue()==1)
+		SLH_Libido.SetValue( iMin( iMax( (SLH_Libido.GetValue() as Int) + 10, 50), 100) )
+	EndIf
+
+	Debug.Trace("[SLH]  Set Libido to " + SLH_Libido.GetValue() as Int )
 
 		Debug.Trace( "[SLH] _alterBodyAfterSex Weight")
 		Debug.Trace( "[SLH] Actorbase weight: " + pActorBase.GetWeight())
@@ -1103,7 +1245,7 @@ Function _alterBodyAfterSex(Bool bOral = False, Bool bVaginal = False, Bool bAna
 	EndIf
 
 	if (GV_useColors.GetValue() == 1)
-		Debug.Trace( "SexLab Hormones: Set skin color"  )
+		Debug.Trace("[SLH]  Set skin color"  )
 		; SKIN TONE =======================================================
 
 		; Types
@@ -1126,8 +1268,8 @@ Function _alterBodyAfterSex(Bool bOral = False, Bool bVaginal = False, Bool bAna
 
 		Float fColorOffset = ( fSwellFactor * 0.4 / 100.0 ) ; max 0.2 increments
 		Int rgbColorOffset = ( (fSwellFactor as Int) * 20 / 100 ) ; max 10 increments
-		Debug.Trace("SexLab Hormones: fColorOffset: " + fColorOffset )
-		Debug.Trace("SexLab Hormones: rgbColorOffset: " + rgbColorOffset )
+		Debug.Trace("[SLH]  fColorOffset: " + fColorOffset )
+		Debug.Trace("[SLH]  rgbColorOffset: " + rgbColorOffset )
 
 		; skin
 		; _alterTintMask(type = 6, alpha = (255.0 * colorFactor) as Int, red = 236, green =194, blue = 184)
@@ -1181,7 +1323,7 @@ Bool Function _detectShapeChange()
 
 	If (kOrigRace != None) 
 		If (thisRace != kOrigRace)
-			Debug.Notification("SexLab Hormones: Race change detected - aborting")
+			Debug.Trace("[SLH]  Race change detected - aborting")
 			return False
 		EndIf
 	EndIf
@@ -1197,11 +1339,11 @@ Bool Function _detectShapeChange()
 	If (fCurrentBreast!=fBreast) || (fCurrentBelly!=fBelly) || (fCurrentButt!=fButt) || (fCurrentSchlong!=fSchlong) || (fCurrentWeight!=fWeight)
 		changeDetected = True
 
-		Debug.Trace("SexLab Hormones: External shape change detected " )
-		Debug.Trace("SexLab Hormones: Breast change " + fBreast + " from " + fCurrentBreast )
-		Debug.Trace("SexLab Hormones: Butt change " + fButt + " from " + fCurrentButt )
-		Debug.Trace("SexLab Hormones: Belly change " + fBelly + " from " + fCurrentBelly )
-		Debug.Trace("SexLab Hormones: Schlong change " + fSchlong + " from " + fCurrentSchlong )
+		Debug.Trace("[SLH]  External shape change detected " )
+		Debug.Trace("[SLH]  Breast change " + fBreast + " from " + fCurrentBreast )
+		Debug.Trace("[SLH]  Butt change " + fButt + " from " + fCurrentButt )
+		Debug.Trace("[SLH]  Belly change " + fBelly + " from " + fCurrentBelly )
+		Debug.Trace("[SLH]  Schlong change " + fSchlong + " from " + fCurrentSchlong )
 
 	EndIf
 
@@ -1224,29 +1366,29 @@ Function _traceStatus()
 	ObjectReference PlayerREF= PlayerAlias.GetReference()
 	Actor PlayerActor= PlayerAlias.GetReference() as Actor
 
-	Debug.Trace("SexLab Hormones: Status ---------------------------------" )
-	Debug.Trace("SexLab Hormones: Sex acts today: " + iSexCountToday + " - Total: " + iSexCountAll)
+	Debug.Trace("[SLH]  Status ---------------------------------" )
+	Debug.Trace("[SLH]  Sex acts today: " + iSexCountToday + " - Total: " + iSexCountAll)
 
-	Debug.Trace("SexLab Hormones: Oral acts today: " + iOralCountToday)
-	Debug.Trace("SexLab Hormones: Vaginal acts today: " + iVaginalCountToday)
-	Debug.Trace("SexLab Hormones: Anal acts today: " + iAnalCountToday)
+	Debug.Trace("[SLH]  Oral acts today: " + iOralCountToday)
+	Debug.Trace("[SLH]  Vaginal acts today: " + iVaginalCountToday)
+	Debug.Trace("[SLH]  Anal acts today: " + iAnalCountToday)
 
-	Debug.Trace("SexLab Hormones: Daedric Influence: " + iDaedricInfluence)
-	Debug.Trace("SexLab Hormones: Succubus: " + iSuccubus)
-	Debug.Trace("SexLab Hormones: Bimbo: " + iBimbo)
-	Debug.Trace("SexLab Hormones: Sex Change: " + iHRT)
-	Debug.Trace("SexLab Hormones: HRT Phase: " + iSexStage)
-	Debug.Trace("SexLab Hormones: Pregnant: " + _isPregnantByBeeingFemale(PlayerActor))
-	Debug.Trace("SexLab Hormones: Chaurus Breeder: " + _isPregnantByEstrusChaurus(PlayerActor))
+	Debug.Trace("[SLH]  Daedric Influence: " + iDaedricInfluence)
+	Debug.Trace("[SLH]  Succubus: " + iSuccubus)
+	Debug.Trace("[SLH]  Bimbo: " + iBimbo)
+	Debug.Trace("[SLH]  Sex Change: " + iHRT)
+	Debug.Trace("[SLH]  HRT Phase: " + iSexStage)
+	Debug.Trace("[SLH]  Pregnant: " + _isPregnantByBeeingFemale(PlayerActor))
+	Debug.Trace("[SLH]  Chaurus Breeder: " + _isPregnantByEstrusChaurus(PlayerActor))
 
-	Debug.Trace("SexLab Hormones: Orgasms today: " + iOrgasmsCountToday + " - Total: " + iOrgasmsCountAll)
+	Debug.Trace("[SLH]  Orgasms today: " + iOrgasmsCountToday + " - Total: " + iOrgasmsCountAll)
 
-	Debug.Trace("SexLab Hormones: Libido: " + SLH_Libido.GetValue())
-	Debug.Trace("SexLab Hormones: Weight: " + fWeight + " [ " + fWeightMin + " / " + fWeightMax + " ]")
-	Debug.Trace("SexLab Hormones: Breast: " + fBreast + " [ " + fBreastMin + " / " + fBreastMax + " ]")
-	Debug.Trace("SexLab Hormones: Belly: " + fBelly + " [ " + fBellyMin + " / " + fBellyMax + " ]")
-	Debug.Trace("SexLab Hormones: Butt: " + fButt + " [ " + fButtMin + " / " + fButtMax + " ]")
-	Debug.Trace("SexLab Hormones: Schlong: " + fSchlong + " [ " + fSchlongMin + " / " + fSchlongMax + " ]")
+	Debug.Trace("[SLH]  Libido: " + SLH_Libido.GetValue())
+	Debug.Trace("[SLH]  Weight: " + fWeight + " [ " + fWeightMin + " / " + fWeightMax + " ]")
+	Debug.Trace("[SLH]  Breast: " + fBreast + " [ " + fBreastMin + " / " + fBreastMax + " ]")
+	Debug.Trace("[SLH]  Belly: " + fBelly + " [ " + fBellyMin + " / " + fBellyMax + " ]")
+	Debug.Trace("[SLH]  Butt: " + fButt + " [ " + fButtMin + " / " + fButtMax + " ]")
+	Debug.Trace("[SLH]  Schlong: " + fSchlong + " [ " + fSchlongMin + " / " + fSchlongMax + " ]")
 
 EndFunction
 
@@ -1301,7 +1443,7 @@ function _alterBreastNode(float fNewBreast = 0.0)
 	; 	fPregRightBreast01 = fMax(fPregRightBreast01, NINODE_MIN_SCALE)
 	; endif
 
-	; Debug.Trace("SexLab Hormones: Breast Old: " + fPregLeftBreast + " Min: " + NINODE_MIN_SCALE + " - Max: " + fBreastMax)
+	; Debug.Trace("[SLH]  Breast Old: " + fPregLeftBreast + " Min: " + NINODE_MIN_SCALE + " - Max: " + fBreastMax)
 
 	if (_isExternalChangeModActive(PlayerActor))
 		fNodeMax = fPregBreastMax
@@ -1315,7 +1457,7 @@ function _alterBreastNode(float fNewBreast = 0.0)
 	fPregLeftBreast    = fBreast
 	fPregRightBreast   = fBreast
 
-	; Debug.Trace("SexLab Hormones: Breast New: " + fPregLeftBreast )
+	; Debug.Trace("[SLH]  Breast New: " + fPregLeftBreast )
 
 	NetImmerse.SetNodeScale( PlayerActor, NINODE_LEFT_BREAST, fPregLeftBreast, false)
 	NetImmerse.SetNodeScale( PlayerActor, NINODE_RIGHT_BREAST, fPregRightBreast, false)
@@ -1538,15 +1680,15 @@ Int function _alterTintMaskRelativeRGB(int colorBase, int maskType = 6, int mask
 	int bBase = Math.LogicalAnd( colorBase, 0x000000FF) 
 
 	Debug.Trace( ":::: SexLab Hormones: Updating tint mask RGB - " +  maskType )
-	Debug.Trace( "SexLab Hormones: Base RGB - " + aBase + " - " + rBase + " - " + gBase + " - " + bBase  )
-	Debug.Trace( "SexLab Hormones: Offsets - " + aOffset + " - " + rOffset + " - " + gOffset + " - " + bOffset  )
+	Debug.Trace("[SLH]  Base RGB - " + aBase + " - " + rBase + " - " + gBase + " - " + bBase  )
+	Debug.Trace("[SLH]  Offsets - " + aOffset + " - " + rOffset + " - " + gOffset + " - " + bOffset  )
 
 	int aNew = iMin(iMax(aBase + aOffset, 0), 255)
 	int rNew = iMin(iMax(rBase + rOffset, 0), 255)
 	int gNew = iMin(iMax(gBase + gOffset, 0), 255)
 	int bNew = iMin(iMax(bBase + bOffset, 0), 255)
 
-	Debug.Trace( "SexLab Hormones: New color - " + aNew + " - " + rNew + " - " + gNew + " - " + bNew  )
+	Debug.Trace("[SLH]  New color - " + aNew + " - " + rNew + " - " + gNew + " - " + bNew  )
     _alterTintMask(type = maskType, alpha = aNew, red = rNew, green = gNew, blue = bNew)
 
     int color = Math.LeftShift(aNew, 24) + Math.LeftShift(rNew, 16) + Math.LeftShift(gNew, 8) + bNew
@@ -1574,15 +1716,15 @@ Int function _alterTintMaskRelativeHSL(int colorOrig, int colorBase, int maskTyp
 	int[] rgbNew  = new int[3]
 
 	Debug.Trace( ":::: SexLab Hormones: Updating tint mask HSL - " +  maskType )
-	; Debug.Trace( "SexLab Hormones: Orig RGB - " + aOrig + " - " + rOrig + " - " + gOrig + " - " + bOrig  )
-	Debug.Trace( "SexLab Hormones: Base RGB - " + aBase + " - " + rBase + " - " + gBase + " - " + bBase  )
-	Debug.Trace( "SexLab Hormones: Offsets - " + aOffset + " - " + hOffset + " - " + sOffset + " - " + lOffset  )
+	; Debug.Trace("[SLH]  Orig RGB - " + aOrig + " - " + rOrig + " - " + gOrig + " - " + bOrig  )
+	Debug.Trace("[SLH]  Base RGB - " + aBase + " - " + rBase + " - " + gBase + " - " + bBase  )
+	Debug.Trace("[SLH]  Offsets - " + aOffset + " - " + hOffset + " - " + sOffset + " - " + lOffset  )
 
 	hslOrig = _RGBtoHSL(rOrig, gOrig, bOrig)
 	hslBase = _RGBtoHSL(rBase, gBase, bBase)
 
-	; Debug.Trace( "SexLab Hormones: Orig HSL - " + hslOrig[0] + " - " + hslOrig[1] + " - " + hslOrig[2])
-	; Debug.Trace( "SexLab Hormones: Base HSL - " + hslBase[0] + " - " + hslBase[1] + " - " + hslBase[2])
+	; Debug.Trace("[SLH]  Orig HSL - " + hslOrig[0] + " - " + hslOrig[1] + " - " + hslOrig[2])
+	; Debug.Trace("[SLH]  Base HSL - " + hslBase[0] + " - " + hslBase[1] + " - " + hslBase[2])
 
 	hslNew[0] = fMin( fMax( hslBase[0] + hOffset, 0), 1.0)
 	hslNew[1] = fMin( fMax( hslBase[1] + sOffset, 0), 1.0)
@@ -1591,20 +1733,20 @@ Int function _alterTintMaskRelativeHSL(int colorOrig, int colorBase, int maskTyp
 	; Prevent skin from becoming too dark 
 	hslNew[2] = fMin( fMax( hslNew[2], hslOrig[2]/2.0), 1.0)
 
-	; Debug.Trace( "SexLab Hormones: HSL - " + hslNew[0] + " - " + hslNew[1] + " - " + hslNew[2]   )
+	; Debug.Trace("[SLH]  HSL - " + hslNew[0] + " - " + hslNew[1] + " - " + hslNew[2]   )
 
 
 
 	rgbNew = _HSLtoRGB(hslNew[0], hslNew[1], hslNew[2])
 
-	; Debug.Trace( "SexLab Hormones: RGB - " + rgbNew[0] + " - " + rgbNew[1] + " - " + rgbNew[2]   )
+	; Debug.Trace("[SLH]  RGB - " + rgbNew[0] + " - " + rgbNew[1] + " - " + rgbNew[2]   )
 
 	int aNew = iMin(iMax(aBase + aOffset, 0), 255)
 	int rNew = iMin(iMax(rgbNew[0], 0), 255)
 	int gNew = iMin(iMax(rgbNew[1], 0), 255)
 	int bNew = iMin(iMax(rgbNew[2], 0), 255)
 
-	Debug.Trace( "SexLab Hormones: New color - " + aNew + " - " + rNew + " - " + gNew + " - " + bNew  )
+	Debug.Trace("[SLH]  New color - " + aNew + " - " + rNew + " - " + gNew + " - " + bNew  )
     _alterTintMask(type = maskType, alpha = aNew, red = rNew, green = gNew, blue = bNew)
 
     int color = Math.LeftShift(aNew, 24) + Math.LeftShift(rNew, 16) + Math.LeftShift(gNew, 8) + bNew
@@ -1635,17 +1777,17 @@ Int function _alterTintMaskTarget(int colorBase, int maskType = 6, int maskIndex
 	bOffset = -1 * ((( (bBase - bTarget) as Float) * colorMod) as Int)
 
 	Debug.Trace( ":::: SexLab Hormones: Sync tint mask - " +  maskType )
-	Debug.Trace( "SexLab Hormones: Orig color - " + aBase + " - " + rBase + " - " + gBase + " - " + bBase  )
-	Debug.Trace( "SexLab Hormones: Target color - " + aTarget + " - " + rTarget + " - " + gTarget + " - " + bTarget  )
-	Debug.Trace( "SexLab Hormones: Offsets - " + aOffset + " - " + rOffset + " - " + gOffset + " - " + bOffset  )
-	Debug.Trace( "SexLab Hormones: ColorMod - " + colorMod )
+	Debug.Trace("[SLH]  Orig color - " + aBase + " - " + rBase + " - " + gBase + " - " + bBase  )
+	Debug.Trace("[SLH]  Target color - " + aTarget + " - " + rTarget + " - " + gTarget + " - " + bTarget  )
+	Debug.Trace("[SLH]  Offsets - " + aOffset + " - " + rOffset + " - " + gOffset + " - " + bOffset  )
+	Debug.Trace("[SLH]  ColorMod - " + colorMod )
 
 	int aNew = iMin(iMax(aBase + aOffset, 0), 255)
 	int rNew = iMin(iMax(rBase + rOffset, 0), 255)
 	int gNew = iMin(iMax(gBase + gOffset, 0), 255)
 	int bNew = iMin(iMax(bBase + bOffset, 0), 255)
 
-	Debug.Trace( "SexLab Hormones: New color - " + aNew + " - " + rNew + " - " + gNew + " - " + bNew  )
+	Debug.Trace("[SLH]  New color - " + aNew + " - " + rNew + " - " + gNew + " - " + bNew  )
     _alterTintMask(type = maskType, alpha = aNew, red = rNew, green = gNew, blue = bNew)
 
     int color = Math.LeftShift(aNew, 24) + Math.LeftShift(rNew, 16) + Math.LeftShift(gNew, 8) + bNew
@@ -1968,6 +2110,10 @@ Function _doSoulDevour(Actor[] _actors)
 			Debug.MessageBox("Your charm is overwhelming for your victim.")
 			StorageUtil.SetIntValue(Game.GetPlayer(), "Puppet_CastTarget", 1)
 			StorageUtil.SetFormValue(Game.GetPlayer(), "Puppet_NewTarget", bandit)
+
+			If !(StorageUtil.HasIntValue(bandit, "_SD_iRelationshipType"))
+				StorageUtil.SetIntValue(bandit, "_SD_iRelationshipType" , 5 )
+			EndIf		
 		EndIf
 	endif
 
@@ -2061,6 +2207,41 @@ function _manageSexLabAroused(int aiModRank = -1)
 
 endFunction
 
+Function _LoadFaceValues(Actor _targetActor, int[] _presets = None, float[] _morphs = None)
+	ActorBase targetBase = _targetActor.GetActorBase()
+	int totalPresets = MAX_PRESETS
+	int totalMorphs = MAX_MORPHS
+
+	int i = 0
+	While i < totalPresets
+		targetBase.SetFacePreset(_presets[i], i)
+		i += 1
+	EndWhile
+ 
+	i = 0
+	While i < totalMorphs
+		targetBase.SetFaceMorph(_morphs[i], i)
+		i += 1
+	EndWhile
+EndFunction
+
+Function _SaveFaceValues(Actor _targetActor, int[] _presets = None, float[] _morphs = None)
+	ActorBase targetBase = _targetActor.GetActorBase()
+	int totalPresets = MAX_PRESETS
+	int totalMorphs = MAX_MORPHS
+
+	int i = 0
+	While i < totalPresets
+		_presets[i] = targetBase.GetFacePreset(i)
+		i += 1
+	EndWhile
+ 
+	i = 0
+	While i < totalMorphs
+		_morphs[i] = targetBase.GetFaceMorph(i)
+		i += 1
+	EndWhile
+EndFunction
 
 function _refreshBodyShape()
 	ObjectReference PlayerREF= PlayerAlias.GetReference()
@@ -2079,12 +2260,12 @@ function _refreshBodyShape()
 
 ;	Debug.Notification("SexLab Hormones: Refreshing body shape values")
 ;	Debug.Notification(".")
-	Debug.Trace("SexLab Hormones: Refreshing body shape values")
+	Debug.Trace("[SLH]  Refreshing body shape values")
 
 
 	If (kOrigRace != None) 
 		If (thisRace != kOrigRace)
-			Debug.Notification("SexLab Hormones: Race change detected - aborting")
+			Debug.Trace("[SLH]  Race change detected - aborting")
 			return
 		EndIf
 	EndIf
@@ -2168,9 +2349,13 @@ function _applyBodyShapeChanges()
 	Race thisRace = pActorBase.GetRace()
 
 	; Debug.Notification("SexLab Hormones: Applying body changes")
-	Debug.Trace("SexLab Hormones: Applying body changes")
+	Debug.Trace("[SLH]  Applying body changes")
 
 	Utility.Wait( 2.0 )
+
+	if (!PlayerActor) || (PlayerActor == None)
+		return
+	endif
 
 	; Wait until menu is closed
 	while ( Utility.IsInMenuMode() )
@@ -2187,31 +2372,31 @@ function _applyBodyShapeChanges()
 	; Abort if race has changed (vampire lord or werewolf transformation)
 	If (kOrigRace != None) 
 		If (thisRace != kOrigRace)
-			Debug.Notification("SexLab Hormones: Race change detected - aborting")
+			Debug.Trace("[SLH]  Race change detected - aborting")
 			return
 		EndIf
 	EndIf
 
 	if (GV_useColors.GetValue() == 1)
 	 	If SKSE.GetPluginVersion("NiOverride") >= 1
-	 		Debug.Trace("SexLab Hormones: Applying NiOverride")
+	 		Debug.Trace("[SLH]  Applying NiOverride")
 		 	NiOverride.ApplyOverrides(PlayerActor)
 	 		NiOverride.ApplyNodeOverrides(PlayerActor)
 	 	Endif
 
 		; Game.UpdateHairColor()
-		Debug.Trace("SexLab Hormones: Updating TintMaskColors")
+		Debug.Trace("[SLH]  Updating TintMaskColors")
 		Game.UpdateTintMaskColors()
 	EndIf
 
  
 	If ((GV_useNodes.GetValue() == 1) || (GV_useWeight.GetValue() == 1)) && (GV_enableNiNodeUpdate.GetValue() == 1)
-		Debug.Trace("SexLab Hormones: QueueNiNodeUpdate")
+		Debug.Trace("[SLH]  QueueNiNodeUpdate")
 		Utility.Wait(2.0)
 		PlayerActor.QueueNiNodeUpdate()
 		Utility.Wait(2.0)
 	Else
-		Debug.Trace("SexLab Hormones: QueueNiNodeUpdate aborted - " + GV_useNodes.GetValue() + " - " +GV_useWeight.GetValue() )
+		Debug.Trace("[SLH]  QueueNiNodeUpdate aborted - " + GV_useNodes.GetValue() + " - " +GV_useWeight.GetValue() )
 	EndIf
  
 
@@ -2284,7 +2469,7 @@ function _initHormonesState()
 	ActorBase pLeveledActorBase = PlayerActor.GetLeveledActorBase()
 	
 	; Debug.Notification("SexLab Hormones: Initialization of body state")
-	Debug.Trace("SexLab Hormones: Initialization of body state")
+	Debug.Trace("[SLH]  Initialization of body state")
 
 
 	if ( bBreastEnabled && PlayerActor.GetLeveledActorBase().GetSex() == 1 )
@@ -2383,14 +2568,14 @@ function _initHormonesState()
 	fLibido = SLH_Libido.GetValue() as Float
 endFunction
 
-function _resetHormonesState()
+function _setHormonesStateDefault()
 	ObjectReference PlayerREF= PlayerAlias.GetReference()
 	Actor PlayerActor= PlayerAlias.GetReference() as Actor
 	ActorBase pActorBase = PlayerActor.GetActorBase()
 	ActorBase pLeveledActorBase = PlayerActor.GetLeveledActorBase()
 	
 	; Debug.Notification("SexLab Hormones: Initialization of body state")
-	Debug.Trace("SexLab Hormones: Reset of body state")
+	Debug.Trace("[SLH]  Reset of body state")
 
 
 	if ( bBreastEnabled && PlayerActor.GetLeveledActorBase().GetSex() == 1 )
@@ -2495,9 +2680,99 @@ function _resetHormonesState()
 
 endFunction
 
+function _resetHormonesState()
+	ObjectReference PlayerREF= PlayerAlias.GetReference()
+	Actor PlayerActor= PlayerAlias.GetReference() as Actor
+	ActorBase pActorBase = PlayerActor.GetActorBase()
+	ActorBase pLeveledActorBase = PlayerActor.GetLeveledActorBase()
+	
+	; Debug.Notification("SexLab Hormones: Initialization of body state")
+	Debug.Trace("[SLH]  Reset of body state")
+
+
+	if ( bBreastEnabled && PlayerActor.GetLeveledActorBase().GetSex() == 1 )
+		; fOrigLeftBreast  = NetImmerse.GetNodeScale(PlayerActor, NINODE_LEFT_BREAST, false)
+		; fOrigRightBreast = NetImmerse.GetNodeScale(PlayerActor, NINODE_RIGHT_BREAST, false)
+		fPregLeftBreast  = fOrigLeftBreast
+		fPregRightBreast = fOrigRightBreast
+		fBreast 		 = fOrigRightBreast
+		if bTorpedoFixEnabled
+			; fOrigLeftBreast01  = NetImmerse.GetNodeScale(PlayerActor, NINODE_LEFT_BREAST01, false)
+			; fOrigRightBreast01 = NetImmerse.GetNodeScale(PlayerActor, NINODE_RIGHT_BREAST01, false)
+			fPregLeftBreast01  = fOrigLeftBreast01
+			fPregRightBreast01 = fOrigRightBreast01
+		endif
+	endif
+	if ( bButtEnabled )
+		; fOrigLeftButt    = NetImmerse.GetNodeScale(PlayerActor, NINODE_LEFT_BUTT, false)
+		; fOrigRightButt   = NetImmerse.GetNodeScale(PlayerActor, NINODE_RIGHT_BUTT, false)
+		fPregLeftButt    = fOrigLeftButt
+		fPregRightButt   = fOrigRightButt
+		fButt   		 = fOrigRightButt
+	endif
+	if ( bBellyEnabled )
+		; fOrigBelly       = NetImmerse.GetNodeScale(PlayerActor, NINODE_BELLY, false)
+		; fPregBelly       = fOrigBelly  
+		fBelly       	 = fOrigBelly  
+	endif		
+	if ( bSchlongEnabled )
+		; fOrigSchlong       = NetImmerse.GetNodeScale(PlayerActor, NINODE_SCHLONG, false) 
+		fSchlong       	 = fOrigSchlong  
+	endif		
+
+	; iOrigSkinColor = Game.GetTintMaskColor(6,0)
+	iSkinColor = iOrigSkinColor
+	; iOrigCheeksColor = Game.GetTintMaskColor(9,0)
+	iCheeksColor = iOrigCheeksColor
+	; iOrigLipsColor = Game.GetTintMaskColor(1,0)
+	iLipsColor = iOrigLipsColor
+	; iOrigEyelinerColor = Game.GetTintMaskColor(3,0)
+	iEyelinerColor = iOrigEyelinerColor
+
+
+	fWeight = fOrigWeight
+	pActorBase.SetWeight(fWeight) 
+
+	fHeight = fOrigHeight
+	PlayerREF.SetScale(fHeight)
+
+	; SLH_OrigWeight.SetValue(fOrigWeight)
+
+	GV_breastValue.SetValue(fBreast)
+	GV_buttValue.SetValue(fButt)
+	GV_bellyValue.SetValue(fBelly)
+	GV_schlongValue.SetValue(fSchlong)
+	GV_weightValue.SetValue(fWeight)
+
+	If (PlayerActor.GetLeveledActorBase().GetSex() == 1 ) && (GV_isHRT.GetValue() == 0)
+		iSexStage = -2
+	Else
+		iSexStage = 2
+	EndIf
+
+	; iOrgasmsCountToday   = 1
+	; iSexCountToday   = 1
+	; iOralCountToday   = 0
+	; iAnalCountToday   = 0
+	; iVaginalCountToday   = 0
+
+	; kOrigRace = pActorBase.GetRace()
+
+	SLH_Libido.SetValue( Utility.RandomInt(15,30))
+	fLibido = SLH_Libido.GetValue() as Float
+
+	_alterBodyAfterRest()
+	_setHormonesState()	
+
+	If !( _isExternalChangeModActive(PlayerActor) ) && (NextAllowed!= -1)
+		_applyBodyShapeChanges()
+	EndIf
+
+endFunction
+
 function _setHormonesState()
 	; Debug.Notification("SexLab Hormones: Writing state to storage")
-	Debug.Trace("SexLab Hormones: Writing state to storage")
+	Debug.Trace("[SLH]  Writing state to storage")
 
 	If (!StorageUtil.HasIntValue(none, "_SLH_iHormones"))
 		StorageUtil.SetIntValue(none, "_SLH_iHormones", 1)
@@ -2611,7 +2886,7 @@ endFunction
 
 function _setShapeState()
 	; Debug.Notification("SexLab Hormones: Writing state to storage")
-	Debug.Trace("SexLab Hormones: Writing shape state to storage")
+	Debug.Trace("[SLH]  Writing shape state to storage")
 
 ; StorageUtil.SetIntValue(none, "myGlobalVariable", 5) ; enter none as first argument to set global variable
 ; StorageUtil.SetIntValue(Game.GetPlayer(), "myVariable", 25) ; set "myVariable" to 25 on player
@@ -2655,7 +2930,7 @@ endFunction
 
 function _getHormonesState()
 	; Debug.Notification("SexLab Hormones: Reading state from storage")
-	Debug.Trace("SexLab Hormones: Reading state from storage")
+	Debug.Trace("[SLH]  Reading state from storage")
 
 ; int value = StorageUtil.GetIntValue(none, "myGlobalVariable") ; get the previously saved global variable
 ; value = StorageUtil.GetIntValue(Game.GetPlayer(), "myVariable") ; get value of myVariable from player
@@ -2789,7 +3064,7 @@ function _getShapeState()
 	ActorBase pActorBase = PlayerActor.GetActorBase()
 
 	; Debug.Notification("SexLab Hormones: Reading state from storage")
-	Debug.Trace("SexLab Hormones: Reading state from storage")
+	Debug.Trace("[SLH]  Reading state from storage")
 
 ; int value = StorageUtil.GetIntValue(none, "myGlobalVariable") ; get the previously saved global variable
 ; value = StorageUtil.GetIntValue(Game.GetPlayer(), "myVariable") ; get value of myVariable from player
@@ -2834,7 +3109,7 @@ function _getShapeActor(Bool bUseNodes = False)
 	ActorBase pActorBase = PlayerActor.GetActorBase()
 
 	; Debug.Notification("SexLab Hormones: Reading state from storage")
-	Debug.Trace("SexLab Hormones: Reading state from player actor")
+	Debug.Trace("[SLH]  Reading state from player actor")
 
 	fBreast       = NetImmerse.GetNodeScale(PlayerActor, NINODE_RIGHT_BREAST, false)
 	fButt       = NetImmerse.GetNodeScale(PlayerActor, NINODE_RIGHT_BUTT, false)
@@ -3070,9 +3345,11 @@ GlobalVariable      Property GV_redShiftColor  			Auto
 GlobalVariable      Property GV_redShiftColorMod 		Auto
 GlobalVariable      Property GV_blueShiftColor 			Auto
 GlobalVariable      Property GV_blueShiftColorMod 		Auto
+GlobalVariable      Property GV_isTG                    Auto
 GlobalVariable      Property GV_isHRT 					Auto
 GlobalVariable      Property GV_isBimbo 				Auto
 GlobalVariable      Property GV_isSuccubus 				Auto
+GlobalVariable      Property GV_allowTG                 Auto
 GlobalVariable      Property GV_allowHRT 				Auto
 GlobalVariable      Property GV_allowBimbo 				Auto
 GlobalVariable      Property GV_allowSuccubus 			Auto
@@ -3102,10 +3379,13 @@ SPELL Property _SLH_DaedricInfluence  Auto
 
 Race Property _SLH_DremoraRace  Auto  
 Race Property _SLH_DremoraOutcastRace  Auto  
+Race Property _SLH_BimboRace  Auto  
 
 Quest Property _SLH_QST_Succubus  Auto  
+Quest Property _SLH_QST_Bimbo  Auto  
 
 
 Keyword Property ArmorOn  Auto  
 
 Keyword Property ClothingOn  Auto  
+SPELL Property PolymorphBimbo Auto

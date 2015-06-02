@@ -60,11 +60,13 @@ float		_redShiftColorMod 		= 1.0
 int			_blueShiftColor 		= 0
 float		_blueShiftColorMod 		= 1.0
 
+bool		_allowTG				= false
 bool		_allowHRT				= false
 bool		_allowBimbo				= false
 bool		_allowSuccubus				= false
 
 bool		_statusToggle			= false
+bool		_setshapeToggle			= false
 bool		_resetToggle			= false
 
 bool		_showStatus 			= true
@@ -165,6 +167,7 @@ event OnPageReset(string a_page)
 	_blueShiftColor 		= GV_blueShiftColor.GetValue() as Int
 	_blueShiftColorMod 		= GV_blueShiftColorMod.GetValue() as Float
 
+	_allowTG = GV_allowTG.GetValue()  as Int
 	_allowHRT = GV_allowHRT.GetValue()  as Int
 	_allowBimbo = GV_allowBimbo.GetValue()  as Int
 	_allowSuccubus = GV_allowSuccubus.GetValue()  as Int
@@ -175,6 +178,7 @@ event OnPageReset(string a_page)
 	_shapeUpdateOnTimer = GV_shapeUpdateOnTimer.GetValue()  as Int
 	_enableNiNodeUpdate = GV_enableNiNodeUpdate.GetValue()  as Int
 
+	_setshapeToggle = GV_setshapeToggle.GetValue()  as Int
 	_resetToggle = GV_resetToggle.GetValue()  as Int
 
 	ObjectReference PlayerREF= PlayerAlias.GetReference()
@@ -271,8 +275,9 @@ event OnPageReset(string a_page)
 
 		AddHeaderOption(" Optional modules")
 		AddToggleOptionST("STATE_SUCCUBUS","Succubus Curse", _allowSuccubus as Float)
-		AddToggleOptionST("STATE_BIMBO","Bimbo Curse", _allowBimbo as Float, OPTION_FLAG_DISABLED)
-		AddToggleOptionST("STATE_SEX_CHANGE","Sex Change Curse", _allowHRT as Float, OPTION_FLAG_DISABLED)
+		AddToggleOptionST("STATE_BIMBO","Bimbo Curse", _allowBimbo as Float)
+		AddToggleOptionST("STATE_SEX_CHANGE","Sex Change Curse", _allowHRT as Float)
+		AddToggleOptionST("STATE_TG","Allow Transgender", _allowTG as Float)
 
 		AddHeaderOption(" Shape refresh controls")
 		AddToggleOptionST("STATE_CHANGE_OVERRIDE","Shape change override", _changeOverrideToggle as Float)
@@ -281,17 +286,14 @@ event OnPageReset(string a_page)
 		AddToggleOptionST("STATE_UPDATE_ON_TIMER","Update on timer", _shapeUpdateOnTimer as Float)
 		AddToggleOptionST("STATE_ENABLE_NODE_UPDATE","Enable node updates", _enableNiNodeUpdate as Float)
 
-		AddHeaderOption(" Status")
-		AddToggleOptionST("STATE_STATUS","Display status", _statusToggle as Float)
-
 		AddEmptyOption()
 		AddToggleOptionST("STATE_SHOW_STATUS","Show Status messages", _showStatus as Bool)
 		AddSliderOptionST("STATE_COMMENTS_FREQUENCY","NPC Comments Frequency ", _commentsFrequency as Float,"{1} %")
 
-		AddEmptyOption()
-		AddToggleOptionST("STATE_RESET","Reset changes", _resetToggle as Float)
-
 		SetCursorPosition(1)
+		AddHeaderOption(" Status")
+		AddToggleOptionST("STATE_STATUS","Display current status", _statusToggle as Float)
+
 		AddHeaderOption(" Change shape values")
 		AddSliderOptionST("STATE_WEIGHT_VALUE","Weight ", _weightSetValue as Float,"{1}")
 		AddSliderOptionST("STATE_BREAST_VALUE","Breast", _breastSetValue as Float,"{1}")
@@ -301,6 +303,10 @@ event OnPageReset(string a_page)
 
 		AddEmptyOption()
 		AddToggleOptionST("STATE_REFRESH","Apply changes", _refreshToggle as Float)
+
+		AddEmptyOption()
+		AddToggleOptionST("STATE_SETSHAPE","Set default shape", _setshapeToggle as Float)
+		AddToggleOptionST("STATE_RESET","Reset changes", _resetToggle as Float)
 	endIf
 endEvent
 
@@ -1059,7 +1065,8 @@ state STATE_REFRESH ; TOGGLE
 	event OnSelectST()
 		; SLH_Control._refreshBodyShape()
 		GV_forcedRefresh.SetValue(1.0) 
-		StorageUtil.SetIntValue(none, "_SLH_iForcedRefresh", 1)
+		; StorageUtil.SetIntValue(none, "_SLH_iForcedRefresh", 1)
+		SendModEvent("SLHRefresh")
 		
 		Debug.MessageBox("Exit the menu and wait a few seconds")
 	endEvent
@@ -1125,6 +1132,24 @@ state STATE_SEX_CHANGE ; TOGGLE
 
 	event OnHighlightST()
 		SetInfoText("Sex Change Curse - This old Hagraven curse could turn your gender upside down.")
+	endEvent
+endState
+; AddToggleOptionST("STATE_TG","Allow Transgender", _isTG)
+state STATE_TG ; TOGGLE
+	event OnSelectST()
+		GV_allowTG.SetValueInt( Math.LogicalXor( 1, GV_allowTG.GetValueInt() ) )
+		SetToggleOptionValueST( GV_allowTG.GetValueInt() as Bool )
+		ForcePageReset()
+	endEvent
+
+	event OnDefaultST()
+		GV_allowTG.SetValueInt( 0 )
+		SetToggleOptionValueST( false )
+		ForcePageReset()
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Allow Transgender - This option enables smoother transitions from male to female, with an intermediate state (female with male genitals).")
 	endEvent
 endState
 ; AddToggleOptionST("STATE_STATUS","Display status", _statusToggle)
@@ -1285,10 +1310,31 @@ state STATE_ENABLE_NODE_UPDATE ; TOGGLE
 endState
 
 ; AddToggleOptionST("STATE_RESET","Reset changes", _resetToggle)
+state STATE_SETSHAPE ; TOGGLE
+	event OnSelectST()
+		; SLH_Control._resetHormonesState()
+		SendModEvent("SLHSetShape")
+
+		Debug.MessageBox("Shape initialized - Exit the menu and wait a few seconds")
+	endEvent
+
+	event OnDefaultST()
+
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Set shape - records default shape to current values of race, weight, shape and color. Use this option if you change race during the game (vampire or other transformations)")
+	endEvent
+
+endState
+
+; AddToggleOptionST("STATE_RESET","Reset changes", _resetToggle)
 state STATE_RESET ; TOGGLE
 	event OnSelectST()
-		SLH_Control._resetHormonesState()
-		Debug.MessageBox("Exit the menu and wait a few seconds")
+		; SLH_Control._resetHormonesState()
+		SendModEvent("SLHResetShape")
+
+		Debug.MessageBox("Shape reset - Exit the menu and wait a few seconds")
 	endEvent
 
 	event OnDefaultST()
@@ -1355,9 +1401,11 @@ GlobalVariable      Property GV_redShiftColorMod 		Auto
 GlobalVariable      Property GV_blueShiftColor 			Auto
 GlobalVariable      Property GV_blueShiftColorMod 		Auto
 
+GlobalVariable      Property GV_allowTG 				Auto
 GlobalVariable      Property GV_allowHRT 				Auto
 GlobalVariable      Property GV_allowBimbo 		 		Auto
 GlobalVariable      Property GV_allowSuccubus 			Auto
+GlobalVariable      Property GV_setshapeToggle 			Auto
 GlobalVariable      Property GV_resetToggle 			Auto
 GlobalVariable      Property GV_origWeight	 			Auto
 GlobalVariable      Property GV_breastValue 			Auto
