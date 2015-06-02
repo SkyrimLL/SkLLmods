@@ -11,8 +11,8 @@ EndEvent
  
 Function Maintenance()
 
-	If fVersion < 0.62 ; <--- Edit this value when updating
-		fVersion = 0.62 ; and this
+	If fVersion < 0.7 ; <--- Edit this value when updating
+		fVersion = 0.7 ; and this
 		Debug.Notification("Updating to Mind Control version: " + fVersion)
 		; Update Code
 		

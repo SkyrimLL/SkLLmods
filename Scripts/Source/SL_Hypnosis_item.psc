@@ -26,14 +26,14 @@ SPELL Property CircletRemovalSpell  Auto
 Event OnContainerChanged(ObjectReference akNewContainer, ObjectReference akOldContainer)
 	Actor akActor = None
 	Int daysSinceEnslavement	
-	Race ContainerRace 
+	Race ContainerRace = None
 	Bool IsActorValid
 
 	Debug.Notification("[MC] Device changed container.")
  
 	akActor = akNewContainer as Actor
+	ContainerRace = akActor.GetRace()
 
-	; ContainerRace = akActor.GetRace()
 	; IsPlayable = ContainerRace.IsRaceFlagSet(0x00000001) 
 	If (akActor != None)
 		IsActorValid = ( akActor.GetLeveledActorBase().GetSex() == 0 ) || ( akActor.GetLeveledActorBase().GetSex() == 1 ) 
@@ -41,7 +41,7 @@ Event OnContainerChanged(ObjectReference akNewContainer, ObjectReference akOldCo
 		IsActorValid = False
 	EndIf
 
-	if ((akNewContainer != Game.GetPlayer()) && (IsActorValid == True)) && (akNewContainer != None)
+	if ((akNewContainer != Game.GetPlayer()) && (IsActorValid == True)) && (akNewContainer != None) && (ContainerRace!=None)
 		akActor = akNewContainer as Actor
 
 		CircletActivationSpell.Cast(akNewContainer,akNewContainer)
@@ -68,6 +68,10 @@ Event OnContainerChanged(ObjectReference akNewContainer, ObjectReference akOldCo
 		StorageUtil.SetIntValue(akActor, "_SLMC_relationshipRank", akActor.GetRelationshipRank(Game.GetPlayer()))
 		akActor.SetRelationshipRank(Game.GetPlayer(), 4)
 		(Game.GetPlayer() as Actor).SetRelationshipRank(akActor, 4)
+
+		If !(StorageUtil.HasIntValue(akActor, "_SD_iRelationshipType"))
+			StorageUtil.SetIntValue(akActor, "_SD_iRelationshipType" , akActor.GetRelationshipRank(Game.GetPlayer()) )
+		EndIf				
 
 		If (akActor.IsInFaction(pPotentialFollower ))
 			StorageUtil.SetIntValue(akActor, "_SLMC_inPotentialFollowerFaction", 1)
@@ -100,12 +104,14 @@ Event OnContainerChanged(ObjectReference akNewContainer, ObjectReference akOldCo
 		If (Utility.RandomInt(0,100)<subTrigger)
 		;	Debug.Notification("[Side effect] NPC is Dominant")
 			StorageUtil.SetIntValue(akActor, "_SLMC_isVictimSub", 0)   ; Victim is Dom 
+			StorageUtil.SetIntValue(akActor, "_SD_iRelationshipType" , -5 )
 		Else
 		;	Debug.Notification("[Mind Control] NPC is Submissive")
 			StorageUtil.SetIntValue(akActor, "_SLMC_isVictimSub", 1)   ; Victim is Sub
 			; StorageUtil.SetIntValue(Game.GetPlayer(), "Puppet_SpellON", 1)
 			StorageUtil.SetIntValue(Game.GetPlayer(), "Puppet_CastTarget", 1)
 			StorageUtil.SetFormValue(Game.GetPlayer(), "Puppet_NewTarget", akActor)
+			StorageUtil.SetIntValue(akActor, "_SD_iRelationshipType" , 5 )
 		EndIf
 
 		int sexChangeTrigger = GV_isHRT.GetValue() as Int
@@ -148,8 +154,10 @@ Event OnContainerChanged(ObjectReference akNewContainer, ObjectReference akOldCo
 		Debug.Notification("[MC] Device in Player inventory")
 
 		if (akOldContainer != None)
-			(pDialogueFollower as DialogueFollowerScript).DismissFollower(0, 0)
-
+			if (pFollowerAlias)			
+				(pDialogueFollower as DialogueFollowerScript).DismissFollower(0, 0)
+			EndIf
+			
 			akActor = akOldContainer as Actor
 
 			; ContainerRace = akActor.GetRace()
@@ -195,6 +203,7 @@ Event OnContainerChanged(ObjectReference akNewContainer, ObjectReference akOldCo
 
 				DismissedFollowerActor.SetRelationshipRank(Game.GetPlayer(), StorageUtil.GetIntValue(akActor, "_SLMC_relationshipRank") )
 				(Game.GetPlayer() as Actor).SetRelationshipRank(DismissedFollowerActor, StorageUtil.GetIntValue(akActor, "_SLMC_relationshipRank") )
+				StorageUtil.SetIntValue(akActor, "_SD_iRelationshipType" , DismissedFollowerActor.GetRelationshipRank(Game.GetPlayer()) )
 
 				; DismissedFollowerActor.RemoveFromFaction(HypnosisVictimFaction)
 				
@@ -264,7 +273,10 @@ Event OnContainerChanged(ObjectReference akNewContainer, ObjectReference akOldCo
 		EndIf
 
 		pHypnosisVictimAlias.Clear()
-		pFollowerAlias.Clear()
+
+		if (pFollowerAlias)
+			pFollowerAlias.Clear()
+		EndIf
 		; StorageUtil.SetIntValue(Game.GetPlayer(), "Puppet_SpellON", -1)
 	Else
 		Debug.Notification("[MC] Device not in compatible host")
@@ -581,7 +593,7 @@ Function _refreshNPCSchlong ( Actor akActor )
 		Else
 			SOSScript.ScaleSchlongBones(addon, akActor, size) ; bone scales
 			SOSScript.UpdateNiNodes(akActor)
-			SOSScript.CheckActorSpell(akActor, true)
+			SOSScript.CheckActorSpell(akActor, true, true)
 		EndIf
 
 
