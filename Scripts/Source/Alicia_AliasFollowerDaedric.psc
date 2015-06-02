@@ -62,6 +62,10 @@ Function CheckAliciaLust()
 	int sexTrigger = 150 - AliciaLustValue - (100 - avHealthLevel)
 	int daedricTrigger
 
+	If !(StorageUtil.HasIntValue(AliciaActor, "_SD_iRelationshipType"))
+		StorageUtil.SetIntValue(AliciaActor, "_SD_iRelationshipType" , -5 )
+	EndIf		
+
 	; Disable orgasm effects when both Alicia and Ali are in Misty Grove
 	if (BackstoryQuest.GetStage() == 50) || (BackstoryQuest.GetStage() == 55)
 		return

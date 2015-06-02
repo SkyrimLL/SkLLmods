@@ -50,6 +50,12 @@ Function UpdateAliciaStats()
 	Int iAVMod
 	Float  fAVMod
 
+
+	If !(StorageUtil.HasIntValue(AliciaActor, "_SD_iRelationshipType"))
+		StorageUtil.SetIntValue(AliciaActor, "_SD_iRelationshipType" , 5 )
+	EndIf				
+
+
 	if (BackstoryQuest.GetStage() != 50) && (BackstoryQuest.GetStage() != 55)
 		Debug.Trace(":: Alicia stats -------" )
 		Debug.Trace("Cut count:" + iAliciaCutCountValue )
