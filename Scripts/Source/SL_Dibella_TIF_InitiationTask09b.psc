@@ -7,6 +7,7 @@ Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
 Self.GetOwningQuest().SetStage(56)
+Self.GetOwningQuest().SetObjectiveDisplayed(51, abDisplayed=False)
 ;END CODE
 EndFunction
 ;END FRAGMENT
