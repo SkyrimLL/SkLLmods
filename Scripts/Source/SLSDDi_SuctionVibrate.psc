@@ -21,7 +21,7 @@ Bool Function Filter(actor akActor, int chanceMod=0)
 		libs.Log("Player is in a sexlab scene. Not starting new vibration effect.")
 		return false
 	EndIf
-	return (HasKeywords(akActor) && akActor.WornHasKeyword(libs.zad_DeviousPlug) && Parent.Filter(akActor, GetChanceModified(akActor, chanceMod)))
+	return (HasKeywords(akActor) && akActor.WornHasKeyword(SLSD_CowHarness) && Parent.Filter(akActor, GetChanceModified(akActor, chanceMod)))
 EndFunction
 
 bool Function HasKeywords(actor akActor)
@@ -47,5 +47,20 @@ Function Execute(actor akActor)
 		else
 			return
 		EndIf
+
+		if akActor.WornHasKeyword(SLSD_CowMilker ) && (vibStrength >= 1)
+
+			if (akActor == Game.GetPlayer())
+				Debug.Notification("Your breasts are aching from a rush of milk.")
+			Else
+				Debug.Notification("The cow's breasts are aching from a rush of milk.")
+			Endif
+
+			StorageUtil.SetIntValue(akActor, "_SLH_iMilkLevel", StorageUtil.GetIntValue(akActor, "_SLH_iMilkLevel") + 1)
+		endif
+
 		libs.VibrateEffect(akActor, vibStrength, duration, teaseOnly=libs.shouldEdgeActor(akActor))
 EndFunction
+
+Keyword Property SLSD_CowHarness Auto
+Keyword Property SLSD_CowMilker Auto

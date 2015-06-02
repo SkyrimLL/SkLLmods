@@ -6,7 +6,7 @@ Scriptname SLSDDi_TIF_HelpCow3 Extends TopicInfo Hidden
 Function Fragment_1(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
-Debug.Notification( "The cow moans with relief..." )
+Debug.Notification( "The cow moans painfully..." )
 ;END CODE
 EndFunction
 ;END FRAGMENT

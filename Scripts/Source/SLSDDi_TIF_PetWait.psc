@@ -8,6 +8,11 @@ Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
 _SLSD_PetFollow.SetValue(0)
 akSpeaker.EvaluatePackage()
+
+	If !(StorageUtil.HasIntValue(akSpeaker, "_SD_iRelationshipType"))
+		StorageUtil.SetIntValue(akSpeaker, "_SD_iRelationshipType" , 5 )
+	EndIf	
+	
 ;END CODE
 EndFunction
 ;END FRAGMENT

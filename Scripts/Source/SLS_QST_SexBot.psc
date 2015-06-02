@@ -22,6 +22,9 @@ Function _Maintenance()
 
 	; StorageUtil.SetIntValue(SexBotActor, "_SD_iCanBeEnslaved", 0)
 	StorageUtil.SetIntValue(SexBotActor, "_SD_iCanBeStripped", 0)
+
+	StorageUtil.SetIntValue(SexBotActor, "_SD_iRelationshipType" , 5 )
+
 EndFunction
 
 
