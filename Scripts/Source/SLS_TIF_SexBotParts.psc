@@ -16,10 +16,11 @@ int bodyPartsCount = Game.GetPlayer().GetItemCount( _SLS_ImbuedFlesh )
 if (bodyPartsCount > 0)
 	Game.GetPlayer().RemoveItem(_SLS_ImbuedFlesh, bodyPartsCount )
 
-	_SLS_SexBotRepairLevel.Mod(  bodyPartsCount  ) 
+	_SLS_SexBotRepairLevel.SetValue( _SLS_SexBotRepairLevel.GetValue() + bodyPartsCount   )
 
-	if ( _SLS_SexBotRepairLevel.GetValue() > 5)
-		_SLS_SexBotRepairLevel.SetValue( 5 )
+
+	if ( _SLS_SexBotRepairLevel.GetValue() >= 6)
+		_SLS_SexBotRepairLevel.SetValue( 6 )
 
 		if (Self.GetOwningQuest().GetStage() != 30)
 

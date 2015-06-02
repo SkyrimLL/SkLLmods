@@ -3,6 +3,7 @@ Scriptname SLS_PlayerAlias_Fetish extends ReferenceAlias
 ReferenceAlias Property PlayerAlias  Auto  
 SexLabFramework     property SexLab Auto
 
+Int iArousalThrottle = 20 ; Chance of success to consider updating arousal
 
 ;  0- No fetish
 ;  1- The Apprentice Stone - Craft / Hitting / Dom
@@ -32,7 +33,11 @@ Event OnLocationChange(Location akOldLoc, Location akNewLoc)
 	; StorageUtil.SetIntValue(akActor, "_SLMC_victimGameDaysEnslaved", daysSinceEnslavement)
 
 ;  http://wiki.tesnexus.com/index.php/Skyrim_bodyparts_number
-	_SLS_NPCSexCount.SetValue(-1)
+	; _SLS_NPCSexCount.SetValue(-1)
+
+	if (Utility.RandomInt(0, 100) > iArousalThrottle)
+		Return
+	Endif
 	
 	If (_SLS_FetishID.GetValue() > 0)
 
@@ -75,10 +80,12 @@ Event OnLocationChange(Location akOldLoc, Location akNewLoc)
 		EndIf
 
 		Actor randomActor = Game.FindRandomActorFromRef(akActor, 10.0)
-		If (_SLS_FetishID.GetValue() == 7 ) && ( (akActor.HasFamilyRelationship(randomActor)) || (randomActor.IsPlayerTeammate()))
-			slaUtil.UpdateActorExposure(akRef = akActor, val = 2, debugMsg = "being close to a loved one.")
-		ElseIf (_SLS_FetishID.GetValue() == 7 ) && ( (akActor.HasAssociation(SpouseType, randomActor)))
-			slaUtil.UpdateActorExposure(akRef = akActor, val = 5, debugMsg = "being close to a spouse.")
+		If (randomActor != None)
+			If (_SLS_FetishID.GetValue() == 7 ) && ( (akActor.HasFamilyRelationship(randomActor)) || (randomActor.IsPlayerTeammate()))
+				slaUtil.UpdateActorExposure(akRef = akActor, val = 2, debugMsg = "being close to a loved one.")
+			ElseIf (_SLS_FetishID.GetValue() == 7 ) && ( (akActor.HasAssociation(SpouseType, randomActor)))
+				slaUtil.UpdateActorExposure(akRef = akActor, val = 5, debugMsg = "being close to a spouse.")
+			EndIf
 		EndIf
 
 		Bool bArmorOn = akActor.WornHasKeyword(ArmorOn)
@@ -128,6 +135,10 @@ Event OnCombatStateChanged(Actor akTarget, int aeCombatState)
 	ObjectReference akActorREF= Game.GetPlayer() as ObjectReference
 	Actor akActor= Game.GetPlayer()
 
+	if (Utility.RandomInt(0, 100) > iArousalThrottle)
+		Return
+	Endif
+
 	If (akTarget != None)
 
 	    if (aeCombatState == 0)
@@ -165,6 +176,10 @@ Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile,
 	ObjectReference akActorREF= Game.GetPlayer() as ObjectReference
 	Actor akActor= Game.GetPlayer()
 
+	if (Utility.RandomInt(0, 100) > iArousalThrottle)
+		Return
+	Endif
+
 	If (akAggressor != None) && (_SLS_FetishID.GetValue() == 12) 
 		;  Debug.Trace("We were hit by " + akAggressor)
 
@@ -178,6 +193,10 @@ Event OnEnterBleedout()
 	ObjectReference akActorREF= Game.GetPlayer() as ObjectReference
 	Actor akActor= Game.GetPlayer()
 
+	if (Utility.RandomInt(0, 100) > iArousalThrottle)
+		Return
+	Endif
+	
 	If (_SLS_FetishID.GetValue() == 12)
 
 		slaUtil.UpdateActorExposure(akRef = akActor, val = 5, debugMsg = "being knocked down.")
@@ -189,13 +208,17 @@ Event OnItemAdded(Form akBaseItem, int aiItemCount, ObjectReference akItemRefere
 	Actor akActor= Game.GetPlayer()
 	bool playerOwnsItem = False
 
+	if (Utility.RandomInt(0, 100) > iArousalThrottle)
+		Return
+	Endif
+	
 	if (akItemReference) && (_SLS_FetishID.GetValue() == 11)
-		playerOwnsItem = (akItemReference.GetActorOwner() == Game.GetPlayer().GetActorBase())
+        playerOwnsItem = (akItemReference.GetActorOwner() == Game.GetPlayer().GetActorBase()) || (akItemReference.GetActorOwner() == None)
+        
+        If !playerOwnsItem
+            slaUtil.UpdateActorExposure(akRef = akActor, val = 2, debugMsg = "stealing.")
 
-		If (_SLS_FetishID.GetValue() == 11) && !playerOwnsItem
-			slaUtil.UpdateActorExposure(akRef = akActor, val = 2, debugMsg = "stealing.")
-
-	    EndIf
+        EndIf
 	EndIf
 
 	Int iuType = akBaseItem.GetType()
@@ -213,13 +236,13 @@ Event OnItemAdded(Form akBaseItem, int aiItemCount, ObjectReference akItemRefere
 EndEvent
 
 Function _Maintenance()
-	UnregisterForAllModEvents()
+	; UnregisterForAllModEvents()
 	Debug.Trace("SexLab Stories: Reset SexLab events")
 	RegisterForModEvent("AnimationStart", "OnSexLabStart")
 	RegisterForModEvent("AnimationEnd",   "OnSexLabEnd")
 	RegisterForModEvent("OrgasmStart",    "OnSexLabOrgasm")
 
-	_SLS_NPCSexCount.SetValue(-1)
+	; _SLS_NPCSexCount.SetValue(-1)
 EndFunction
 
 Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
@@ -242,9 +265,9 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 	; Debug.Notification("Has player: " + _hasPlayer(actors))
 	; Debug.Notification("Arousal trigger: " + (slaUtil.GetActorExposure(akRef = PlayerActor) / 3))
 
-	If (_hasPlayer(actors))
+	; If (_hasPlayer(actors))
 
-	EndIf
+	; EndIf
 
 	; Debug.Notification("SexLab Hormones: Forced refresh flag: " + StorageUtil.GetIntValue(none, "_SLH_iForcedRefresh"))
 	
@@ -281,9 +304,9 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 	; 	_listActors("End: ", actors)
 	; EndIf
 
-	If (_hasPlayer(actors))
+	; If (_hasPlayer(actors))
 		;
-	EndIf
+	; EndIf
 
 EndEvent 
 
@@ -302,10 +325,10 @@ Event OnSexLabOrgasm(String _eventName, String _args, Float _argc, Form _sender)
 	Actor[] victims = new Actor[1]
 	victims[0] = victim
 
-	If (_hasPlayer(actors))
-		Debug.Trace("SexLab Stories: Orgasm!")
+	; If (_hasPlayer(actors))
+	;	Debug.Trace("SexLab Stories: Orgasm!")
 
-	EndIf
+	; EndIf
 	
 EndEvent
 

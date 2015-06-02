@@ -10,13 +10,31 @@ Actor PlayerRef = Game.GetPlayer()
 
 Game.ForceThirdPerson()
 ; Debug.SendAnimationEvent( PlayerRef , "bleedOutStart")
-ChaurusSpitFX.Cast( akSpeaker ,Game.GetPlayer() )
 
-Utility.Wait(6.0)
+  int ECTrap = ModEvent.Create("ECStartAnimation")  ; Int  Does not have to be named "ECTrap" any name would do
 
-Game.FadeOutGame(true, true, 0.1, 15)
-PlayerRef.moveTo( _SLS_BreedinggroundMarker )
-Game.FadeOutGame(false, true, 0.01, 10)
+  if (ECTrap) 
+        ModEvent.PushForm(ECTrap, self)             ; Form (Some SendModEvent scripting "black magic" - required)
+        ModEvent.PushForm(ECTrap, Game.GetPlayer())          ; Form The animation target
+        ModEvent.PushInt(ECTrap, 0)    ; Int  The animation required    0 = Tentacles, 1 = Machine
+        ModEvent.PushBool(ECTrap, true)             ; Bool Apply the linked EC effect (Ovipostion for Tentacles, Exhaustion for Machine) 
+        ModEvent.Pushint(ECTrap, 500)               ; Int  Alarm radius in units (0 to disable) 
+        ModEvent.PushBool(ECTrap, true)             ; Bool Use EC (basic) crowd control on hostiles 
+        ModEvent.Send(ECtrap)
+  else
+		ChaurusSpitFX.Cast( akSpeaker ,Game.GetPlayer() )
+
+		Utility.Wait(6.0)
+
+    ; EC is not installed
+    ; Try SD events as backup
+    SendModEvent("SDParasiteVag")
+
+    Game.FadeOutGame(true, true, 0.1, 15)
+		PlayerRef.moveTo( _SLS_BreedinggroundMarker )
+		Game.FadeOutGame(false, true, 0.01, 10)
+
+  endIf
 ;END CODE
 EndFunction
 ;END FRAGMENT

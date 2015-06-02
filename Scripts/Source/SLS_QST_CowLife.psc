@@ -15,19 +15,21 @@ Function PlayerReceivedCowharness( )
 
 	; EquipDevice(actor akActor, armor deviceInventory, armor deviceRendered, keyword zad_DeviousDevice, bool skipEvents=false, bool skipMutex=false)
 	libs.EquipDevice(libs.PlayerRef, cowHarnessInventory , cowHarnessRendered , SLS_CowHarness)
+	StorageUtil.SetIntValue(none, "_SLH_iLactating", 1)
 
 	; SetStage(10)
 	; SetObjectiveDisplayed(10)
 EndFunction
 
 Function PlayerRemovedCowharness( )
-	libs.Log("PlayerReceivedCowharness ")
+	libs.Log("PlayerLostCowharness ")
 	
 	; zaddsgBeltInexperiencedMsg.Show()
-	Debug.MessageBox("The harness molds around your body, accentuating your breasts as the suction cups lock in around your nipples.")
+	Debug.MessageBox("The harness lets go of your sore nipples with a loud pop.")
 
 	; EquipDevice(actor akActor, armor deviceInventory, armor deviceRendered, keyword zad_DeviousDevice, bool skipEvents=false, bool skipMutex=false)
 	libs.RemoveDevice(libs.PlayerRef, cowHarnessInventory , cowHarnessRendered , SLS_CowHarness)
+	StorageUtil.SetIntValue(none, "_SLH_iLactating", 0)
 
 	; SetStage(10)
 	; SetObjectiveDisplayed(10)

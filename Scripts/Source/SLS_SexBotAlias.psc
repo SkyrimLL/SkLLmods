@@ -13,6 +13,7 @@ Event OnLocationChange(Location akOldLoc, Location akNewLoc)
 			SexBotActor.EvaluatePackage()
 			Utility.Wait(1.0)
 	EndIf
+
 EndEvent
 
 ReferenceAlias Property SexBotAlias  Auto  

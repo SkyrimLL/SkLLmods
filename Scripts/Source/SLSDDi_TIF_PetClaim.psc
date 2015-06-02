@@ -6,8 +6,8 @@ Scriptname SLSDDi_TIF_PetClaim Extends TopicInfo Hidden
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
-StorageUtil.SetIntValue(Game.GetPlayer(), "Puppet_CastTarget", 1)
-	StorageUtil.SetFormValue(Game.GetPlayer(), "Puppet_NewTarget", akSpeaker)
+akSpeaker.SendModEvent("PMCharmPuppet")
+SendModEvent("PMGrantControlSpells")
 ;END CODE
 EndFunction
 ;END FRAGMENT
