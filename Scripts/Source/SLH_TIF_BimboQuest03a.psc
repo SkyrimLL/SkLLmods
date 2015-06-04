@@ -1,6 +1,6 @@
 ;BEGIN FRAGMENT CODE - Do not edit anything between this and the end comment
 ;NEXT FRAGMENT INDEX 1
-Scriptname SLH_TIF_BimboQuest03 Extends TopicInfo Hidden
+Scriptname SLH_TIF_BimboQuest03a Extends TopicInfo Hidden
 
 ;BEGIN FRAGMENT Fragment_0
 Function Fragment_0(ObjectReference akSpeakerRef)
@@ -12,8 +12,6 @@ PlayerActor.DoCombatSpellApply(PolymorphBimboFX, PlayerActor)
 
 PlayerActor.AddItem( BimboPolymorphToken, 1)
 PlayerActor.RemoveItem( DaedraHeart, 1)
-
-self.GetOwningQuest().Setstage(40)
 ;END CODE
 EndFunction
 ;END FRAGMENT
