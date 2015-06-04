@@ -44,9 +44,9 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 	Actor[] victims = new Actor[1]
 	victims[0] = victim
 
-	If (_hasPlayer(actors))
+	; If (_hasPlayer(actors))
 
-	EndIf
+	; EndIf
 
 	If victim	;none consensual
 		;
@@ -78,11 +78,11 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 	; 	_listActors("End: ", actors)
 	; EndIf
 
-	If (_hasActor(actors, SexBotActor))
+	; If (_hasActor(actors, SexBotActor))
 		; Debug.Trace("SexLab Stories: Orgasm!")
 
 
-	EndIf
+	; EndIf
 
 EndEvent 
 
@@ -105,7 +105,8 @@ Event OnSexLabOrgasm(String _eventName, String _args, Float _argc, Form _sender)
  
 		If (SLS_SexBotOnOff.GetValue() == 0)
 			Debug.Notification("E.L.L.E is now recharged.")
-			SLS_SexBotOnOff.SetValue(1)
+			SLS_SexBotOnOff.SetValue(1) 
+            StorageUtil.SetIntValue(SexBotActor, "_SLS_LastSexDate", Game.QueryStat("Days Passed"))
 			SexBotActor.EvaluatePackage()
 			Utility.Wait(1.0)
 		EndIf
