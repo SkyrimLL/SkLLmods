@@ -1355,7 +1355,7 @@ Function _showStatus()
 	Actor PlayerActor= PlayerAlias.GetReference() as Actor
 	ActorBase pActorBase = PlayerActor.GetActorBase()
 
-	Debug.MessageBox("SexLab Hormones \n Sex acts today: " + iSexCountToday + " - Total: " + iSexCountAll + " \n v: " + iVaginalCountToday  + " a: " + iAnalCountToday  + " o: " + iOralCountToday  + " \n Orgasms today: " + iOrgasmsCountToday + " - Total: " + iOrgasmsCountAll + " \n Libido: " + SLH_Libido.GetValue() + " \n Daedric: " + iDaedricInfluence + " Succubus: " + iSuccubus +" \n Bimbo: " + iBimbo +" \n Sex change: " + iHRT +" HRT phase: " + iSexStage +" \n Pregnant: " + _isPregnantByBeeingFemale(PlayerActor) +" Chaurus: " + _isPregnantByEstrusChaurus(PlayerActor) +" \n Weight: " + fWeight + " \n Breasts: " + fBreast + " \n Belly: " + fBelly + " \n Butt: " + fButt + " \n Schlong: " + fSchlong)
+	Debug.MessageBox("SexLab Hormones \n Sex acts today: " + iSexCountToday + " - Total: " + iSexCountAll + " \n v: " + iVaginalCountToday  + " a: " + iAnalCountToday  + " o: " + iOralCountToday  + " \n Orgasms today: " + iOrgasmsCountToday + " - Total: " + iOrgasmsCountAll + " \n Libido: " + SLH_Libido.GetValue() + " \n Daedric: " + iDaedricInfluence + " Succubus: " + iSuccubus +" \n Bimbo: " + iBimbo +" \n Sex change: " + iHRT +" TransGender: " + iTG +" \n Pregnant: " + _isPregnantByBeeingFemale(PlayerActor) +" Chaurus: " + _isPregnantByEstrusChaurus(PlayerActor) +" \n Weight: " + fWeight + " \n Breasts: " + fBreast + " \n Belly: " + fBelly + " \n Butt: " + fButt + " \n Schlong: " + fSchlong)
 
 	If (kOrigRace == None)
 		kOrigRace = pActorBase.GetRace()
@@ -1377,7 +1377,8 @@ Function _traceStatus()
 	Debug.Trace("[SLH]  Succubus: " + iSuccubus)
 	Debug.Trace("[SLH]  Bimbo: " + iBimbo)
 	Debug.Trace("[SLH]  Sex Change: " + iHRT)
-	Debug.Trace("[SLH]  HRT Phase: " + iSexStage)
+	Debug.Trace("[SLH]  TransGender: " + iTG)
+	; Debug.Trace("[SLH]  HRT Phase: " + iSexStage)
 	Debug.Trace("[SLH]  Pregnant: " + _isPregnantByBeeingFemale(PlayerActor))
 	Debug.Trace("[SLH]  Chaurus Breeder: " + _isPregnantByEstrusChaurus(PlayerActor))
 
@@ -2770,6 +2771,30 @@ function _resetHormonesState()
 
 endFunction
 
+function _setBimboState(Bool bBimboState)
+	iBimbo = bBimboState as Int
+	GV_isBimbo.SetValue(iBimbo as Int)
+	StorageUtil.SetIntValue(none, "_SLH_iBimbo", iBimbo as Int)
+endFunction
+
+function _setTGState(Bool bTGState)
+	iTG = bTGState as Int
+	GV_isTG.SetValue(iTG as Int)
+	StorageUtil.SetIntValue(none, "_SLH_iTG", iTG as Int)
+endFunction
+
+function _setHRTState(Bool bHRTState)
+	iHRT = bHRTState as Int
+	GV_isHRT.SetValue(iHRT as Int)
+	StorageUtil.SetIntValue(none, "_SLH_iHRT", iHRT as Int)
+endFunction
+
+function _setSuccubusState(Bool bSuccubusState)
+	iSuccubus = bSuccubusState as Int
+	GV_isSuccubus.SetValue(iSuccubus as Int)
+	StorageUtil.SetIntValue(none, "_SLH_iSuccubus", iSuccubus as Int)
+endFunction
+
 function _setHormonesState()
 	; Debug.Notification("SexLab Hormones: Writing state to storage")
 	Debug.Trace("[SLH]  Writing state to storage")
@@ -2839,6 +2864,7 @@ function _setHormonesState()
 
 	StorageUtil.SetIntValue(none, "_SLH_iBimbo", iBimbo) 
 	StorageUtil.SetIntValue(none, "_SLH_iHRT", iHRT) 
+	StorageUtil.SetIntValue(none, "_SLH_iTG", iTG) 
 	StorageUtil.SetIntValue(none, "_SLH_iSuccubus", iSuccubus) 
 	StorageUtil.SetIntValue(none, "_SLH_iDaedricInfluence",  iDaedricInfluence) 
 	StorageUtil.SetIntValue(none, "_SLH_iSexStage",  iSexStage) 
@@ -2863,6 +2889,7 @@ function _setHormonesState()
 
 	GV_isBimbo.SetValue(iBimbo)
 	GV_isHRT.SetValue(iHRT)
+	GV_isTG.SetValue(iTG)
 	GV_isSuccubus.SetValue(iSuccubus)
 
 	GV_breastValue.SetValue(fBreast)
@@ -2992,6 +3019,7 @@ function _getHormonesState()
 	iAnalCountToday = StorageUtil.GetIntValue(none, "_SLH_iAnalCountToday") 
 	iVaginalCountToday = StorageUtil.GetIntValue(none, "_SLH_iVaginalCountToday") 
 
+	iTG = StorageUtil.GetIntValue(none, "_SLH_iTG") 
 	iHRT = StorageUtil.GetIntValue(none, "_SLH_iHRT") 
 	iBimbo = StorageUtil.GetIntValue(none, "_SLH_iBimbo") 
 	iSuccubus = StorageUtil.GetIntValue(none, "_SLH_iSuccubus") 
@@ -3017,6 +3045,7 @@ function _getHormonesState()
 	iSexDaedraAll = StorageUtil.GetIntValue(none, "_SLH_iSexDaedraAll") 
 
 	GV_isBimbo.SetValue(iBimbo)
+	GV_isTG.SetValue(iTG)
 	GV_isHRT.SetValue(iHRT)
 	GV_isSuccubus.SetValue(iSuccubus)
 
@@ -3268,6 +3297,7 @@ Int iHairColor = 0
 Int iHairColorSuccubus = 0
 Int iHairColorBimbo = 0
 
+Int iTG = 0
 Int iHRT = 0
 Int iBimbo = 0
 Int iSuccubus = 0

@@ -8,7 +8,7 @@ int daysSinceEnslavement
 Event OnLocationChange(Location akOldLoc, Location akNewLoc)
 	Actor akActor= BimboAliasRef.GetReference() as Actor
 
-	debug.Notification("[SLH] Bimbo changing location")
+	; debug.Notification("[SLH] Bimbo changing location")
 endEvent
 
 Event OnUpdateGameTime()
@@ -22,14 +22,14 @@ EndEvent
 Event OnInit()
 	Actor akActor= BimboAliasRef.GetReference() as Actor
 
-	debug.Notification("[SLH] Bimbo init")
+	; debug.Notification("[SLH] Bimbo init")
 
 EndEvent
 
 Event OnCombatStateChanged(Actor akTarget, int aeCombatState)
 	Actor akActor= BimboAliasRef.GetReference() as Actor
 
-	debug.Notification("[SLH] Bimbo in combat")
+	; debug.Notification("[SLH] Bimbo in combat")
 
 	If (akTarget == Game.GetPlayer())
 
@@ -83,7 +83,7 @@ Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile,
 
 	ElseIf (akAggressor != None)
 		;  Debug.Trace("We were hit by " + akAggressor)
-		debug.Notification("[SLH] Bimbo is hit")
+		; debug.Notification("[SLH] Bimbo is hit")
 		Int randomNum = Utility.RandomInt(0,100)
 
 		daysSinceEnslavement = (Game.QueryStat("Days Passed") - StorageUtil.GetIntValue(akActor, "_SLH_bimboTransformDate") ) as Int
@@ -101,7 +101,7 @@ EndEvent
 Event OnItemAdded(Form akBaseItem, int aiItemCount, ObjectReference akItemReference, ObjectReference akSourceContainer)
 	Actor akActor= BimboAliasRef.GetReference() as Actor
 
-	debug.Notification("[SLH] Bimbo received something")
+	; debug.Notification("[SLH] Bimbo received something")
 
       ; If ( (akBaseItem as Armor) == HypnosisCircletArmor  )
       ;  akActor.Equipitem(HypnosisCirclet)

@@ -100,6 +100,8 @@ Event OnEffectStart(Actor Target, Actor Caster)
         Return
     Endif
 
+    Debug.Trace("[SLH] Bimbo Transform Init")
+
     _playerPresets = new int[4]
     _playerMorphs = new float[19]
     _bimboPresets = new int[4]
@@ -218,6 +220,8 @@ Event OnEffectStart(Actor Target, Actor Caster)
 
 
     if (GV_allowBimbo.GetValue()==1) &&  (Target.GetActorBase().GetRace() != PolymorphRace)
+        Debug.Trace("[SLH] Bimbo Transform ON")
+
         Debug.SetGodMode(true)
         Player.ResetHealthAndLimbs()
 
@@ -232,6 +236,7 @@ Event OnEffectStart(Actor Target, Actor Caster)
         Player.DispelSpell (VampireSunDamage04)
 
         ;======= CHANGING RACE HERE
+        Debug.Trace("[SLH] Bimbo Transform - Change Race")
         Player.SetRace(PolymorphRace)
         ;=======
 
@@ -328,38 +333,39 @@ Event OnEffectStart(Actor Target, Actor Caster)
 
     If (isPlayerMale) && ((GV_allowHRT.GetValue()==1) || (GV_allowTG.GetValue()==1))
         ; Male to Female if Sex Change is allowed (HRT)  
+        Debug.Trace("[SLH] Bimbo Transform - Change Sex")
         ConsoleUtil.ExecuteCommand("player.sexchange")
 
         If (GV_allowBimbo.GetValue()==1)
             SLH_Control._LoadFaceValues( Player, _bimboPresets,  _bimboMorphs ) 
             SLH_Control._setHormonesStateDefault()
 
-            GV_isBimbo.SetValue(1)
-            StorageUtil.SetIntValue(Player, "_SLH_iBimbo", 1)
+            SLH_Control._setBimboState(TRUE)
+            Debug.Trace("[SLH] Bimbo ON")
 
             StorageUtil.SetIntValue(Player, "_SD_iSlaveryLevel", 6)
             StorageUtil.SetIntValue( Player , "_SD_iDom", 0)
             StorageUtil.SetIntValue( Player , "_SD_iSub", -10)
 
         else
-            GV_isBimbo.SetValue(0)
-            StorageUtil.SetIntValue(Player, "_SLH_iBimbo", 0)
+            SLH_Control._setBimboState(FALSE)
+            Debug.Trace("[SLH] Bimbo OFF")
         endif
 
         if (GV_allowTG.GetValue()==1)                
             Player.SendModEvent("SLHSetSchlong", "UNP Bimbo")
-            GV_isTG.SetValue(1)
-            StorageUtil.SetIntValue(Player, "_SLH_iTG", 1)
+            SLH_Control._setTGState(TRUE)
+            Debug.Trace("[SLH] TG ON")
         Else
             Player.SendModEvent("SLHRemoveSchlong")
             Sexlab.TreatAsFemale(Player)
-            GV_isTG.SetValue(0)
-            StorageUtil.SetIntValue(Player, "_SLH_iTG", 0)
+            SLH_Control._setTGState(FALSE)
+            Debug.Trace("[SLH] TG OFF")
         endif
 
         if (GV_allowHRT.GetValue()==1)
-            GV_isHRT.SetValue(1)
-            StorageUtil.SetIntValue(Player, "_SLH_iHRT", 1)
+            SLH_Control._setHRTState(TRUE)
+            Debug.Trace("[SLH] HRT ON")
         endif
 
     elseif (!isPlayerMale)
@@ -367,11 +373,11 @@ Event OnEffectStart(Actor Target, Actor Caster)
 
         If (GV_allowBimbo.GetValue()==1)
             SLH_Control._LoadFaceValues( Player, _bimboPresets,  _bimboMorphs ) 
-            GV_isBimbo.SetValue(1)
-            StorageUtil.SetIntValue(Player, "_SLH_iBimbo", 1)
+            SLH_Control._setBimboState(TRUE)
+            Debug.Trace("[SLH] Bimbo ON")
         else
-            GV_isBimbo.SetValue(0)
-            StorageUtil.SetIntValue(Player, "_SLH_iBimbo", 0)
+            SLH_Control._setBimboState(FALSE)
+            Debug.Trace("[SLH] Bimbo OFF")
         endif
 
         if (GV_allowTG.GetValue()==1)
@@ -380,21 +386,25 @@ Event OnEffectStart(Actor Target, Actor Caster)
             SendModEvent("SLHRefresh")
 
             Sexlab.TreatAsMale(Player)
-            GV_isTG.SetValue(1)
-            StorageUtil.SetIntValue(Player, "_SLH_iTG", 1)
+            SLH_Control._setTGState(TRUE)
+            Debug.Trace("[SLH] TG ON")
         else
             Sexlab.TreatAsFemale(Player)
-            GV_isTG.SetValue(0)
-            StorageUtil.SetIntValue(Player, "_SLH_iTG", 0)
+            SLH_Control._setTGState(FALSE)
+            Debug.Trace("[SLH] TG OFF")
         endif
 
-        GV_isHRT.SetValue(0)
-        StorageUtil.SetIntValue(Player, "_SLH_iHRT", 0)
+        SLH_Control._setHRTState(FALSE)
+        Debug.Trace("[SLH] HRT OFF")
 
     endif
 
     StorageUtil.SetIntValue(Player, "_SLH_bimboTransformDate", Game.QueryStat("Days Passed"))
     StorageUtil.SetIntValue(Player, "_SLH_bimboTransformGameDays", 0)   
+
+    Debug.Trace("[SLH] Bimbo Curse Start - IsBimbo: " + GV_isBimbo.GetValue() as Int)
+    Debug.Trace("[SLH] Bimbo Curse Start - IsHRT: " + GV_isHRT.GetValue() as Int)
+    Debug.Trace("[SLH] Bimbo Curse Start - IsTG: " + GV_isTG.GetValue() as Int)
 
     Game.ShowRaceMenu()
 
@@ -404,6 +414,10 @@ EndEvent
 
 Event OnUpdate()
     iDaysPassed = Game.QueryStat("Days Passed")
+
+    
+    StorageUtil.SetIntValue(Player, "_SLH_bimboTransformGameDays", iDaysPassed - (StorageUtil.GetIntValue(Player, "_SLH_bimboTransformDate") as Int ))    
+
 
     if (iGameDateLastCheck == -1)
         iGameDateLastCheck = iDaysPassed
@@ -425,8 +439,8 @@ Event OnUpdate()
             _SLH_QST_Bimbo.SetStage(12)
         Endif
 
-        If (GV_isTG.GetValue() == 1) && (isPlayerMale) && !_SLH_QST_Bimbo.IsStageDone(18)
-            if (StorageUtil.GetFloatValue(none, "_SLH_fSchlong") >= (SLH_Control.GV_schlongMin.GetValue() as Float) ) 
+        If (GV_isTG.GetValue() == 1) && (isPlayerMale) && ( !_SLH_QST_Bimbo.IsStageDone(18) || ( (StorageUtil.GetIntValue(Player, "_SLH_bimboTransformGameDays") as Int) >= 5 ))
+            if (StorageUtil.GetFloatValue(none, "_SLH_fSchlong") >= (SLH_Control.GV_schlongMin.GetValue() as Float) ) && ( (StorageUtil.GetIntValue(Player, "_SLH_bimboTransformGameDays") as Int) < 5 )
                 StorageUtil.SetFloatValue(none, "_SLH_fSchlong", StorageUtil.GetFloatValue(none, "_SLH_fSchlong") * 0.8 - 0.1) 
                 SendModEvent("SLHRefresh")
             else
@@ -435,8 +449,8 @@ Event OnUpdate()
                 _SLH_QST_Bimbo.SetStage(18)
             endif
 
-        ElseIf (GV_isTG.GetValue() == 1) && (!isPlayerMale) && !_SLH_QST_Bimbo.IsStageDone(16)
-            if (StorageUtil.GetFloatValue(none, "_SLH_fSchlong") <= (SLH_Control.GV_schlongMax.GetValue() as Float) ) 
+        ElseIf (GV_isTG.GetValue() == 1) && (!isPlayerMale) && ( !_SLH_QST_Bimbo.IsStageDone(16) || ( (StorageUtil.GetIntValue(Player, "_SLH_bimboTransformGameDays") as Int) >= 5 ))
+            if (StorageUtil.GetFloatValue(none, "_SLH_fSchlong") <= (SLH_Control.GV_schlongMax.GetValue() as Float) )  && ( (StorageUtil.GetIntValue(Player, "_SLH_bimboTransformGameDays") as Int) < 5 )
                 StorageUtil.SetFloatValue(none, "_SLH_fSchlong", 0.1 + StorageUtil.GetFloatValue(none, "_SLH_fSchlong") * 1.2 ) 
                 SendModEvent("SLHRefresh")
                 _SLH_QST_Bimbo.SetStage(16)
@@ -464,13 +478,16 @@ Event OnItemAdded(Form akBaseItem, int aiItemCount, ObjectReference akItemRefere
     Player = Game.GetPlayer()
 
     if (akBaseItem == (ReturnItem)) 
-        Player.RemoveItem(ReturnItem, 1, True)
+        
+        ; PolymorphBimboFX.Cast(Player,Player) 
+        Debug.Trace("[SLH] Bimbo Curse Shutdown - I picked up " + aiItemCount + "x " + akBaseItem + " from the world")
+        Debug.Trace("[SLH] Bimbo Curse Shutdown - IsBimbo: " + GV_isBimbo.GetValue() as Int)
+        Debug.Trace("[SLH] Bimbo Curse Shutdown - IsHRT: " + GV_isHRT.GetValue() as Int)
+        Debug.Trace("[SLH] Bimbo Curse Shutdown - IsTG: " + GV_isTG.GetValue() as Int)
 
         If (GV_allowBimbo.GetValue()==1) && (GV_isBimbo.GetValue()==1)
-            Debug.Trace("I picked up " + aiItemCount + "x " + akBaseItem + " from the world")
             ; TransformationEffect.Cast(Player,Player)
-
-    	    PolymorphBimboFX.Cast(Player,Player) 
+            Debug.Trace("[SLH] Bimbo Transform OFF")
       
             ; Player.RemoveSpell(PolymorphSpell)
             ; Player.UnEquipSpell(PolymorphSpell, 0)
@@ -500,9 +517,10 @@ Event OnItemAdded(Form akBaseItem, int aiItemCount, ObjectReference akItemRefere
             ; VFX3.Play(Player, afTime = 3)
             ; VFX1.Stop(Player)
             ; VFX2.Stop(Player)
-            ; Player.DispelSpell(TransformationEffect)
+            Player.DispelSpell(TransformationSpell)
             
 
+            Debug.Trace("[SLH] Original race")
             Player.SetRace(PlayerOriginalRace)
 
             if (!isPlayerExhibitionist)
@@ -539,28 +557,31 @@ Event OnItemAdded(Form akBaseItem, int aiItemCount, ObjectReference akItemRefere
 
         If (isPlayerMale) && (GV_allowHRT.GetValue()==1)
             ; MiscUtil.ExecuteBat("SLH_sexchange.bat")
+            Debug.Trace("[SLH] Sexchange")
             ConsoleUtil.ExecuteCommand("player.sexchange")
 
             If (GV_allowBimbo.GetValue()==1)
+                Debug.Trace("[SLH] Bimbo OFF")
                 SLH_Control._LoadFaceValues( Player, _playerPresets,  _playerMorphs ) 
-                GV_isBimbo.SetValue(0)
-                StorageUtil.SetIntValue(Player, "_SLH_iBimbo", 0)
+                SLH_Control._setBimboState(FALSE)
+
+                SLH_Control._setHormonesStateDefault()
             endif
 
             if (GV_allowTG.GetValue()==1)
+                Debug.Trace("[SLH] TG OFF")
                 Player.SendModEvent("SLHSetSchlong", "")
-                GV_isTG.SetValue(0)
-                StorageUtil.SetIntValue(Player, "_SLH_iTG", 0)
+                SLH_Control._setTGState(FALSE)
+
             endif
 
-            GV_isHRT.SetValue(0)
-            StorageUtil.SetIntValue(Player, "_SLH_iHRT", 0)
+            Debug.Trace("[SLH] HRT OFF")
+            SLH_Control._setHRTState(FALSE)
+
 
             ; Debug.Messagebox("[Remember to change the sex of your character in the Racemenu or later in the console using 'sexchange' or armors will still show with the female model on your male form].")
 
-            SLH_Control._resetHormonesState()
-
-            Game.ShowLimitedRaceMenu()
+            Game.ShowRaceMenu()
 
 
         elseif (!isPlayerMale)
@@ -568,22 +589,22 @@ Event OnItemAdded(Form akBaseItem, int aiItemCount, ObjectReference akItemRefere
 
             If (GV_allowBimbo.GetValue()==1)
                 SLH_Control._LoadFaceValues( Player, _playerPresets,  _playerMorphs )  
-                GV_isBimbo.SetValue(0)
-                StorageUtil.SetIntValue(Player, "_SLH_iBimbo", 0) 
+                SLH_Control._setBimboState(FALSE)
+
+               SLH_Control._setHormonesStateDefault()
+               Debug.Trace("[SLH] Bimbo OFF")
             endif
 
             if (GV_allowTG.GetValue()==1)
                 Player.SendModEvent("SLHRemoveSchlong")
                 Sexlab.TreatAsFemale(Player)
-                GV_isTG.SetValue(0)
-                StorageUtil.SetIntValue(Player, "_SLH_iTG", 0)
+                SLH_Control._setTGState(FALSE)
+                Debug.Trace("[SLH] TG OFF")
             endif
 
-            GV_isHRT.SetValue(0)
-            StorageUtil.SetIntValue(Player, "_SLH_iHRT", 0)
-
-            SLH_Control._resetHormonesState()
-
+            SLH_Control._setHRTState(FALSE)
+            Debug.Trace("[SLH] HRT OFF")
+ 
             Game.ShowRaceMenu()
 
         endif                
@@ -591,6 +612,7 @@ Event OnItemAdded(Form akBaseItem, int aiItemCount, ObjectReference akItemRefere
 
      	; Player.RegenerateHead()
      	; Player.QueueNiNodeUpdate()
+        Player.RemoveItem(ReturnItem, 1, True)
 
     EndIf
 endEvent
