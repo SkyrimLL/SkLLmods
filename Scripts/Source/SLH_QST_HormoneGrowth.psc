@@ -699,32 +699,33 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 			Debug.Trace("[Hormones] Daedra sex count:" + iSexDaedraAll + " - influence:" + iDaedricInfluence)
 
 			_SLH_DaedricInfluence.Cast(PlayerActor,PlayerActor)
-		EndIf
 
-		; modify succubus influence based on other daedric exposure
-		if (iDaedricInfluence >1) && (GV_allowSuccubus.GetValue()==1) && (GV_isSuccubus.GetValue()==0)
-			iSuccubus = 1
-			GV_isSuccubus.SetValue(1)
-			; _SLH_QST_Succubus.Start()
-			_SLH_QST_Succubus.SetStage(10)
+			; modify succubus influence based on other daedric exposure
+			if (iDaedricInfluence >1) && (GV_allowSuccubus.GetValue()==1) && (GV_isSuccubus.GetValue()==0)
+				iSuccubus = 1
+				GV_isSuccubus.SetValue(1)
+				; _SLH_QST_Succubus.Start()
+				_SLH_QST_Succubus.SetStage(10)
 
-		elseif (iDaedricInfluence >1) && (GV_allowSuccubus.GetValue()==1) && (GV_isSuccubus.GetValue()==1)
-			if (_SLH_QST_Succubus.GetStage()<=10) && (iDaedricInfluence >=10)
-				_SLH_QST_Succubus.SetStage(20)
-			elseif (_SLH_QST_Succubus.GetStage()<=20) && (iDaedricInfluence >=20)
-				_SLH_QST_Succubus.SetStage(30)
-			elseif (_SLH_QST_Succubus.GetStage()<=30) && (iDaedricInfluence >=30)
-				_SLH_QST_Succubus.SetStage(40)
-			elseif (_SLH_QST_Succubus.GetStage()<=40) && (iDaedricInfluence >=40)
-				_SLH_QST_Succubus.SetStage(50)
-				StorageUtil.SetIntValue(Game.GetPlayer(), "PSQ_SpellON", 1)
-				SendModEvent("SLHisSuccubus")
-			Endif
-		else
-			iSuccubus = 0
-			GV_isSuccubus.SetValue(0)
+			elseif (iDaedricInfluence >1) && (GV_allowSuccubus.GetValue()==1) && (GV_isSuccubus.GetValue()==1)
+				if (_SLH_QST_Succubus.GetStage()<=10) && (iDaedricInfluence >=10)
+					_SLH_QST_Succubus.SetStage(20)
+				elseif (_SLH_QST_Succubus.GetStage()<=20) && (iDaedricInfluence >=20)
+					_SLH_QST_Succubus.SetStage(30)
+					ModEvent.Send(ModEvent.Create("HoSLDD_GivePlayerPowers"))
+				elseif (_SLH_QST_Succubus.GetStage()<=30) && (iDaedricInfluence >=30)
+					_SLH_QST_Succubus.SetStage(40)
+				elseif (_SLH_QST_Succubus.GetStage()<=40) && (iDaedricInfluence >=40)
+					_SLH_QST_Succubus.SetStage(50)
+					StorageUtil.SetIntValue(Game.GetPlayer(), "PSQ_SpellON", 1)
+					SendModEvent("SLHisSuccubus")
+				Endif
+			else
+				iSuccubus = 0
+				GV_isSuccubus.SetValue(0)
+			EndIf
+			; _showStatus()
 		EndIf
-		; _showStatus()
 
 
 		If (bOral || bVaginal || bAnal)
@@ -763,7 +764,7 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 				If _hasRace(actors, _SLH_BimboRace)
 					_SLH_QST_Bimbo.SetStage(10)
 					iDaedricInfluence   = iDaedricInfluence   + 5
-				else
+				elseIf _hasRace(actors, _SLH_DremoraOutcastRace)
 					_SLH_QST_Bimbo.SetStage(11)
 				endif
 			Endif
