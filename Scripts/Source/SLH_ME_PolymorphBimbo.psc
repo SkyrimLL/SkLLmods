@@ -617,6 +617,11 @@ Event OnItemAdded(Form akBaseItem, int aiItemCount, ObjectReference akItemRefere
     EndIf
 endEvent
 
+
+Event OnEffectFinish(Actor akTarget, Actor akCaster)        
+     Debug.Messagebox("Bimbo Curse ended unexpectedly!")    
+ENDEVENT
+
 slaUtilScr Property slaUtil  Auto  
 
 
