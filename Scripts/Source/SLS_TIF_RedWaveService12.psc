@@ -14,7 +14,9 @@ Int PlayerGender = PlayerBase.GetSex() ; 0 = Male ; 1 = Female
 
 ; Check if whores available in _SLS_RedWaveFollowerWhores[]
 
-If (RedWaveQuest.ReserveFollowerWhore())
+Bool bWhoreAvailable = RedWaveQuest.ReserveFollowerWhore()
+
+If (bWhoreAvailable )
 	Game.GetPlayer().AddItem(Gold001, 1000)
 	Game.GetPlayer().AddItem(_SLS_RedWaveWhoreCollar, 1)
 
