@@ -80,6 +80,10 @@ float 		_schlongSetValue		= 1.0
 
 bool 		_refreshToggle 			= false
 
+ObjectReference PlayerREF
+Actor PlayerActor
+ActorBase pActorBase 
+
 ; INITIALIZATION ----------------------------------------------------------------------------------
 
 ; @overrides SKI_ConfigBase
@@ -181,9 +185,9 @@ event OnPageReset(string a_page)
 	_setshapeToggle = GV_setshapeToggle.GetValue()  as Int
 	_resetToggle = GV_resetToggle.GetValue()  as Int
 
-	ObjectReference PlayerREF= PlayerAlias.GetReference()
-	Actor PlayerActor= PlayerAlias.GetReference() as Actor
-	ActorBase pActorBase = PlayerActor.GetActorBase()
+	PlayerREF= PlayerAlias.GetReference()
+	PlayerActor= PlayerAlias.GetReference() as Actor
+	pActorBase = PlayerActor.GetActorBase()
 
 	Bool bEnableLeftBreast  = NetImmerse.HasNode(PlayerActor, NINODE_LEFT_BREAST, false)
 	Bool bEnableRightBreast = NetImmerse.HasNode(PlayerActor, NINODE_RIGHT_BREAST, false)
@@ -584,6 +588,9 @@ state STATE_BREAST_SWELL ; SLIDER
 		float thisValue = value 
 		GV_breastSwellMod.SetValue( thisValue  )
 		SetSliderOptionValueST( thisValue, "{1}" )
+
+		GV_forcedRefresh.SetValue(1.0) 
+		StorageUtil.SetIntValue(none, "_SLH_iForcedRefresh", 1)
 	endEvent
 
 	event OnDefaultST()
@@ -635,6 +642,9 @@ state STATE_BELLY_SWELL ; SLIDER
 		float thisValue = value  
 		GV_bellySwellMod.SetValue( thisValue  )
 		SetSliderOptionValueST( thisValue, "{1}" )
+
+		GV_forcedRefresh.SetValue(1.0) 
+		StorageUtil.SetIntValue(none, "_SLH_iForcedRefresh", 1)
 	endEvent
 
 	event OnDefaultST()
@@ -686,6 +696,9 @@ state STATE_BUTT_SWELL ; SLIDER
 		float thisValue = value
 		GV_buttSwellMod.SetValue( thisValue   )
 		SetSliderOptionValueST( thisValue, "{1}" )
+
+		GV_forcedRefresh.SetValue(1.0) 
+		StorageUtil.SetIntValue(none, "_SLH_iForcedRefresh", 1)
 	endEvent
 
 	event OnDefaultST()
@@ -737,6 +750,9 @@ state STATE_SCHLONG_SWELL ; SLIDER
 		float thisValue = value  
 		GV_schlongSwellMod.SetValue( thisValue  )
 		SetSliderOptionValueST( thisValue, "{1}" )
+
+		GV_forcedRefresh.SetValue(1.0) 
+		StorageUtil.SetIntValue(none, "_SLH_iForcedRefresh", 1)
 	endEvent
 
 	event OnDefaultST()
@@ -785,7 +801,6 @@ state STATE_CHANGE_WEIGHT ; TOGGLE
 	endEvent
 
 	event OnDefaultST()
-		ActorBase pActorBase = Game.GetPlayer().GetActorBase()
 
 		if (GV_origWeight.GetValue()== -1)
 			GV_origWeight.SetValue(pActorBase.GetWeight())
@@ -813,6 +828,9 @@ state STATE_WEIGHT_SWELL ; SLIDER
 		float thisValue = value 
 		GV_weightSwellMod.SetValue( thisValue )
 		SetSliderOptionValueST( thisValue, "{1}" )
+
+		GV_forcedRefresh.SetValue(1.0) 
+		StorageUtil.SetIntValue(none, "_SLH_iForcedRefresh", 1)
 	endEvent
 
 	event OnDefaultST()
@@ -950,8 +968,11 @@ state STATE_WEIGHT_VALUE ; SLIDER
 	event OnSliderAcceptST(float value)
 		float thisValue = value 
 		GV_weightValue.SetValue( thisValue) 
-		StorageUtil.SetFloatValue(none, "_SLH_fWeight",  thisValue) 
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fWeight",  thisValue) 
 		SetSliderOptionValueST( thisValue, "{1}" )
+
+		GV_forcedRefresh.SetValue(1.0) 
+		StorageUtil.SetIntValue(none, "_SLH_iForcedRefresh", 1)
 	endEvent
 
 	event OnDefaultST()
@@ -974,8 +995,11 @@ state STATE_BREAST_VALUE ; SLIDER
 	event OnSliderAcceptST(float value)
 		float thisValue = value 
 		GV_breastValue.SetValue(thisValue)
-		StorageUtil.SetFloatValue(none, "_SLH_fBreast",  thisValue)
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast",  thisValue)
 		SetSliderOptionValueST( thisValue, "{1}" )
+
+		GV_forcedRefresh.SetValue(1.0) 
+		StorageUtil.SetIntValue(none, "_SLH_iForcedRefresh", 1)
 	endEvent
 
 	event OnDefaultST()
@@ -998,8 +1022,11 @@ state STATE_BELLY_VALUE ; SLIDER
 	event OnSliderAcceptST(float value)
 		float thisValue = value 
 		GV_bellyValue.SetValue(thisValue) 
-		StorageUtil.SetFloatValue(none, "_SLH_fBelly",  thisValue) 
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBelly",  thisValue) 
 		SetSliderOptionValueST( thisValue, "{1}" )
+
+		GV_forcedRefresh.SetValue(1.0) 
+		StorageUtil.SetIntValue(none, "_SLH_iForcedRefresh", 1)
 	endEvent
 
 	event OnDefaultST()
@@ -1022,9 +1049,11 @@ state STATE_BUTT_VALUE ; SLIDER
 	event OnSliderAcceptST(float value)
 		float thisValue = value 
 		GV_buttValue.SetValue(thisValue)
-		StorageUtil.SetFloatValue(none, "_SLH_fButt",  thisValue) 
-
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fButt",  thisValue) 
 		SetSliderOptionValueST( thisValue, "{1}" )
+
+		GV_forcedRefresh.SetValue(1.0) 
+		StorageUtil.SetIntValue(none, "_SLH_iForcedRefresh", 1)
 	endEvent
 
 	event OnDefaultST()
@@ -1047,9 +1076,11 @@ state STATE_SCHLONG_VALUE ; SLIDER
 	event OnSliderAcceptST(float value)
 		float thisValue = value 
 		GV_schlongValue.SetValue(thisValue) 
-		StorageUtil.SetFloatValue(none, "_SLH_fSchlong",  thisValue) 
-
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fSchlong",  thisValue) 
 		SetSliderOptionValueST( thisValue, "{1}" )
+
+		GV_forcedRefresh.SetValue(1.0) 
+		StorageUtil.SetIntValue(none, "_SLH_iForcedRefresh", 1)
 	endEvent
 
 	event OnDefaultST()
@@ -1064,9 +1095,8 @@ endState
 state STATE_REFRESH ; TOGGLE
 	event OnSelectST()
 		; SLH_Control._refreshBodyShape()
-		GV_forcedRefresh.SetValue(1.0) 
-		; StorageUtil.SetIntValue(none, "_SLH_iForcedRefresh", 1)
-		SendModEvent("SLHRefresh")
+
+		PlayerActor.SendModEvent("SLHRefresh")
 		
 		Debug.MessageBox("Exit the menu and wait a few seconds")
 	endEvent
@@ -1155,7 +1185,7 @@ endState
 ; AddToggleOptionST("STATE_STATUS","Display status", _statusToggle)
 state STATE_STATUS ; TOGGLE
 	event OnSelectST()
-		SLH_Control._showStatus()
+		SLH_Control.showStatus()
 	endEvent
 
 	event OnDefaultST()
@@ -1313,7 +1343,7 @@ endState
 state STATE_SETSHAPE ; TOGGLE
 	event OnSelectST()
 		; SLH_Control._resetHormonesState()
-		SendModEvent("SLHSetShape")
+		PlayerActor.SendModEvent("SLHSetShape")
 
 		Debug.MessageBox("Shape initialized - Exit the menu and wait a few seconds")
 	endEvent
@@ -1332,7 +1362,7 @@ endState
 state STATE_RESET ; TOGGLE
 	event OnSelectST()
 		; SLH_Control._resetHormonesState()
-		SendModEvent("SLHResetShape")
+		PlayerActor.SendModEvent("SLHResetShape")
 
 		Debug.MessageBox("Shape reset - Exit the menu and wait a few seconds")
 	endEvent
