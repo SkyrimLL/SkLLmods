@@ -117,20 +117,25 @@ Event OnUpdate()
             _SLH_QST_Bimbo.SetStage(12)
         Endif
 
-        If (GV_isTG.GetValue() == 1) && (!isMale) && ( !_SLH_QST_Bimbo.IsStageDone(18) || ( (StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformGameDays") as Int) >= 5 ))
+        If (GV_isTG.GetValue() == 1) && (!isMale) && !_SLH_QST_Bimbo.IsStageDone(18) 
+        	
             if (StorageUtil.GetFloatValue(BimboActor, "_SLH_fSchlong") >= fSchlongMin ) && ( (StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformGameDays") as Int) < 5 )
                 StorageUtil.SetFloatValue(BimboActor, "_SLH_fSchlong", StorageUtil.GetFloatValue(BimboActor, "_SLH_fSchlong") * 0.8 - 0.1) 
                 SendModEvent("SLHRefresh")
-            else
+
+            elseIf ((StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformGameDays") as Int) >= 5 )
                 BimboActor.SendModEvent("SLHRemoveSchlong")
                 Sexlab.TreatAsFemale(BimboActor)
                 _SLH_QST_Bimbo.SetStage(18)
             endif
 
-        ElseIf (GV_isTG.GetValue() == 1) && (isMale) && ( !_SLH_QST_Bimbo.IsStageDone(16) || ( (StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformGameDays") as Int) >= 5 ))
+        ElseIf (GV_isTG.GetValue() == 1) && (isMale) && !_SLH_QST_Bimbo.IsStageDone(16) 
+        	
             if (StorageUtil.GetFloatValue(BimboActor, "_SLH_fSchlong") <= fSchlongMax )  && ( (StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformGameDays") as Int) < 5 )
                 StorageUtil.SetFloatValue(BimboActor, "_SLH_fSchlong", 0.1 + StorageUtil.GetFloatValue(BimboActor, "_SLH_fSchlong") * 1.2 ) 
                 SendModEvent("SLHRefresh")
+
+            elseif ((StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformGameDays") as Int) >= 5 )
                 _SLH_QST_Bimbo.SetStage(16)
             endif
 
