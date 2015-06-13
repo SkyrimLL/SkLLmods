@@ -232,6 +232,18 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 	; Debug.Trace("Player wants to wake up at: " + Utility.GameTimeToString(afDesiredSleepEndTime))
 
 	; TO DO: Chance of dream sequence 
+
+	; Debug.Trace("Player went to sleep at: " + Utility.GameTimeToString(afSleepStartTime))
+	; Debug.Trace("Player wants to wake up at: " + Utility.GameTimeToString(afDesiredSleepEndTime))
+
+	; If player sleeps in Windhelm and enough time since last victim
+	; AND Alicia is enabled
+	if ((Game.GetPlayer().GetCurrentLocation() == WindhelmArea) && !(AliciaDaedricREF.IsDisabled())) 
+
+		If (Utility.RandomInt(0,100)>60) && (StorageUtil.GetIntValue(Game.getPlayer(), "_SD_iDisableDreamworldOnSleep") == 0) && ( StorageUtil.GetIntValue(Game.getPlayer(), "_SD_iSanguineBlessings") > 0)
+			SendModEvent("SDDreamworldPull")
+		EndIf
+	EndIf
 endEvent
 
 Event OnSleepStop(bool abInterrupted)

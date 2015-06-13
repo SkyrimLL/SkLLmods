@@ -284,6 +284,10 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 	; AND Alicia is enabled
 	if ((Game.GetPlayer().GetCurrentLocation() == WindhelmArea) && ( !(AliciaREF.IsDisabled())) && (NPCVictimActive.GetValue()==0))
 		NPCVictimActive.SetValue(1)
+
+		If (Utility.RandomInt(0,100)>90) && (StorageUtil.GetIntValue(Game.getPlayer(), "_SD_iDisableDreamworldOnSleep") == 0) && ( StorageUtil.GetIntValue(Game.getPlayer(), "_SD_iSanguineBlessings") > 0)
+			SendModEvent("SDDreamworldPull")
+		EndIf
 	EndIf
 endEvent
 
