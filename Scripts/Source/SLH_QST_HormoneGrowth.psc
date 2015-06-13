@@ -900,11 +900,13 @@ Event OnSexLabOrgasm(String _eventName, String _args, Float _argc, Form _sender)
 			If ( AbsLibido >= 80)
 				StorageUtil.SetIntValue(PlayerActor, "Puppet_SpellON", 1)
 				StorageUtil.SetIntValue(PlayerActor, "_SLH_succubusMC", 1)
+				SendModEvent("PMGrantControlSpells")
 			Else
 				if (StorageUtil.GetIntValue(PlayerActor, "_SLMC_controlDeviceON")!=1)
 					StorageUtil.SetIntValue(PlayerActor, "Puppet_SpellON", -1)
 				EndIf
 				StorageUtil.SetIntValue(PlayerActor, "_SLH_succubusMC", 0) 
+				SendModEvent("PMRemoveControlSpells")
 			EndIf
 		EndIf
 		; _showStatus()
