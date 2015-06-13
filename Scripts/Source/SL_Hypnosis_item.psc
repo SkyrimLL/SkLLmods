@@ -109,8 +109,8 @@ Event OnContainerChanged(ObjectReference akNewContainer, ObjectReference akOldCo
 		;	Debug.Notification("[Mind Control] NPC is Submissive")
 			StorageUtil.SetIntValue(akActor, "_SLMC_isVictimSub", 1)   ; Victim is Sub
 			; StorageUtil.SetIntValue(Game.GetPlayer(), "Puppet_SpellON", 1)
-			StorageUtil.SetIntValue(Game.GetPlayer(), "Puppet_CastTarget", 1)
-			StorageUtil.SetFormValue(Game.GetPlayer(), "Puppet_NewTarget", akActor)
+			akActor.SendModEvent("PMCharmPuppet")
+			SendModEvent("PMGrantControlSpells")
 			StorageUtil.SetIntValue(akActor, "_SD_iRelationshipType" , 5 )
 		EndIf
 
