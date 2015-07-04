@@ -226,15 +226,8 @@ function alterTintMask(int type = 6, int alpha = 0, int red = 125, int green = 9
 
 	int color = Math.LeftShift(alpha, 24) + Math.LeftShift(red, 16) + Math.LeftShift(green, 8) + blue
 	; int color = Math.LogicalOr(Math.LogicalAnd(rgb, 0xFFFFFF), Math.LeftShift((alpha * 255) as Int, 24))
- 	int index_count = Game.GetNumTintsByType(type)
 
- 	int index = 0
- 	while(index < index_count)
- 		if (index == setIndex) || (setAll)
- 			Game.SetTintMaskColor(color, type, index)
- 		EndIf
-  		index = index + 1
- 	EndWhile
+	setTintMaskColor(itype = type, irgbacolor = color, isetIndex = setIndex, bsetAll = setAll)
 
 EndFunction
 
@@ -262,12 +255,20 @@ function setTintMask(int type = 6, int rgbacolor = 0, int setIndex = 0, Bool set
 
 	; int color = Math.LeftShift(alpha, 24) + Math.LeftShift(red, 16) + Math.LeftShift(green, 8) + blue
 	; int color = Math.LogicalOr(Math.LogicalAnd(rgb, 0xFFFFFF), Math.LeftShift((alpha * 255) as Int, 24))
- 	int index_count = Game.GetNumTintsByType(type)
+	setTintMaskColor(itype = type, irgbacolor = rgbacolor, isetIndex = setIndex, bsetAll = setAll)
+
+EndFunction
+
+function setTintMaskColor(int itype = 6, int irgbacolor = 0, int isetIndex = 0, Bool bsetAll = False)
+ 	int index_count = Game.GetNumTintsByType(itype)
+
+ 	debugTrace("[SLH]  		NumTintsByType: " + index_count  + " - type: " + itype)
+ 	debugTrace("[SLH]  		Layer to change: " + isetIndex + " - setAll: " + bsetAll )
 
  	int index = 0
  	while(index < index_count)
- 		if (index == setIndex) || (setAll)
- 			Game.SetTintMaskColor(rgbacolor, type, index)
+ 		if (index == isetIndex) || (bsetAll)
+ 			Game.SetTintMaskColor(irgbacolor, itype, index)
  		EndIf
  		index = index + 1
  	EndWhile
@@ -514,6 +515,23 @@ float[] function RGBtoHSL(int r, int g, int b)
     return hsl
 EndFunction
 
+function sendSlaveTatModEvent(actor akActor, string sType, string sTatooName, int iColor = 0x99000000)
+	; SlaveTats.simple_add_tattoo(bimbo, "Bimbo", "Tramp Stamp", last = false, silent = true)
+  	int STevent = ModEvent.Create("STSimpleAddTattoo")  
+
+  	if (STevent) 
+        ModEvent.PushForm(STevent, akActor)      	; Form - actor
+        ModEvent.PushString(STevent, sType)    	; String - type of tattoo?
+        ModEvent.PushString(STevent, sTatooName)  	; String - name of tattoo
+        ModEvent.PushInt(STevent, iColor)  			; Int - color
+        ModEvent.PushBool(STevent, false)        	; Bool - last = false
+        ModEvent.PushBool(STevent, true)         	; Bool - silent = true
+
+        ModEvent.Send(STevent)
+  	else
+  		Debug.Trace("[SLH] SLH_fctColor: Send slave tat event failed.")
+	endIf
+endfunction
 
 function initColorConstants(Actor kActor)
  

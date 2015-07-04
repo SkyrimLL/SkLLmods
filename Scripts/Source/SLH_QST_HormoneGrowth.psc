@@ -92,7 +92,10 @@ GlobalVariable      Property GV_allowTG                 Auto
 GlobalVariable      Property GV_allowHRT 				Auto
 GlobalVariable      Property GV_allowBimbo 				Auto
 GlobalVariable      Property GV_allowSuccubus 			Auto
-GlobalVariable      Property GV_resetToggle 			Auto
+GlobalVariable      Property GV_resetToggle 			Auto 
+GlobalVariable      Property GV_allowSelfSpells			Auto
+
+GlobalVariable      Property GV_isPregnant		Auto 
 
 Event OnInit()
 	doInit()
@@ -140,9 +143,9 @@ Function Maintenance()
 	maintenanceVersionEvents()
 
 	; Loading shape and hormone state
+	getHormonesState(PlayerActor)	
 	fctBodyShape.initShapeConstants(PlayerActor)
 	fctColor.initColorConstants(PlayerActor)
-	getHormonesState(PlayerActor)	
 
 	; Debug.Notification("[Hormones] s:" + iSexCountToday + " - v:" + iVaginalCountToday + " - a:" + iAnalCountToday + " - o:" + iOralCountToday)
 
@@ -192,10 +195,17 @@ Function maintenanceVersionEvents()
 	RegisterForModEvent("SLHCastBimboCurse",    "OnCastBimboCurseEvent")
 	RegisterForModEvent("SLHCureBimboCurse",    "OnCureBimboCurseEvent")
 
-	debugTrace("[SLH]  Add spell")
-	PlayerActor.AddSpell( _SLH_Masturbation )
-	PlayerActor.AddSpell( _SLH_Undress )
-
+	if (GV_allowSelfSpells.GetValue() == 1)
+		debugTrace("[SLH]  Add spells")
+		PlayerActor.AddSpell( _SLH_Masturbation )
+		PlayerActor.AddSpell( _SLH_Undress )
+	Else 
+		debugTrace("[SLH]  Remove spells")
+		PlayerActor.RemoveSpell( _SLH_Masturbation )
+		PlayerActor.RemoveSpell( _SLH_Undress )
+	EndIf
+	
+	RegisterForSleep()
 	RegisterForSingleUpdate(5)
 EndFunction
 
@@ -245,6 +255,24 @@ function initHormones()
 	debugTrace("SexLab Hormones started")
 
 Endfunction
+
+Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
+	Debug.Trace("Player went to sleep at: " + Utility.GameTimeToString(afSleepStartTime))
+	Debug.Trace("Player wants to wake up at: " + Utility.GameTimeToString(afDesiredSleepEndTime))
+
+	fRefreshAfterSleep = (afDesiredSleepEndTime - afSleepStartTime)
+	Debug.Trace("SexLab Hormones: fRefreshAfterSleep: " + fRefreshAfterSleep)
+endEvent
+
+Event OnSleepStop(bool abInterrupted)
+
+	if abInterrupted
+	    ; Debug.Trace("Player was woken by something!")
+	else
+	    ; Debug.Trace("Player woke up naturally")
+	endIf
+
+endEvent
 
 Event OnUpdate()
 	PlayerREF= PlayerAlias.GetReference()
@@ -747,10 +775,12 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 					ModEvent.Send(ModEvent.Create("HoSLDD_GivePlayerPowers"))
 				elseif (_SLH_QST_Succubus.GetStage()<=30) && (iDaedricInfluence >=30)
 					_SLH_QST_Succubus.SetStage(40)
+					ModEvent.Send(ModEvent.Create("HoSLDD_GivePlayerPowers"))
 				elseif (_SLH_QST_Succubus.GetStage()<=40) && (iDaedricInfluence >=40)
 					_SLH_QST_Succubus.SetStage(50)
 					StorageUtil.SetIntValue(PlayerActor, "PSQ_SpellON", 1)
 					SendModEvent("SLHisSuccubus")
+					ModEvent.Send(ModEvent.Create("HoSLDD_GivePlayerPowers"))
 				Endif
 			else
 				setSuccubusState(PlayerActor, FALSE)
@@ -928,6 +958,9 @@ Function doSoulDevour(Actor[] _actors)
 	EndIf
 	
 	Debug.Notification("Your orgasm drains your partner's very essence.")
+
+	_SLH_DaedricInfluence.Cast(PlayerActor,PlayerActor)
+
 	Float Libido  = StorageUtil.GetFloatValue(PlayerActor, "_SLH_fLibido")
 	Float AbsLibido = Math.abs(Libido)
 	
@@ -1041,7 +1074,10 @@ Function doSoulDevour(Actor[] _actors)
 		endwhile
 		
 	endif
-	
+
+	; debugTrace("[SLH] Beeing Female - Healing baby event" )
+	; PlayerActor.SendModEvent("BeeingFemale", "HealBaby", 100)
+
 EndFunction
 
 function setBimboState(Actor kActor, Bool bBimboState)
@@ -1179,8 +1215,11 @@ function setHormonesSexualState(Actor kActor)
 
 	if 	( fctUtil.isPregnantBySoulGemOven(kActor) || fctUtil.isPregnantBySimplePregnancy(kActor) || fctUtil.isPregnantByBeeingFemale(kActor) || fctUtil.isPregnantByEstrusChaurus(kActor) || ((StorageUtil.GetIntValue(Game.GetPlayer(), "PSQ_SuccubusON") == 1) && (StorageUtil.GetIntValue(Game.GetPlayer(), "PSQ_SoulGemPregnancyON") == 1)) )
 		StorageUtil.SetIntValue(kActor, "_SLH_isPregnant", 1)
+		GV_isPregnant.SetValue(1)
+
 	Else
 		StorageUtil.SetIntValue(kActor, "_SLH_isPregnant", 0)
+		GV_isPregnant.SetValue(1)
 	EndIf
 
 	if 	(GV_isSuccubus.GetValue() == 1) || ((StorageUtil.GetIntValue(Game.GetPlayer(), "PSQ_SuccubusON") == 1))

@@ -9,8 +9,9 @@ Actor akSpeaker = akSpeakerRef as Actor
 Actor PlayerActor = game.GetPlayer()
 
 PlayerActor.DoCombatSpellApply(PolymorphBimboFX, PlayerActor)
+PlayerActor.DoCombatSpellApply(PolymorphBimboOFF, PlayerActor)
 
-PlayerActor.AddItem( BimboPolymorphToken, 1)
+; PlayerActor.AddItem( BimboPolymorphToken, 1)
 PlayerActor.RemoveItem( DaedraHeart, 1)
 ;END CODE
 EndFunction
@@ -23,3 +24,5 @@ WEAPON Property BimboPolymorphToken  Auto
 Ingredient Property DaedraHeart  Auto  
 
 SPELL Property PolymorphBimboFX  Auto  
+
+SPELL Property PolymorphBimboOFF  Auto  

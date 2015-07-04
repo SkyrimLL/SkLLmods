@@ -6,10 +6,10 @@ Scriptname SLH_TIF_BimboOral Extends TopicInfo Hidden
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
-If  (SexLab.ValidateActor( SexLab.PlayerREF) > 0) &&  (SexLab.ValidateActor(akSpeaker) > 0) 
+Actor akActor = Game.GetPlayer()
+If  (SexLab.ValidateActor( akActor) > 0) &&  (SexLab.ValidateActor(akSpeaker) > 0) 
 		; Debug.Notification( "[Resists weakly]" )
-		Actor akActor = SexLab.PlayerRef
-		ActorBase PlayerBase = Game.GetPlayer().GetBaseObject() as ActorBase
+		ActorBase PlayerBase = akActor.GetBaseObject() as ActorBase
 		Int PlayerGender = PlayerBase.GetSex() ; 0 = Male ; 1 = Female
 		
 		sslThreadModel Thread = SexLab.NewThread()
