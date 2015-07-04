@@ -7,6 +7,9 @@ Int iOrigSLAExposureRank = -3
 Faction  Property kfSLAExposure Auto
 slaUtilScr Property slaUtil  Auto  
 
+GlobalVariable      Property GV_allowExhibitionist		Auto 
+
+bool property bIsPregnant = false auto
 bool property bBeeingFemale = false auto
 bool property bEstrusChaurus = false auto
 spell property BeeingFemalePregnancy auto
@@ -202,7 +205,9 @@ endFunction
 bool function isExternalChangeModActive(actor kActor)
 	ObjectReference kActorREF = kActor as ObjectReference 
 
-	Return ( isPregnantBySoulGemOven(kActor) || isPregnantBySimplePregnancy(kActor) || isPregnantByBeeingFemale(kActor) || isPregnantByEstrusChaurus(kActor) || ((StorageUtil.GetIntValue(Game.GetPlayer(), "PSQ_SuccubusON") == 1) && (StorageUtil.GetIntValue(Game.GetPlayer(), "PSQ_SoulGemPregnancyON") == 1)) || (GV_changeOverrideToggle.GetValue() == 0) )
+	bIsPregnant = ( isPregnantBySoulGemOven(kActor) || isPregnantBySimplePregnancy(kActor) || isPregnantByBeeingFemale(kActor) || isPregnantByEstrusChaurus(kActor) || ((StorageUtil.GetIntValue(Game.GetPlayer(), "PSQ_SuccubusON") == 1) && (StorageUtil.GetIntValue(Game.GetPlayer(), "PSQ_SoulGemPregnancyON") == 1)) )
+
+	Return bIsPregnant || (GV_changeOverrideToggle.GetValue() == 0) 
 endFunction
 
 function manageSexLabAroused(Actor kActor, int aiModRank = -1)
@@ -211,12 +216,14 @@ function manageSexLabAroused(Actor kActor, int aiModRank = -1)
 	Float AbsLibido = Math.abs(Libido)
 	
 	If (Libido > 0)
-		If (AbsLibido >= 50)
-			slaUtil.SetActorExhibitionist(kActor, True)
-		Else
-			slaUtil.SetActorExhibitionist(kActor, False)
+		If (GV_allowExhibitionist.GetValue() == 1) && ((StorageUtil.GetIntValue(kActor, "_SLH_isPregnant") == 1) || (StorageUtil.GetIntValue(kActor, "_SLH_isBimbo") == 1) || (StorageUtil.GetIntValue(kActor, "_SLH_isSuccubus") == 1))
+			If (AbsLibido >= 50)
+				slaUtil.SetActorExhibitionist(kActor, True)
+			Else
+				slaUtil.SetActorExhibitionist(kActor, False)
+			EndIf
 		EndIf
-
+		
 	    slaUtil.UpdateActorExposureRate(kActor, AbsLibido / 10.0)
 	EndIf
 
@@ -236,3 +243,4 @@ Function debugTrace(string traceMsg)
 		Debug.Trace(traceMsg)
 	endif
 endFunction
+

@@ -6,16 +6,16 @@ Scriptname SLH_TIF_BimboRelease Extends TopicInfo Hidden
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
-If  (SexLab.ValidateActor( SexLab.PlayerREF) > 0) &&  (SexLab.ValidateActor(akSpeaker) > 0) 
+Actor akActor = Game.GetPlayer()
+If  (SexLab.ValidateActor( akActor) > 0) &&  (SexLab.ValidateActor(akSpeaker) > 0) 
 		; Debug.Notification( "[Resists weakly]" )
-		Actor akActor = SexLab.PlayerRef
 
 		isBimboBound.SetVAlue(0)
 
 
 		Debug.Messagebox( "As soon as her hands are free, the vixen crawls all over you with wet lips, hot tongue and a ravenous look on her face." )
 
-		SexLab.QuickStart(SexLab.PlayerRef,  akSpeaker, AnimationTags = "Sex")
+		SexLab.QuickStart(akSpeaker, akActor,  AnimationTags = "Sex")
 
 
 

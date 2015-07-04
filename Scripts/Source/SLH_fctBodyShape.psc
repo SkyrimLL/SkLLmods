@@ -188,12 +188,29 @@ SOS_API Property SOS
   EndFunction
 EndProperty
 
+
+Bool Function isSoSAPI()
+	if (Game.GetFormFromFile(0x1eda4, "Schlongs of Skyrim.esp") != None)
+		Return True
+	Else
+		Return False
+	Endif
+Endfunction
+
 Bool Function isSchlongSet(Actor kActor)
+	if !isSoSAPI()
+		Return False
+	Endif
+
 	Return SOS.isSchlonged(kActor)
 Endfunction
 
 Function setSchlong(Actor kActor, string schlongLabel)
 	Form schlong
+
+	if !isSoSAPI()
+		Return
+	Endif
 
 	if (schlongLabel == "Any") || (schlongLabel == "")
 		schlong =  SOS_Data.GetAddon(0)
@@ -215,6 +232,10 @@ Function setSchlong(Actor kActor, string schlongLabel)
 Endfunction
 
 Function removeSchlong(Actor kActor)
+	if !isSoSAPI()
+		Return
+	Endif
+
 	Form schlong = SOS.GetSchlong(kActor)
  
  	if (schlong != None)
@@ -406,8 +427,9 @@ function alterBodyAfterRest(Actor kActor)
 				alterButtNode(kActor,  fButt )
 			endif
 		EndIf
-
-	ElseIf (fSwellFactor != 0) && !(fctUtil.isFemale(kActor)) && (GV_useNodes.GetValue() == 1)
+	EndIf
+	
+	If (fSwellFactor != 0) && (!(fctUtil.isFemale(kActor)) || ((fctUtil.isFemale(kActor) && (StorageUtil.GetIntValue(kActor, "_SLH_iTG") == 1))) ) && (GV_useNodes.GetValue() == 1)
 		; Debug.Notification("SexLab Hormones: Male: Schlong updates: " + fSchlong )
 		; SCHLONG SWELL ======================================================
 		If  (iVaginalCountToday > 0) || (iAnalCountToday > 0) || (iOralCountToday > 0)  || (fSwellFactor < 0)

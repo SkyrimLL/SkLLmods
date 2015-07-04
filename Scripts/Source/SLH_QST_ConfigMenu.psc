@@ -60,6 +60,9 @@ float		_redShiftColorMod 		= 1.0
 int			_blueShiftColor 		= 0
 float		_blueShiftColorMod 		= 1.0
 
+bool		_allowExhibitionist		= false
+bool		_allowSelfSpells		= false
+
 bool		_allowTG				= false
 bool		_allowHRT				= false
 bool		_allowBimbo				= false
@@ -170,6 +173,9 @@ event OnPageReset(string a_page)
 	_redShiftColorMod 		= GV_redShiftColorMod.GetValue() as Float
 	_blueShiftColor 		= GV_blueShiftColor.GetValue() as Int
 	_blueShiftColorMod 		= GV_blueShiftColorMod.GetValue() as Float
+
+	_allowExhibitionist = GV_allowExhibitionist.GetValue()  as Int
+	_allowSelfSpells = GV_allowSelfSpells.GetValue()  as Int
 
 	_allowTG = GV_allowTG.GetValue()  as Int
 	_allowHRT = GV_allowHRT.GetValue()  as Int
@@ -293,6 +299,8 @@ event OnPageReset(string a_page)
 		AddEmptyOption()
 		AddToggleOptionST("STATE_SHOW_STATUS","Show Status messages", _showStatus as Bool)
 		AddSliderOptionST("STATE_COMMENTS_FREQUENCY","NPC Comments Frequency ", _commentsFrequency as Float,"{1} %")
+		AddToggleOptionST("STATE_EXHIBITIONIST","Allow Exhibitionist", _allowExhibitionist as Float)
+		AddToggleOptionST("STATE_SELF_SPELLS","Allow Self Spells", _allowSelfSpells as Float)
 
 		SetCursorPosition(1)
 		AddHeaderOption(" Status")
@@ -1143,7 +1151,7 @@ state STATE_BIMBO ; TOGGLE
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Bimbo Curse - This old Necromancer curse could turn you into a mindless sex-starved blonde.")
+		SetInfoText("Bimbo Curse - This curse could turn you into a mindless sex-starved blonde.")
 	endEvent
 endState
 ; AddToggleOptionST("STATE_SEX_CHANGE","Sex Change Curse", _isHRT)
@@ -1161,7 +1169,7 @@ state STATE_SEX_CHANGE ; TOGGLE
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Sex Change Curse - This old Hagraven curse could turn your gender upside down.")
+		SetInfoText("Sex Change Curse - This curse could turn your gender upside down.")
 	endEvent
 endState
 ; AddToggleOptionST("STATE_TG","Allow Transgender", _isTG)
@@ -1180,6 +1188,42 @@ state STATE_TG ; TOGGLE
 
 	event OnHighlightST()
 		SetInfoText("Allow Transgender - This option enables smoother transitions from male to female, with an intermediate state (female with male genitals).")
+	endEvent
+endState
+; AddToggleOptionST("STATE_EXHIBITIONIST","Allow Exhibitionist", _allowExhibitionist)
+state STATE_EXHIBITIONIST ; TOGGLE
+	event OnSelectST()
+		GV_allowExhibitionist.SetValueInt( Math.LogicalXor( 1, GV_allowExhibitionist.GetValueInt() ) )
+		SetToggleOptionValueST( GV_allowExhibitionist.GetValueInt() as Bool )
+		ForcePageReset()
+	endEvent
+
+	event OnDefaultST()
+		GV_allowExhibitionist.SetValueInt( 1 )
+		SetToggleOptionValueST( false )
+		ForcePageReset()
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Allow Exhibitionist - High levels of arousal will automatically make your character Exhibitionist in SexLab Arousal.")
+	endEvent
+endState
+; AddToggleOptionST("STATE_SELF_SPELLS","Allow Self Spells", _allowSelfSpells)
+state STATE_SELF_SPELLS ; TOGGLE
+	event OnSelectST()
+		GV_allowSelfSpells.SetValueInt( Math.LogicalXor( 1, GV_allowSelfSpells.GetValueInt() ) )
+		SetToggleOptionValueST( GV_allowSelfSpells.GetValueInt() as Bool )
+		ForcePageReset()
+	endEvent
+
+	event OnDefaultST()
+		GV_allowSelfSpells.SetValueInt( 1 )
+		SetToggleOptionValueST( false )
+		ForcePageReset()
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Allow Self Spells - Enable spells for Undress and Masturbation when loading your save game (quit and reload to see the change).")
 	endEvent
 endState
 ; AddToggleOptionST("STATE_STATUS","Display status", _statusToggle)
@@ -1455,6 +1499,10 @@ GlobalVariable      Property GV_shapeUpdateOnCellChange	Auto
 GlobalVariable      Property GV_shapeUpdateAfterSex		Auto
 GlobalVariable      Property GV_shapeUpdateOnTimer		Auto
 GlobalVariable      Property GV_enableNiNodeUpdate		Auto
+
+GlobalVariable      Property GV_allowExhibitionist		Auto
+GlobalVariable      Property GV_allowSelfSpells			Auto
+
 
 SLH_QST_HormoneGrowth 	Property SLH_Control auto
 

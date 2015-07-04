@@ -89,6 +89,7 @@ GlobalVariable      Property GV_allowHRT                Auto
 GlobalVariable      Property GV_allowBimbo              Auto
 GlobalVariable      Property GV_isPolymorphON           Auto
 
+GlobalVariable      Property GV_allowExhibitionist      Auto 
 
 float actorArousalRate
 float actorHP
@@ -291,7 +292,10 @@ function bimboTransformEffectON(actor kActor)
 
         isActorExhibitionist = slaUtil.IsActorExhibitionist(kActor)
         actorArousalRate = slaUtil.GetActorExposureRate(kActor)
-        slaUtil.SetActorExhibitionist(kActor, True)
+
+        If (GV_allowExhibitionist.GetValue() == 1) 
+            slaUtil.SetActorExhibitionist(kActor, True)
+        EndIf
 
         if (actorArousalRate < 8.0 )
             slaUtil.SetActorExposureRate(kActor, 8.0)
@@ -481,7 +485,7 @@ function bimboTransformEffectOFF(actor kActor)
             debugTrace("[SLH] Original race")
             kActor.SetRace(ActorOriginalRace)
 
-            if (!isActorExhibitionist)
+            if (!isActorExhibitionist) && (GV_allowExhibitionist.GetValue() == 1) 
                 slaUtil.SetActorExhibitionist(kActor, False)
             EndIf
 

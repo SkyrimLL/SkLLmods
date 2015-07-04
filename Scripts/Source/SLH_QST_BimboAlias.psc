@@ -2,6 +2,7 @@ Scriptname SLH_QST_BimboAlias extends ReferenceAlias
 
 SLH_fctPolymorph Property fctPolymorph Auto
 SLH_fctUtil Property fctUtil Auto
+SLH_fctColor Property fctColor Auto
 SLH_QST_HormoneGrowth Property SLH_Control Auto
 
 slaUtilScr Property slaUtil  Auto  
@@ -34,6 +35,16 @@ Bool isMale
 Float fSchlongMin
 Float fSchlongMax
 
+;===========================================================================
+;mod variables
+Race Property _SLH_BimboRace Auto
+Bool isBimboClumsyLegs = false
+Bool isBimboClumsyHands = false
+Bool isBimboFrailBody = false
+Bool isClumsyHandsRegistered = False
+Bool isClumsyLegsRegistered = False
+;===========================================================================
+
 ;how much gold hypnosis victim earns each day
 Event OnLocationChange(Location akOldLoc, Location akNewLoc)
 	; Safeguard - Exit if alias not set
@@ -54,9 +65,49 @@ Event OnLocationChange(Location akOldLoc, Location akNewLoc)
     endif
 endEvent
 
+;===========================================================================
+;Hack! Recover lost saves where the tf was done on day zero
+;===========================================================================
+Event OnPlayerLoadGame()
+	; if (!isUpdating)
+		debug.trace("[slh+] game loaded, registering for update")
+		if Game.GetPlayer().GetActorBase().GetRace() == _SLH_BimboRace && StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") == 0
+			StorageUtil.SetIntValue(BimboActor, "_SLH_bimboTransformDate", 1)
+			debug.trace("[slh+] poor bimbo, are you lost?")
+		endif
+    	RegisterForSingleUpdate( 10 )
+    ; else
+	; 	debug.trace("[slh+] game loaded, is already updating (is it?)")
+    ; endif
+EndEvent
+
+;===========================================================================
+;[mod] stumbling happens here
+;===========================================================================
 Event OnUpdateGameTime()
 	; Safeguard - Exit if alias not set
 	if (BimboAliasRef == None)
+		Return
+	Endif
+	; debug.Notification("[SLH] Bimbo update game time")
+
+	BimboActor= BimboAliasRef.GetReference() as Actor
+
+	; Safeguard - Evaluate the rest only when transformation happened
+	if (StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") == 0)
+		Return
+	Endif
+
+	if (isBimboClumsyLegs)
+    	clumsyBimboLegs(BimboActor)
+    	RegisterForSingleUpdateGameTime(0.03)
+    endif
+EndEvent
+
+Event OnActorAction(int actionType, Actor akActor, Form source, int slot)
+	; Safeguard - Exit if alias not set
+	if (BimboAliasRef == None)
+		;debug.trace("[slh+] bimbo OnActorAction, None")
 		Return
 	Endif
 
@@ -66,13 +117,15 @@ Event OnUpdateGameTime()
 	if (StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") == 0)
 		Return
 	Endif
-	
-	; debug.Notification("[SLH] Bimbo update game time")
 
+	clumsyBimboHands(actionType, BimboActor, source, slot)
 EndEvent
 
 Event OnUpdate()
 	; Safeguard - Exit if alias not set
+	; Debug.Notification( "[SLH] Bimbo status update: " + StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") as Int )
+	; Debug.Notification( "[SLH] Bimbo alias: " + BimboAliasRef )
+
 	if (BimboAliasRef == None)
 		Return
 	Endif
@@ -84,6 +137,7 @@ Event OnUpdate()
 
 	; Safeguard - Evaluate the rest only when transformation happened
 	if (StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") == 0)
+		; debug.trace("[slh+] bimbo OnUpdate, No TF Date")
 		Return
 	Endif
 
@@ -92,12 +146,17 @@ Event OnUpdate()
     
     StorageUtil.SetIntValue(BimboActor, "_SLH_bimboTransformGameDays", iDaysPassed - (StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") as Int ))    
 
+    daysSinceEnslavement = StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformGameDays")
+
 
     if (iGameDateLastCheck == -1)
         iGameDateLastCheck = iDaysPassed
     EndIf
 
     iDaysSinceLastCheck = (iDaysPassed - iGameDateLastCheck ) as Int
+       
+    ; Debug.Notification( "[SLH] Bimbo status update - Days: " + daysSinceEnslavement )
+    ; Debug.Notification( "[SLH] iDaysSinceLastCheck: " + iDaysSinceLastCheck )
 
     ; Exit conditions
     If (iDaysSinceLastCheck >= 1)
@@ -111,16 +170,22 @@ Event OnUpdate()
         ; StorageUtil.SetFloatValue(BimboActor, "_SLH_fBreast", 0.8 ) 
         ; StorageUtil.SetFloatValue(BimboActor, "_SLH_fBelly", 0.8 ) 
         ; StorageUtil.SetFloatValue(BimboActor, "_SLH_fWeight", 0 ) 
-        If (GV_isTG.GetValue() == 1) && (!isMale) && !_SLH_QST_Bimbo.IsStageDone(14)
+        If (GV_isTG.GetValue() == 1) && (!isMale) && (daysSinceEnslavement==1)
             _SLH_QST_Bimbo.SetStage(14)
-        ElseIf (GV_isTG.GetValue() == 1) && (isMale) && !_SLH_QST_Bimbo.IsStageDone(12)
+        ElseIf (GV_isTG.GetValue() == 1) && (isMale) && (daysSinceEnslavement==1)
             _SLH_QST_Bimbo.SetStage(12)
         Endif
 
-        If (GV_isTG.GetValue() == 1) && (!isMale) && !_SLH_QST_Bimbo.IsStageDone(18) 
+        ;[mod] progressive tf - start
+        if (daysSinceEnslavement<=5) ; !(_SLH_QST_Bimbo.IsStageDone(18) || _SLH_QST_Bimbo.IsStageDone(16) )
+        	bimboDailyProgressiveTransformation(BimboActor, GV_isTG.GetValue() == 1)
+        endif
+        ;[mod] progressive tf - end
+
+        If (GV_isTG.GetValue() == 1) && (!isMale) && (daysSinceEnslavement<=6) ; !_SLH_QST_Bimbo.IsStageDone(18) 
         	
             if (StorageUtil.GetFloatValue(BimboActor, "_SLH_fSchlong") >= fSchlongMin ) && ( (StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformGameDays") as Int) < 5 )
-                StorageUtil.SetFloatValue(BimboActor, "_SLH_fSchlong", StorageUtil.GetFloatValue(BimboActor, "_SLH_fSchlong") * 0.8 - 0.1) 
+                StorageUtil.SetFloatValue(BimboActor, "_SLH_fSchlong", StorageUtil.GetFloatValue(BimboActor, "_SLH_fSchlong") * 0.65 - 0.1) 
                 SendModEvent("SLHRefresh")
 
             elseIf ((StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformGameDays") as Int) >= 5 )
@@ -129,8 +194,9 @@ Event OnUpdate()
                 _SLH_QST_Bimbo.SetStage(18)
             endif
 
-        ElseIf (GV_isTG.GetValue() == 1) && (isMale) && !_SLH_QST_Bimbo.IsStageDone(16) 
+        ElseIf (GV_isTG.GetValue() == 1) && (isMale) && (daysSinceEnslavement<=6) ; !_SLH_QST_Bimbo.IsStageDone(16) 
         	
+            bimboDailyProgressiveTransformation(BimboActor, true) ;[mod]
             if (StorageUtil.GetFloatValue(BimboActor, "_SLH_fSchlong") <= fSchlongMax )  && ( (StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformGameDays") as Int) < 5 )
                 StorageUtil.SetFloatValue(BimboActor, "_SLH_fSchlong", 0.1 + StorageUtil.GetFloatValue(BimboActor, "_SLH_fSchlong") * 1.2 ) 
                 SendModEvent("SLHRefresh")
@@ -153,8 +219,12 @@ Event OnUpdate()
     If (StorageUtil.GetIntValue(BimboActor, "_SD_iDom") != 0)
         StorageUtil.SetIntValue(BimboActor, "_SD_iDom", 0)
     EndIf
-        
-    RegisterForSingleUpdate( fRFSU )
+
+    updateClumsyBimbo() ;[mod] clumsy bimbo
+    isUpdating = false
+    ;RegisterForSingleUpdate( fRFSU )
+    RegisterForSingleUpdate( fRFSU * 2 ) ;performance
+	;debug.trace("[slh+] bimbo OnUpdate, Done")
 EndEvent
 
 Event OnCombatStateChanged(Actor akTarget, int aeCombatState)
@@ -233,28 +303,33 @@ Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile,
 		; EndIf	
 
 
-	ElseIf (akAggressor != None)
+	ElseIf (akAggressor != None && isBimboFrailBody) ;[mod] check if is a weak bimbo
 		;  Debug.Trace("We were hit by " + akAggressor)
 		; debug.Notification("[SLH] Bimbo is hit")
-		Int randomNum = Utility.RandomInt(0,100)	
+      	;If ((randomNum>90) && (BimboActor.GetActorValuePercentage("health")<0.3)) ; && (!(akAggressor as Actor).IsInFaction(pCreatureFaction)))
 
-      	If ((randomNum>90) && (BimboActor.GetActorValuePercentage("health")<0.3)) ; && (!(akAggressor as Actor).IsInFaction(pCreatureFaction)))
+		float bimboArousal = slaUtil.GetActorArousal(BimboActor) as float
+		float dropchance = 1.0 + (bimboArousal / 30.0 )
+		Debug.Trace("[slh+] bimbo beeing hit, drop chance: " + dropchance)
+      	If Utility.RandomInt() <= dropchance ; && (!(akAggressor as Actor).IsInFaction(pCreatureFaction)))
 				;
 
-		    if(BimboActor.IsWeaponDrawn())
-		        BimboActor.SheatheWeapon()
-		        Utility.Wait(2.0)
-		    endif
+			Debug.Notification("The enemy made you lose your grip!")
+			dropWeapons(BimboActor, both = false, chanceMult = 1.0) ;only the weapon
+		    ;if(BimboActor.IsWeaponDrawn())
+		    ;    BimboActor.SheatheWeapon()
+		    ;    Utility.Wait(2.0)
+		    ;endif
 
 		    ; unequip weapons
-		    Weapon wleft = BimboActor.GetEquippedWeapon(0)
-		    Weapon wright = BimboActor.GetEquippedWeapon(1)
-		    if (wleft != None)
-		        BimboActor.UnequipItem(wleft, 0)
-		    endif
-		    if (wright != None)
-		        BimboActor.UnequipItem(wright, 1)
-		    endif
+		    ;Weapon wleft = BimboActor.GetEquippedWeapon(0)
+		    ;Weapon wright = BimboActor.GetEquippedWeapon(1)
+		    ;if (wleft != None)
+		    ;    BimboActor.UnequipItem(wleft, 0)
+		    ;endif
+		    ;if (wright != None)
+		    ;    BimboActor.UnequipItem(wright, 1)
+		    ;endif
 
 		EndIf
 
@@ -295,5 +370,443 @@ Event OnItemAdded(Form akBaseItem, int aiItemCount, ObjectReference akItemRefere
     EndIf
 endEvent
 
+;===========================================================================
+;should really drop the weapons or just unequip it?
+;move this to a mcm option
+;===========================================================================
+Function DropOrUnequip(Actor akActor, Form akObject, bool drop = true)
+	If drop 
+		akActor.DropObject(akObject)
+	else
+		akActor.UnequipItem(akObject, false, true)
+	EndIf
+EndFunction
 
+;===========================================================================
+;This makes the actor drop his weapons, with a chance based on his stamina
+;credit: copied from devious hepless, with some changes
+;parameters:
+;Actor pl = actor who will drop the weapons
+;bool both = should drop both weapons
+;float chanceMult = increase the chance to drop
+;===========================================================================
+int[] function dropWeapons(Actor pl, bool both = false, float chanceMult = 1.0)
+	; By default, drops only stuff on left hand, if both == true, also right hand
+	; returns an array of dropped item counts, weapon & shield at 0, spells at 1
+	debug.trace("[slh+] dropWeapons(both = "+both+", chanceMult = "+chanceMult+")")
+	
+	; Calculate the drop chance
+	float spellDropChance = ( 100.0 - ( pl.GetAvPercentage("Stamina") * 100.0 ) ) ; inverse of stamina percentage
+	;int arousal = 0
+	;if (pl != None)
+	;	arousal = slaUtil.GetActorArousal(pl)
+	;else
+	;	Debug.Trace("[sla] null player on dropWeapons")
+	;endif
+	;if arousal >= 30 ; If arousal is over 30, increase the drop chance
+	;	arousal = ( arousal - 30 ) / 2 ; 0 - 35% extra
+	;	spellDropChance = spellDropChance + arousal
+	;endIf
+	
+	spellDropChance *= chanceMult
+	
+	if spellDropChance > 100
+		spellDropChance = 100
+	elseif spellDropChance < 0
+		spellDropChance = 0
+	endif
+
+	debug.trace("[slh+] weapon drop chance: " + spellDropChance)
+	
+	int[] drops = new int[2]
+	drops[0] = 0
+	drops[1] = 0
+		
+	float chance = Utility.RandomInt(0, 99)
+	Spell spl
+	Weapon weap
+	Armor sh
+	
+	int i = 2
+	bool drop = true
+	While i > 0
+		i -= 1
+		if i == 0
+			Utility.Wait(1.0) ; Equipping the secondary set takes a while...
+		EndIf
+		if both
+			spl = pl.getEquippedSpell(1)
+			if spl && chance < spellDropChance
+				pl.unequipSpell(spl, 1)
+				drops[1] = drops[1] + 1
+			endIf
+			
+			weap = pl.GetEquippedWeapon(true)
+			if weap && pl.IsWeaponDrawn()
+				DropOrUnequip(pl, weap, drop)
+				drops[0] = drops[0] + 1
+			endIf
+			
+			sh = pl.GetEquippedShield()
+			if sh && pl.IsWeaponDrawn()
+				DropOrUnequip(pl, sh, drop)
+				drops[0] = drops[0] + 1
+			endIf
+		endIf
+		
+		spl = pl.getEquippedSpell(0)
+		if spl && chance < spellDropChance
+			pl.unequipSpell(spl, 0)
+			drops[1] = drops[1] + 1
+		endIf
+		
+		weap = pl.GetEquippedWeapon(false)
+		if weap && pl.IsWeaponDrawn()
+			both = both || weap.GetWeaponType() >= 5 ; if this is a two handed weapon, unequip both hands on the 2nd loop
+			DropOrUnequip(pl, weap, drop)
+			drops[0] = drops[0] + 1
+		endIf
+		
+		drop = false
+		If drops[0] > 0
+		; Some weapons are dropped already, make sure to unequip any spells on the second iteration as well
+			spellDropChance = 100
+		EndIf
+	EndWhile
+
+	return drops
+endFunction
+
+;===========================================================================
+;moan sound
+;===========================================================================
+function bimboMoan(actor bimbo)
+	sslBaseVoice voice = SexLab.GetVoice(bimbo)
+	voice.Moan(bimbo)
+endFunction
+
+;===========================================================================
+;called to start the clumsiness
+;===========================================================================
+function updateClumsyBimbo()
+    if (isBimboClumsyHands && !isClumsyHandsRegistered)
+    	isClumsyHandsRegistered = True
+		RegisterForActorAction(0) ; Weapon Swing
+		RegisterForActorAction(5) ; Bow Draw
+		Debug.Notification("Your hands feel weak, trembling with arousal")
+	endif
+
+	if (isBimboClumsyLegs && !isClumsyLegsRegistered)
+    	isClumsyLegsRegistered = True
+    	RegisterForSingleUpdateGameTime(0.015) ;walking
+		Debug.Notification("You feel clumsy, your hips swaying without control")
+    endif
+endfunction
+
+;===========================================================================
+; messages shown when the player drop his weapons trying to attack
+; TOOD change this messages, was just a quick thing
+;===========================================================================
+string Function randomBimboHandsMessage(float bimboArousal, int actionType)
+	int chance = Utility.RandomInt(0, 5)
+	String handMessage
+	if bimboArousal > 40
+		if chance < 1
+			handMessage = "You fantasise about caressing your tits"
+		elseif chance < 2
+			handMessage = "You fantasise about holding dicks"
+		elseif chance < 3
+			handMessage = "For a moment you try to finger your pussy"
+		elseif chance < 4
+			handMessage = "You try to pinch your nipples"
+		else
+			handMessage = "Your trembling hands can't hold well"
+		endif
+	elseif chance < 1
+		handMessage = "You fantasise about holding a fat dick"
+	elseif chance < 2
+		handMessage = "You fantasise about holding a dick with each hand"
+	elseif chance < 3
+		handMessage = "Your dainty hands can't hold well"
+	elseif chance < 4
+		handMessage = "You feel weak"
+	elseif chance < 5
+		handMessage = "You think about chipping your nails"
+	endif
+	return handMessage
+EndFunction
+
+;===========================================================================
+; clumsy hands, called with every player attack or bow draw
+; - the chances should be tweaked
+; - TODO i've saw this beeing called without the player doing attacks. Why??
+;===========================================================================
+function clumsyBimboHands(int actionType, Actor bimbo, Form source, int slot)
+	;debug: checking why this is beeing called without doing an attack
+	BimboActor= BimboAliasRef.GetReference() as Actor
+	if (bimbo != BimboActor)
+		debug.trace("[slh+] bimbo clumsy hands, not the bimbo")
+		return
+	endif
+
+	;not clumsy anymore? stop it!
+	if !isBimboClumsyHands
+		UnregisterForActorAction(0)
+		UnregisterForActorAction(5)
+		isClumsyHandsRegistered = false
+		return
+	endif
+
+	float bimboArousal = slaUtil.GetActorArousal(bimbo) as float
+	float dropchance = 0.5 + (bimboArousal / 35 )
+	string handMessage
+	int[] drops
+
+	;...but bow draw chances are bigger (using both hands)
+	if actionType == 5
+		dropchance *= 2.0
+	endif
+
+	;TODO check long nails (equipped at the bad end), dropchance *= 2 
+	int roll = Utility.RandomInt()
+	debug.trace("[slh+] bimbo clumsy hands, drop chance/roll = " + dropchance + "/" + roll)
+	if roll <= (dropchance) as int
+		handMessage = randomBimboHandsMessage(bimboArousal, actionType)
+		if actionType == 5
+			; bow fumble
+			Input.TapKey(Input.GetMappedKey("Ready Weapon"))
+			drops = dropWeapons(bimbo, both = false, chanceMult = 0.2) ;may drop the bow too
+		elseif slot == 1
+			; right hand
+			drops = dropWeapons(bimbo, both = true)
+		else
+			drops = dropWeapons(bimbo, both = false)
+		endif
+		bimbo.CreateDetectionEvent(bimbo, 20)
+		if drops[0] > 0 ;dropped weapons
+			handMessage = handMessage + "... and lose grip"
+		endif
+		Debug.Notification(handMessage)
+		bimboMoan(bimbo)
+	endif
+
+
+	;TODO stop it for a while, register again on another update after some time
+	;UnregisterForActorAction(0)
+	;UnregisterForActorAction(5)
+	;RegisterForSingleUpdate( fRFSU )
+endfunction
+
+;===========================================================================
+;this makes the bimbo stumble when running/sprinting/sneaking
+;called with OnUpdate
+; - the stumbling chances should be tweaked
+;===========================================================================
+function clumsyBimboLegs(Actor bimbo)
+
+	;not clumsy anymore?
+	if !isBimboClumsyLegs
+		isClumsyLegsRegistered = false
+		return
+	endif
+
+	;is pressing the movement keys?
+	if Input.IsKeyPressed(Input.GetMappedKey("Forward")) || Input.IsKeyPressed(Input.GetMappedKey("Back")) || Input.IsKeyPressed(Input.GetMappedKey("Strafe Left")) || Input.IsKeyPressed(Input.GetMappedKey("Strafe Right"))
+		;isn't on the menu?
+		bool IsMenuOpen = Utility.IsInMenuMode() || UI.IsMenuOpen("Dialogue Menu")
+		if !IsMenuOpen && !bimbo.IsOnMount() && !bimbo.IsSwimming()
+		    float tumbleForce = 0.1
+			float bimboArousal = 0.0
+			if bimbo != None
+				bimboArousal = slaUtil.GetActorArousal(bimbo) as float
+				debug.trace("[slh+] ---- is aroused: " + bimboArousal)
+			else
+				Debug.Trace("[sla+] null player on clumsyBimboLegs")
+			endif
+		    float tumbleChance = 1.0 + (bimboArousal / 20.0)
+
+			;ok, lets check what is the bimbo doing and increase the chances
+			;TODO is using HDT heels and the tf ended, decrease the chances (a good bimbo always use heels)
+			if bimbo.IsSprinting()
+				tumbleChance *= 4.00
+				tumbleForce *= 1.50
+			elseif bimbo.IsRunning()
+				tumbleChance *= 2.00
+				tumbleForce *= 1.00
+			elseif bimbo.IsSneaking()
+				tumbleChance *= 0.33
+				tumbleForce *= 0.50
+			else
+				;just walking, no stumbling
+				tumbleChance = 0.0
+			endif
+
+			int roll = Utility.RandomInt()
+			debug.trace("[slh+] ------- stumble [" + roll + " < " + tumbleChance + "]?")
+			if (roll <= tumbleChance)
+				Game.ForceThirdPerson()
+				If bimbo.IsSneaking()
+					bimbo.StartSneaking()
+				EndIf
+				bimbo.CreateDetectionEvent(bimbo, 20)
+				bimbo.PushActorAway(bimbo, tumbleForce) ;how to push only to the bimbo movement direction?
+				Utility.Wait(1.0)
+				int[] drop = dropWeapons(bimbo, both = true, chanceMult = 0.1)
+				if drop[0] > 0 ;if dropped anything, play a moan sound
+					bimboMoan(bimbo)
+				endif
+
+				;wait a little to show the messages, because on ragdoll the hud is hidden
+				Utility.Wait(2.0)
+				if drop[0] > 0
+					Debug.Notification("You trip and drop your weapons!") ;temp messages
+				else
+					Debug.Notification("You tripped! Clumsy bimbo!") ;temp messages
+				endif
+
+				;alternative to the ragdoll: trigger the bleedout animation for 2 seconds
+				;Debug.SendAnimationEvent(bimbo, "BleedOutStart")
+				;if util.config.dropWeapons
+				;	util.dropWeapons(both = true, chanceMult = 2.0)
+				;endif
+				;Utility.Wait(2.0)
+				;Debug.SendAnimationEvent(bimbo, "BleedOutStop")
+
+			elseif bimboArousal > 80 ;warn the player
+				Debug.Notification("Your legs are trembling with arousal")
+				bimboMoan(bimbo)
+				bimbo.CreateDetectionEvent(bimbo, 10)
+			endif
+		endif
+	endif
+endfunction
+
+;===========================================================================
+;[mod] progressive transformation here, called every day
+;TODO move all the stuff here, each thing with its own trigger
+;
+;
+;===========================================================================
+function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
+	debug.trace("[slh+] bimbo progressive transformation: " + iDaysPassed)
+	if (bimbo == None)
+		return
+	endIf
+
+	;bimbo = Game.GetPlayer()
+	;transformationlevel is the same as the number of days
+	int transformationLevel = StorageUtil.GetIntValue(bimbo, "_SLH_bimboTransformGameDays")
+	bool showSchlongMessage = true
+	float fButtMax
+	float fButtActual
+	float fButtMin
+
+	debug.trace("[slh+] bimbo transformation level: " + transformationLevel)
+
+	;no tg = always female, never has a schlong
+	;tg:
+	; - female + tg = schlong enlarges every day, permanent on day 5
+	; - male + tg = schlong shrinks every day, lost on day 5
+
+	if !isTG
+		showSchlongMessage = false
+	endif
+
+	;level 1: permanent makeup
+	if transformationLevel == 1
+		;lipstick: pink, or should it be red? or random?
+		;eyelids shadow: pink too
+		Debug.Notification("You feel a little tingling on your face")
+		; SlaveTats.simple_add_tattoo(bimbo, "Bimbo", "Lipstick", color = 0x66FF0984, last = false, silent = true)
+		fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Lipstick", iColor = 0x66FF0984)
+		; SlaveTats.simple_add_tattoo(bimbo, "Bimbo", "Eye Shadow", color = 0x99000000, last = true, silent = true)
+		fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Eye Shadow", iColor = 0x99000000)
+
+	;level 2, slutty tattoos, weak body (can drop weapons when hit)
+	elseif transformationLevel == 2
+		Debug.Notification("Your body feels weak and tingly")
+		; SlaveTats.simple_add_tattoo(bimbo, "Bimbo", "Tramp Stamp", last = false, silent = true)
+		fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Tramp Stamp" )
+		; SlaveTats.simple_add_tattoo(bimbo, "Bimbo", "Belly", last = true, silent = true)
+		fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Belly" )
+		isBimboFrailBody = true
+	;level 3: clumsy hands
+	elseif transformationLevel == 3
+		;Debug.Notification("Your hands feel delicate, your back tingle")
+		isBimboClumsyHands = true
+	;level 4: back tf: bigger butt, painted feet nails and clumsy legs
+	elseif transformationLevel == 4
+		Debug.Notification("Your butt feels bloated, your legs tingle")
+		; SlaveTats.simple_add_tattoo(bimbo, "Bimbo", "Feet Nails", color = 0x00FF0984, last = true, silent = true)
+		fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Feet Nails", iColor = 0x00FF0984 )
+
+		;butt
+		fButtMin = StorageUtil.GetFloatValue(bimbo, "_SLH_fButtMin")
+		fButtMax = StorageUtil.GetFloatValue(bimbo, "_SLH_fButtMax")
+		fButtActual = StorageUtil.GetFloatValue(bimbo, "_SLH_fButt")
+		if (fButtActual < fButtMax )
+			Debug.SendAnimationEvent(bimbo, "BleedOutStart")
+			bimboMoan(bimbo)
+
+			fButtActual = 0.1 + fButtActual * 1.5 ;now with 50% more butt!
+			if fButtActual > fButtMax
+				fButtActual = fButtMax
+			endif
+            StorageUtil.SetFloatValue(bimbo, "_SLH_fButt", fButtActual ) 
+            SendModEvent("SLHRefresh")
+
+			Utility.Wait(1.0)
+			Debug.SendAnimationEvent(bimbo, "BleedOutStop")
+        endif
+		isBimboClumsyLegs = true
+	;level 5, bad end, optional pubic tattoo
+	elseif transformationLevel == 5
+		;i'm handling this as a bad end, on CK
+		;should equip long nails, but i dont know how to create quest items here, so 
+		;^    this is beeing handled on CK, slh_qst_bimbo
+		;^    .... and my ck crashes if i try to open this script >:(
+		;^    .... and i can't edit the quest dialogs, if i try everything will be blank (need to remove the 'is a cure' dialogs!!)
+		if !isMale ;no schlong on the way
+			; SlaveTats.simple_add_tattoo(bimbo, "Bimbo", "Pubic Tattoo", last = true, silent = true)
+			fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Pubic Tattoo"  )
+		endif
+	endif
+
+	;--------------------------------------------
+	;TODO
+	;- almost done: moving the clumsy stuff here, progressing each day too (hands, legs, combat hits)
+	;- the long nails, and the very long nails too should be here
+	;- done: better tramp stamp
+	;- make the bimbo scream when the combat starts (sometimes)
+	;- better makeup
+	;- create curses status, so the player can know about it
+	;
+	;IDEAS
+	;- some kind of sex need? or leave it for other mods?
+	;- the bad end should be better: an fx should play, trigger as masturbation too
+	;- move the clumsiness to the nails (enchantment)?
+	;- or move it all to spells, each curse should be a spell
+	;
+	;FINAL EXPANSION - turning this into a new mod: curses of skyrim - items with curses on them and move this into a plugin, using sl_hormones api and the new mod api
+	;- move everything to a second quest caused by the player choices:
+	;  ask Honey if she has a better solution after talking with the dremora (her ideas of "solution" are not the same as yours) 
+	;  then she will randomly seek the player and give (force equip) him surprise cursed gifts every day (maybe she only visits the player after sleep, or during sex so he cant avoid her):
+	;  - permanent makeup and a haircut = causes random thoughts of sex
+	;  - long nails = clumsy hands
+	;  - hoops earrings = block helmets
+	;  - bracelets = block forearm armor
+	;  - an anal dildo = butt growth until removed, can only be removed after a day (she could do it on the next visit)
+	;  - vaginal dildo = start the player tripping on equip, then after removed the player will stumble less but will forever do it (same, she removes it on the next visit)
+	;  - nipple piercings = boob expansion, increases arousal each minute
+	;  - more piercings? navel, clit?
+	;  - as a parting gift some kind of outfit (heels, skirt and a tube top, or something like that), all enchanted. These can be removed, but causes the player to be conditioned to use heels (stumble a lot more if not)
+	;  - this quest will not have a good end, only makes the curse worse
+	;
+	;
+	;BUG CHECK
+	;check if the cure is still possible
+	;check why, WHY, WHYYYY the honey hello dialog disappears when i save the esp!!
+	;check what happens after the player is cured
+	;--------------------------------------------
+endfunction
 

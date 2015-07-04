@@ -16,9 +16,9 @@ Int IButton = _SLH_warning.Show()
 
 If IButton == 0 ; Show the thing.
 
-	If  (SexLab.ValidateActor( SexLab.PlayerREF) > 0) &&  (SexLab.ValidateActor(akSpeaker) > 0) 
+	If  (SexLab.ValidateActor( kVictim) > 0) &&  (SexLab.ValidateActor(akSpeaker) > 0) 
 
-		SexLab.QuickStart(SexLab.PlayerRef, akSpeaker , Victim = SexLab.PlayerRef, AnimationTags = "Sex")
+		SexLab.QuickStart(kVictim, akSpeaker , Victim = kVictim, AnimationTags = "Sex")
 	EndIf
 
 EndIf
