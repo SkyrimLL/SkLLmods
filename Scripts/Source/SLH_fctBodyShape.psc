@@ -61,6 +61,10 @@ Float fPregRightBreast01 = 1.0
 Float fPregLeftButt      = 1.0
 Float fPregRightButt     = 1.0
 Float fPregBelly         = 1.0
+Float fPregBreastMax      	= 15.0
+Float fPregBellyMax       	= 15.0
+Float fPregButtMax       	= 15.0 
+
 ; Float fBreast       	= 0.0
 ; Float fButt       		= 0.0
 ; Float fBelly       		= 0.0
@@ -68,29 +72,26 @@ Float fPregBelly         = 1.0
 ; Float fWeight 			= 0.0
 Float fHeight 			= 0.0
  
-float fBreastSwellMod    = 0.0
-float fButtSwellMod      = 0.0
-float fBellySwellMod      = 0.0
-Float fPregBreastMax      	= 15.0
-Float fPregBellyMax       	= 15.0
-Float fPregButtMax       	= 15.0 
-float fWeightSwellMod    = 0.0
-Float fSchlongSwellMod = 1.0
+; float fBreastSwellMod    = 0.0
+; float fButtSwellMod      = 0.0
+; float fBellySwellMod      = 0.0
+; float fWeightSwellMod    = 0.0
+; Float fSchlongSwellMod = 1.0
 
-Float fBreastMax      	= 3.0
-Float fBellyMax       	= 2.4
-Float fButtMax       	= 2.0
-Float fSchlongMax 		= 3.0
-Float fWeightMax 		= 100.0
+; Float fBreastMax      	= 3.0
+; Float fBellyMax       	= 2.4
+; Float fButtMax       	= 2.0
+; Float fSchlongMax 		= 3.0
+; Float fWeightMax 		= 100.0
 
-Float fBreastMin      	= 0.8
-Float fBellyMin       	= 0.9
-Float fButtMin       	= 0.9
-Float fSchlongMin 		= 0.9
-Float fWeightMin 		= 0.0
+; Float fBreastMin      	= 0.8
+; Float fBellyMin       	= 0.9
+; Float fButtMin       	= 0.9
+; Float fSchlongMin 		= 0.9
+; Float fWeightMin 		= 0.0
 
-Float fArmorMod = 0.5
-Float fClothingMod = 0.8
+; Float fArmorMod = 0.5
+; Float fClothingMod = 0.8
 
 Float fSwellFactor	     = 0.0
 Float fGameTime          = 0.0
@@ -254,6 +255,22 @@ function alterBodyAfterRest(Actor kActor)
 	Float fNodeMax
 	Bool bExternalChangeModActive = fctUtil.isExternalChangeModActive(kActor)
 	Float fLibido = StorageUtil.GetFloatValue(kActor, "_SLH_fLibido")
+	Float fBreastSwellMod    = StorageUtil.GetFloatValue(kActor, "_SLH_fBreastSwellMod")
+	Float fButtSwellMod      = StorageUtil.GetFloatValue(kActor, "_SLH_fButtSwellMod")
+	Float fBellySwellMod      = StorageUtil.GetFloatValue(kActor, "_SLH_fBellySwellMod")
+	Float fWeightSwellMod    = StorageUtil.GetFloatValue(kActor, "_SLH_fWeightSwellMod")
+	Float fSchlongSwellMod = StorageUtil.GetFloatValue(kActor, "_SLH_fSchlongSwellMod")
+	Float fBreastMax      	= StorageUtil.GetFloatValue(kActor, "_SLH_fBreastMax")
+	Float fBellyMax       	= StorageUtil.GetFloatValue(kActor, "_SLH_fBellyMax")
+	Float fButtMax       	= StorageUtil.GetFloatValue(kActor, "_SLH_fButtMax")
+	Float fSchlongMax 		= StorageUtil.GetFloatValue(kActor, "_SLH_fSchlongMax")
+	Float fWeightMax 		= StorageUtil.GetFloatValue(kActor, "_SLH_fWeightMax")
+	Float fBreastMin      	= StorageUtil.GetFloatValue(kActor, "_SLH_fBreastMin")
+	Float fBellyMin       	= StorageUtil.GetFloatValue(kActor, "_SLH_fBellyMin")
+	Float fButtMin       	= StorageUtil.GetFloatValue(kActor, "_SLH_fButtMin")
+	Float fSchlongMin 		= StorageUtil.GetFloatValue(kActor, "_SLH_fSchlongMin")
+	Float fWeightMin 		= StorageUtil.GetFloatValue(kActor, "_SLH_fWeightMin")
+
 	Float fCurrentWeight
 	Float fWeight
 	Float fBreast       
@@ -387,7 +404,7 @@ function alterBodyAfterRest(Actor kActor)
 
 					; Debug.Notification(sSwellingMsgs[Utility.RandomInt(0, sSwellingMsgs.Length - 1)])
 					If (fSwellFactor > 0)
-							Sound.SetInstanceVolume( SLH_MoanMarkerBreast.Play(kActor), 1.0 )
+							; Sound.SetInstanceVolume( SLH_MoanMarkerBreast.Play(kActor), 1.0 )
 					EndIf
 				endif				
 			endif
@@ -468,6 +485,22 @@ function alterBodyAfterSex(Actor kActor, Bool bOral = False, Bool bVaginal = Fal
 	Float fNodeMax
 	Bool bExternalChangeModActive = fctUtil.isExternalChangeModActive(kActor)
 	Float fLibido = StorageUtil.GetFloatValue(kActor, "_SLH_fLibido")
+	Float fBreastSwellMod    = StorageUtil.GetFloatValue(kActor, "_SLH_fBreastSwellMod")
+	Float fButtSwellMod      = StorageUtil.GetFloatValue(kActor, "_SLH_fButtSwellMod")
+	Float fBellySwellMod      = StorageUtil.GetFloatValue(kActor, "_SLH_fBellySwellMod")
+	Float fWeightSwellMod    = StorageUtil.GetFloatValue(kActor, "_SLH_fWeightSwellMod")
+	Float fSchlongSwellMod = StorageUtil.GetFloatValue(kActor, "_SLH_fSchlongSwellMod")
+	Float fBreastMax      	= StorageUtil.GetFloatValue(kActor, "_SLH_fBreastMax")
+	Float fBellyMax       	= StorageUtil.GetFloatValue(kActor, "_SLH_fBellyMax")
+	Float fButtMax       	= StorageUtil.GetFloatValue(kActor, "_SLH_fButtMax")
+	Float fSchlongMax 		= StorageUtil.GetFloatValue(kActor, "_SLH_fSchlongMax")
+	Float fWeightMax 		= StorageUtil.GetFloatValue(kActor, "_SLH_fWeightMax")
+	Float fBreastMin      	= StorageUtil.GetFloatValue(kActor, "_SLH_fBreastMin")
+	Float fBellyMin       	= StorageUtil.GetFloatValue(kActor, "_SLH_fBellyMin")
+	Float fButtMin       	= StorageUtil.GetFloatValue(kActor, "_SLH_fButtMin")
+	Float fSchlongMin 		= StorageUtil.GetFloatValue(kActor, "_SLH_fSchlongMin")
+	Float fWeightMin 		= StorageUtil.GetFloatValue(kActor, "_SLH_fWeightMin")
+
 	Float fApparelMod = 1.0
 	Float fBreast       
 	Float fButt       	
@@ -635,7 +668,11 @@ EndFunction
 function alterWeight(Actor kActor, float fNewWeight = 0.0, float fWeightOrig = 0.0)		
 	ObjectReference kActorREF= kActor as ObjectReference
 	ActorBase pActorBase = kActor.GetActorBase()
- 
+
+	Float fWeightSwellMod    = StorageUtil.GetFloatValue(kActor, "_SLH_fWeightSwellMod")
+	Float fWeightMax 		= StorageUtil.GetFloatValue(kActor, "_SLH_fWeightMax")
+	Float fWeightMin 		= StorageUtil.GetFloatValue(kActor, "_SLH_fWeightMin")
+
 	if (fWeightOrig != pActorBase.GetWeight() )
 		debugTrace( "[SLH] Weight discrepency: " + fWeightOrig)
 		debugTrace( "[SLH]      should be: " + pActorBase.GetWeight())
@@ -661,6 +698,9 @@ function alterBreastNode(Actor kActor, float fNewBreast = 0.0)
 	ActorBase pActorBase = kActor.GetActorBase()
 	Float fNodeMax
 
+	Float fBreastSwellMod    = StorageUtil.GetFloatValue(kActor, "_SLH_fBreastSwellMod")
+	Float fBreastMax      	= StorageUtil.GetFloatValue(kActor, "_SLH_fBreastMax")
+	Float fBreastMin      	= StorageUtil.GetFloatValue(kActor, "_SLH_fBreastMin")
 
 	; if bTorpedoFixEnabled
 	; 	fPregLeftBreast01  = fPregLeftBreast01 * (fOrigLeftBreast / fPregLeftBreast)
@@ -713,6 +753,9 @@ function alterBellyNode(Actor kActor, float fNewBelly = 0.0)
 	ActorBase pActorBase = kActor.GetActorBase()
 	Float fNodeMax
 
+	Float fBellySwellMod      = StorageUtil.GetFloatValue(kActor, "_SLH_fBellySwellMod")
+	Float fBellyMax       	= StorageUtil.GetFloatValue(kActor, "_SLH_fBellyMax")
+	Float fBellyMin       	= StorageUtil.GetFloatValue(kActor, "_SLH_fBellyMin")
 
 	if (fctUtil.isExternalChangeModActive(kActor))
 		fNodeMax = fPregBellyMax
@@ -743,6 +786,10 @@ function alterButtNode(Actor kActor, float fNewButt = 0.0)
 	ActorBase pActorBase = kActor.GetActorBase()
 	Float fNodeMax
 		
+	Float fButtSwellMod      = StorageUtil.GetFloatValue(kActor, "_SLH_fButtSwellMod")
+	Float fButtMax       	= StorageUtil.GetFloatValue(kActor, "_SLH_fButtMax")
+	Float fButtMin       	= StorageUtil.GetFloatValue(kActor, "_SLH_fButtMin")
+
 	if (fctUtil.isExternalChangeModActive(kActor))
 		fNodeMax = fPregButtMax
 	Else
@@ -771,6 +818,10 @@ function alterSchlongNode(Actor kActor, float fNewSchlong = 0.0)
 	ObjectReference kActorREF= kActor as ObjectReference
 	ActorBase pActorBase = kActor.GetActorBase()
  
+	Float fSchlongSwellMod = StorageUtil.GetFloatValue(kActor, "_SLH_fSchlongSwellMod")
+	Float fSchlongMax 		= StorageUtil.GetFloatValue(kActor, "_SLH_fSchlongMax")
+	Float fSchlongMin 		= StorageUtil.GetFloatValue(kActor, "_SLH_fSchlongMin")
+
 	debugTrace("[SLH]  Schlong Old: " + StorageUtil.GetFloatValue(kActor, "_SLH_fSchlong")  + " New: " + fNewSchlong + " Min: " + fSchlongMin + " - Max: " + fSchlongMax)
 
 	Float fSchlong = fctUtil.fRange(fNewSchlong, fSchlongMin, fSchlongMax)
@@ -1232,25 +1283,25 @@ function initShapeConstants(Actor kActor)
 	debugTrace("[SLH]  Init shape constants")
 
 	; Modifiers for each part
-	fWeightSwellMod = GV_weightSwellMod.GetValue()   ; 5.0   
+	; fWeightSwellMod = GV_weightSwellMod.GetValue()   ; 5.0   
 
-	fBreastSwellMod = GV_breastSwellMod.GetValue()   ; 0.3 
-	fBellySwellMod = GV_bellySwellMod.GetValue()   ; 0.1 
-	fButtSwellMod = GV_buttSwellMod.GetValue()   ; 0.2 
-	fSchlongSwellMod = GV_schlongSwellMod.GetValue()   ; 0.2 
-	fWeightSwellMod = GV_weightSwellMod.GetValue()   ; 0.2 
+	; fBreastSwellMod = GV_breastSwellMod.GetValue()   ; 0.3 
+	; fBellySwellMod = GV_bellySwellMod.GetValue()   ; 0.1 
+	; fButtSwellMod = GV_buttSwellMod.GetValue()   ; 0.2 
+	; fSchlongSwellMod = GV_schlongSwellMod.GetValue()   ; 0.2 
+	; fWeightSwellMod = GV_weightSwellMod.GetValue()   ; 0.2 
 
-	fBreastMax      = GV_breastMax.GetValue()   ; 4.0
-	fBellyMax       = GV_bellyMax.GetValue()   ; 1.0
-	fButtMax       	= GV_buttMax.GetValue()   ; 4.0
-	fSchlongMax     = GV_schlongMax.GetValue()   ; 4.0
-	fWeightMax      = GV_weightMax.GetValue()   ; 4.0
+	; fBreastMax      = GV_breastMax.GetValue()   ; 4.0
+	; fBellyMax       = GV_bellyMax.GetValue()   ; 1.0
+	; fButtMax       	= GV_buttMax.GetValue()   ; 4.0
+	; fSchlongMax     = GV_schlongMax.GetValue()   ; 4.0
+	; fWeightMax      = GV_weightMax.GetValue()   ; 4.0
 
-	fBreastMin      = GV_breastMin.GetValue()   ; 4.0
-	fBellyMin       = GV_bellyMin.GetValue()   ; 1.0
-	fButtMin       	= GV_buttMin.GetValue()   ; 4.0
-	fSchlongMin     = GV_schlongMin.GetValue()   ; 4.0
-	fWeightMin      = GV_weightMin.GetValue()   ; 4.0
+	; fBreastMin      = GV_breastMin.GetValue()   ; 4.0
+	; fBellyMin       = GV_bellyMin.GetValue()   ; 1.0
+	; fButtMin       	= GV_buttMin.GetValue()   ; 4.0
+	; fSchlongMin     = GV_schlongMin.GetValue()   ; 4.0
+	; fWeightMin      = GV_weightMin.GetValue()   ; 4.0
 
 	bEnableLeftBreast  = NetImmerse.HasNode(kActor, NINODE_LEFT_BREAST, false)
 	bEnableRightBreast = NetImmerse.HasNode(kActor, NINODE_RIGHT_BREAST, false)
@@ -1315,23 +1366,23 @@ function setShapeState(Actor kActor)
 	StorageUtil.SetFloatValue(kActor, "_SLH_fPregRightButt",  fPregRightButt) 
 	StorageUtil.SetFloatValue(kActor, "_SLH_fPregBelly",  fPregBelly) 
 
-	StorageUtil.SetFloatValue(kActor, "_SLH_fBreastSwellMod",  fBreastSwellMod) 
-	StorageUtil.SetFloatValue(kActor, "_SLH_fButtSwellMod",  fButtSwellMod) 
-	StorageUtil.SetFloatValue(kActor, "_SLH_fBellySwellMod",  fBellySwellMod) 
-	StorageUtil.SetFloatValue(kActor, "_SLH_fSchlongSwellMod",  fSchlongSwellMod) 
-	StorageUtil.SetFloatValue(kActor, "_SLH_fWeightSwellMod",  fWeightSwellMod) 
+	; StorageUtil.SetFloatValue(kActor, "_SLH_fBreastSwellMod",  fBreastSwellMod) 
+	; StorageUtil.SetFloatValue(kActor, "_SLH_fButtSwellMod",  fButtSwellMod) 
+	; StorageUtil.SetFloatValue(kActor, "_SLH_fBellySwellMod",  fBellySwellMod) 
+	; StorageUtil.SetFloatValue(kActor, "_SLH_fSchlongSwellMod",  fSchlongSwellMod) 
+	; StorageUtil.SetFloatValue(kActor, "_SLH_fWeightSwellMod",  fWeightSwellMod) 
 
-	StorageUtil.SetFloatValue(kActor, "_SLH_fBreastMin",  fBreastMin) 
-	StorageUtil.SetFloatValue(kActor, "_SLH_fButtMin",  fButtMin) 
-	StorageUtil.SetFloatValue(kActor, "_SLH_fBellyMin",  fBellyMin) 
-	StorageUtil.SetFloatValue(kActor, "_SLH_fSchlongMin",  fSchlongMin) 
-	StorageUtil.SetFloatValue(kActor, "_SLH_fWeightMin",  fWeightMin) 
+	; StorageUtil.SetFloatValue(kActor, "_SLH_fBreastMin",  fBreastMin) 
+	; StorageUtil.SetFloatValue(kActor, "_SLH_fButtMin",  fButtMin) 
+	; StorageUtil.SetFloatValue(kActor, "_SLH_fBellyMin",  fBellyMin) 
+	; StorageUtil.SetFloatValue(kActor, "_SLH_fSchlongMin",  fSchlongMin) 
+	; StorageUtil.SetFloatValue(kActor, "_SLH_fWeightMin",  fWeightMin) 
 
-	StorageUtil.SetFloatValue(kActor, "_SLH_fBreastMax",  fBreastMax) 
-	StorageUtil.SetFloatValue(kActor, "_SLH_fButtMax",  fButtMax) 
-	StorageUtil.SetFloatValue(kActor, "_SLH_fBellyMax",  fBellyMax) 
-	StorageUtil.SetFloatValue(kActor, "_SLH_fSchlongMax",  fSchlongMax) 
-	StorageUtil.SetFloatValue(kActor, "_SLH_fWeightMax",  fWeightMax) 
+	; StorageUtil.SetFloatValue(kActor, "_SLH_fBreastMax",  fBreastMax) 
+	; StorageUtil.SetFloatValue(kActor, "_SLH_fButtMax",  fButtMax) 
+	; StorageUtil.SetFloatValue(kActor, "_SLH_fBellyMax",  fBellyMax) 
+	; StorageUtil.SetFloatValue(kActor, "_SLH_fSchlongMax",  fSchlongMax) 
+	; StorageUtil.SetFloatValue(kActor, "_SLH_fWeightMax",  fWeightMax) 
 
 	; StorageUtil.SetFloatValue(kActor, "_SLH_fBreast",  fBreast) 
 	; StorageUtil.SetFloatValue(kActor, "_SLH_fButt",  fButt) 
@@ -1400,17 +1451,17 @@ function getShapeState(Actor kActor)
 	; fWeight = StorageUtil.GetFloatValue(kActor, "_SLH_fWeight") 
 	fHeight = StorageUtil.GetFloatValue(kActor, "_SLH_fHeight") 
 
-	fBreastSwellMod = StorageUtil.GetFloatValue(kActor, "_SLH_fBreastSwellMod") 
-	fButtSwellMod = StorageUtil.GetFloatValue(kActor, "_SLH_fButtSwellMod") 
-	fBellySwellMod = StorageUtil.GetFloatValue(kActor, "_SLH_fBellySwellMod") 
-	fSchlongSwellMod = StorageUtil.GetFloatValue(kActor, "_SLH_fSchlongSwellMod") 
-	fWeightSwellMod = StorageUtil.GetFloatValue(kActor, "_SLH_fWeightSwellMod") 
+	; fBreastSwellMod = StorageUtil.GetFloatValue(kActor, "_SLH_fBreastSwellMod") 
+	; fButtSwellMod = StorageUtil.GetFloatValue(kActor, "_SLH_fButtSwellMod") 
+	; fBellySwellMod = StorageUtil.GetFloatValue(kActor, "_SLH_fBellySwellMod") 
+	; fSchlongSwellMod = StorageUtil.GetFloatValue(kActor, "_SLH_fSchlongSwellMod") 
+	; fWeightSwellMod = StorageUtil.GetFloatValue(kActor, "_SLH_fWeightSwellMod") 
 
-	GV_breastMin.SetValue(StorageUtil.GetFloatValue(kActor, "_SLH_fBreastMin"))
-	GV_buttMin.SetValue(StorageUtil.GetFloatValue(kActor, "_SLH_fButtMin"))
-	GV_bellyMin.SetValue(StorageUtil.GetFloatValue(kActor, "_SLH_fBellyMin"))
-	GV_schlongMin.SetValue(StorageUtil.GetFloatValue(kActor, "_SLH_fSchlongMin"))
-	GV_weightMin.SetValue(StorageUtil.GetFloatValue(kActor, "_SLH_fWeightMin"))
+	; GV_breastMin.SetValue(StorageUtil.GetFloatValue(kActor, "_SLH_fBreastMin"))
+	; GV_buttMin.SetValue(StorageUtil.GetFloatValue(kActor, "_SLH_fButtMin"))
+	; GV_bellyMin.SetValue(StorageUtil.GetFloatValue(kActor, "_SLH_fBellyMin"))
+	; GV_schlongMin.SetValue(StorageUtil.GetFloatValue(kActor, "_SLH_fSchlongMin"))
+	; GV_weightMin.SetValue(StorageUtil.GetFloatValue(kActor, "_SLH_fWeightMin"))
 
 	GV_breastMax.SetValue(StorageUtil.GetFloatValue(kActor, "_SLH_fBreastMax"))
 	GV_buttMax.SetValue(StorageUtil.GetFloatValue(kActor, "_SLH_fButtMax"))

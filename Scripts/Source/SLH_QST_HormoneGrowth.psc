@@ -96,6 +96,7 @@ GlobalVariable      Property GV_resetToggle 			Auto
 GlobalVariable      Property GV_allowSelfSpells			Auto
 
 GlobalVariable      Property GV_isPregnant		Auto 
+GlobalVariable      Property GV_isSuccubusFinal 				Auto
 
 Event OnInit()
 	doInit()
@@ -177,10 +178,10 @@ Function maintenanceVersionEvents()
 
 	EndIf
 	
-	StorageUtil.SetFloatValue(none, "_SLH_iHormonesVersion", 1.7)
+	StorageUtil.SetFloatValue(none, "_SLH_iHormonesVersion", 1.9)
 		
-	Debug.Notification("[SLH] Hormones 2015-06-06 v " + StorageUtil.GetFloatValue(none, "_SLH_iHormonesVersion"))
-	debugTrace("[SLH] Hormones 2015-06-06 v " + StorageUtil.GetFloatValue(none, "_SLH_iHormonesVersion"))
+	Debug.Notification("[SLH] Hormones 2015-07-06 v " + StorageUtil.GetFloatValue(none, "_SLH_iHormonesVersion"))
+	debugTrace("[SLH] Hormones 2015-07-06 v " + StorageUtil.GetFloatValue(none, "_SLH_iHormonesVersion"))
 	
 	UnregisterForAllModEvents()
 	debugTrace("[SLH]  Reset SexLab events")
@@ -204,6 +205,11 @@ Function maintenanceVersionEvents()
 		PlayerActor.RemoveSpell( _SLH_Masturbation )
 		PlayerActor.RemoveSpell( _SLH_Undress )
 	EndIf
+
+	; Set Succubus flag if needed for users already infected by curse
+	If (GV_isSuccubus.GetValue()==1) && (GV_isSuccubusFinal.GetValue()==0) && (_SLH_QST_Succubus.GetStage()>=50)
+		GV_isSuccubusFinal.SetValue(1)
+	endif	
 	
 	RegisterForSleep()
 	RegisterForSingleUpdate(5)
@@ -781,7 +787,9 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 					StorageUtil.SetIntValue(PlayerActor, "PSQ_SpellON", 1)
 					SendModEvent("SLHisSuccubus")
 					ModEvent.Send(ModEvent.Create("HoSLDD_GivePlayerPowers"))
+					GV_isSuccubusFinal.SetValue(1)
 				Endif
+
 			else
 				setSuccubusState(PlayerActor, FALSE)
 
@@ -1080,6 +1088,15 @@ Function doSoulDevour(Actor[] _actors)
 
 EndFunction
 
+;===========================================================================
+;moan sound
+;===========================================================================
+function playMoan(actor akActor)
+	sslBaseVoice voice = SexLab.GetVoice(akActor)
+	voice.Moan(akActor)
+endFunction
+
+
 function setBimboState(Actor kActor, Bool bBimboState)
 	Int iBimbo = bBimboState as Int
 	GV_isBimbo.SetValue(iBimbo as Int)
@@ -1219,7 +1236,7 @@ function setHormonesSexualState(Actor kActor)
 
 	Else
 		StorageUtil.SetIntValue(kActor, "_SLH_isPregnant", 0)
-		GV_isPregnant.SetValue(1)
+		GV_isPregnant.SetValue(0)
 	EndIf
 
 	if 	(GV_isSuccubus.GetValue() == 1) || ((StorageUtil.GetIntValue(Game.GetPlayer(), "PSQ_SuccubusON") == 1))
