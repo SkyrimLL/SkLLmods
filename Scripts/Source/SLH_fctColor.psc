@@ -83,17 +83,16 @@ function alterColorsAfterRest(Actor kActor, float fSwellFactor)
 		iSkinColor = alterTintMaskTarget(colorBase = iSkinColor, maskType = 6, maskIndex = 0, colorTarget = iOrigSkinColor, colorMod = 1.0/3.0 )
 
 		If (fctUtil.isFemale(kActor))
+			; SkinColor only for now - issues with coloring of tattoos and other layers
+
 			; cheeks
-			; alterTintMask(type = 9, alpha = (128.0 * colorFactor) as Int, red = 200, green = 10, blue = 10)
-			iCheeksColor = alterTintMaskRelativeRGB(colorBase = iCheeksColor, maskType = 9, maskIndex = 0, aOffset = rgbColorOffset, rOffset = rgbColorOffset, gOffset = 0, bOffset = 0)
+			; iCheeksColor = alterTintMaskRelativeRGB(colorBase = iCheeksColor, maskType = 9, maskIndex = 0, aOffset = rgbColorOffset, rOffset = rgbColorOffset, gOffset = 0, bOffset = 0)
 
 			; lips
-			; alterTintMask(type = 1, alpha = (255.0 * colorFactor) as Int, red = 255, green = 0, blue = 0)
-			iLipsColor = alterTintMaskRelativeRGB(colorBase = iLipsColor, maskType = 1, maskIndex = 0, aOffset = rgbColorOffset, rOffset = rgbColorOffset * 2, gOffset = 0, bOffset = 0)
+			; iLipsColor = alterTintMaskRelativeRGB(colorBase = iLipsColor, maskType = 1, maskIndex = 0, aOffset = rgbColorOffset, rOffset = rgbColorOffset * 2, gOffset = 0, bOffset = 0)
 
 			; Eyeliner 
-			; alterTintMask(type = 3, alpha = (255.0 * colorFactor) as Int, red = 0, green = 0, blue = 0)
-			iEyelinerColor = alterTintMaskRelativeRGB(colorBase = iEyelinerColor, maskType = 3, maskIndex = 0, aOffset = rgbColorOffset, rOffset = -5, gOffset = -5, bOffset = -5)
+			; iEyelinerColor = alterTintMaskRelativeRGB(colorBase = iEyelinerColor, maskType = 3, maskIndex = 0, aOffset = rgbColorOffset, rOffset = -5, gOffset = -5, bOffset = -5)
 		EndIf
 
 	ElseIf (fSwellFactor == 0) ; Healthy
@@ -115,15 +114,13 @@ function alterColorsAfterRest(Actor kActor, float fSwellFactor)
 
 		If (fctUtil.isFemale(kActor))
 			; cheeks
-			; alterTintMask(type = 9, alpha = (-1.0 * 128.0 * colorFactor) as Int, red = 220, green = 229, blue = 255)
-			iCheeksColor = alterTintMaskRelativeRGB(colorBase = iCheeksColor, maskType = 9, maskIndex = 0, aOffset = rgbColorOffset, rOffset = 0, gOffset = 0, bOffset = rgbColorOffset)
+			; iCheeksColor = alterTintMaskRelativeRGB(colorBase = iCheeksColor, maskType = 9, maskIndex = 0, aOffset = rgbColorOffset, rOffset = 0, gOffset = 0, bOffset = rgbColorOffset)
 
 			; lips
-			; alterTintMask(type = 1, alpha = (-1.0 * 255.0 * colorFactor) as Int, red = 10, green = 10, blue = 125)
-			iLipsColor = alterTintMaskRelativeRGB(colorBase = iLipsColor, maskType = 1, maskIndex = 0, aOffset = rgbColorOffset, rOffset = 0, gOffset = 0, bOffset = rgbColorOffset  )
+			; iLipsColor = alterTintMaskRelativeRGB(colorBase = iLipsColor, maskType = 1, maskIndex = 0, aOffset = rgbColorOffset, rOffset = 0, gOffset = 0, bOffset = rgbColorOffset  )
 
 			; Eyeliner 
-			iEyelinerColor = alterTintMaskRelativeRGB(colorBase = iEyelinerColor, maskType = 3, maskIndex = 0, aOffset = rgbColorOffset, rOffset = 5, gOffset = 0, bOffset = 0)
+			; iEyelinerColor = alterTintMaskRelativeRGB(colorBase = iEyelinerColor, maskType = 3, maskIndex = 0, aOffset = rgbColorOffset, rOffset = 5, gOffset = 0, bOffset = 0)
 		EndIf
 	EndIf
 
@@ -183,16 +180,13 @@ function alterColorsAfterSex(Actor kActor, float fSwellFactor)
 
 	If (fctUtil.isFemale(kActor))
 		; cheeks
-		; alterTintMask(type = 9, alpha = (128.0 * colorFactor) as Int, red = 200, green = 10, blue = 10)
-		iCheeksColor = alterTintMaskRelativeRGB(colorBase = iCheeksColor, maskType = 9, maskIndex = 0, aOffset = rgbColorOffset, rOffset = rgbColorOffset, gOffset = 0, bOffset = 0)
+		; iCheeksColor = alterTintMaskRelativeRGB(colorBase = iCheeksColor, maskType = 9, maskIndex = 0, aOffset = rgbColorOffset, rOffset = rgbColorOffset, gOffset = 0, bOffset = 0)
 
 		; lips
-		; alterTintMask(type = 1, alpha = (255.0 * colorFactor) as Int, red = 255, green = 0, blue = 0)
-		iLipsColor = alterTintMaskRelativeRGB(colorBase = iLipsColor, maskType = 1, maskIndex = 0, aOffset = rgbColorOffset, rOffset = rgbColorOffset * 2, gOffset = 0, bOffset = 0)
+		; iLipsColor = alterTintMaskRelativeRGB(colorBase = iLipsColor, maskType = 1, maskIndex = 0, aOffset = rgbColorOffset, rOffset = rgbColorOffset * 2, gOffset = 0, bOffset = 0)
 
 		; Eyeliner 
-		; alterTintMask(type = 3, alpha = (255.0 * colorFactor) as Int, red = 0, green = 0, blue = 0)
-		iEyelinerColor = alterTintMaskRelativeRGB(colorBase = iEyelinerColor, maskType = 3, maskIndex = 0, aOffset = rgbColorOffset, rOffset = -5, gOffset = -5, bOffset = -5)
+		; iEyelinerColor = alterTintMaskRelativeRGB(colorBase = iEyelinerColor, maskType = 3, maskIndex = 0, aOffset = rgbColorOffset, rOffset = -5, gOffset = -5, bOffset = -5)
 	EndIf
 
 endfunction

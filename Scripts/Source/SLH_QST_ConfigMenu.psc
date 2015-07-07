@@ -15,6 +15,97 @@ int function GetVersion()
 	return 3 ; Default version
 endFunction
 
+;--------------------------------------
+ReferenceAlias Property PlayerAlias  Auto  
+
+GlobalVariable      Property GV_breastValue 			Auto
+GlobalVariable      Property GV_buttValue 				Auto
+GlobalVariable      Property GV_bellyValue 				Auto
+GlobalVariable      Property GV_schlongValue 			Auto
+GlobalVariable      Property GV_weightValue 			Auto
+
+GlobalVariable      Property GV_breastSwellMod 			Auto
+GlobalVariable      Property GV_bellySwellMod 			Auto
+GlobalVariable      Property GV_schlongSwellMod 		Auto
+GlobalVariable      Property GV_buttSwellMod 			Auto
+GlobalVariable      Property GV_weightSwellMod 			Auto
+
+GlobalVariable      Property GV_breastMax 				Auto
+GlobalVariable      Property GV_buttMax 				Auto
+GlobalVariable      Property GV_bellyMax 				Auto
+GlobalVariable      Property GV_schlongMax 				Auto
+GlobalVariable      Property GV_weightMax 				Auto
+
+GlobalVariable      Property GV_breastMin				Auto
+GlobalVariable      Property GV_buttMin 				Auto
+GlobalVariable      Property GV_bellyMin 				Auto
+GlobalVariable      Property GV_schlongMin 				Auto
+GlobalVariable      Property GV_weightMin 				Auto
+
+; -----
+GlobalVariable      Property GV_armorMod 				Auto
+GlobalVariable      Property GV_clothMod	 			Auto
+
+GlobalVariable      Property GV_startingLibido 			Auto
+GlobalVariable      Property GV_sexActivityThreshold 	Auto
+GlobalVariable      Property GV_sexActivityBuffer		Auto
+GlobalVariable      Property GV_baseSwellFactor 		Auto
+GlobalVariable      Property GV_baseShrinkFactor 		Auto
+
+GlobalVariable      Property GV_useNodes 				Auto
+GlobalVariable      Property GV_useBreastNode 			Auto
+GlobalVariable      Property GV_useButtNode 			Auto
+GlobalVariable      Property GV_useBellyNode 			Auto
+GlobalVariable      Property GV_useSchlongNode 			Auto
+
+GlobalVariable      Property GV_useWeight 				Auto
+GlobalVariable      Property GV_useColors 				Auto
+GlobalVariable      Property GV_redShiftColor  			Auto
+GlobalVariable      Property GV_redShiftColorMod 		Auto
+GlobalVariable      Property GV_blueShiftColor 			Auto
+GlobalVariable      Property GV_blueShiftColorMod 		Auto
+
+GlobalVariable      Property GV_allowTG 				Auto
+GlobalVariable      Property GV_allowHRT 				Auto
+GlobalVariable      Property GV_allowBimbo 		 		Auto
+GlobalVariable      Property GV_allowSuccubus 			Auto
+GlobalVariable      Property GV_setshapeToggle 			Auto
+GlobalVariable      Property GV_resetToggle 			Auto
+GlobalVariable      Property GV_origWeight	 			Auto
+
+GlobalVariable      Property GV_forcedRefresh 			Auto
+
+GlobalVariable      Property GV_showStatus 				Auto
+GlobalVariable      Property GV_commentsFrequency		Auto
+
+GlobalVariable      Property GV_changeOverrideToggle	Auto
+GlobalVariable      Property GV_shapeUpdateOnCellChange	Auto
+GlobalVariable      Property GV_shapeUpdateAfterSex		Auto
+GlobalVariable      Property GV_shapeUpdateOnTimer		Auto
+GlobalVariable      Property GV_enableNiNodeUpdate		Auto
+
+GlobalVariable      Property GV_allowExhibitionist		Auto
+GlobalVariable      Property GV_allowSelfSpells			Auto
+GlobalVariable      Property GV_bimboClumsinessMod      Auto
+
+
+SLH_QST_HormoneGrowth 	Property SLH_Control auto
+
+; String                   Property NINODE_SCHLONG	 	= "NPC Genitals01 [Gen01]" AutoReadOnly
+String                   Property NINODE_SCHLONG	 	= "NPC GenitalsBase [GenBase]" AutoReadOnly
+String                   Property NINODE_LEFT_BREAST    = "NPC L Breast" AutoReadOnly
+String                   Property NINODE_LEFT_BREAST01  = "NPC L Breast01" AutoReadOnly
+String                   Property NINODE_LEFT_BUTT      = "NPC L Butt" AutoReadOnly
+String                   Property NINODE_RIGHT_BREAST   = "NPC R Breast" AutoReadOnly
+String                   Property NINODE_RIGHT_BREAST01 = "NPC R Breast01" AutoReadOnly
+String                   Property NINODE_RIGHT_BUTT     = "NPC R Butt" AutoReadOnly
+String                   Property NINODE_SKIRT02        = "SkirtBBone02" AutoReadOnly
+String                   Property NINODE_SKIRT03        = "SkirtBBone03" AutoReadOnly
+String                   Property NINODE_BELLY          = "NPC Belly" AutoReadOnly
+Float                    Property NINODE_MAX_SCALE      = 2.0 AutoReadOnly
+Float                    Property NINODE_MIN_SCALE      = 0.1 AutoReadOnly
+
+
 
 ; PRIVATE VARIABLES -------------------------------------------------------------------------------
 
@@ -37,6 +128,7 @@ float 		_weightSwellMod 		= 1.0; 0.1
 
 float 		_armorMod 				= 0.5; 0.1  
 float 		_clothMod 				= 0.8; 0.1  
+float 		_bimboClumsinessMod		= 1.0; 0.1  
 
 float 		_breastMax      		= 4.0
 float 		_bellyMax       		= 8.0
@@ -146,6 +238,7 @@ event OnPageReset(string a_page)
 
 	_armorMod = GV_armorMod.GetValue()    as Float  
 	_clothMod = GV_clothMod.GetValue()    as Float   
+	_bimboClumsinessMod = GV_bimboClumsinessMod.GetValue()    as Float   
 
 	_breastMax = GV_breastMax.GetValue()  as Float
 	_bellyMax = GV_bellyMax.GetValue()  as Float 
@@ -285,9 +378,10 @@ event OnPageReset(string a_page)
 
 		AddHeaderOption(" Optional modules")
 		AddToggleOptionST("STATE_SUCCUBUS","Succubus Curse", _allowSuccubus as Float)
-		AddToggleOptionST("STATE_BIMBO","Bimbo Curse", _allowBimbo as Float)
 		AddToggleOptionST("STATE_SEX_CHANGE","Sex Change Curse", _allowHRT as Float)
 		AddToggleOptionST("STATE_TG","Allow Transgender", _allowTG as Float)
+		AddToggleOptionST("STATE_BIMBO","Bimbo Curse", _allowBimbo as Float)
+		AddSliderOptionST("STATE_BIMBO_CLUMSINESS","Clumsiness factor", _bimboClumsinessMod as Float,"{1}")
 
 		AddHeaderOption(" Shape refresh controls")
 		AddToggleOptionST("STATE_CHANGE_OVERRIDE","Shape change override", _changeOverrideToggle as Float)
@@ -546,7 +640,8 @@ state STATE_ARMOR_MOD ; SLIDER
 		float thisValue = value 
 		GV_armorMod.SetValue( thisValue )
 		SetSliderOptionValueST( thisValue ,"{1}")
-		StorageUtil.SetIntValue(none, "_SLH_iForcedRefresh", 1)
+
+		refreshStorageFromGlobals() 
 	endEvent
 
 	event OnDefaultST()
@@ -571,7 +666,8 @@ state STATE_CLOTH_MOD ; SLIDER
 		float thisValue = value 
 		GV_clothMod.SetValue( thisValue )
 		SetSliderOptionValueST( thisValue ,"{1}")
-		StorageUtil.SetIntValue(none, "_SLH_iForcedRefresh", 1)
+
+		refreshStorageFromGlobals() 
 	endEvent
 
 	event OnDefaultST()
@@ -597,8 +693,8 @@ state STATE_BREAST_SWELL ; SLIDER
 		GV_breastSwellMod.SetValue( thisValue  )
 		SetSliderOptionValueST( thisValue, "{1}" )
 
-		GV_forcedRefresh.SetValue(1.0) 
-		StorageUtil.SetIntValue(none, "_SLH_iForcedRefresh", 1)
+		refreshStorageFromGlobals() 
+
 	endEvent
 
 	event OnDefaultST()
@@ -621,11 +717,11 @@ state STATE_BREAST_MAX ; SLIDER
 
 	event OnSliderAcceptST(float value)
 		float thisValue = value 
-		GV_breastMax.SetValue( thisValue )
+		GV_breastMax.SetValue( thisValue ) 
 		SetSliderOptionValueST( thisValue, "{1}" )
 
-		GV_forcedRefresh.SetValue(1.0) 
-		StorageUtil.SetIntValue(none, "_SLH_iForcedRefresh", 1)
+		refreshStorageFromGlobals()
+
 	endEvent
 
 	event OnDefaultST()
@@ -651,8 +747,8 @@ state STATE_BELLY_SWELL ; SLIDER
 		GV_bellySwellMod.SetValue( thisValue  )
 		SetSliderOptionValueST( thisValue, "{1}" )
 
-		GV_forcedRefresh.SetValue(1.0) 
-		StorageUtil.SetIntValue(none, "_SLH_iForcedRefresh", 1)
+		refreshStorageFromGlobals() 
+
 	endEvent
 
 	event OnDefaultST()
@@ -678,8 +774,8 @@ state STATE_BELLY_MAX ; SLIDER
 		GV_bellyMax.SetValue( thisValue )
 		SetSliderOptionValueST( thisValue, "{1}" )
 
-		GV_forcedRefresh.SetValue(1.0) 
-		StorageUtil.SetIntValue(none, "_SLH_iForcedRefresh", 1)
+		refreshStorageFromGlobals()
+
 	endEvent
 
 	event OnDefaultST()
@@ -705,8 +801,8 @@ state STATE_BUTT_SWELL ; SLIDER
 		GV_buttSwellMod.SetValue( thisValue   )
 		SetSliderOptionValueST( thisValue, "{1}" )
 
-		GV_forcedRefresh.SetValue(1.0) 
-		StorageUtil.SetIntValue(none, "_SLH_iForcedRefresh", 1)
+		refreshStorageFromGlobals() 
+
 	endEvent
 
 	event OnDefaultST()
@@ -732,8 +828,8 @@ state STATE_BUTT_MAX ; SLIDER
 		GV_buttMax.SetValue( thisValue )
 		SetSliderOptionValueST( thisValue, "{1}" )
 
-		GV_forcedRefresh.SetValue(1.0) 
-		StorageUtil.SetIntValue(none, "_SLH_iForcedRefresh", 1)
+		refreshStorageFromGlobals()
+
 	endEvent
 
 	event OnDefaultST()
@@ -759,8 +855,8 @@ state STATE_SCHLONG_SWELL ; SLIDER
 		GV_schlongSwellMod.SetValue( thisValue  )
 		SetSliderOptionValueST( thisValue, "{1}" )
 
-		GV_forcedRefresh.SetValue(1.0) 
-		StorageUtil.SetIntValue(none, "_SLH_iForcedRefresh", 1)
+		refreshStorageFromGlobals() 
+
 	endEvent
 
 	event OnDefaultST()
@@ -786,8 +882,8 @@ state STATE_SCHLONG_MAX ; SLIDER
 		GV_schlongMax.SetValue( thisValue )
 		SetSliderOptionValueST( thisValue, "{1}" )
 
-		GV_forcedRefresh.SetValue(1.0) 
-		StorageUtil.SetIntValue(none, "_SLH_iForcedRefresh", 1)
+		refreshStorageFromGlobals()
+
 	endEvent
 
 	event OnDefaultST()
@@ -837,8 +933,8 @@ state STATE_WEIGHT_SWELL ; SLIDER
 		GV_weightSwellMod.SetValue( thisValue )
 		SetSliderOptionValueST( thisValue, "{1}" )
 
-		GV_forcedRefresh.SetValue(1.0) 
-		StorageUtil.SetIntValue(none, "_SLH_iForcedRefresh", 1)
+		refreshStorageFromGlobals() 
+
 	endEvent
 
 	event OnDefaultST()
@@ -979,8 +1075,8 @@ state STATE_WEIGHT_VALUE ; SLIDER
 		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fWeight",  thisValue) 
 		SetSliderOptionValueST( thisValue, "{1}" )
 
-		GV_forcedRefresh.SetValue(1.0) 
-		StorageUtil.SetIntValue(none, "_SLH_iForcedRefresh", 1)
+		refreshStorageFromGlobals() 
+
 	endEvent
 
 	event OnDefaultST()
@@ -1006,8 +1102,8 @@ state STATE_BREAST_VALUE ; SLIDER
 		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast",  thisValue)
 		SetSliderOptionValueST( thisValue, "{1}" )
 
-		GV_forcedRefresh.SetValue(1.0) 
-		StorageUtil.SetIntValue(none, "_SLH_iForcedRefresh", 1)
+		refreshStorageFromGlobals() 
+
 	endEvent
 
 	event OnDefaultST()
@@ -1033,8 +1129,8 @@ state STATE_BELLY_VALUE ; SLIDER
 		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBelly",  thisValue) 
 		SetSliderOptionValueST( thisValue, "{1}" )
 
-		GV_forcedRefresh.SetValue(1.0) 
-		StorageUtil.SetIntValue(none, "_SLH_iForcedRefresh", 1)
+		refreshStorageFromGlobals() 
+
 	endEvent
 
 	event OnDefaultST()
@@ -1060,8 +1156,8 @@ state STATE_BUTT_VALUE ; SLIDER
 		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fButt",  thisValue) 
 		SetSliderOptionValueST( thisValue, "{1}" )
 
-		GV_forcedRefresh.SetValue(1.0) 
-		StorageUtil.SetIntValue(none, "_SLH_iForcedRefresh", 1)
+		refreshStorageFromGlobals() 
+
 	endEvent
 
 	event OnDefaultST()
@@ -1087,8 +1183,8 @@ state STATE_SCHLONG_VALUE ; SLIDER
 		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fSchlong",  thisValue) 
 		SetSliderOptionValueST( thisValue, "{1}" )
 
-		GV_forcedRefresh.SetValue(1.0) 
-		StorageUtil.SetIntValue(none, "_SLH_iForcedRefresh", 1)
+		refreshStorageFromGlobals() 
+
 	endEvent
 
 	event OnDefaultST()
@@ -1104,7 +1200,7 @@ state STATE_REFRESH ; TOGGLE
 	event OnSelectST()
 		; SLH_Control._refreshBodyShape()
 
-		PlayerActor.SendModEvent("SLHRefresh")
+		refreshStorageFromGlobals() 
 		
 		Debug.MessageBox("Exit the menu and wait a few seconds")
 	endEvent
@@ -1152,6 +1248,30 @@ state STATE_BIMBO ; TOGGLE
 
 	event OnHighlightST()
 		SetInfoText("Bimbo Curse - This curse could turn you into a mindless sex-starved blonde.")
+	endEvent
+endState
+; AddSliderOptionST("STATE_BIMBO_CLUMSINESS","Bimbo clumsiness factor", _bimboClumsinessMod)
+state STATE_BIMBO_CLUMSINESS ; SLIDER
+	event OnSliderOpenST()
+		SetSliderDialogStartValue( GV_bimboClumsinessMod.GetValue() )
+		SetSliderDialogDefaultValue( 1.0 )
+		SetSliderDialogRange( 0.0, 1.0 )
+		SetSliderDialogInterval( 0.1 )
+	endEvent
+
+	event OnSliderAcceptST(float value)
+		float thisValue = value 
+		GV_bimboClumsinessMod.SetValue( thisValue )
+		SetSliderOptionValueST( thisValue ,"{1}") 
+	endEvent
+
+	event OnDefaultST()
+		GV_bimboClumsinessMod.SetValue( 1.0 )
+		SetSliderOptionValueST( 1.0,"{1}" )
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Bimbo clunsiness factor - To throttle dropping weapons or stumbling to the ground from 0 (no effect) to 1.0 (default range of clumsiness(")
 	endEvent
 endState
 ; AddToggleOptionST("STATE_SEX_CHANGE","Sex Change Curse", _isHRT)
@@ -1387,7 +1507,7 @@ endState
 state STATE_SETSHAPE ; TOGGLE
 	event OnSelectST()
 		; SLH_Control._resetHormonesState()
-		PlayerActor.SendModEvent("SLHSetShape")
+		refreshStorageFromGlobals()
 
 		Debug.MessageBox("Shape initialized - Exit the menu and wait a few seconds")
 	endEvent
@@ -1436,89 +1556,29 @@ float function fMax(float a, float b)
 		return a
 	EndIf
 EndFunction
-;--------------------------------------
-ReferenceAlias Property PlayerAlias  Auto  
 
-GlobalVariable      Property GV_startingLibido 			Auto
-GlobalVariable      Property GV_sexActivityThreshold 	Auto
-GlobalVariable      Property GV_sexActivityBuffer		Auto
-GlobalVariable      Property GV_baseSwellFactor 		Auto
-GlobalVariable      Property GV_baseShrinkFactor 		Auto
-GlobalVariable      Property GV_breastSwellMod 			Auto
-GlobalVariable      Property GV_bellySwellMod 			Auto
-GlobalVariable      Property GV_schlongSwellMod 		Auto
-GlobalVariable      Property GV_buttSwellMod 			Auto
-GlobalVariable      Property GV_weightSwellMod 			Auto
+Function refreshStorageFromGlobals()
+	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreastSwellMod",  GV_breastSwellMod.GetValue() as Float) 
+	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fButtSwellMod",  GV_buttSwellMod.GetValue() as Float)  
+	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBellySwellMod",  GV_bellySwellMod.GetValue() as Float)  
+	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fSchlongSwellMod",  GV_schlongSwellMod.GetValue() as Float)  
+	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fWeightSwellMod",  GV_weightSwellMod.GetValue() as Float)  
 
-GlobalVariable      Property GV_breastMax 				Auto
-GlobalVariable      Property GV_buttMax 				Auto
-GlobalVariable      Property GV_bellyMax 				Auto
-GlobalVariable      Property GV_schlongMax 				Auto
-GlobalVariable      Property GV_weightMax 				Auto
+	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreastMax",  GV_breastMax.GetValue() as Float) 
+	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fButtMax",  GV_buttMax.GetValue() as Float) 
+	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBellyMax",  GV_bellyMax.GetValue() as Float) 
+	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fSchlongMax",  GV_schlongMax.GetValue() as Float) 
+	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fWeightMax",  GV_weightMax.GetValue() as Float) 
 
-GlobalVariable      Property GV_breastMin				Auto
-GlobalVariable      Property GV_buttMin 				Auto
-GlobalVariable      Property GV_bellyMin 				Auto
-GlobalVariable      Property GV_schlongMin 				Auto
-GlobalVariable      Property GV_weightMin 				Auto
+	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast",  GV_breastValue.GetValue() as Float) 
+	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fButt",  GV_buttValue.GetValue() as Float) 
+	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBelly",  GV_bellyValue.GetValue() as Float) 
+	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fSchlong",  GV_schlongValue.GetValue() as Float) 
+	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fWeight",  GV_weightValue.GetValue() as Float) 
 
-GlobalVariable      Property GV_useNodes 				Auto
-GlobalVariable      Property GV_useBreastNode 			Auto
-GlobalVariable      Property GV_useButtNode 			Auto
-GlobalVariable      Property GV_useBellyNode 			Auto
-GlobalVariable      Property GV_useSchlongNode 			Auto
+	PlayerActor.SendModEvent("SLHRefresh")
 
-GlobalVariable      Property GV_useWeight 				Auto
-GlobalVariable      Property GV_useColors 				Auto
-GlobalVariable      Property GV_redShiftColor  			Auto
-GlobalVariable      Property GV_redShiftColorMod 		Auto
-GlobalVariable      Property GV_blueShiftColor 			Auto
-GlobalVariable      Property GV_blueShiftColorMod 		Auto
-
-GlobalVariable      Property GV_allowTG 				Auto
-GlobalVariable      Property GV_allowHRT 				Auto
-GlobalVariable      Property GV_allowBimbo 		 		Auto
-GlobalVariable      Property GV_allowSuccubus 			Auto
-GlobalVariable      Property GV_setshapeToggle 			Auto
-GlobalVariable      Property GV_resetToggle 			Auto
-GlobalVariable      Property GV_origWeight	 			Auto
-GlobalVariable      Property GV_breastValue 			Auto
-GlobalVariable      Property GV_buttValue 				Auto
-GlobalVariable      Property GV_bellyValue 				Auto
-GlobalVariable      Property GV_schlongValue 			Auto
-GlobalVariable      Property GV_weightValue 			Auto
-GlobalVariable      Property GV_forcedRefresh 			Auto
-GlobalVariable      Property GV_armorMod 				Auto
-GlobalVariable      Property GV_clothMod	 			Auto
-
-GlobalVariable      Property GV_showStatus 				Auto
-GlobalVariable      Property GV_commentsFrequency		Auto
-
-GlobalVariable      Property GV_changeOverrideToggle	Auto
-GlobalVariable      Property GV_shapeUpdateOnCellChange	Auto
-GlobalVariable      Property GV_shapeUpdateAfterSex		Auto
-GlobalVariable      Property GV_shapeUpdateOnTimer		Auto
-GlobalVariable      Property GV_enableNiNodeUpdate		Auto
-
-GlobalVariable      Property GV_allowExhibitionist		Auto
-GlobalVariable      Property GV_allowSelfSpells			Auto
-
-
-SLH_QST_HormoneGrowth 	Property SLH_Control auto
-
-; String                   Property NINODE_SCHLONG	 	= "NPC Genitals01 [Gen01]" AutoReadOnly
-String                   Property NINODE_SCHLONG	 	= "NPC GenitalsBase [GenBase]" AutoReadOnly
-String                   Property NINODE_LEFT_BREAST    = "NPC L Breast" AutoReadOnly
-String                   Property NINODE_LEFT_BREAST01  = "NPC L Breast01" AutoReadOnly
-String                   Property NINODE_LEFT_BUTT      = "NPC L Butt" AutoReadOnly
-String                   Property NINODE_RIGHT_BREAST   = "NPC R Breast" AutoReadOnly
-String                   Property NINODE_RIGHT_BREAST01 = "NPC R Breast01" AutoReadOnly
-String                   Property NINODE_RIGHT_BUTT     = "NPC R Butt" AutoReadOnly
-String                   Property NINODE_SKIRT02        = "SkirtBBone02" AutoReadOnly
-String                   Property NINODE_SKIRT03        = "SkirtBBone03" AutoReadOnly
-String                   Property NINODE_BELLY          = "NPC Belly" AutoReadOnly
-Float                    Property NINODE_MAX_SCALE      = 2.0 AutoReadOnly
-Float                    Property NINODE_MIN_SCALE      = 0.1 AutoReadOnly
+EndFunction
 
 
 
