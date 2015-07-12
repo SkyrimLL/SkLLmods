@@ -174,6 +174,10 @@ Function Maintenance()
 EndFunction
 
 Function maintenanceVersionEvents()
+	PlayerREF= PlayerAlias.GetReference()
+	PlayerActor= PlayerREF as Actor
+	pActorBase = PlayerActor.GetActorBase()
+
 	If (bInit) && (!StorageUtil.HasFloatValue(none, "_SLH_iHormonesVersion")) && (StorageUtil.GetIntValue(none, "_SLH_iHormones")==1)
 		Debug.MessageBox("[Upgrading to Hormones v 1.7 from a previous version is not recommended. You should clean your save game from Hormones and reinstall the latest version. Check the download page on LoversLab for details.]")
 
@@ -224,6 +228,10 @@ EndFunction
 
 
 function initHormones()
+	PlayerREF= PlayerAlias.GetReference()
+	PlayerActor= PlayerREF as Actor
+	pActorBase = PlayerActor.GetActorBase()
+
 	bInit = True
 
 	maintenanceVersionEvents()

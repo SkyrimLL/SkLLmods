@@ -1271,6 +1271,7 @@ function initShapeState(Actor kActor)
 	fOrigWeight = fWeight
 	StorageUtil.SetFloatValue(kActor, "_SLH_fWeight", fWeight)
 	StorageUtil.SetFloatValue(kActor, "_SLH_fWeightOrig", fWeight)
+	StorageUtil.SetFloatValue(kActor, "_SLH_fManualWeightChange",  fWeight) 
 
 	fHeight = kActorREF.GetScale()
 	fOrigHeight = fHeight
@@ -1446,6 +1447,12 @@ function initShapeConstants(Actor kActor)
 	; fSchlongSwellMod = GV_schlongSwellMod.GetValue()   ; 0.2 
 	; fWeightSwellMod = GV_weightSwellMod.GetValue()   ; 0.2 
  
+	StorageUtil.SetFloatValue(kActor, "_SLH_fBreastSwellMod",  GV_breastSwellMod.GetValue() as Float) 
+	StorageUtil.SetFloatValue(kActor, "_SLH_fButtSwellMod",  GV_buttSwellMod.GetValue()  as Float) 
+	StorageUtil.SetFloatValue(kActor, "_SLH_fBellySwellMod",  GV_bellySwellMod.GetValue()   as Float) 
+	StorageUtil.SetFloatValue(kActor, "_SLH_fSchlongSwellMod",  GV_schlongSwellMod.GetValue()  as Float) 
+	StorageUtil.SetFloatValue(kActor, "_SLH_fWeightSwellMod",  GV_weightSwellMod.GetValue()   as Float) 
+
 	StorageUtil.SetFloatValue(kActor, "_SLH_fBreastMin",  GV_breastMin.GetValue() as Float) 
 	StorageUtil.SetFloatValue(kActor, "_SLH_fButtMin",  GV_buttMin.GetValue()  as Float) 
 	StorageUtil.SetFloatValue(kActor, "_SLH_fBellyMin",  GV_bellyMin.GetValue()   as Float) 
