@@ -9,6 +9,7 @@ Event OnEffectStart(Actor Target, Actor Caster)
     pActorBase = Target.GetActorBase()
 
     fctPolymorph.bimboTransformEffectON(Target)
+    Game.ShowRaceMenu()
  
 EndEvent
 

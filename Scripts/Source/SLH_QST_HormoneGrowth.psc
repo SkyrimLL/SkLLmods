@@ -127,6 +127,7 @@ Function doInit()
 	skillList[17] = "Enchanting"
 
 	NextAllowed = -1.0
+	initHormones()
 EndFunction
 
 Function Maintenance()
@@ -178,10 +179,10 @@ Function maintenanceVersionEvents()
 
 	EndIf
 	
-	StorageUtil.SetFloatValue(none, "_SLH_iHormonesVersion", 1.9)
+	StorageUtil.SetFloatValue(none, "_SLH_iHormonesVersion", 2.0)
 		
-	Debug.Notification("[SLH] Hormones 2015-07-06 v " + StorageUtil.GetFloatValue(none, "_SLH_iHormonesVersion"))
-	debugTrace("[SLH] Hormones 2015-07-06 v " + StorageUtil.GetFloatValue(none, "_SLH_iHormonesVersion"))
+	Debug.Notification("[SLH] Hormones 2015-07-11 v " + StorageUtil.GetFloatValue(none, "_SLH_iHormonesVersion"))
+	debugTrace("[SLH] Hormones 2015-07-11 v " + StorageUtil.GetFloatValue(none, "_SLH_iHormonesVersion"))
 	
 	UnregisterForAllModEvents()
 	debugTrace("[SLH]  Reset SexLab events")
@@ -195,6 +196,10 @@ Function maintenanceVersionEvents()
 	RegisterForModEvent("SLHRemoveSchlong",    "OnRemoveSchlongEvent")
 	RegisterForModEvent("SLHCastBimboCurse",    "OnCastBimboCurseEvent")
 	RegisterForModEvent("SLHCureBimboCurse",    "OnCureBimboCurseEvent")
+	RegisterForModEvent("SLHCastHRTCurse",    "OnCastHRTCurseEvent")
+	RegisterForModEvent("SLHCureHRTCurse",    "OnCureHRTCurseEvent")
+	RegisterForModEvent("SLHCastTGCurse",    "OnCastTGCurseEvent")
+	RegisterForModEvent("SLHCureTGCurse",    "OnCureTGCurseEvent")
 
 	if (GV_allowSelfSpells.GetValue() == 1)
 		debugTrace("[SLH]  Add spells")
@@ -210,7 +215,9 @@ Function maintenanceVersionEvents()
 	If (GV_isSuccubus.GetValue()==1) && (GV_isSuccubusFinal.GetValue()==0) && (_SLH_QST_Succubus.GetStage()>=50)
 		GV_isSuccubusFinal.SetValue(1)
 	endif	
-	
+
+	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fManualWeightChange",  -1)
+
 	RegisterForSleep()
 	RegisterForSingleUpdate(5)
 EndFunction
@@ -490,27 +497,6 @@ Event OnUpdate()
 	RegisterForSingleUpdate(10)
 EndEvent
 
-Event OnObjectEquipped(Form akBaseObject, ObjectReference akReference)
-	PlayerREF= PlayerAlias.GetReference()
-	PlayerActor= PlayerREF as Actor
-
-    if akBaseObject as Armor
-
-		PlayerActor.SendModEvent("SLHRefresh")
-
-  	endIf
-endEvent
-
-Event OnObjectUnequipped(Form akBaseObject, ObjectReference akReference)
-	PlayerREF= PlayerAlias.GetReference()
-	PlayerActor= PlayerREF as Actor
-
-  	if akBaseObject as Armor
-
-		PlayerActor.SendModEvent("SLHRefresh")
-
-  	endIf
-endEvent
  
 Event OnCastBimboCurseEvent(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
@@ -527,6 +513,42 @@ Event OnCureBimboCurseEvent(String _eventName, String _args, Float _argc = 1.0, 
 	debugTrace("[SLH] Cure Bimbo Curse event" )	  
 
 	fctPolymorph.bimboTransformEffectOFF(kActor)
+ 	
+endEvent
+
+Event OnCastHRTCurseEvent(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+ 	
+	debugTrace("[SLH] Cast HRT Curse event" )	  
+	; PolymorphBimbo.Cast(PlayerActor,PlayerActor)
+	fctPolymorph.HRTEffectON(kActor)
+
+endEvent
+
+Event OnCureHRTCurseEvent(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+
+	debugTrace("[SLH] Cure HRT Curse event" )	  
+
+	fctPolymorph.HRTEffectOFF(kActor)
+ 	
+endEvent
+
+Event OnCastTGCurseEvent(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+ 	
+	debugTrace("[SLH] Cast TG Curse event" )	  
+	; PolymorphBimbo.Cast(PlayerActor,PlayerActor)
+	fctPolymorph.TGEffectON(kActor)
+
+endEvent
+
+Event OnCureTGCurseEvent(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+
+	debugTrace("[SLH] Cure TG Curse event" )	  
+
+	fctPolymorph.TGEffectOFF(kActor)
  	
 endEvent
 

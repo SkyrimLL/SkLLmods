@@ -1,4 +1,4 @@
-Scriptname SLH_ME_PolymorphBimboOFF extends activemagiceffect  
+Scriptname SLH_ME_TG extends activemagiceffect  
 
 SLH_fctPolymorph Property fctPolymorph Auto
  
@@ -8,11 +8,11 @@ Event OnEffectStart(Actor Target, Actor Caster)
 
     pActorBase = Target.GetActorBase()
 
-    fctPolymorph.bimboTransformEffectOFF(Target)
-    Game.ShowRaceMenu()
+    fctPolymorph.TGEffectON(Target) 
  
 EndEvent
 
 Event OnEffectFinish(Actor akTarget, Actor akCaster)        
     ;   Debug.Messagebox("Bimbo spell ended")    
 ENDEVENT
+

@@ -262,6 +262,7 @@ function setTintMaskColor(int itype = 6, int irgbacolor = 0, int isetIndex = 0, 
  	int index = 0
  	while(index < index_count)
  		if (index == isetIndex) || (bsetAll)
+ 			debugTrace("[SLH]  		    Layer : " + index  )
  			Game.SetTintMaskColor(irgbacolor, itype, index)
  		EndIf
  		index = index + 1

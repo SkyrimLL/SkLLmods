@@ -204,10 +204,13 @@ endFunction
 
 bool function isExternalChangeModActive(actor kActor)
 	ObjectReference kActorREF = kActor as ObjectReference 
+	ActorBase pActorBase = kActor.GetActorBase()
+	Float fCurrentWeight = pActorBase.GetWeight()
 
 	bIsPregnant = ( isPregnantBySoulGemOven(kActor) || isPregnantBySimplePregnancy(kActor) || isPregnantByBeeingFemale(kActor) || isPregnantByEstrusChaurus(kActor) || ((StorageUtil.GetIntValue(Game.GetPlayer(), "PSQ_SuccubusON") == 1) && (StorageUtil.GetIntValue(Game.GetPlayer(), "PSQ_SoulGemPregnancyON") == 1)) )
 
-	Return bIsPregnant || (GV_changeOverrideToggle.GetValue() == 0) 
+	Return bIsPregnant || (GV_changeOverrideToggle.GetValue() == 0) || ((fCurrentWeight!=StorageUtil.GetFloatValue(kActor, "_SLH_fWeight")) && (StorageUtil.GetFloatValue(kActor, "_SLH_fManualWeightChange") == -1))
+
 endFunction
 
 function manageSexLabAroused(Actor kActor, int aiModRank = -1)
