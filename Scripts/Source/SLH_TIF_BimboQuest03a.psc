@@ -8,7 +8,7 @@ Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
 Actor PlayerActor = game.GetPlayer()
 
-PlayerActor.DoCombatSpellApply(PolymorphBimboFX, PlayerActor)
+; PlayerActor.DoCombatSpellApply(PolymorphBimboFX, PlayerActor)
 PlayerActor.DoCombatSpellApply(PolymorphBimboOFF, PlayerActor)
 
 ; PlayerActor.AddItem( BimboPolymorphToken, 1)

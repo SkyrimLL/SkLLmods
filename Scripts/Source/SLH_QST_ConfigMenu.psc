@@ -1071,8 +1071,12 @@ state STATE_WEIGHT_VALUE ; SLIDER
 
 	event OnSliderAcceptST(float value)
 		float thisValue = value 
+
+		float fOldWeight = StorageUtil.GetFloatValue(PlayerActor, "_SLH_fWeight")
+
 		GV_weightValue.SetValue( thisValue) 
 		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fWeight",  thisValue) 
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fManualWeightChange",  fOldWeight) 
 		SetSliderOptionValueST( thisValue, "{1}" )
 
 		refreshStorageFromGlobals() 

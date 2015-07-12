@@ -214,9 +214,9 @@ Function setSchlong(Actor kActor, string schlongLabel)
 	Endif
 
 	if (schlongLabel == "Any") || (schlongLabel == "")
+		; Get first addon available for now... add code to better select later
 		schlong =  SOS_Data.GetAddon(0)
 	else
-		; Get first addon available for now... add code to better select later
 		schlong = SOS.FindSchlongByName(schlongLabel)
 	endif
  
@@ -272,11 +272,11 @@ function alterBodyAfterRest(Actor kActor)
 	Float fWeightMin 		= StorageUtil.GetFloatValue(kActor, "_SLH_fWeightMin")
 
 	Float fCurrentWeight
-	Float fWeight
-	Float fBreast       
-	Float fButt       	
-	Float fBelly       		
-	Float fSchlong      			
+	Float fWeight = StorageUtil.GetFloatValue(kActor, "_SLH_fWeight")
+	Float fBreast = StorageUtil.GetFloatValue(kActor, "_SLH_fBreast")       
+	Float fButt = StorageUtil.GetFloatValue(kActor, "_SLH_fButt")       	
+	Float fBelly = StorageUtil.GetFloatValue(kActor, "_SLH_fBelly")       		
+	Float fSchlong = StorageUtil.GetFloatValue(kActor, "_SLH_fSchlong")      			
 
 	Float fApparelMod = 1.0
 	
@@ -369,7 +369,7 @@ function alterBodyAfterRest(Actor kActor)
 		fWeight = fctUtil.fRange( fWeight  , fWeightMin, fWeightMax)
 
 		debugTrace("[SLH]  Set weight to " + fWeight + " from " + fCurrentWeight)
-		alterWeight(kActor, fWeight, fCurrentWeight  )
+		alterWeight(kActor, fWeight  )
 
 		; Debug.Notification("[SLH]  Set weight to " + fWeight + " from " + fCurrentWeight)
 
@@ -480,8 +480,6 @@ function alterBodyAfterSex(Actor kActor, Bool bOral = False, Bool bVaginal = Fal
 	ObjectReference kActorREF= kActor as ObjectReference
 	ActorBase pActorBase = kActor.GetActorBase()
 	Race thisRace = pActorBase.GetRace()
-	Bool bArmorOn = kActor.WornHasKeyword(ArmorOn)
-	Bool bClothingOn = kActor.WornHasKeyword(ClothingOn)
 	Float fNodeMax
 	Bool bExternalChangeModActive = fctUtil.isExternalChangeModActive(kActor)
 	Float fLibido = StorageUtil.GetFloatValue(kActor, "_SLH_fLibido")
@@ -501,11 +499,11 @@ function alterBodyAfterSex(Actor kActor, Bool bOral = False, Bool bVaginal = Fal
 	Float fSchlongMin 		= StorageUtil.GetFloatValue(kActor, "_SLH_fSchlongMin")
 	Float fWeightMin 		= StorageUtil.GetFloatValue(kActor, "_SLH_fWeightMin")
 
-	Float fApparelMod = 1.0
-	Float fBreast       
-	Float fButt       	
-	Float fBelly       		
-	Float fSchlong   
+	Float fWeight = StorageUtil.GetFloatValue(kActor, "_SLH_fWeight")
+	Float fBreast = StorageUtil.GetFloatValue(kActor, "_SLH_fBreast")       
+	Float fButt = StorageUtil.GetFloatValue(kActor, "_SLH_fButt")       	
+	Float fBelly = StorageUtil.GetFloatValue(kActor, "_SLH_fBelly")       		
+	Float fSchlong = StorageUtil.GetFloatValue(kActor, "_SLH_fSchlong")      			 
 
 	If (kOrigRace != None) 
 		If (thisRace != kOrigRace)
@@ -516,11 +514,6 @@ function alterBodyAfterSex(Actor kActor, Bool bOral = False, Bool bVaginal = Fal
 		kOrigRace = pActorBase.GetRace()
 	EndIf
 
-	If (bArmorOn)
-		fApparelMod = GV_armorMod.GetValue() as Float
-	ElseIf (bClothingOn)
-		fApparelMod = GV_clothMod.GetValue() as Float
-	EndIf
 
 	fGameTime       = Utility.GetCurrentGameTime()
 	
@@ -559,7 +552,7 @@ function alterBodyAfterSex(Actor kActor, Bool bOral = False, Bool bVaginal = Fal
 					fBreast = fCurrentBreast 
 				Else
 					fNodeMax = fBreastMax
-					fBreast = ( fCurrentBreast + ( fSwellFactor * (fNodeMax + fBreastMin  - fCurrentBreast) / 100.0 ) * fBreastSwellMod )  * fApparelMod
+					fBreast = ( fCurrentBreast + ( fSwellFactor * (fNodeMax + fBreastMin  - fCurrentBreast) / 100.0 ) * fBreastSwellMod ) 
 				EndIf
 
 				alterBreastNode(kActor,  fBreast )				
@@ -576,7 +569,7 @@ function alterBodyAfterSex(Actor kActor, Bool bOral = False, Bool bVaginal = Fal
 					fBelly = fCurrentBelly
 				Else
 					fNodeMax = fBellyMax
-					fBelly = ( fCurrentBelly + ( fSwellFactor * (fNodeMax + fBellyMin  - fCurrentBelly) / 100.0 ) * fBellySwellMod )  * fApparelMod
+					fBelly = ( fCurrentBelly + ( fSwellFactor * (fNodeMax + fBellyMin  - fCurrentBelly) / 100.0 ) * fBellySwellMod ) 
 				EndIf
 
 				alterBellyNode(kActor, fBelly)
@@ -594,7 +587,7 @@ function alterBodyAfterSex(Actor kActor, Bool bOral = False, Bool bVaginal = Fal
 					fButt = fCurrentButt
 				Else
 					fNodeMax = fButtMax
-					fButt = ( fCurrentButt + ( fSwellFactor * (fNodeMax + fButtMin  - fCurrentButt) / 100.0 ) * fButtSwellMod ) * fApparelMod
+					fButt = ( fCurrentButt + ( fSwellFactor * (fNodeMax + fButtMin  - fCurrentButt) / 100.0 ) * fButtSwellMod ) 
 				EndIf
 
 				alterButtNode(kActor,  fButt )
@@ -625,6 +618,141 @@ function alterBodyAfterSex(Actor kActor, Bool bOral = False, Bool bVaginal = Fal
  	; _refreshBodyShape()
 
 
+EndFunction
+
+function alterBodyByPercent(Actor kActor, String sBodyPart, Float modFactor)
+	ObjectReference kActorREF= kActor as ObjectReference
+	ActorBase pActorBase = kActor.GetActorBase()
+	Race thisRace = pActorBase.GetRace()
+	Float fNodeMax
+	Bool bExternalChangeModActive = fctUtil.isExternalChangeModActive(kActor)
+	Float fLibido = StorageUtil.GetFloatValue(kActor, "_SLH_fLibido")
+	Float fBreastSwellMod    = StorageUtil.GetFloatValue(kActor, "_SLH_fBreastSwellMod")
+	Float fButtSwellMod      = StorageUtil.GetFloatValue(kActor, "_SLH_fButtSwellMod")
+	Float fBellySwellMod      = StorageUtil.GetFloatValue(kActor, "_SLH_fBellySwellMod")
+	Float fWeightSwellMod    = StorageUtil.GetFloatValue(kActor, "_SLH_fWeightSwellMod")
+	Float fSchlongSwellMod = StorageUtil.GetFloatValue(kActor, "_SLH_fSchlongSwellMod")
+	Float fBreastMax      	= StorageUtil.GetFloatValue(kActor, "_SLH_fBreastMax")
+	Float fBellyMax       	= StorageUtil.GetFloatValue(kActor, "_SLH_fBellyMax")
+	Float fButtMax       	= StorageUtil.GetFloatValue(kActor, "_SLH_fButtMax")
+	Float fSchlongMax 		= StorageUtil.GetFloatValue(kActor, "_SLH_fSchlongMax")
+	Float fWeightMax 		= StorageUtil.GetFloatValue(kActor, "_SLH_fWeightMax")
+	Float fBreastMin      	= StorageUtil.GetFloatValue(kActor, "_SLH_fBreastMin")
+	Float fBellyMin       	= StorageUtil.GetFloatValue(kActor, "_SLH_fBellyMin")
+	Float fButtMin       	= StorageUtil.GetFloatValue(kActor, "_SLH_fButtMin")
+	Float fSchlongMin 		= StorageUtil.GetFloatValue(kActor, "_SLH_fSchlongMin")
+	Float fWeightMin 		= StorageUtil.GetFloatValue(kActor, "_SLH_fWeightMin")
+
+	Float fCurrentWeight
+	Float fWeight = StorageUtil.GetFloatValue(kActor, "_SLH_fWeight")
+	Float fBreast = StorageUtil.GetFloatValue(kActor, "_SLH_fBreast")       
+	Float fButt = StorageUtil.GetFloatValue(kActor, "_SLH_fButt")       	
+	Float fBelly = StorageUtil.GetFloatValue(kActor, "_SLH_fBelly")       		
+	Float fSchlong = StorageUtil.GetFloatValue(kActor, "_SLH_fSchlong")      			
+	
+	If (kOrigRace != None) 
+		If (thisRace != kOrigRace)
+			debugTrace("[SLH]  Race change detected - aborting")
+			return
+		EndIf
+	Else
+		kOrigRace = pActorBase.GetRace()
+	EndIf
+
+	if (GV_useWeight.GetValue() == 1) && (sBodyPart=="Weight")
+		debugTrace( "[SLH] alterBodyByPercent Weight")
+		debugTrace( "[SLH] Actorbase weight: " + pActorBase.GetWeight())
+		debugTrace( "[SLH] Weight factor: " + modFactor)
+		debugTrace( "[SLH] StorageUtil: " + StorageUtil.GetFloatValue(kActor, "_SLH_fWeight") )
+		debugTrace( "[SLH] Global Value: " + GV_weightValue.GetValue() )
+
+		; WEIGHT CHANGE ====================================================
+		fCurrentWeight = pActorBase.GetWeight()
+		fWeight = fCurrentWeight + ( modFactor * (110 - fCurrentWeight) / 100.0 ) * fWeightSwellMod
+		fWeight = fctUtil.fRange( fWeight  , fWeightMin, fWeightMax)
+
+		debugTrace("[SLH]  Set weight to " + fWeight + " from " + fCurrentWeight)
+		alterWeight(kActor, fWeight  )
+
+		; Debug.Notification("[SLH]  Set weight to " + fWeight + " from " + fCurrentWeight)
+
+	EndIf
+
+	If (fctUtil.isFemale(kActor)) && (GV_useNodes.GetValue() == 1)
+		; --------
+		; BREAST SWELL ====================================================
+		If  (sBodyPart=="Breast") && (GV_useBreastNode.GetValue() == 1)
+			if ( bBreastEnabled ) 
+				Float fCurrentBreast = NetImmerse.GetNodeScale(kActor, NINODE_RIGHT_BREAST, false)
+
+				if (bExternalChangeModActive)
+					fNodeMax = fPregBreastMax
+					fBreast = fCurrentBreast
+				Else
+					fNodeMax = fBreastMax
+					fBreast = ( fCurrentBreast + ( modFactor * (fNodeMax + fBreastMin  - fCurrentBreast) / 100.0 )   ) 
+				EndIf
+
+				debugTrace("[SLH]  	fCurrentBreast:  " + fCurrentBreast)
+				debugTrace("[SLH]  		fBreastSwellMod:  " + fBreastSwellMod)
+				debugTrace("[SLH]  		fSwellFactor:  " + modFactor)
+				debugTrace("[SLH]  		fNodeMax:  " + fNodeMax)
+				debugTrace("[SLH]  	fBreast:  " + fBreast)
+
+				alterBreastNode(kActor,  fBreast )	
+ 			
+			endif
+		EndIf
+
+		; BELLY SWELL =====================================================
+		If (sBodyPart=="Belly")  && (GV_useBellyNode.GetValue() == 1)
+			if ( bBellyEnabled )  
+				Float fCurrentBelly = NetImmerse.GetNodeScale(kActor, NINODE_BELLY, false)
+
+				if (bExternalChangeModActive)
+					fNodeMax = fPregBellyMax
+					fBelly = fCurrentBelly
+				Else
+					fNodeMax = fBellyMax
+					fBelly = (fCurrentBelly + ( modFactor * (fNodeMax + fBellyMin - fCurrentBelly) / 100.0 )   ) 
+				EndIf
+				
+				alterBellyNode(kActor, fBelly )
+
+			endif
+		EndIf
+
+		; BUTT SWELL ======================================================
+		If (sBodyPart=="Butt")  && (GV_useButtNode.GetValue() == 1)
+			if ( bButtEnabled )  
+				Float fCurrentButt = NetImmerse.GetNodeScale(kActor, NINODE_RIGHT_BUTT, false)
+
+				if (bExternalChangeModActive)
+					fNodeMax = fPregButtMax
+					fButt = fCurrentButt
+				Else
+					fNodeMax = fButtMax
+					fButt = ( fCurrentButt + ( modFactor * (fNodeMax + fButtMin  - fCurrentButt) / 100.0 )   )  
+				EndIf
+				
+				alterButtNode(kActor,  fButt )
+			endif
+		EndIf
+	EndIf
+	
+	If (sBodyPart=="Schlong")  && (!(fctUtil.isFemale(kActor)) || ((fctUtil.isFemale(kActor) && (StorageUtil.GetIntValue(kActor, "_SLH_iTG") == 1))) ) && (GV_useNodes.GetValue() == 1)
+		; Debug.Notification("SexLab Hormones: Male: Schlong updates: " + fSchlong )
+		; SCHLONG SWELL ======================================================
+ 
+		if ( bEnableSchlong )   && (GV_useSchlongNode.GetValue() == 1)
+			Float fCurrentSchlong = NetImmerse.GetNodeScale(kActor, NINODE_SCHLONG, false)
+			fSchlong = fCurrentSchlong + ( modFactor * (fSchlongMax + fSchlongMin  - fCurrentSchlong) / 100.0 )  
+
+			alterSchlongNode(kActor,  fSchlong )
+		endif
+ 
+	EndIf
+ 
 EndFunction
 
 Bool function detectShapeChange(Actor kActor)
@@ -665,31 +793,39 @@ Bool function detectShapeChange(Actor kActor)
 	return changeDetected
 EndFunction
 
-function alterWeight(Actor kActor, float fNewWeight = 0.0, float fWeightOrig = 0.0)		
+function alterWeight(Actor kActor, float fNewWeight = 0.0)		
 	ObjectReference kActorREF= kActor as ObjectReference
 	ActorBase pActorBase = kActor.GetActorBase()
 
 	Float fWeightSwellMod    = StorageUtil.GetFloatValue(kActor, "_SLH_fWeightSwellMod")
 	Float fWeightMax 		= StorageUtil.GetFloatValue(kActor, "_SLH_fWeightMax")
 	Float fWeightMin 		= StorageUtil.GetFloatValue(kActor, "_SLH_fWeightMin")
-
-	if (fWeightOrig != pActorBase.GetWeight() )
-		debugTrace( "[SLH] Weight discrepency: " + fWeightOrig)
-		debugTrace( "[SLH]      should be: " + pActorBase.GetWeight())
-	endif
  
 	Float fWeight = fctUtil.fRange(fNewWeight, fWeightMin, fWeightMax)
-	GV_weightValue.SetValue(fWeight)
-	StorageUtil.SetFloatValue(kActor, "_SLH_fWeight",  fWeight) 
+	Float fWeightOrig = pActorBase.GetWeight()
 
-	if (fWeightOrig != fNewWeight)
+	Float fManualWeightChange = StorageUtil.GetFloatValue(kActor, "_SLH_fManualWeightChange") 
+
+	if (fManualWeightChange != -1)
+	 	Debug.Trace("[SLH] Weight inconsistency - maybe after showracemenu? " + fManualWeightChange)
+		StorageUtil.SetFloatValue(kActor, "_SLH_fManualWeightChange",  -1) 
+
+		fWeightOrig = fManualWeightChange
+		; 	StorageUtil.SetFloatValue(kActor, "_SLH_fWeight", fWeightOrig)
+	EndIf
+
+	if (fWeightOrig != fWeight) 
 		Float NeckDelta = (fWeightOrig / 100) - (fWeight / 100) ;Work out the neckdelta.
 
-		; Debug.Notification("[SLH] New weight: " + fNewWeight)
+		Debug.Trace("[SLH] New weight: " + fWeight)
 	 
-		pActorBase.SetWeight(fNewWeight) ;Set Player's weight to a random float between 0.0 and 100.0.
+		pActorBase.SetWeight(fWeight) 
 		kActor.UpdateWeight(NeckDelta) ;Apply the changes.
+
+		GV_weightValue.SetValue(fWeight)
+		StorageUtil.SetFloatValue(kActor, "_SLH_fWeight",  fWeight)
 	EndIf
+
  
 EndFunction
 
@@ -701,6 +837,16 @@ function alterBreastNode(Actor kActor, float fNewBreast = 0.0)
 	Float fBreastSwellMod    = StorageUtil.GetFloatValue(kActor, "_SLH_fBreastSwellMod")
 	Float fBreastMax      	= StorageUtil.GetFloatValue(kActor, "_SLH_fBreastMax")
 	Float fBreastMin      	= StorageUtil.GetFloatValue(kActor, "_SLH_fBreastMin")
+
+	Float fApparelMod = 1.0
+	Bool bArmorOn = kActor.WornHasKeyword(ArmorOn)
+	Bool bClothingOn = kActor.WornHasKeyword(ClothingOn)
+
+	If (bArmorOn)
+		fApparelMod = GV_armorMod.GetValue() as Float
+	ElseIf (bClothingOn)
+		fApparelMod = GV_clothMod.GetValue() as Float
+	EndIf
 
 	; if bTorpedoFixEnabled
 	; 	fPregLeftBreast01  = fPregLeftBreast01 * (fOrigLeftBreast / fPregLeftBreast)
@@ -733,15 +879,15 @@ function alterBreastNode(Actor kActor, float fNewBreast = 0.0)
 	fPregLeftBreast    = fBreast
 	fPregRightBreast   = fBreast
 
-	NetImmerse.SetNodeScale( kActor, NINODE_LEFT_BREAST, fPregLeftBreast, false)
-	NetImmerse.SetNodeScale( kActor, NINODE_RIGHT_BREAST, fPregRightBreast, false)
+	NetImmerse.SetNodeScale( kActor, NINODE_LEFT_BREAST, fPregLeftBreast * fApparelMod, false)
+	NetImmerse.SetNodeScale( kActor, NINODE_RIGHT_BREAST, fPregRightBreast * fApparelMod, false)
 	; if bTorpedoFixEnabled
 	;	NetImmerse.SetNodeScale( kActor, NINODE_LEFT_BREAST01, fPregLeftBreast01, false)
 	;	NetImmerse.SetNodeScale( kActor, NINODE_RIGHT_BREAST01, fPregRightBreast01, false)
 	; endIf
 
-	NetImmerse.SetNodeScale( kActor, NINODE_RIGHT_BREAST, fPregRightBreast, true)
-	NetImmerse.SetNodeScale( kActor, NINODE_LEFT_BREAST, fPregLeftBreast, true)
+	NetImmerse.SetNodeScale( kActor, NINODE_RIGHT_BREAST, fPregRightBreast * fApparelMod, true)
+	NetImmerse.SetNodeScale( kActor, NINODE_LEFT_BREAST, fPregLeftBreast * fApparelMod, true)
 	; if bTorpedoFixEnabled
 	;	NetImmerse.SetNodeScale( kActor, NINODE_RIGHT_BREAST01, fPregRightBreast01, true)
 	;	NetImmerse.SetNodeScale( kActor, NINODE_LEFT_BREAST01, fPregLeftBreast01, true)
@@ -756,6 +902,16 @@ function alterBellyNode(Actor kActor, float fNewBelly = 0.0)
 	Float fBellySwellMod      = StorageUtil.GetFloatValue(kActor, "_SLH_fBellySwellMod")
 	Float fBellyMax       	= StorageUtil.GetFloatValue(kActor, "_SLH_fBellyMax")
 	Float fBellyMin       	= StorageUtil.GetFloatValue(kActor, "_SLH_fBellyMin")
+
+	Float fApparelMod = 1.0
+	Bool bArmorOn = kActor.WornHasKeyword(ArmorOn)
+	Bool bClothingOn = kActor.WornHasKeyword(ClothingOn)
+
+	If (bArmorOn)
+		fApparelMod = GV_armorMod.GetValue() as Float
+	ElseIf (bClothingOn)
+		fApparelMod = GV_clothMod.GetValue() as Float
+	EndIf
 
 	if (fctUtil.isExternalChangeModActive(kActor))
 		fNodeMax = fPregBellyMax
@@ -775,8 +931,8 @@ function alterBellyNode(Actor kActor, float fNewBelly = 0.0)
 	fPregBelly     = fBelly
 
 	; kTarget.SetAnimationVariableFloat("ecBellySwell", fBellySwell)
-	NetImmerse.SetNodeScale( kActor, NINODE_BELLY, fPregBelly, false)
-	NetImmerse.SetNodeScale( kActor, NINODE_BELLY, fPregBelly, true)
+	NetImmerse.SetNodeScale( kActor, NINODE_BELLY, fPregBelly * fApparelMod, false)
+	NetImmerse.SetNodeScale( kActor, NINODE_BELLY, fPregBelly * fApparelMod, true)
 
 	; Debug.Notification("SexLab Hormones: Set Belly scale: " + fPregBelly)
 EndFunction
@@ -789,6 +945,16 @@ function alterButtNode(Actor kActor, float fNewButt = 0.0)
 	Float fButtSwellMod      = StorageUtil.GetFloatValue(kActor, "_SLH_fButtSwellMod")
 	Float fButtMax       	= StorageUtil.GetFloatValue(kActor, "_SLH_fButtMax")
 	Float fButtMin       	= StorageUtil.GetFloatValue(kActor, "_SLH_fButtMin")
+
+	Float fApparelMod = 1.0
+	Bool bArmorOn = kActor.WornHasKeyword(ArmorOn)
+	Bool bClothingOn = kActor.WornHasKeyword(ClothingOn)
+
+	If (bArmorOn)
+		fApparelMod = GV_armorMod.GetValue() as Float
+	ElseIf (bClothingOn)
+		fApparelMod = GV_clothMod.GetValue() as Float
+	EndIf
 
 	if (fctUtil.isExternalChangeModActive(kActor))
 		fNodeMax = fPregButtMax
@@ -807,11 +973,11 @@ function alterButtNode(Actor kActor, float fNewButt = 0.0)
 	fPregLeftButt = fButt
 	fPregRightButt = fButt
 
-	NetImmerse.SetNodeScale( kActor, NINODE_LEFT_BUTT, fPregLeftButt, false)
-	NetImmerse.SetNodeScale( kActor, NINODE_RIGHT_BUTT, fPregRightButt, false)
+	NetImmerse.SetNodeScale( kActor, NINODE_LEFT_BUTT, fPregLeftButt * fApparelMod, false)
+	NetImmerse.SetNodeScale( kActor, NINODE_RIGHT_BUTT, fPregRightButt * fApparelMod, false)
 
-	NetImmerse.SetNodeScale( kActor, NINODE_LEFT_BUTT, fPregLeftButt, true)
-	NetImmerse.SetNodeScale( kActor, NINODE_RIGHT_BUTT, fPregRightButt, true)
+	NetImmerse.SetNodeScale( kActor, NINODE_LEFT_BUTT, fPregLeftButt * fApparelMod, true)
+	NetImmerse.SetNodeScale( kActor, NINODE_RIGHT_BUTT, fPregRightButt * fApparelMod, true)
 EndFunction
 
 function alterSchlongNode(Actor kActor, float fNewSchlong = 0.0)				
@@ -917,8 +1083,6 @@ function refreshBodyShape(Actor kActor)
 	ObjectReference kActorREF= kActor as ObjectReference
 	ActorBase pActorBase = kActor.GetActorBase()
 	Race thisRace = pActorBase.GetRace()
-	Bool bArmorOn = kActor.WornHasKeyword(ArmorOn)
-	Bool bClothingOn = kActor.WornHasKeyword(ClothingOn)
 	Float fNodeMax
 	Bool bExternalChangeModActive = fctUtil.isExternalChangeModActive(kActor)
 
@@ -928,13 +1092,6 @@ function refreshBodyShape(Actor kActor)
 	Float fButt = StorageUtil.GetFloatValue(kActor, "_SLH_fButt")
 	Float fSchlong = StorageUtil.GetFloatValue(kActor, "_SLH_fSchlong")
 
-	Float fApparelMod = 1.0
-
-	If (bArmorOn)
-		fApparelMod = GV_armorMod.GetValue() as Float
-	ElseIf (bClothingOn)
-		fApparelMod = GV_clothMod.GetValue() as Float
-	EndIf
 
 ;	Debug.Notification("SexLab Hormones: Refreshing body shape values")
 ;	Debug.Notification(".")
@@ -959,26 +1116,24 @@ function refreshBodyShape(Actor kActor)
 		debugTrace( "[SLH] 	Current weight: " + fWeight)
 		debugTrace( "[SLH] 	StorageUtil: " + StorageUtil.GetFloatValue(kActor, "_SLH_fWeight") )
 
-		Float fCurrentWeight = pActorBase.GetWeight()
-
-		alterWeight(kActor,  fWeight, fCurrentWeight  )
+		alterWeight(kActor,  fWeight  )
 	EndIf
 
 	If (GV_useNodes.GetValue() == 1)
 		; --------
 		; BREAST SWELL ====================================================
 		if ( bBreastEnabled )  && (GV_useBreastNode.GetValue() == 1)
-			alterBreastNode(kActor,  fBreast * fApparelMod)				
+			alterBreastNode(kActor,  fBreast )				
 		endif
 
 		; BELLY SWELL =====================================================
 		if ( bBellyEnabled )  && (GV_useBellyNode.GetValue() == 1) 
-			alterBellyNode(kActor, fBelly * fApparelMod )
+			alterBellyNode(kActor, fBelly  )
 		endif
 
 		; BUTT SWELL ======================================================
 		if ( bButtEnabled )   && (GV_useButtNode.GetValue() == 1)  
-			alterButtNode(kActor,  fButt  * fApparelMod)
+			alterButtNode(kActor,  fButt  )
 		endif
 
 		; BUTT SWELL ======================================================
@@ -1254,7 +1409,7 @@ function resetShapeState(Actor kActor)
  
 
 	Float fWeight = StorageUtil.GetFloatValue(kActor, "_SLH_fWeightOrig")
-	alterWeight(kActor, fWeight, pActorBase.GetWeight())
+	alterWeight(kActor, fWeight)
 	StorageUtil.SetFloatValue(kActor, "_SLH_fWeight", fWeight)
 
 	fHeight = fOrigHeight
@@ -1290,18 +1445,18 @@ function initShapeConstants(Actor kActor)
 	; fButtSwellMod = GV_buttSwellMod.GetValue()   ; 0.2 
 	; fSchlongSwellMod = GV_schlongSwellMod.GetValue()   ; 0.2 
 	; fWeightSwellMod = GV_weightSwellMod.GetValue()   ; 0.2 
+ 
+	StorageUtil.SetFloatValue(kActor, "_SLH_fBreastMin",  GV_breastMin.GetValue() as Float) 
+	StorageUtil.SetFloatValue(kActor, "_SLH_fButtMin",  GV_buttMin.GetValue()  as Float) 
+	StorageUtil.SetFloatValue(kActor, "_SLH_fBellyMin",  GV_bellyMin.GetValue()   as Float) 
+	StorageUtil.SetFloatValue(kActor, "_SLH_fSchlongMin",  GV_schlongMin.GetValue()  as Float) 
+	StorageUtil.SetFloatValue(kActor, "_SLH_fWeightMin",  GV_weightMin.GetValue()   as Float) 
 
-	; fBreastMax      = GV_breastMax.GetValue()   ; 4.0
-	; fBellyMax       = GV_bellyMax.GetValue()   ; 1.0
-	; fButtMax       	= GV_buttMax.GetValue()   ; 4.0
-	; fSchlongMax     = GV_schlongMax.GetValue()   ; 4.0
-	; fWeightMax      = GV_weightMax.GetValue()   ; 4.0
-
-	; fBreastMin      = GV_breastMin.GetValue()   ; 4.0
-	; fBellyMin       = GV_bellyMin.GetValue()   ; 1.0
-	; fButtMin       	= GV_buttMin.GetValue()   ; 4.0
-	; fSchlongMin     = GV_schlongMin.GetValue()   ; 4.0
-	; fWeightMin      = GV_weightMin.GetValue()   ; 4.0
+	StorageUtil.SetFloatValue(kActor, "_SLH_fBreastMax",  GV_breastMax.GetValue() as Float)
+	StorageUtil.SetFloatValue(kActor, "_SLH_fButtMax",  GV_buttMax.GetValue()  as Float)
+	StorageUtil.SetFloatValue(kActor, "_SLH_fBellyMax",  GV_bellyMax.GetValue() as Float)
+	StorageUtil.SetFloatValue(kActor, "_SLH_fSchlongMax",  GV_schlongMax.GetValue()  as Float)
+	StorageUtil.SetFloatValue(kActor, "_SLH_fWeightMax",  GV_weightMax.GetValue()   as Float)
 
 	bEnableLeftBreast  = NetImmerse.HasNode(kActor, NINODE_LEFT_BREAST, false)
 	bEnableRightBreast = NetImmerse.HasNode(kActor, NINODE_RIGHT_BREAST, false)
@@ -1322,6 +1477,15 @@ endFunction
 function getShapeFromNodes(Actor kActor)
 	ObjectReference kActorREF= kActor as ObjectReference
 	ActorBase pActorBase = kActor.GetActorBase()
+	Float fApparelMod = 1.0
+	Bool bArmorOn = kActor.WornHasKeyword(ArmorOn)
+	Bool bClothingOn = kActor.WornHasKeyword(ClothingOn)
+
+	If (bArmorOn)
+		fApparelMod = GV_armorMod.GetValue() as Float
+	ElseIf (bClothingOn)
+		fApparelMod = GV_clothMod.GetValue() as Float
+	EndIf
 
 	if (kActor == None)
 		return
@@ -1330,9 +1494,9 @@ function getShapeFromNodes(Actor kActor)
 	; Debug.Notification("SexLab Hormones: Reading state from storage")
 	debugTrace("[SLH] <--- Reading state from player actor")
 
-	StorageUtil.SetFloatValue(kActor, "_SLH_fBreast", NetImmerse.GetNodeScale(kActor, NINODE_RIGHT_BREAST, false))
-	StorageUtil.SetFloatValue(kActor, "_SLH_fButt", NetImmerse.GetNodeScale(kActor, NINODE_RIGHT_BUTT, false))
-	StorageUtil.SetFloatValue(kActor, "_SLH_fBelly", NetImmerse.GetNodeScale(kActor, NINODE_BELLY, false))
+	StorageUtil.SetFloatValue(kActor, "_SLH_fBreast", NetImmerse.GetNodeScale(kActor, NINODE_RIGHT_BREAST, false) / fApparelMod)
+	StorageUtil.SetFloatValue(kActor, "_SLH_fButt", NetImmerse.GetNodeScale(kActor, NINODE_RIGHT_BUTT, false) / fApparelMod)
+	StorageUtil.SetFloatValue(kActor, "_SLH_fBelly", NetImmerse.GetNodeScale(kActor, NINODE_BELLY, false)  / fApparelMod)
 	StorageUtil.SetFloatValue(kActor, "_SLH_fSchlong", NetImmerse.GetNodeScale(kActor, NINODE_SCHLONG, false))
 	; fWeight = pActorBase.GetWeight()
 	StorageUtil.SetFloatValue(kActor, "_SLH_fWeight", pActorBase.GetWeight())

@@ -1,6 +1,7 @@
 Scriptname SLH_QST_BimboAlias extends ReferenceAlias  
 
 SLH_fctPolymorph Property fctPolymorph Auto
+SLH_fctBodyshape Property fctBodyshape Auto
 SLH_fctUtil Property fctUtil Auto
 SLH_fctColor Property fctColor Auto
 SLH_QST_HormoneGrowth Property SLH_Control Auto
@@ -34,6 +35,7 @@ Float fRFSU = 0.1
 Bool isUpdating = False
 
 Bool isMale 
+Bool isMaleToBimbo
 Float fSchlongMin
 Float fSchlongMax
 
@@ -62,9 +64,9 @@ Event OnLocationChange(Location akOldLoc, Location akNewLoc)
 	Endif
 
 	; debug.Notification("[SLH] Bimbo changing location")
-	if (!isUpdating)
+	; if (!isUpdating)
     	RegisterForSingleUpdate( fRFSU )
-    endif
+    ; endif
 endEvent
 
 ;===========================================================================
@@ -77,6 +79,9 @@ Event OnPlayerLoadGame()
 			StorageUtil.SetIntValue(BimboActor, "_SLH_bimboTransformDate", 1)
 			debug.trace("[slh+] poor bimbo, are you lost?")
 		endif
+
+		isMaleToBimbo =  StorageUtil.GetIntValue(none, "_SLH_bimboIsOriginalActorMale") as Bool
+
     	RegisterForSingleUpdate( 10 )
     ; else
 	; 	debug.trace("[slh+] game loaded, is already updating (is it?)")
@@ -89,6 +94,8 @@ EndEvent
 Event OnUpdateGameTime()
 	; Safeguard - Exit if alias not set
 	if (BimboAliasRef == None)
+		; try again later
+    	RegisterForSingleUpdate( 10 )
 		Return
 	Endif
 	; debug.Notification("[SLH] Bimbo update game time")
@@ -125,10 +132,12 @@ EndEvent
 
 Event OnUpdate()
 	; Safeguard - Exit if alias not set
-	; Debug.Notification( "[SLH] Bimbo status update: " + StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") as Int )
-	; Debug.Notification( "[SLH] Bimbo alias: " + BimboAliasRef )
 
 	if (BimboAliasRef == None)
+		; Debug.Notification( "[SLH] Bimbo status update: " + StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") as Int )
+		Debug.Trace( "[SLH] Bimbo alias is None: " )
+		; try again later
+    	RegisterForSingleUpdate( 10 )
 		Return
 	Endif
 
@@ -162,7 +171,7 @@ Event OnUpdate()
 
     ; Exit conditions
     If (iDaysSinceLastCheck >= 1)
-        Debug.Trace( "[SLH] Bimbo status update - Days transformed: " + StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformGameDays") as Int )
+        Debug.Trace( "[SLH] Bimbo status update - Days transformed: " + daysSinceEnslavement )
         isMale = fctUtil.isMale(BimboActor)
         fSchlongMin = StorageUtil.GetFloatValue(BimboActor, "_SLH_fSchlongMin")
         fSchlongMax = StorageUtil.GetFloatValue(BimboActor, "_SLH_fSchlongMax")
@@ -172,11 +181,11 @@ Event OnUpdate()
         ; StorageUtil.SetFloatValue(BimboActor, "_SLH_fBreast", 0.8 ) 
         ; StorageUtil.SetFloatValue(BimboActor, "_SLH_fBelly", 0.8 ) 
         ; StorageUtil.SetFloatValue(BimboActor, "_SLH_fWeight", 0 ) 
-        If (GV_isTG.GetValue() == 1) && (!isMale) && (daysSinceEnslavement==1)
-            _SLH_QST_Bimbo.SetStage(14)
-        ElseIf (GV_isTG.GetValue() == 1) && (isMale) && (daysSinceEnslavement==1)
-            _SLH_QST_Bimbo.SetStage(12)
-        Endif
+        ; If (GV_isTG.GetValue() == 1) && (!isMale) && (daysSinceEnslavement==1)
+        ;    _SLH_QST_Bimbo.SetStage(14)
+        ; ElseIf (GV_isTG.GetValue() == 1) && (isMale) && (daysSinceEnslavement==1)
+        ;    _SLH_QST_Bimbo.SetStage(12)
+        ; Endif
 
         ;[mod] progressive tf - start
         ; if (daysSinceEnslavement<=5) ; !(_SLH_QST_Bimbo.IsStageDone(18) || _SLH_QST_Bimbo.IsStageDone(16) )
@@ -184,27 +193,60 @@ Event OnUpdate()
         ; endif
         ;[mod] progressive tf - end
 
-        If (GV_isTG.GetValue() == 1) && (!isMale) && (daysSinceEnslavement<=6) ; !_SLH_QST_Bimbo.IsStageDone(18) 
-        	
-            if (StorageUtil.GetFloatValue(BimboActor, "_SLH_fSchlong") >= fSchlongMin ) && ( (StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformGameDays") as Int) < 5 )
-                StorageUtil.SetFloatValue(BimboActor, "_SLH_fSchlong", StorageUtil.GetFloatValue(BimboActor, "_SLH_fSchlong") * 0.65 - 0.1) 
-                SendModEvent("SLHRefresh")
+        If (isMaleToBimbo) && (daysSinceEnslavement<=6) ; !_SLH_QST_Bimbo.IsStageDone(18) 
+            fctBodyshape.alterBodyByPercent(BimboActor, "Weight", 20.0)
+            fctBodyshape.alterBodyByPercent(BimboActor, "Breast", 20.0)
 
-            elseIf ((StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformGameDays") as Int) >= 5 )
+            ; Male to female bimbo
+            if (daysSinceEnslavement==1)
+            	debug.messagebox("Your boobs are growing larger every day. You find it more and more difficult to resist cupping them and feeling their weight in your hand. If they grow any larger, they will make using bows and armors a lot more difficult. That's alright though.. bimbos don't need to fight. They get others to fight for the right to use them.")
+            elseif (daysSinceEnslavement==2)
+            	debug.messagebox("Your lips are full and feel parched if they are not frequently coated with semen. Who knew semen tasted so good. A good bimbo doesn't let a drop go to waste. It has to land on her or better, deep inside.")
+            elseif (daysSinceEnslavement==3)
+            	debug.messagebox("Your cock is shrinking and getting more sensitive every day. Squeezing your legs and rubbing it frequently only provide temporary relief and wets your expanding vagina. Don't worry about your cock little bimbo... you will get plenty of cocks to squeeze.")
+            elseif (daysSinceEnslavement==4)
+            	debug.messagebox("Everything around you looks so confusing and difficult. Except for sex. Sex is easy and fun. Being horny makes your hand shake and your legs weak with anticipation. Being a slut is one of the many perks of being a bimbo.")
+            endif
+        	
+            if (GV_isTG.GetValue() == 1) && (StorageUtil.GetFloatValue(BimboActor, "_SLH_fSchlong") >= fSchlongMin ) && ( daysSinceEnslavement < 5 )
+                ; StorageUtil.SetFloatValue(BimboActor, "_SLH_fSchlong", StorageUtil.GetFloatValue(BimboActor, "_SLH_fSchlong") * 0.65 - 0.1) 
+                fctBodyshape.alterBodyByPercent(BimboActor, "Schlong", -20.0)
+                BimboActor.SendModEvent("SLHRefresh")
+
+            elseIf (GV_isTG.GetValue() == 1) && (daysSinceEnslavement >= 5 )
                 BimboActor.SendModEvent("SLHRemoveSchlong")
                 Sexlab.TreatAsFemale(BimboActor)
                 _SLH_QST_Bimbo.SetStage(18)
+
+                SLH_Control.setTGState(BimboActor, FALSE)
             endif
 
-        ElseIf (GV_isTG.GetValue() == 1) && (isMale) && (daysSinceEnslavement<=6) ; !_SLH_QST_Bimbo.IsStageDone(16) 
-        	
-            ; bimboDailyProgressiveTransformation(BimboActor, true) ;[mod]
-            if (StorageUtil.GetFloatValue(BimboActor, "_SLH_fSchlong") <= fSchlongMax )  && ( (StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformGameDays") as Int) < 5 )
-                StorageUtil.SetFloatValue(BimboActor, "_SLH_fSchlong", 0.1 + StorageUtil.GetFloatValue(BimboActor, "_SLH_fSchlong") * 1.2 ) 
-                SendModEvent("SLHRefresh")
+        ElseIf (!isMaleToBimbo) && (daysSinceEnslavement<=6) ; !_SLH_QST_Bimbo.IsStageDone(16) 
+ 
+            fctBodyshape.alterBodyByPercent(BimboActor, "Weight", 20.0)
+            fctBodyshape.alterBodyByPercent(BimboActor, "Breast", 20.0)
 
-            elseif ((StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformGameDays") as Int) >= 5 )
+            ; Female to female bimbo
+            if (daysSinceEnslavement==1)
+            	debug.messagebox("Your boobs are growing larger every day and your hair is definitely blonde now. Forget about wearing armor and using bows, you will soon have to rely on your charms to get a strong warrior to fight for you... maybe he will give you a good fuck too.")
+            elseif (daysSinceEnslavement==2)
+            	debug.messagebox("The constant tingle in your tits is only relieved after they have been sucked on for a long time, or tweaked.. or pinched with your long pink nails. Damn.. just thinking about it made them tingle again.")
+            elseif (daysSinceEnslavement==3)
+            	debug.messagebox("Forget about using swords as well. You constantly crave only one kind of sword now... the hard and throbbing kind. There is nothing a good bimbo wouldn't do for a good cock in her hand.. or lips.. or loged deep inside her.")
+            elseif (daysSinceEnslavement==4)
+            	debug.messagebox("Sex is all you can think about now.. you crave it.. your tits crave it.. you lips crave it. Being horny makes your hand shake and your legs weak with anticipation. Being a slut is one of the many perks of being a bimbo.")
+            endif
+  
+            ; bimboDailyProgressiveTransformation(BimboActor, true) ;[mod]
+            if (GV_isTG.GetValue() == 1) && (StorageUtil.GetFloatValue(BimboActor, "_SLH_fSchlong") <= fSchlongMax )  && ( daysSinceEnslavement < 5 )
+                ; StorageUtil.SetFloatValue(BimboActor, "_SLH_fSchlong", 0.1 + StorageUtil.GetFloatValue(BimboActor, "_SLH_fSchlong") * 1.2 ) 
+                fctBodyshape.alterBodyByPercent(BimboActor, "Schlong", 20.0)
+                BimboActor.SendModEvent("SLHRefresh")
+
+            elseif (GV_isTG.GetValue() == 1) && (daysSinceEnslavement >= 5 )
                 _SLH_QST_Bimbo.SetStage(16)
+
+                SLH_Control.setTGState(BimboActor, FALSE)
             endif
 
         endif
@@ -722,8 +764,9 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 
 	;level 2, nails, weak body (can drop weapons when hit)
 	elseif transformationLevel == 2
-		Debug.Notification("Your body feels weak and sizzling.")
+		Debug.Notification("Your body feels weak and your boobs are sizzling.")
 		fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Feet Nails", iColor = 0x00FF0984 )
+		fctBodyshape.alterBodyByPercent(bimbo, "Breast", 20.0)
 		isBimboFrailBody = true
 
 	;level 3: back tattoo, clumsy hands
@@ -750,7 +793,7 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 				fButtActual = fButtMax
 			endif
             StorageUtil.SetFloatValue(bimbo, "_SLH_fButt", fButtActual ) 
-            SendModEvent("SLHRefresh")
+            Bimbo.SendModEvent("SLHRefresh")
 
 			Utility.Wait(1.0)
 			Debug.SendAnimationEvent(bimbo, "BleedOutStop")
