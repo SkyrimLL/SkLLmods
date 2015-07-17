@@ -80,6 +80,7 @@ Int Property HP  Auto
 Int Property Magicka  Auto  
 Int Property Stamina  Auto  
 
+ObjectReference Property BimboDummyRef  Auto  
 
 GlobalVariable      Property GV_isTG                   Auto
 GlobalVariable      Property GV_isHRT                   Auto
@@ -477,7 +478,7 @@ function bimboTransformEffectOFF(actor kActor)
 
         SprigganFX.Play( kActor, 30 )
 
-        BimboAliasRef.ForceRefTo(None)
+        BimboAliasRef.ForceRefTo(BimboDummyRef)
 
         _actorPresets = new int[4]
         _actorMorphs = new float[19]

@@ -19,6 +19,7 @@ GlobalVariable      Property GV_allowHRT                Auto
 GlobalVariable      Property GV_allowBimbo              Auto
 
 GlobalVariable      Property GV_bimboClumsinessMod              Auto
+GlobalVariable      Property GV_bimboClumsinessDrop    	Auto
 
 Weapon Property ReturnItem Auto
 
@@ -52,7 +53,7 @@ Bool isClumsyLegsRegistered = False
 ;how much gold hypnosis victim earns each day
 Event OnLocationChange(Location akOldLoc, Location akNewLoc)
 	; Safeguard - Exit if alias not set
-	if (BimboAliasRef == None)
+	if (Game.GetPlayer().GetActorBase().GetRace() != _SLH_BimboRace)
 		Return
 	Endif
 
@@ -75,8 +76,8 @@ endEvent
 Event OnPlayerLoadGame()
 	; if (!isUpdating)
 		debug.trace("[slh+] game loaded, registering for update")
-		if Game.GetPlayer().GetActorBase().GetRace() == _SLH_BimboRace && StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") == 0
-			StorageUtil.SetIntValue(BimboActor, "_SLH_bimboTransformDate", 1)
+		if Game.GetPlayer().GetActorBase().GetRace() == _SLH_BimboRace && StorageUtil.GetIntValue(Game.GetPlayer(), "_SLH_bimboTransformDate") == 0
+			StorageUtil.SetIntValue(Game.GetPlayer(), "_SLH_bimboTransformDate", 1)
 			debug.trace("[slh+] poor bimbo, are you lost?")
 		endif
 
@@ -93,7 +94,7 @@ EndEvent
 ;===========================================================================
 Event OnUpdateGameTime()
 	; Safeguard - Exit if alias not set
-	if (BimboAliasRef == None)
+	if (Game.GetPlayer().GetActorBase().GetRace() != _SLH_BimboRace)
 		; try again later
     	RegisterForSingleUpdate( 10 )
 		Return
@@ -115,7 +116,7 @@ EndEvent
 
 Event OnActorAction(int actionType, Actor akActor, Form source, int slot)
 	; Safeguard - Exit if alias not set
-	if (BimboAliasRef == None)
+	if (Game.GetPlayer().GetActorBase().GetRace() != _SLH_BimboRace)
 		;debug.trace("[slh+] bimbo OnActorAction, None")
 		Return
 	Endif
@@ -127,13 +128,13 @@ Event OnActorAction(int actionType, Actor akActor, Form source, int slot)
 		Return
 	Endif
 
-	clumsyBimboHands(actionType, BimboActor, source, slot)
+	clumsyBimboHands(actionType, akActor, source, slot)
 EndEvent
 
 Event OnUpdate()
 	; Safeguard - Exit if alias not set
 
-	if (BimboAliasRef == None)
+	if (Game.GetPlayer().GetActorBase().GetRace() != _SLH_BimboRace)
 		; Debug.Notification( "[SLH] Bimbo status update: " + StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") as Int )
 		Debug.Trace( "[SLH] Bimbo alias is None: " )
 		; try again later
@@ -194,8 +195,8 @@ Event OnUpdate()
         ;[mod] progressive tf - end
 
         If (isMaleToBimbo) && (daysSinceEnslavement<=6) ; !_SLH_QST_Bimbo.IsStageDone(18) 
-            fctBodyshape.alterBodyByPercent(BimboActor, "Weight", 20.0)
-            fctBodyshape.alterBodyByPercent(BimboActor, "Breast", 20.0)
+            fctBodyshape.alterBodyByPercent(BimboActor, "Weight", 50.0)
+            fctBodyshape.alterBodyByPercent(BimboActor, "Breast", 50.0)
 
             ; Male to female bimbo
             if (daysSinceEnslavement==1)
@@ -210,7 +211,7 @@ Event OnUpdate()
         	
             if (GV_isTG.GetValue() == 1) && (StorageUtil.GetFloatValue(BimboActor, "_SLH_fSchlong") >= fSchlongMin ) && ( daysSinceEnslavement < 5 )
                 ; StorageUtil.SetFloatValue(BimboActor, "_SLH_fSchlong", StorageUtil.GetFloatValue(BimboActor, "_SLH_fSchlong") * 0.65 - 0.1) 
-                fctBodyshape.alterBodyByPercent(BimboActor, "Schlong", -20.0)
+                fctBodyshape.alterBodyByPercent(BimboActor, "Schlong", -30.0)
                 BimboActor.SendModEvent("SLHRefresh")
 
             elseIf (GV_isTG.GetValue() == 1) && (daysSinceEnslavement >= 5 )
@@ -223,8 +224,8 @@ Event OnUpdate()
 
         ElseIf (!isMaleToBimbo) && (daysSinceEnslavement<=6) ; !_SLH_QST_Bimbo.IsStageDone(16) 
  
-            fctBodyshape.alterBodyByPercent(BimboActor, "Weight", 20.0)
-            fctBodyshape.alterBodyByPercent(BimboActor, "Breast", 20.0)
+            fctBodyshape.alterBodyByPercent(BimboActor, "Weight", 50.0)
+            fctBodyshape.alterBodyByPercent(BimboActor, "Breast", 50.0)
 
             ; Female to female bimbo
             if (daysSinceEnslavement==1)
@@ -240,7 +241,7 @@ Event OnUpdate()
             ; bimboDailyProgressiveTransformation(BimboActor, true) ;[mod]
             if (GV_isTG.GetValue() == 1) && (StorageUtil.GetFloatValue(BimboActor, "_SLH_fSchlong") <= fSchlongMax )  && ( daysSinceEnslavement < 5 )
                 ; StorageUtil.SetFloatValue(BimboActor, "_SLH_fSchlong", 0.1 + StorageUtil.GetFloatValue(BimboActor, "_SLH_fSchlong") * 1.2 ) 
-                fctBodyshape.alterBodyByPercent(BimboActor, "Schlong", 20.0)
+                fctBodyshape.alterBodyByPercent(BimboActor, "Schlong", -30.0)
                 BimboActor.SendModEvent("SLHRefresh")
 
             elseif (GV_isTG.GetValue() == 1) && (daysSinceEnslavement >= 5 )
@@ -273,7 +274,7 @@ EndEvent
 
 Event OnCombatStateChanged(Actor akTarget, int aeCombatState)
 	; Safeguard - Exit if alias not set
-	if (BimboAliasRef == None)
+	if (Game.GetPlayer().GetActorBase().GetRace() != _SLH_BimboRace)
 		Return
 	Endif
 
@@ -329,7 +330,7 @@ EndEvent
 
 Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile, bool abPowerAttack, bool abSneakAttack, bool abBashAttack, bool abHitBlocked)
 	; Safeguard - Exit if alias not set
-	if (BimboAliasRef == None)
+	if (Game.GetPlayer().GetActorBase().GetRace() != _SLH_BimboRace)
 		Return
 	Endif
 
@@ -387,7 +388,7 @@ EndEvent
 
 Event OnItemAdded(Form akBaseItem, int aiItemCount, ObjectReference akItemReference, ObjectReference akSourceContainer)
 	; Safeguard - Exit if alias not set
-	if (BimboAliasRef == None)
+	if (Game.GetPlayer().GetActorBase().GetRace() != _SLH_BimboRace)
 		Return
 	Endif
 
@@ -421,7 +422,7 @@ endEvent
 ;move this to a mcm option
 ;===========================================================================
 Function DropOrUnequip(Actor akActor, Form akObject, bool drop = true)
-	If drop 
+	If drop && (GV_bimboClumsinessDrop.GetValue() == 1) 
 		akActor.DropObject(akObject)
 	else
 		akActor.UnequipItem(akObject, false, true)
@@ -596,13 +597,13 @@ function clumsyBimboHands(int actionType, Actor bimbo, Form source, int slot)
 	endif
 
 	float bimboArousal = slaUtil.GetActorArousal(bimbo) as float
-	float dropchance = 0.5 + (bimboArousal / 35 )
+	float dropchance = 1.0 + (bimboArousal / 10 )
 	string handMessage
 	int[] drops
 
 	;...but bow draw chances are bigger (using both hands)
 	if actionType == 5
-		dropchance *= 2.0 * (GV_bimboClumsinessMod.GetValue() as Float)
+		dropchance *= 3.0 * (GV_bimboClumsinessMod.GetValue() as Float)
 	endif
 
 	;TODO check long nails (equipped at the bad end), dropchance *= 2 
@@ -613,7 +614,11 @@ function clumsyBimboHands(int actionType, Actor bimbo, Form source, int slot)
 		if actionType == 5
 			; bow fumble
 			Input.TapKey(Input.GetMappedKey("Ready Weapon"))
-			drops = dropWeapons(bimbo, both = false, chanceMult = 0.2) ;may drop the bow too
+			roll = Utility.RandomInt()
+			dropchance = dropchance * 0.33
+			if roll <= (dropchance as int)
+				drops = dropWeapons(bimbo, both = false ) ;may drop the bow too
+			endif
 		elseif slot == 1
 			; right hand
 			drops = dropWeapons(bimbo, both = true)
@@ -667,7 +672,7 @@ function clumsyBimboLegs(Actor bimbo)
 			;TODO is using HDT heels and the tf ended, decrease the chances (a good bimbo always use heels)
 			if bimbo.IsSprinting()
 				tumbleChance *= 4.00 * (GV_bimboClumsinessMod.GetValue() as Float)
-				tumbleForce *= 1.50
+				tumbleForce *= 1.10
 			elseif bimbo.IsRunning()
 				tumbleChance *= 2.00 * (GV_bimboClumsinessMod.GetValue() as Float)
 				tumbleForce *= 1.00
@@ -710,7 +715,7 @@ function clumsyBimboLegs(Actor bimbo)
 				;Utility.Wait(2.0)
 				;Debug.SendAnimationEvent(bimbo, "BleedOutStop")
 
-			elseif bimboArousal > 80 ;warn the player
+			elseif bimboArousal > 80 && roll <= 20 ;warn the player
 				Debug.Notification("You squeeze your legs with arousal.")
 				SLH_Control.playMoan(bimbo)
 				bimbo.CreateDetectionEvent(bimbo, 10)
@@ -851,4 +856,6 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 	;check what happens after the player is cured
 	;--------------------------------------------
 endfunction
+
+
 
