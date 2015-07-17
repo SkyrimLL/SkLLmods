@@ -11,6 +11,7 @@ SLH_fctPolymorph Property fctPolymorph Auto
 SLH_fctUtil Property fctUtil Auto
 
 ReferenceAlias Property PlayerAlias  Auto  
+ReferenceAlias Property SuccubusPlayerAlias  Auto  
 ObjectReference PlayerREF
 Actor PlayerActor
 ActorBase pActorBase 
@@ -127,7 +128,8 @@ Function doInit()
 	skillList[17] = "Enchanting"
 
 	NextAllowed = -1.0
-	initHormones()
+	; initHormones()
+
 EndFunction
 
 Function Maintenance()
@@ -141,6 +143,11 @@ Function Maintenance()
 	; Debug.Notification("[SLH] pActorBase: " + pActorBase)
 
 	StorageUtil.SetIntValue(none, "_SLH_debugTraceON", 1)
+
+	If (!StorageUtil.HasIntValue(none, "_SLH_iHormones"))
+		; StorageUtil.SetIntValue(none, "_SLH_iHormones", 1)
+		Return
+	EndIf
 
 	maintenanceVersionEvents()
 
@@ -177,11 +184,6 @@ Function maintenanceVersionEvents()
 	PlayerREF= PlayerAlias.GetReference()
 	PlayerActor= PlayerREF as Actor
 	pActorBase = PlayerActor.GetActorBase()
-
-	If (bInit) && (!StorageUtil.HasFloatValue(none, "_SLH_iHormonesVersion")) && (StorageUtil.GetIntValue(none, "_SLH_iHormones")==1)
-		Debug.MessageBox("[Upgrading to Hormones v 1.7 from a previous version is not recommended. You should clean your save game from Hormones and reinstall the latest version. Check the download page on LoversLab for details.]")
-
-	EndIf
 	
 	StorageUtil.SetFloatValue(none, "_SLH_iHormonesVersion", 2.0)
 		
@@ -234,11 +236,13 @@ function initHormones()
 
 	bInit = True
 
-	maintenanceVersionEvents()
+	StorageUtil.SetIntValue(none, "_SLH_debugTraceON", 1)
+
+	If (!StorageUtil.HasIntValue(none, "_SLH_iHormones"))
+		StorageUtil.SetIntValue(none, "_SLH_iHormones", 1)
+	EndIf
 
 	; First time body shape
-
-	debugTrace("[SLH]  Add spell")
 
 	; Debug.Notification("SexLab Hormones: Waiting for 3d to load")
 	; make sure we have loaded 3d to access
@@ -246,24 +250,23 @@ function initHormones()
 	; 	Utility.Wait( 1.0 )
 	; endWhile
 
-	debugTrace("[SLH]  Save body state baseline")
+ 	debugTrace("[SLH]  Initialization of body")
 
 	NextAllowed = -1.0
 
 	fctBodyShape.initShapeConstants(PlayerActor)
 	fctColor.initColorConstants(PlayerActor)
-	getHormonesState(PlayerActor)	
 
-	If (iGameDateLastSex  == 0)  ; Variable never set - initialize state
-		initHormonesState(PlayerActor)
-	EndIf
+
+	initHormonesState(PlayerActor)
+
+	setHormonesState(PlayerActor)	
+	getHormonesState(PlayerActor)	
 
 	StorageUtil.SetIntValue(PlayerActor, "Puppet_SpellON", -1)
 	StorageUtil.SetIntValue(PlayerActor, "PSQ_SpellON", -1)
 
-	debugTrace("[SLH]  Initialization of body")
 	fctBodyShape.alterBodyAfterRest(PlayerActor)
-	setHormonesState(PlayerActor)	
 	traceStatus()
 
 	iOrgasmsCountToday   = 0
@@ -271,6 +274,8 @@ function initHormones()
 	iOralCountToday   = 0
 	iAnalCountToday   = 0
 	iVaginalCountToday   = 0
+
+	maintenanceVersionEvents()
 
 	Debug.Notification("SexLab Hormones started")
 	debugTrace("SexLab Hormones started")
@@ -474,7 +479,7 @@ Event OnUpdate()
 				; fctBodyShape.applyBodyShapeChanges()
 			Else
  
-				debugTrace("[SLH]  Updating shape.")
+				debugTrace("[SLH]  Updating shape on external detection.")
 				; Debug.Notification("SexLab Hormones: Before: " + fBelly + " from " + NetImmerse.GetNodeScale(PlayerActor, NINODE_BELLY, false) )
 
 				; Refreshing values in case of any external change from other mods
@@ -806,18 +811,34 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 			elseif (iDaedricInfluence >1) && (GV_allowSuccubus.GetValue()==1) && (GV_isSuccubus.GetValue()==1)
 				if (_SLH_QST_Succubus.GetStage()<=10) && (iDaedricInfluence >=10)
 					_SLH_QST_Succubus.SetStage(20)
+
 				elseif (_SLH_QST_Succubus.GetStage()<=20) && (iDaedricInfluence >=20)
 					_SLH_QST_Succubus.SetStage(30)
 					ModEvent.Send(ModEvent.Create("HoSLDD_GivePlayerPowers"))
+
 				elseif (_SLH_QST_Succubus.GetStage()<=30) && (iDaedricInfluence >=30)
 					_SLH_QST_Succubus.SetStage(40)
 					ModEvent.Send(ModEvent.Create("HoSLDD_GivePlayerPowers"))
+
 				elseif (_SLH_QST_Succubus.GetStage()<=40) && (iDaedricInfluence >=40)
 					_SLH_QST_Succubus.SetStage(50)
 					StorageUtil.SetIntValue(PlayerActor, "PSQ_SpellON", 1)
 					SendModEvent("SLHisSuccubus")
 					ModEvent.Send(ModEvent.Create("HoSLDD_GivePlayerPowers"))
 					GV_isSuccubusFinal.SetValue(1)
+					SuccubusPlayerAlias.ForceRefTo(PlayerActor as ObjectReference)
+
+				elseif (_SLH_QST_Succubus.GetStage()>=50) && (iDaedricInfluence >=40)
+					; Maintenance... grant powers again if they are missing
+					StorageUtil.SetIntValue(PlayerActor, "PSQ_SpellON", 1)
+					ModEvent.Send(ModEvent.Create("HoSLDD_GivePlayerPowers"))
+
+					if (GV_isSuccubusFinal.GetValue()==0)
+						GV_isSuccubusFinal.SetValue(1)
+						SendModEvent("SLHisSuccubus")
+					endIf
+
+					SuccubusPlayerAlias.ForceRefTo(PlayerActor as ObjectReference)
 				Endif
 
 			else
@@ -1119,6 +1140,24 @@ Function doSoulDevour(Actor[] _actors)
 EndFunction
 
 ;===========================================================================
+; pumping iron effect on skill improvement
+;===========================================================================
+Event OnStoryIncreaseSkill(string asSkill)
+	if asSkill == "LightArmor" || asSkill =="Marksman"
+		; PumpingIronSleep.train(0.2)	
+	elseif asSkill == "Block" || asSkill == "OneHanded" || asSkill == "Smithing" 
+		; PumpingIronSleep.train(0.25)
+	elseif asSkill == "HeavyArmor"
+		; PumpingIronSleep.train(0.33)
+	elseif asSkill == "TwoHanded"
+		; PumpingIronSleep.train(0.5)
+	endif 
+		  
+	Debug.Notification("[SLH] Learning a new skill: " + asSkill)
+	; Stop()
+EndEvent
+
+;===========================================================================
 ;moan sound
 ;===========================================================================
 function playMoan(actor akActor)
@@ -1280,10 +1319,6 @@ endFunction
 function setHormonesState(Actor kActor)
 
 	debugTrace("[SLH] ---> Writing Hormones state to storage")
-
-	If (!StorageUtil.HasIntValue(none, "_SLH_iHormones"))
-		StorageUtil.SetIntValue(none, "_SLH_iHormones", 1)
-	EndIf
  
 	fctBodyShape.setShapeState(kActor)
 	fctColor.setColorState(kActor)
@@ -1393,4 +1428,32 @@ Function debugTrace(string traceMsg)
 	if (StorageUtil.GetIntValue(none, "_SLH_debugTraceON")==1)
 		Debug.Trace(traceMsg)
 	endif
+endFunction
+
+
+
+Function startSex(Actor kSpeaker, string sexTags="Sex", string sexMsg="")
+	Actor akActor = Game.GetPlayer()
+	If  (SexLab.ValidateActor( akActor) > 0) &&  (SexLab.ValidateActor(kSpeaker) > 0) 
+		; Debug.Notification( "[Resists weakly]" )
+		if (sexMsg!="")
+			Debug.Messagebox(sexMsg)
+		endif
+
+		ActorBase PlayerBase = akActor.GetBaseObject() as ActorBase
+		Int PlayerGender = PlayerBase.GetSex() ; 0 = Male ; 1 = Female
+		
+		sslThreadModel Thread = SexLab.NewThread()
+		Thread.AddActor(akActor) ; // IsVictim = true
+		Thread.AddActor(kSpeaker ) ; // IsVictim = true
+
+		If (PlayerGender  == 1)
+			Thread.SetAnimations(SexLab.GetAnimationsByTags(2, "Lesbian," + SexTags))
+		Else
+			Thread.SetAnimations(SexLab.GetAnimationsByTags(2, "MF," + SexTags))
+		EndIf
+
+		Thread.StartThread()
+
+	EndIf
 endFunction

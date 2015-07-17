@@ -27,32 +27,4 @@ Event OnPlayerLoadGame()
 	SLH_Control.Maintenance()
 
 EndEvent
-
-
-Event OnObjectEquipped(Form akBaseObject, ObjectReference akReference)
-	ObjectReference PlayerREF= Game.GetPlayer()
-	Actor PlayerActor= PlayerREF as Actor
-	Bool bArmorOn = PlayerActor.WornHasKeyword(ArmorOn)
-	Bool bClothingOn = PlayerActor.WornHasKeyword(ClothingOn)
-
-    if (bArmorOn || bClothingOn)  && (akBaseObject as Armor)
-    	; Refresh if wearing cloth body or armor cuirass
-		debug.Trace("[SLH] Clothing equipped event" )	  
-		PlayerActor.SendModEvent("SLHRefresh")
-
-  	endIf
-endEvent
-
-Event OnObjectUnequipped(Form akBaseObject, ObjectReference akReference)
-	ObjectReference PlayerREF= Game.GetPlayer()
-	Actor PlayerActor= PlayerREF as Actor
-	Bool bArmorOn = PlayerActor.WornHasKeyword(ArmorOn)
-	Bool bClothingOn = PlayerActor.WornHasKeyword(ClothingOn)
-
-  	if !bArmorOn && !bClothingOn  && (akBaseObject as Armor)
-  		; Refresh if naked
-		debug.Trace("[SLH] Clothing removed event" )	  
-		PlayerActor.SendModEvent("SLHRefresh")
-
-  	endIf
-endEvent
+ 

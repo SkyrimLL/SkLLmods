@@ -88,6 +88,9 @@ GlobalVariable      Property GV_allowExhibitionist		Auto
 GlobalVariable      Property GV_allowSelfSpells			Auto
 GlobalVariable      Property GV_bimboClumsinessMod      Auto
 
+GlobalVariable      Property GV_hornyBegON     			Auto
+GlobalVariable      Property GV_hornyBegArousal      	Auto
+GlobalVariable      Property GV_bimboClumsinessDrop    	Auto
 
 SLH_QST_HormoneGrowth 	Property SLH_Control auto
 
@@ -129,6 +132,10 @@ float 		_weightSwellMod 		= 1.0; 0.1
 float 		_armorMod 				= 0.5; 0.1  
 float 		_clothMod 				= 0.8; 0.1  
 float 		_bimboClumsinessMod		= 1.0; 0.1  
+
+bool 		_hornyBegON     		= true
+float 		_hornyBegArousal      	= 60.0
+bool 		_bimboClumsinessDrop    = true
 
 float 		_breastMax      		= 4.0
 float 		_bellyMax       		= 8.0
@@ -213,6 +220,11 @@ endEvent
 event OnPageReset(string a_page)
 	{Called when a new page is selected, including the initial empty page}
 
+
+	If (!StorageUtil.HasIntValue(none, "_SLH_iHormones"))
+		SLH_Control.initHormones()
+	EndIf
+
 	; Load custom logo in DDS format
 	if (a_page == "")
 		; Image size 512x512
@@ -239,6 +251,10 @@ event OnPageReset(string a_page)
 	_armorMod = GV_armorMod.GetValue()    as Float  
 	_clothMod = GV_clothMod.GetValue()    as Float   
 	_bimboClumsinessMod = GV_bimboClumsinessMod.GetValue()    as Float   
+
+	_hornyBegON  = GV_hornyBegON.GetValue()    as Int
+	_hornyBegArousal  = GV_hornyBegArousal.GetValue()    as Float
+	_bimboClumsinessDrop  = GV_bimboClumsinessDrop.GetValue()    as Int
 
 	_breastMax = GV_breastMax.GetValue()  as Float
 	_bellyMax = GV_bellyMax.GetValue()  as Float 
@@ -382,6 +398,9 @@ event OnPageReset(string a_page)
 		AddToggleOptionST("STATE_TG","Allow Transgender", _allowTG as Float)
 		AddToggleOptionST("STATE_BIMBO","Bimbo Curse", _allowBimbo as Float)
 		AddSliderOptionST("STATE_BIMBO_CLUMSINESS","Clumsiness factor", _bimboClumsinessMod as Float,"{1}")
+		AddToggleOptionST("STATE_HORNY_BEG","Beg for sex", _hornyBegON   as Bool)
+		AddSliderOptionST("STATE_BEG_TRIGGER","Beg arousal trigger", _hornyBegArousal  as Float,"{1}")
+		AddToggleOptionST("STATE_BIMBO_DROP","Drop items when aroused", _bimboClumsinessDrop  as Bool)
 
 		AddHeaderOption(" Shape refresh controls")
 		AddToggleOptionST("STATE_CHANGE_OVERRIDE","Shape change override", _changeOverrideToggle as Float)
@@ -1275,7 +1294,68 @@ state STATE_BIMBO_CLUMSINESS ; SLIDER
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Bimbo clunsiness factor - To throttle dropping weapons or stumbling to the ground from 0 (no effect) to 1.0 (default range of clumsiness(")
+		SetInfoText("Bimbo clumsiness factor - To throttle dropping weapons or stumbling to the ground from 0 (no effect) to 1.0 (default range of clumsiness)")
+	endEvent
+endState
+
+; AddToggleOptionST("STATE_HORNY_BEG","Beg for sex", _hornyBegON   as Bool)
+state STATE_HORNY_BEG ; TOGGLE
+	event OnSelectST()
+		GV_hornyBegON.SetValueInt( Math.LogicalXor( 1, GV_hornyBegON.GetValueInt() ) )
+		SetToggleOptionValueST( GV_hornyBegON.GetValueInt() as Bool )
+		ForcePageReset()
+	endEvent
+
+	event OnDefaultST()
+		GV_hornyBegON.SetValueInt( 0 )
+		SetToggleOptionValueST( false )
+		ForcePageReset()
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Bimbo beg for sex when aroused. Begging topics will block all other dialogues until arousal falls below threshold.")
+	endEvent
+endState
+; AddSliderOptionST("STATE_BEG_TRIGGER","Beg arousal trigger", _hornyBegArousal  as Float,"{1}")
+state STATE_BEG_TRIGGER ; SLIDER
+	event OnSliderOpenST()
+		SetSliderDialogStartValue( GV_hornyBegArousal.GetValue() )
+		SetSliderDialogDefaultValue( 60.0 )
+		SetSliderDialogRange( 0.0, 100.0 )
+		SetSliderDialogInterval( 10.0 )
+	endEvent
+
+	event OnSliderAcceptST(float value)
+		float thisValue = value 
+		GV_hornyBegArousal.SetValue( thisValue )
+		SetSliderOptionValueST( thisValue ,"{1}") 
+	endEvent
+
+	event OnDefaultST()
+		GV_hornyBegArousal.SetValue( 60.0 )
+		SetSliderOptionValueST( 60.0,"{1}" )
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Arousal threshold to trigger forced begging topic for a Bimbo.")
+	endEvent
+endState
+; AddToggleOptionST("STATE_BIMBO_DROP","Drop items when aroused", _bimboClumsinessDrop  as Bool)
+state STATE_BIMBO_DROP ; TOGGLE
+	event OnSelectST()
+		GV_bimboClumsinessDrop.SetValueInt( Math.LogicalXor( 1, GV_bimboClumsinessDrop.GetValueInt() ) )
+		SetToggleOptionValueST( GV_allowHRT.GetValueInt() as Bool )
+		ForcePageReset()
+	endEvent
+
+	event OnDefaultST()
+		GV_bimboClumsinessDrop.SetValueInt( 0 )
+		SetToggleOptionValueST( false )
+		ForcePageReset()
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("At high arousal values, Bimbo will be clumsy and drop equipped weapons in combat. This may cause dropped weapons to fall through the ground and be lost in some terrains.")
 	endEvent
 endState
 ; AddToggleOptionST("STATE_SEX_CHANGE","Sex Change Curse", _isHRT)

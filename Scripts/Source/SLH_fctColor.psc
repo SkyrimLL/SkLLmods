@@ -510,6 +510,10 @@ float[] function RGBtoHSL(int r, int g, int b)
     return hsl
 EndFunction
 
+; STRemoveAllSectionTattoo(Form _form, String _section, bool _ignoreLock, bool _silent): remove all tattoos from determined section (ie, the folder name on disk, like "Bimbo")
+
+; STAddTattoo(Form _form, String _section, String _name, int _color, bool _last, bool _silent, int _glowColor, bool _gloss, bool _lock): add a tattoo with more parameters, including glow, gloss (use it to apply makeup, looks much better) and locked tattoos.
+
 function sendSlaveTatModEvent(actor akActor, string sType, string sTatooName, int iColor = 0x99000000)
 	; SlaveTats.simple_add_tattoo(bimbo, "Bimbo", "Tramp Stamp", last = false, silent = true)
   	int STevent = ModEvent.Create("STSimpleAddTattoo")  
