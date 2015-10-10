@@ -40,3 +40,4 @@ EndFunction
 MiscObject Property Gold001  Auto  
 
 SexLabFramework Property SexLab  Auto  
+ 

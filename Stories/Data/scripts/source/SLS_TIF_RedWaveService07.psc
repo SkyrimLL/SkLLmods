@@ -41,3 +41,4 @@ MiscObject Property Gold001  Auto
 SexLabFramework Property SexLab  Auto  
 
 ObjectReference Property _SLS_ShowDogRef  Auto  
+ 

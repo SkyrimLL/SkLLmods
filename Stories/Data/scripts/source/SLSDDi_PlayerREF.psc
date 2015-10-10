@@ -38,8 +38,14 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 	; Debug.Notification("Has player: " + _hasPlayer(actors))
 	; Debug.Notification("Arousal trigger: " + (slaUtil.GetActorExposure(akRef = PlayerActor) / 3))
 
-	If (StorageUtil.GetIntValue(none, "_SLH_iLactating") == 1)
+	; Force lactation if Player is wearing harness and not lactating yet
+	if ( PlayerActor.WornHasKeyword(SLSD_CowHarness) || PlayerActor.WornHasKeyword(SLSD_CowMilker) ) && (!StorageUtil.HasIntValue(PlayerActor, "_SLH_iLactating") || (StorageUtil.GetIntValue(PlayerActor, "_SLH_iLactating") == 0) )
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iLactating", 1)
+	endif
+
+	If (StorageUtil.GetIntValue(PlayerActor, "_SLH_iLactating") == 1)
 		If (_hasPlayer(actors))
+			Debug.Trace("[SLSDDi] Player is lactating")
 
 			If (!StorageUtil.HasIntValue(PlayerActor, "_SLH_iMilkLevel"))
 					StorageUtil.SetIntValue(PlayerActor, "_SLH_iMilkLevel", MilkLevel)
@@ -51,13 +57,24 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 
 			If ( PlayerActor.WornHasKeyword(SLSD_CowHarness) && ( Utility.RandomInt(0,80) < slaUtil.GetActorExposure(akRef = PlayerActor) ) ) || PlayerActor.WornHasKeyword(SLSD_CowMilker)
 				; Hormones compatibility
-				Debug.Notification("Your breasts are aching from a rush of milk.")
+				Debug.Notification("Your breasts are aching from a strong rush of milk.")
 
-				fBreastScale = StorageUtil.GetFloatValue(none, "_SLH_fBreast") 
-				StorageUtil.SetFloatValue(none, "_SLH_fBreast",  fBreastScale + fBreastScale * 0.1) 
-				StorageUtil.SetIntValue(none, "_SLH_iForcedRefresh", 1) 
+				fBreastScale = StorageUtil.GetFloatValue(PlayerActor, "_SLH_fBreast") 
+				StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast",  fBreastScale + fBreastScale * 0.2) 
+				PlayerActor.SendModEvent("SLHRefresh")
 
 				StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkLevel", StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkLevel") + 1)
+			ElseIf ( !PlayerActor.WornHasKeyword(SLSD_CowHarness) && ( Utility.RandomInt(0,200) < slaUtil.GetActorExposure(akRef = PlayerActor) ) ) 
+				; Hormones compatibility
+				Debug.Notification("Your breasts are tingling from a small rush of milk.")
+
+				fBreastScale = StorageUtil.GetFloatValue(PlayerActor, "_SLH_fBreast") 
+				StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast",  fBreastScale + fBreastScale * 0.1) 
+				PlayerActor.SendModEvent("SLHRefresh")
+
+				if (Utility.RandomInt(0,100)>80)
+					StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkLevel", StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkLevel") + 1)
+				endif
 			Else
 				Debug.Trace("[SLSDDi] You can't produce enough milk to fill the suction cup. Exposure trigger: " + slaUtil.GetActorExposure(akRef = PlayerActor))
 
@@ -70,7 +87,14 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 
 	int idx = 0
 	while idx < actors.Length
-		if (actors[idx]) && ( actors[idx] != PlayerActor)
+		; Force lactation if NPC is wearing harness and not lactating yet
+		if ( actors[idx].WornHasKeyword(SLSD_CowHarness) || actors[idx].WornHasKeyword(SLSD_CowMilker) ) && (!StorageUtil.HasIntValue(actors[idx], "_SLH_iLactating") || (StorageUtil.GetIntValue(actors[idx], "_SLH_iLactating") == 0) )
+			StorageUtil.SetIntValue(actors[idx], "_SLH_iLactating", 1)
+		endif
+
+		if (actors[idx]) && ( actors[idx] != PlayerActor) && (StorageUtil.GetIntValue(actors[idx], "_SLH_iLactating") == 1)
+
+			Debug.Trace("[SLSDDi] NPC is lactating: " + actors[idx].GetName())
 
 			if ( actors[idx].WornHasKeyword(SLSD_CowHarness)  && ( Utility.RandomInt(0,80) < (slaUtil.GetActorExposure(akRef = actors[idx]) ) ) ) || actors[idx].WornHasKeyword(SLSD_CowMilker)
 
@@ -82,17 +106,32 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 				Endif
 
 
-				Debug.Notification("The cow's breasts are aching from a rush of milk.")
+				Debug.Notification("The cow's breasts are aching from a strong rush of milk.")
 
 				StorageUtil.SetIntValue(actors[idx], "_SLH_iMilkLevel", StorageUtil.GetIntValue(actors[idx], "_SLH_iMilkLevel") + 1)
 				Debug.Notification("[SLSDDi] NPC Milk level: " + StorageUtil.GetIntValue(actors[idx], "_SLH_iMilkLevel"))
+
+			elseif ( !actors[idx].WornHasKeyword(SLSD_CowHarness)  && ( Utility.RandomInt(0,80) < (slaUtil.GetActorExposure(akRef = actors[idx]) ) ) )
+
+				If (!StorageUtil.HasIntValue(actors[idx], "_SLH_iMilkLevel"))
+						StorageUtil.SetIntValue(actors[idx], "_SLH_iMilkLevel", 0)
+				Endif
+				If (!StorageUtil.HasIntValue(actors[idx], "_SLH_iMilkProduced"))
+						StorageUtil.SetIntValue(actors[idx], "_SLH_iMilkProduced", 0)
+				Endif
+
+				Debug.Notification("The cow's breasts are tingling from a small drop of milk.")
+
+				if (Utility.RandomInt(0,100)>80)
+					StorageUtil.SetIntValue(actors[idx], "_SLH_iMilkLevel", StorageUtil.GetIntValue(actors[idx], "_SLH_iMilkLevel") + 1)
+				EndIf
 			Else
 				Debug.Trace("[SLSDDi] You can't extract enough milk to fill the suction cup. Exposure trigger: " + slaUtil.GetActorExposure(akRef = actors[idx]))
 
 			endif
 
-			Debug.Trace("[SLSDDi] Player Milk level: " + StorageUtil.GetIntValue(actors[idx], "_SLH_iMilkLevel"))
-			Debug.Trace("[SLSDDi] Player Milk produced: " + StorageUtil.GetIntValue(actors[idx], "_SLH_iMilkProduced"))
+			Debug.Trace("[SLSDDi] NPC Milk level: " + StorageUtil.GetIntValue(actors[idx], "_SLH_iMilkLevel"))
+			Debug.Trace("[SLSDDi] NPC Milk produced: " + StorageUtil.GetIntValue(actors[idx], "_SLH_iMilkProduced"))
 		EndIf
 		idx += 1
 	endwhile
@@ -153,7 +192,7 @@ Event OnSexLabOrgasm(String _eventName, String _args, Float _argc, Form _sender)
 	Actor[] victims = new Actor[1]
 	victims[0] = victim
 
-	If (StorageUtil.GetIntValue(none, "_SLH_iLactating") == 1)
+	If (StorageUtil.GetIntValue(PlayerActor, "_SLH_iLactating") == 1)
 		If (_hasPlayer(actors)) && PlayerActor.WornHasKeyword(SLSD_CowHarness)
 			Debug.Trace("SexLab Stories: Orgasm!")
 
@@ -170,9 +209,9 @@ Event OnSexLabOrgasm(String _eventName, String _args, Float _argc, Form _sender)
 
 				
 				; Hormones compatibility
-				fBreastScale = StorageUtil.GetFloatValue(none, "_SLH_fBreast") 
-				StorageUtil.SetFloatValue(none, "_SLH_fBreast",  0.9) 	
-				StorageUtil.SetIntValue(none, "_SLH_iForcedRefresh", 1) 
+				fBreastScale = StorageUtil.GetFloatValue(PlayerActor, "_SLH_fBreast") 
+				StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast",  0.9) 	
+				PlayerActor.SendModEvent("SLHRefresh")
 
 				StorageUtil.SetIntValue(PlayerActor, "_SLH_iMilkLevel", 0)	
 				StorageUtil.SetIntValue(PlayerActor, "_SLH_iMilkProduced", StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkProduced") +1)
