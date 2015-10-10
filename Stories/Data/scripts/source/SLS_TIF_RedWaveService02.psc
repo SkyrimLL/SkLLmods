@@ -6,32 +6,9 @@ Scriptname SLS_TIF_RedWaveService02 Extends TopicInfo Hidden
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
-Int randomNum = Utility.RandomInt(0,100)
 
-ActorBase PlayerBase = Game.GetPlayer().GetBaseObject() as ActorBase
-Int PlayerGender = PlayerBase.GetSex() ; 0 = Male ; 1 = Female
+RedWaveController.RedWaveSex( akActor = akSpeaker, goldAmount = 20, sexTags = "Oral", isSolo = False)
 
-;		Debug.MessageBox( "The Sister quietly peels off your clothes to reveal your beauty to the world." )
-;  		SexLab.ActorLib.StripActor(Game.GetPlayer(), DoAnimate= false)
-
-Game.GetPlayer().RemoveItem(Gold001, 20)
-
-	If  (SexLab.ValidateActor( SexLab.PlayerRef ) > 0) &&  (SexLab.ValidateActor(akSpeaker) > 0) 
-
-		Actor akActor = SexLab.PlayerRef
-		
-		sslThreadModel Thread = SexLab.NewThread()
-		Thread.AddActor(akSpeaker, IsVictim = true) ; // IsVictim = true
-		Thread.AddActor(akActor) ; // IsVictim = true
-
-		If (PlayerGender  == 1)
-			Thread.SetAnimations(SexLab.GetAnimationsByTags(2, "Oral,Lesbian"))
-		Else
-			Thread.SetAnimations(SexLab.GetAnimationsByTags(2, "Oral,MF"))
-		EndIf
-
-		Thread.StartThread()
-	Endif
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -42,3 +19,5 @@ EndFunction
 MiscObject Property Gold001  Auto  
 
 SexLabFramework Property SexLab  Auto  
+
+SLS_QST_RedWaveController Property RedWaveController Auto

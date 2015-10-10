@@ -17,6 +17,10 @@ int outfitID
 if (bodyPartsCount > 0)
 	Game.GetPlayer().RemoveItem(_SLS_ImbuedFlesh, bodyPartsCount )
 
+	if (_SLS_SexBotRepairLevel.GetValue()<0)
+		_SLS_SexBotRepairLevel.SetValue( 0 )
+	endif
+
 	_SLS_SexBotRepairLevel.SetValue( _SLS_SexBotRepairLevel.GetValue() + bodyPartsCount   )
 
 
@@ -31,9 +35,9 @@ if (bodyPartsCount > 0)
 		EndIf
 	EndIf
 
-      outfitID = _SLS_SexBotRepairLevel.GetValue() as Int
+    outfitID = _SLS_SexBotRepairLevel.GetValue() as Int
 	
-	newSexBotOutfit  = _SLS_SexBotRepairStates[outfitID - 1]
+	newSexBotOutfit  = _SLS_SexBotRepairStates[outfitID]
 
 	Debug.Notification("SexBot: index = " + _SLS_SexBotRepairLevel.GetValue() as Int + " - Outfit: " + outfitID )
 
