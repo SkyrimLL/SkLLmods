@@ -511,7 +511,13 @@ function alterBodyAfterSex(Actor kActor, Bool bOral = False, Bool bVaginal = Fal
 	Float fBreast = StorageUtil.GetFloatValue(kActor, "_SLH_fBreast")       
 	Float fButt = StorageUtil.GetFloatValue(kActor, "_SLH_fButt")       	
 	Float fBelly = StorageUtil.GetFloatValue(kActor, "_SLH_fBelly")       		
-	Float fSchlong = StorageUtil.GetFloatValue(kActor, "_SLH_fSchlong")      			 
+	Float fSchlong = StorageUtil.GetFloatValue(kActor, "_SLH_fSchlong")     
+
+	Float fTempGrowthMod = StorageUtil.GetFloatValue(kActor, "_SLH_fTempGrowthMod")  
+
+	if (fTempGrowthMod==0.0)		
+		fTempGrowthMod=1.0	 
+	Endif
 
 	Race kOrigRace = StorageUtil.GetFormValue(kActor, "_SLH_fOrigRace") as Race
 
@@ -531,7 +537,8 @@ function alterBodyAfterSex(Actor kActor, Bool bOral = False, Bool bVaginal = Fal
 	; SexLab Aroused ==================================================
 	fctUtil.manageSexLabAroused(kActor)
 
-	fSwellFactor    = GV_baseSwellFactor.GetValue() / GV_sexActivityThreshold.GetValue()
+	; StorageUtil.SetFloatValue(kActor, "_SLH_fTempGrowthMod",  1.0) 
+	fSwellFactor    = (fTempGrowthMod * GV_baseSwellFactor.GetValue()) / GV_sexActivityThreshold.GetValue()
  
 	fLibido = fctUtil.iRange( (fLibido as Int) + 1, -100, 100)
 
@@ -627,6 +634,7 @@ function alterBodyAfterSex(Actor kActor, Bool bOral = False, Bool bVaginal = Fal
 	EndIf
 	
  	; _refreshBodyShape()
+ 	StorageUtil.SetFloatValue(kActor, "_SLH_fTempGrowthMod",  1.0) 
 
 
 EndFunction
@@ -807,8 +815,39 @@ Bool function detectShapeChange(Actor kActor)
 	Float fCurrentWeight = pActorBase.GetWeight()
 
 	Bool changeDetected = False
+	Bool changeBreastDetected = False
+	Bool changeBellyDetected = False
+	Bool changeButtDetected = False
+	Bool changeSchlongDetected = False
+	Bool changeWeightDetected = False
 
-	If (Math.abs(fCurrentBreast - StorageUtil.GetFloatValue(kActor, "_SLH_fBreast")) > deltaChange) || (Math.abs(fCurrentBelly - StorageUtil.GetFloatValue(kActor, "_SLH_fBelly"))  > deltaChange) || (Math.abs(fCurrentButt - StorageUtil.GetFloatValue(kActor, "_SLH_fButt"))  > deltaChange) || (Math.abs(fCurrentSchlong - StorageUtil.GetFloatValue(kActor, "_SLH_fSchlong"))  > deltaChange) || (Math.abs(fCurrentWeight - StorageUtil.GetFloatValue(kActor, "_SLH_fWeight")) > deltaChange) 
+	If (GV_useWeight.GetValue() == 1)
+		If ((Math.abs(fCurrentWeight - StorageUtil.GetFloatValue(kActor, "_SLH_fWeight")) > deltaChange) )
+			changeWeightDetected = True
+		Endif
+	endif
+
+	If (GV_useNodes.GetValue() == 1)
+		If (GV_useBreastNode.GetValue() == 1) && (Math.abs(fCurrentBreast - StorageUtil.GetFloatValue(kActor, "_SLH_fBreast")) > deltaChange)
+			changeBreastDetected = True
+		Endif
+
+		If (GV_useBellyNode.GetValue() == 1) && (Math.abs(fCurrentButt - StorageUtil.GetFloatValue(kActor, "_SLH_fButt"))  > deltaChange)
+			changeBellyDetected = True
+		Endif
+
+		If (GV_useButtNode.GetValue() == 1) && (Math.abs(fCurrentBelly - StorageUtil.GetFloatValue(kActor, "_SLH_fBelly"))  > deltaChange)
+			changeButtDetected = True
+		Endif
+
+		If (GV_useSchlongNode.GetValue() == 1) && (Math.abs(fCurrentSchlong - StorageUtil.GetFloatValue(kActor, "_SLH_fSchlong"))  > deltaChange)
+			changeSchlongDetected = True
+		Endif
+
+	endIf
+
+
+	If ( changeWeightDetected || changeBreastDetected || changeBellyDetected || changeButtDetected || changeSchlongDetected )
 
 		changeDetected = True
 
@@ -848,7 +887,9 @@ function alterWeight(Actor kActor, float fNewWeight = 0.0)
 	if (fWeightOrig != fWeight) 
 		Float NeckDelta = (fWeightOrig / 100) - (fWeight / 100) ;Work out the neckdelta.
 
+		Debug.Trace("[SLH] Old weight: " + fWeightOrig)
 		Debug.Trace("[SLH] New weight: " + fWeight)
+		Debug.Trace("[SLH] NeckDelta: " + NeckDelta)
 	 
 		pActorBase.SetWeight(fWeight) 
 		kActor.UpdateWeight(NeckDelta) ;Apply the changes.
@@ -1069,21 +1110,23 @@ function shaveHair ( Actor kActor)
 	If (iPlayerGender==0) 
 		If (hpHairCurrent != hpHairBaldM)
 			kActor.ChangeHeadPart(hpHairBaldM)
-			Debug.Messagebox("Your rapid body changes force your hair to fall.")
+			Debug.Messagebox("Your rapid body changes force your hair to fall. " )
 		Else
 			; Game.ShowLimitedRaceMenu()
 		EndIf
 
 	Else
 		If (hpHairCurrent != hpHairBaldF)
-			kActor.ChangeHeadPart(hpHairBaldM)
-			Debug.Notification("Your rapid body changes force your hair to fall.")
+			kActor.ChangeHeadPart(hpHairBaldF)
+			Debug.Messagebox("Your rapid body changes force your hair to fall. ")
 		Else
 			; Game.ShowLimitedRaceMenu()
 		EndIf
 
 	EndIf
 
+	Debug.Trace("[SLH]       -> Forced hair change applied")
+ 
 EndFunction
 
 

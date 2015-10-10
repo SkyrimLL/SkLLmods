@@ -648,10 +648,11 @@ function getColorState(Actor kActor)
 
 endFunction
 
-
 function refreshColors(Actor kActor)
 
 	if (GV_useColors.GetValue() == 1)
+		getColorState(kActor)
+
 		If (iSkinColor == 0)
 			iSkinColor = Game.GetTintMaskColor(6,0)
 		Else
@@ -676,7 +677,29 @@ function refreshColors(Actor kActor)
 			setTintMask(3,iEyelinerColor)
 		EndIf
 
+		setColorState( kActor)
 	EndIf
+
+endFunction
+
+function getColorsFromSkin(Actor kActor)
+	if (GV_useColors.GetValue() == 1)
+		iSkinColor = Game.GetTintMaskColor(6,0)
+		setTintMask(6,iSkinColor)
+
+		iCheeksColor = Game.GetTintMaskColor(9,0)
+		setTintMask(9,iCheeksColor)
+
+		iLipsColor = Game.GetTintMaskColor(1,0)
+		setTintMask(1,iLipsColor)
+
+		iEyelinerColor = Game.GetTintMaskColor(3,0)
+		setTintMask(3,iEyelinerColor)
+
+		setColorState( kActor)
+	EndIf
+	
+
 endFunction
 
 Function debugTrace(string traceMsg)
