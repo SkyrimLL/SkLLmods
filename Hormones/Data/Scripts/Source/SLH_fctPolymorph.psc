@@ -130,15 +130,6 @@ function bimboTransformEffectON(actor kActor)
     isActorMale = fctUtil.isMale(kActor)
     StorageUtil.SetIntValue(none, "_SLH_bimboIsOriginalActorMale", isActorMale as Int)
 
-    ; Abort is sex change is not turned on and actor is Male
-    If (isActorMale) && (GV_allowHRT.GetValue()==0) && (GV_allowTG.GetValue()==0)
-        Return
-    EndIf
-
-    If (!isActorMale) && (GV_allowBimbo.GetValue()==0) 
-        Return
-    EndIf
-
     debugTrace("[SLH] Bimbo Transform Init")
 
     Game.ForceThirdPerson()
@@ -371,7 +362,7 @@ function bimboTransformEffectON(actor kActor)
     Debug.Messagebox("A heatwave of pure lust suddenly rips through your body, molding your features and turning your skin into liquid fire. The shock leaves you breathless... light headed... panting even.")
     Debug.Messagebox("[Technical note - Once the transformation is complete, you should reset SexLab using the Clean Up option.]")
 
-    If (isActorMale)
+    If (isActorMale) 
         ; Do not switch sex for female -> bimbo
         Utility.Wait(1.0)
         HRTEffectON( kActor)
@@ -383,6 +374,21 @@ function bimboTransformEffectON(actor kActor)
         StorageUtil.SetFloatValue(kActor, "_SLH_fBreast",  0.9)
         StorageUtil.SetFloatValue(kActor, "_SLH_fButt",  0.9)
         kActor.SendModEvent("SLHRefresh")
+
+    ElseIf (!isActorMale) && (GV_allowBimbo.GetValue()==0)
+        ; Allow sex change if bimbo effect is OFF
+        Utility.Wait(1.0)
+        HRTEffectON( kActor)
+
+        Utility.Wait(1.0)
+        TGEffectON( kActor)
+
+    ElseIf (!isActorMale) 
+        ; Allow sex change if bimbo effect is OFF
+
+        Utility.Wait(1.0)
+        TGEffectON( kActor)
+
     EndIf
 
     SLH_Control.playMoan(kActor)
@@ -505,6 +511,19 @@ function bimboTransformEffectOFF(actor kActor)
 
         Utility.Wait(1.0)
         TGEffectOFF( kActor)
+
+    Elseif !(StorageUtil.GetIntValue(none, "_SLH_bimboIsOriginalActorMale")) && (GV_allowBimbo.GetValue()==0)
+        ; Race change is enough for Bimbo -> female
+        Utility.Wait(1.0)
+        HRTEffectOFF( kActor)
+
+        Utility.Wait(1.0)
+        TGEffectOFF( kActor)
+
+    Elseif !(StorageUtil.GetIntValue(none, "_SLH_bimboIsOriginalActorMale"))
+        Utility.Wait(1.0)
+        TGEffectOFF( kActor)
+
     EndIf
 
     SLH_Control.playMoan(kActor)

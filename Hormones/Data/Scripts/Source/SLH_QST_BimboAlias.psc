@@ -43,6 +43,7 @@ Float fSchlongMax
 ;===========================================================================
 ;mod variables
 Race Property _SLH_BimboRace Auto
+Int bimboClumsyBuffer = 0
 Bool isBimboClumsyLegs = false
 Bool isBimboClumsyHands = false
 Bool isBimboFrailBody = false
@@ -646,6 +647,7 @@ endfunction
 ; - the stumbling chances should be tweaked
 ;===========================================================================
 function clumsyBimboLegs(Actor bimbo)
+	string bimboTripMessage = ""
 
 	;not clumsy anymore?
 	if !isBimboClumsyLegs
@@ -671,13 +673,13 @@ function clumsyBimboLegs(Actor bimbo)
 			;ok, lets check what is the bimbo doing and increase the chances
 			;TODO is using HDT heels and the tf ended, decrease the chances (a good bimbo always use heels)
 			if bimbo.IsSprinting()
-				tumbleChance *= 4.00 * (GV_bimboClumsinessMod.GetValue() as Float)
+				tumbleChance *= 4.00 
 				tumbleForce *= 1.10
 			elseif bimbo.IsRunning()
-				tumbleChance *= 2.00 * (GV_bimboClumsinessMod.GetValue() as Float)
+				tumbleChance *= 2.00 
 				tumbleForce *= 1.00
 			elseif bimbo.IsSneaking()
-				tumbleChance *= 0.33 * (GV_bimboClumsinessMod.GetValue() as Float)
+				tumbleChance *= 0.33 
 				tumbleForce *= 0.50
 			else
 				;just walking, no stumbling
@@ -687,33 +689,55 @@ function clumsyBimboLegs(Actor bimbo)
 			int roll = Utility.RandomInt()
 			; debug.trace("[slh+] ------- stumble [" + roll + " < " + tumbleChance + "]?")
 			if (roll <= tumbleChance)
-				Game.ForceThirdPerson()
-				If bimbo.IsSneaking()
-					bimbo.StartSneaking()
-				EndIf
-				bimbo.CreateDetectionEvent(bimbo, 20)
-				bimbo.PushActorAway(bimbo, tumbleForce) ;how to push only to the bimbo movement direction?
-				Utility.Wait(1.0)
-				int[] drop = dropWeapons(bimbo, both = true, chanceMult = 0.1)
-				if drop[0] > 0 ;if dropped anything, play a moan sound
-					SLH_Control.playMoan(bimbo)
-				endif
-
-				;wait a little to show the messages, because on ragdoll the hud is hidden
-				Utility.Wait(2.0)
-				if drop[0] > 0
-					Debug.Notification("You trip and drop your weapons!") ;temp messages
+				If (bimboClumsyBuffer < ( 7 - (GV_bimboClumsinessMod.GetValue() as Int) * 6) )
+					bimboClumsyBuffer = bimboClumsyBuffer + 1
 				else
-					Debug.Notification("You tripped! Clumsy bimbo!") ;temp messages
-				endif
+					bimboClumsyBuffer = 0
+					Game.ForceThirdPerson()
+					If bimbo.IsSneaking()
+						bimbo.StartSneaking()
+					EndIf
+					bimbo.CreateDetectionEvent(bimbo, 20)
+					bimbo.PushActorAway(bimbo, tumbleForce) ;how to push only to the bimbo movement direction?
+					Utility.Wait(1.0)
+					int[] drop = dropWeapons(bimbo, both = true, chanceMult = 0.1)
+					if drop[0] > 0 ;if dropped anything, play a moan sound
+						SLH_Control.playMoan(bimbo)
+					endif
 
-				;alternative to the ragdoll: trigger the bleedout animation for 2 seconds
-				;Debug.SendAnimationEvent(bimbo, "BleedOutStart")
-				;if util.config.dropWeapons
-				;	util.dropWeapons(both = true, chanceMult = 2.0)
-				;endif
-				;Utility.Wait(2.0)
-				;Debug.SendAnimationEvent(bimbo, "BleedOutStop")
+					;wait a little to show the messages, because on ragdoll the hud is hidden
+					Utility.Wait(2.0)
+
+					int rollMessage = Utility.RandomInt()
+
+					if (rollMessage >= 80)
+						bimboTripMessage = "You notice a chipped nail and skip a step."
+					elseif (rollMessage >= 60)
+						bimboTripMessage = "You know what you need? a hard pounding.."
+					elseif (rollMessage >= 40)
+						bimboTripMessage = "Semen coating your lips. That's what you need right now."
+					elseif (rollMessage >= 20)
+						bimboTripMessage = "Oh.. What you would give to have all your holes filled..."
+					else 
+						bimboTripMessage = "Your clit demands to be licked.. right now!"
+					endIf
+
+					if drop[0] > 0
+						Debug.Notification("You trip and drop your weapons!") ;temp messages
+					else
+						Debug.Notification("You tripped! Clumsy bimbo!") ;temp messages
+					endif
+					
+					Debug.Notification(bimboTripMessage) ;temp messages
+
+					;alternative to the ragdoll: trigger the bleedout animation for 2 seconds
+					;Debug.SendAnimationEvent(bimbo, "BleedOutStart")
+					;if util.config.dropWeapons
+					;	util.dropWeapons(both = true, chanceMult = 2.0)
+					;endif
+					;Utility.Wait(2.0)
+					;Debug.SendAnimationEvent(bimbo, "BleedOutStop")
+				endIf
 
 			elseif bimboArousal > 80 && roll <= 20 ;warn the player
 				Debug.Notification("You squeeze your legs with arousal.")
@@ -771,6 +795,7 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 	elseif transformationLevel == 2
 		Debug.Notification("Your body feels weak and your boobs are sizzling.")
 		fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Feet Nails", iColor = 0x00FF0984 )
+		fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Hand Nails", iColor = 0x00FF0984 )
 		fctBodyshape.alterBodyByPercent(bimbo, "Breast", 20.0)
 		isBimboFrailBody = true
 

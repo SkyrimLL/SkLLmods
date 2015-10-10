@@ -99,6 +99,10 @@ GlobalVariable      Property GV_allowSelfSpells			Auto
 GlobalVariable      Property GV_isPregnant		Auto 
 GlobalVariable      Property GV_isSuccubusFinal 				Auto
 
+FormList Property VanillaHairRaceList  Auto  
+FormList Property CustomHairRaceList  Auto  
+
+
 Event OnInit()
 	doInit()
 	RegisterForSleep()
@@ -156,6 +160,9 @@ Function Maintenance()
 	fctBodyShape.initShapeConstants(PlayerActor)
 	fctColor.initColorConstants(PlayerActor)
 
+	registerNewRacesForHair( VanillaHairRaceList  )
+	registerNewRacesForHair( CustomHairRaceList  )
+
 	; Debug.Notification("[Hormones] s:" + iSexCountToday + " - v:" + iVaginalCountToday + " - a:" + iAnalCountToday + " - o:" + iOralCountToday)
 
 	If (iGameDateLastSex  == 0)  ; Variable never set - initialize state
@@ -181,14 +188,18 @@ Function Maintenance()
 EndFunction
 
 Function maintenanceVersionEvents()
+	Float fVersionNumber = 2.022
+	String sVersion = "2015-10-10 v " + fVersionNumber
 	PlayerREF= PlayerAlias.GetReference()
 	PlayerActor= PlayerREF as Actor
 	pActorBase = PlayerActor.GetActorBase()
 	
-	StorageUtil.SetFloatValue(none, "_SLH_iHormonesVersion", 2.0)
-		
-	Debug.Notification("[SLH] Hormones 2015-07-11 v " + StorageUtil.GetFloatValue(none, "_SLH_iHormonesVersion"))
-	debugTrace("[SLH] Hormones 2015-07-11 v " + StorageUtil.GetFloatValue(none, "_SLH_iHormonesVersion"))
+	If (StorageUtil.GetFloatValue(none, "_SLH_iHormonesVersion") != fVersionNumber)
+		StorageUtil.SetFloatValue(none, "_SLH_iHormonesVersion", fVersionNumber)	
+		Debug.Notification("[SLH] Hormones " + sVersion)
+	Endif
+
+	debugTrace("[SLH] Hormones " + sVersion)
 	
 	UnregisterForAllModEvents()
 	debugTrace("[SLH]  Reset SexLab events")
@@ -356,11 +367,20 @@ Event OnUpdate()
 
 	ElseIf (iDaysSinceLastCheck > 0) || (fRefreshAfterSleep > 0.02)
 		; Manage sex effect ==================================================
-		If (iSexCountToday==0)
+		If (iDaysSinceLastSex==0)
+			debugTrace("[SLH]  Sex boost cleared after rest")
 			PlayerActor.DispelSpell(_SLH_SexBoost)
-			_SLH_SexFocus.Cast(PlayerActor,PlayerActor)
-			_SLH_SexStarve.Cast(PlayerActor,PlayerActor)
 		EndIf
+
+		If (iDaysSinceLastSex>=1)
+			debugTrace("[SLH]  Sex focus effect after a day without sex")
+			_SLH_SexFocus.Cast(PlayerActor,PlayerActor)
+		EndIf
+
+		If (iDaysSinceLastSex>1)
+			debugTrace("[SLH]  Sex starve effect after more than a day without sex")
+			_SLH_SexStarve.Cast(PlayerActor,PlayerActor)
+		Endif
 
 		fRefreshAfterSleep = 0.0
 
@@ -570,15 +590,17 @@ Event OnRefreshShapeEvent(String _eventName, String _args, Float _argc = 1.0, Fo
 
 	bExternalChangeModActive = fctUtil.isExternalChangeModActive(kActor)
 
-	Debug.Notification("[SLH] Updating shape" )
+	debugTrace("[SLH] Updating shape" )
 	debugTrace("[SLH] Receiving 'refresh shape' event. Actor: " + kActor )
 
-	If ( StorageUtil.GetIntValue(kActor, "_SLH_iForcedRairLoss") == 1)
-		fctBodyShape.shaveHair (kActor)		
-		StorageUtil.SetIntValue(kActor, "_SLH_iForcedRairLoss", 0) 
+	If ( StorageUtil.GetIntValue(kActor, "_SLH_iForcedHairLoss") == 1)
+		debugTrace("[SLH] Detected forced hair change")
+		fctBodyShape.shaveHair(kActor)		
+		StorageUtil.SetIntValue(kActor, "_SLH_iForcedHairLoss", 0) 
 	Endif
 
 	fctBodyShape.getShapeState(kActor)
+	fctColor.getColorState(kActor)
 
 	Utility.Wait(1.0)
 
@@ -801,6 +823,7 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 			debugTrace("[SLH] Daedra sex count:" + iSexDaedraAll + " - influence:" + iDaedricInfluence)
 
 			_SLH_DaedricInfluence.Cast(PlayerActor,PlayerActor)
+			StorageUtil.SetFloatValue(PlayerActor, "_SLH_fTempGrowthMod",  2.0) 
 
 			; modify succubus influence based on other daedric exposure
 			if (iDaedricInfluence >1) && (GV_allowSuccubus.GetValue()==1) && (GV_isSuccubus.GetValue()==0)
@@ -814,21 +837,34 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 
 				elseif (_SLH_QST_Succubus.GetStage()<=20) && (iDaedricInfluence >=20)
 					_SLH_QST_Succubus.SetStage(30)
-					ModEvent.Send(ModEvent.Create("HoSLDD_GivePlayerPowers"))
+					; ModEvent.Send(ModEvent.Create("HoSLDD_GivePlayerPowers"))
 
-				elseif (_SLH_QST_Succubus.GetStage()<=30) && (iDaedricInfluence >=30)
+				elseif (_SLH_QST_Succubus.GetStage()<=30) && (iDaedricInfluence >=30) && fctUtil.isMale(PlayerActor)
 					_SLH_QST_Succubus.SetStage(40)
 					ModEvent.Send(ModEvent.Create("HoSLDD_GivePlayerPowers"))
 
-				elseif (_SLH_QST_Succubus.GetStage()<=40) && (iDaedricInfluence >=40)
+			        ; Do not switch sex for female -> bimbo
+			        Utility.Wait(1.0)
+			        fctPolymorph.HRTEffectON( PlayerActor)
+
+			        Utility.Wait(1.0)
+			        fctPolymorph.TGEffectON( PlayerActor)
+
+			        StorageUtil.SetFloatValue(PlayerActor, "_SLH_fWeight",  0.0)
+			        StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast",  0.9)
+			        StorageUtil.SetFloatValue(PlayerActor, "_SLH_fButt",  0.9)
+			        PlayerActor.SendModEvent("SLHRefresh")
+
+				elseif (_SLH_QST_Succubus.GetStage()<=40) && (iDaedricInfluence >=40) && !fctUtil.isMale(PlayerActor)
 					_SLH_QST_Succubus.SetStage(50)
 					StorageUtil.SetIntValue(PlayerActor, "PSQ_SpellON", 1)
 					SendModEvent("SLHisSuccubus")
 					ModEvent.Send(ModEvent.Create("HoSLDD_GivePlayerPowers"))
+				    fctPolymorph.TGEffectOFF( PlayerActor)
 					GV_isSuccubusFinal.SetValue(1)
 					SuccubusPlayerAlias.ForceRefTo(PlayerActor as ObjectReference)
 
-				elseif (_SLH_QST_Succubus.GetStage()>=50) && (iDaedricInfluence >=40)
+				elseif (_SLH_QST_Succubus.GetStage()>=50) && (iDaedricInfluence >=40) && !fctUtil.isMale(PlayerActor)
 					; Maintenance... grant powers again if they are missing
 					StorageUtil.SetIntValue(PlayerActor, "PSQ_SpellON", 1)
 					ModEvent.Send(ModEvent.Create("HoSLDD_GivePlayerPowers"))
@@ -884,15 +920,23 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 		If (GV_allowBimbo.GetValue()==1) || (GV_allowHRT.GetValue()==1) || (GV_allowTG.GetValue()==1) 
 			If (GV_isBimbo.GetValue()==0) && (GV_isHRT.GetValue()==0) && (GV_isTG.GetValue()==0) && ( (fctUtil.hasRace(actors, _SLH_DremoraOutcastRace) || fctUtil.hasRace(actors, _SLH_BimboRace)))
 
-				kPervert = None ; Disable pervert when transformation occurs
-				debugTrace("[SLH] Cast Bimbo Curse" )	  
-				; PolymorphBimbo.Cast(PlayerActor,PlayerActor)
-				PlayerActor.DoCombatSpellApply(_SLH_PolymorphBimbo, PlayerActor)
-
 				If fctUtil.hasRace(actors, _SLH_BimboRace)
+					kPervert = None ; Disable pervert when transformation occurs
+
+					debugTrace("[SLH] Cast Bimbo Curse" )	  
+					; PolymorphBimbo.Cast(PlayerActor,PlayerActor)
+					PlayerActor.DoCombatSpellApply(_SLH_PolymorphBimbo, PlayerActor)
+
 					_SLH_QST_Bimbo.SetStage(10)
 					iDaedricInfluence   = iDaedricInfluence   + 5
-				elseIf fctUtil.hasRace(actors, _SLH_DremoraOutcastRace)
+
+				elseIf fctUtil.hasRace(actors, _SLH_DremoraOutcastRace) && (Utility.RandomInt(0,100)>60)
+					kPervert = None ; Disable pervert when transformation occurs
+
+					debugTrace("[SLH] Cast Bimbo Curse" )	  
+					; PolymorphBimbo.Cast(PlayerActor,PlayerActor)
+					PlayerActor.DoCombatSpellApply(_SLH_PolymorphBimbo, PlayerActor)
+
 					_SLH_QST_Bimbo.SetStage(11)
 				endif
 			Endif
@@ -942,10 +986,7 @@ Event OnSexLabOrgasm(String _eventName, String _args, Float _argc, Form _sender)
 	Actor   victim  = SexLab.HookVictim(_args)
 	Actor[] victims = new Actor[1]
 	victims[0] = victim
-	
-	; if _checkRnd100(config.fSoulCProc)
-	;	_doSoulDevour(actors)
-	; endif
+	 
 
 	If (fctUtil.hasPlayer(actors))
 		debugTrace("[SLH]  Orgasm!")
@@ -975,7 +1016,7 @@ Event OnSexLabOrgasm(String _eventName, String _args, Float _argc, Form _sender)
 
 
 		; Succubus effect ==================================================
-		If ((iSuccubus == 1)  && (_SLH_QST_Succubus.GetStage()>=30))
+		If ((iSuccubus == 1)  && (_SLH_QST_Succubus.GetStage()>=30)) && !fctUtil.isMale(PlayerActor)
 			; PlayerActor.resethealthandlimbs()
 			If (Utility.RandomInt(0,100) > (60.0 - (AbsLibido / 10.0) * 2.0) )
 				doSoulDevour(actors)
@@ -983,7 +1024,7 @@ Event OnSexLabOrgasm(String _eventName, String _args, Float _argc, Form _sender)
 		EndIf
 
 		; Succubus effect ==================================================
-		If ((iSuccubus == 1)  && (iDaedricInfluence>=20))
+		If ((iSuccubus == 1)   && (_SLH_QST_Succubus.GetStage()>=50))
 			; PlayerActor.resethealthandlimbs()
 
 			If ( AbsLibido >= 80)
@@ -1457,3 +1498,13 @@ Function startSex(Actor kSpeaker, string sexTags="Sex", string sexMsg="")
 
 	EndIf
 endFunction
+
+Function registerNewRacesForHair(FormList HairRaceList)
+
+    	If (!HairRaceList.HasForm( _SLH_BimboRace  as Form) )
+		HairRaceList.AddForm( _SLH_BimboRace  as Form) 
+	Endif
+ 
+EndFunction
+
+

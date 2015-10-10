@@ -15,7 +15,7 @@ If  (SexLab.ValidateActor( akActor) > 0) &&  (SexLab.ValidateActor(akSpeaker) > 
 
 		Debug.Messagebox( "As soon as her hands are free, the vixen crawls all over you with wet lips, hot tongue and a ravenous look on her face." )
 
-		SexLab.QuickStart(akSpeaker, akActor,  AnimationTags = "Sex")
+		SexLab.QuickStart(akActor, akSpeaker, victim=akActor, AnimationTags = "Sex")
 
 
 
