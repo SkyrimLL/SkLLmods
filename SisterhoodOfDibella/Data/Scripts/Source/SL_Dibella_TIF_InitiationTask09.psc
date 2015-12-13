@@ -9,8 +9,8 @@ Actor akSpeaker = akSpeakerRef as Actor
 ; DibellaPathQuest.SetStage(50)
 
 ; Self.GetOwningQuest().SetObjectiveDisplayed(30, abDisplayed = False)
-; Self.GetOwningQuest().SetObjectiveDisplayed(50)
-; Self.GetOwningQuest().SetStage(50)
+Self.GetOwningQuest().SetObjectiveDisplayed(45)
+; Self.GetOwningQuest().SetStage(45)
 ;END CODE
 EndFunction
 ;END FRAGMENT

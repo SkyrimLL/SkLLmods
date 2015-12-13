@@ -14,7 +14,7 @@ Event OnTriggerLeave(ObjectReference akActionRef)
        Int iCurrentTimeValue = fCurrentTimeValue  as Int
 	Int timeSinceLastBlessing 
 
-	If UI.IsMenuOpen("Console") || UI.IsMenuOpen("Main Menu") || UI.IsMenuOpen("Loading Menu") || UI.IsMenuOpen("MessageBoxMenu")
+	If UI.IsMenuOpen("Console") || UI.IsMenuOpen("Main Menu") || UI.IsMenuOpen("Loading Menu") || UI.IsMenuOpen("MessageBoxMenu") || (_SLSD_TempleSweatON.GetValue() == 0)
 		return
 	EndIf
 	
@@ -112,3 +112,5 @@ Event OnTriggerLeave(ObjectReference akActionRef)
 EndEvent
 
 
+
+GlobalVariable Property _SLSD_TempleSweatON  Auto  
