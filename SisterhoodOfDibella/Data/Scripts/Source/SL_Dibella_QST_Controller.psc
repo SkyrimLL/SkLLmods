@@ -23,8 +23,8 @@ EndEvent
 Function _Maintenance()
 	; UnregisterForAllModEvents()
 	Debug.Trace("[SLD] Reset SexLab events")
-	; RegisterForModEvent("AnimationStart", "OnSexLabStart")
-	; RegisterForModEvent("AnimationEnd",   "OnSexLabEnd")
+	RegisterForModEvent("AnimationStart", "OnSexLabStart")
+	RegisterForModEvent("AnimationEnd",   "OnSexLabEnd")
 	RegisterForModEvent("OrgasmStart",    "OnSexLabOrgasm")
 	RegisterForSleep()
 
@@ -139,15 +139,29 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 	; 	_listActors("End: ", actors)
 	; EndIf
 
-	; If (_hasPlayer(actors))
-		;
-	; EndIf
+	If (_hasActor(actors, FjotraRef as Actor)) && (_hasPlayer(actors))
+		if ( (Game.GetPlayer().HasMagicEffect(AgentOfDibella  )) && (_SLSD_HormonesSexChange.GetValue() == 1) && (pActorBase.GetSex() == 0) )
+			InitiationFX.Cast(PlayerActor, PlayerActor )
+
+			StorageUtil.SetIntValue( PlayerActor, "_SLH_allowHRT", 1)
+ 			PlayerActor.SendModEvent("SLHCastHRTCurse")
+ 			_SLSD_PlayerSexChanged.SetValue(1)
+
+		 	Debug.MessageBox("Dibella's Grace washes over you, changing your features in her image.")
+
+		 	Utility.Wait(5.0)
+
+    		Game.ShowRaceMenu()
+ 
+		endIf
+	EndIf
 
 EndEvent 
 
 Event OnSexLabOrgasm(String _eventName, String _args, Float _argc, Form _sender)
 	ObjectReference PlayerREF= PlayerAlias.GetReference()
 	Actor PlayerActor= PlayerAlias.GetReference() as Actor
+	ActorBase pActorBase = PlayerActor.GetActorBase()
 	Float fBreastScale 
 	Int iRandomNum
 
@@ -166,33 +180,49 @@ Event OnSexLabOrgasm(String _eventName, String _args, Float _argc, Form _sender)
 	; EndIf
 
 	If (_hasActor(actors, FjotraRef as Actor)) && (_hasPlayer(actors))
-	 	Debug.Trace("[SLSD] Orgasm with Fjotra!")
+		if ( (Game.GetPlayer().HasMagicEffect(AgentOfDibella  )) && (_SLSD_HormonesSexChange.GetValue() == 1) && (pActorBase.GetSex() == 0) )
+			; Do nothing... message box will open from SexLab End event
+		Else
+		 	Debug.Trace("[SLSD] Orgasm with Fjotra!")
 
-		iRandomNum = Utility.RandomInt(0,100)
+			iRandomNum = Utility.RandomInt(0,100)
 
-		If (iRandomNum > 70) && (TempleCorruption.getValue()>0)
-	 		InitiationFX.Cast(FjotraRef as Actor ,FjotraRef as Actor )
-	 		Utility.Wait(2.0)
+			If (iRandomNum > 70) && (TempleCorruption.getValue()>0)
+		 		InitiationFX.Cast(FjotraRef as Actor ,FjotraRef as Actor )
+		 		Utility.Wait(2.0)
 
-	 		iRandomNum = Utility.RandomInt(0,100)
-	 		If (iRandomNum > 80) 
-	 			; [Dibella after orgasm] There is a disease in my temple. Help my Sybil and show her the path!
-	 			Debug.MessageBox("The Sybil reaches for your arm and gasps in an otherworldly voice 'There is a disease in my temple. Help my Sybil and show her the path!'")
+		 		iRandomNum = Utility.RandomInt(0,100)
+		 		If (iRandomNum > 80) 
+		 			; [Dibella after orgasm] There is a disease in my temple. Help my Sybil and show her the path!
+		 			Debug.MessageBox("The Sybil reaches for your arm and gasps in an otherworldly voice 'There is a disease in my temple. Help my Sybil and show her the path!'")
 
-	 		ElseIf (iRandomNum > 50)
-				; [Dibella after orgasm] My Sybil needs you!
-				Debug.MessageBox("The Sybil cries out, transfixed 'My Sybil needs you! Hurry!'.")
+		 		ElseIf (iRandomNum > 50)
+					; [Dibella after orgasm] My Sybil needs you!
+					Debug.MessageBox("The Sybil cries out, transfixed 'My Sybil needs you! Hurry!'.")
 
-	 		ElseIf (iRandomNum > 20)
-				; [Dibella after orgasm] Trust Senna.
-				Debug.MessageBox("The Sybil is collapses and whispers 'Trust Senna.. she will help you.'.")
+		 		ElseIf (iRandomNum > 20)
+					; [Dibella after orgasm] Trust Senna.
+					Debug.MessageBox("The Sybil is collapses and whispers 'Trust Senna.. she will help you.'.")
 
-			Else
-				Debug.MessageBox("The Sybil is possessed by the essence of Dibella, transfixed, eyes glowing and looking right through you.")
+				Else
+					Debug.MessageBox("The Sybil is possessed by the essence of Dibella, transfixed, eyes glowing and looking right through you.")
 
-			EndIf
+				EndIf
 
-	 		
+		 		If (iRandomNum > 80) 
+					; Hormones compatibility
+					if (pActorBase.GetSex() == 0)
+						StorageUtil.SetFloatValue(PlayerActor, "_SLH_fSchlong",  StorageUtil.GetFloatValue(PlayerActor, "_SLH_fSchlong")  * 1.5) 	
+					else
+						StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast",  StorageUtil.GetFloatValue(PlayerActor, "_SLH_fBreast")  * 2.0) 	
+						StorageUtil.SetFloatValue(PlayerActor, "_SLH_fButt",  StorageUtil.GetFloatValue(PlayerActor, "_SLH_fButt")  * 1.5) 	
+					endIf
+
+					PlayerActor.SendModEvent("SLHRefresh")
+
+		 		endIf
+
+	 		Endif
 	 	EndIf
 	 ElseIf (_hasFaction(actors, DibellaTempleFaction)) && (_hasPlayer(actors))
 	 	Debug.Trace("[SLSD] Orgasm with Sister of Dibella!")
@@ -313,3 +343,8 @@ Faction Property DibellaTempleFaction Auto
 
 MiscObject Property DibellaToken  Auto  
 Location Property DibellaTempleBaths  Auto  
+
+MagicEffect   Property AgentOfDibella  Auto  
+
+GlobalVariable Property _SLSD_HormonesSexChange  Auto  
+GlobalVariable Property _SLSD_PlayerSexChanged  Auto  
