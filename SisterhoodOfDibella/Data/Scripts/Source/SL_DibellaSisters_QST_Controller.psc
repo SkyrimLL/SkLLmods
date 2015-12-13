@@ -18,7 +18,7 @@ Event OnLocationChange(Location akOldLoc, Location akNewLoc)
 	; Set outfits accordingly
 
 	If (akNewLoc == TempleLocation) || (akOldLoc == TempleLocation)
-		; Debug.Notification("[SLSD] Temple corruption: " + iTempleCorruption )
+		Debug.Trace("[SLSD] Temple corruption: " + iTempleCorruption )
 		; Debug.Notification("[SLSD] Sybil Level: " + iSybilLevel )
 		; Debug.Notification("[SLSD] SennaRef: " + SennaRef)
 		; Debug.Notification("[SLSD] OrlaRef: " + OrlaRef)
@@ -33,7 +33,7 @@ Event OnLocationChange(Location akOldLoc, Location akNewLoc)
 			(HamalRef as Actor).SetOutfit(HamalPureOutfit)
 			(SybilRef as Actor).SetOutfit(FjotraPureOutfit)
 
-		ElseIf (iTempleCorruption >= 1) && (iTempleCorruption < 4)
+		ElseIf (iTempleCorruption >= 1) && (iTempleCorruption <= 4)
 			(SennaRef as Actor).SetOutfit(SisterPureOutfit)
 			(OrlaRef as Actor).SetOutfit(SisterCorruptedOutfit)
 			(AnwenRef as Actor).SetOutfit(SisterCorruptedOutfit)
@@ -59,7 +59,7 @@ Event OnLocationChange(Location akOldLoc, Location akNewLoc)
 				EndIf
 			EndIf
 
-		ElseIf (iTempleCorruption >= 4)
+		ElseIf (iTempleCorruption > 4)
 			(SennaRef as Actor).SetOutfit(SisterCorruptedOutfit)
 			(OrlaRef as Actor).SetOutfit(SisterCorruptedOutfit)
 			(AnwenRef as Actor).SetOutfit(SisterCorruptedOutfit)
@@ -72,8 +72,51 @@ EndEvent
 
 Function _Maintenance()
 ;
+	RegisterForModEvent("SLSDEquipOutfit",   "OnSLSDEquipOutfit")
 
 EndFunction
+
+
+Event OnSLSDEquipOutfit(String _eventName, String _args, Float _argc = -1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+	String sOutfit = _args
+
+	; Example: akSpeaker forcing a gag on player using OutfitID = 1 [between 0 and 10] 
+	; akSpeaker.SendModEvent("SDEquipDevice", "Gag", 1) 
+
+	Debug.Trace("[SL_DibellaSisters_QST_controller] Receiving equip outfit story event [" + _args  + "] [" + _argc as Int + "]")
+
+	if (sOutfit == "SisterPure")
+		kActor.SetOutfit(SisterPureOutfit)
+
+	elseif (sOutfit == "SisterCorrupted")
+		kActor.SetOutfit(SisterCorruptedOutfit)
+
+	elseif (sOutfit == "HamalPure")
+		kActor.SetOutfit(HamalPureOutfit)
+
+	elseif (sOutfit == "HamalCorrupted")
+		kActor.SetOutfit(HamalCorruptedOutfit)
+
+	elseif (sOutfit == "FjotraPure")
+		kActor.SetOutfit(FjotraPureOutfit)
+
+	elseif (sOutfit == "FjotraNovice")
+		kActor.SetOutfit(FjotraNoviceOutfit )
+
+	elseif (sOutfit == "FjotraAccolyte")
+		kActor.SetOutfit(FjotraAccolyteOutfit)
+
+	elseif (sOutfit == "FjotraInitiate")
+		kActor.SetOutfit(FjotraInitiateOutfit)
+
+	elseif (sOutfit == "FjotraCorrupted")
+		kActor.SetOutfit(FjotraCorruptedOutfit)
+		
+	else
+		Debug.Trace("[SL_DibellaSisters_QST_controller] Unknow outfit [" + sOutfit  + "]")
+	Endif
+EndEvent
 
 ObjectReference Property SennaRef Auto
 ObjectReference Property OrlaRef Auto
