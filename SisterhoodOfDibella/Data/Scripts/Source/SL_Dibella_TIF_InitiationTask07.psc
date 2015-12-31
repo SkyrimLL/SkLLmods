@@ -10,8 +10,10 @@ Self.GetOwningQuest().SetObjectiveDisplayed(26, abDisplayed = False)
 
 DibellaPathQuest.SetStage(40)
 
-if ( SybilLevel.GetValue() < 5 ) 
-	SybilLevel.SetValue( 5 )
+if ( SybilLevel.GetValue() < 4 ) 
+	SybilLevel.SetValue( 4 )
+	StorageUtil.SetIntValue( Game.GetPlayer(), "_SLSD_iDibellaSybilLevel" , 4)
+
 	InitiationLevelBuffer.SetValue( 0 )
 	Self.GetOwningQuest().SetStage(40)
 EndIf
