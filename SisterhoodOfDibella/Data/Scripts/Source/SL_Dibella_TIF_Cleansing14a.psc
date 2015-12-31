@@ -6,7 +6,7 @@ Scriptname SL_Dibella_TIF_Cleansing14a Extends TopicInfo Hidden
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
-(HaelgaRef as Actor).SetOutfit(TravelingSisterOutfit)
+;
 ;END CODE
 EndFunction
 ;END FRAGMENT
