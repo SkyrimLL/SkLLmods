@@ -7,8 +7,16 @@ Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
 Self.GetOwningQuest().SetStage(20)
+; (HaelgaRef as Actor).SetOutfit(TravelingSisterOutfit)
+Game.GetPlayer().RemoveItem(HaelgaHood)
 ;END CODE
 EndFunction
 ;END FRAGMENT
 
 ;END FRAGMENT CODE - Do not edit anything between this and the begin comment
+
+ObjectReference Property HaelgaRef  Auto  
+
+Armor Property HaelgaHood  Auto  
+
+Outfit Property TravelingSisterOutfit  Auto  
