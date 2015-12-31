@@ -16,7 +16,7 @@ Int sexTrigger = (SybilLevel.GetValue() as Int)*10+20
 	; If (Utility.RandomInt(0,100)<sexTrigger )  
 		; 3d will not be loaded in some situations, such as werewolf transformations.
 		; Skip body update if 3d not loaded.
-		If ( !(HamalREF as Actor).Is3DLoaded() ) || ( !(SybilREF as Actor).Is3DLoaded() )
+		If ( !(HamalREF as Actor).Is3DLoaded() ) || ( !(SybilREF as Actor).Is3DLoaded() ) || ( !(SanguineAgentM as Actor).Is3DLoaded() ) || ( !(SanguineAgentF as Actor).Is3DLoaded() )
 			return
 		EndIf
 

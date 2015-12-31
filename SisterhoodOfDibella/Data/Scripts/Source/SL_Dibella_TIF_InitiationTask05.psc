@@ -13,6 +13,7 @@ DibellaPathQuest.SetStage(30)
 
 if ( SybilLevel.GetValue() < 3 ) 
 	SybilLevel.SetValue( 3 )
+	StorageUtil.SetIntValue( Game.GetPlayer(), "_SLSD_iDibellaSybilLevel" , 3)
 	InitiationLevelBuffer.SetValue( 0 )
 	Self.GetOwningQuest().SetStage(20)
 EndIf

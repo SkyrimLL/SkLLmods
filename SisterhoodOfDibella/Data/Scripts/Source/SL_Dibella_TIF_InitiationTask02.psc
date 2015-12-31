@@ -17,6 +17,8 @@ DibellaPathQuest.SetStage(20)
 
 if ( SybilLevel.GetValue() < 2 ) 
 	SybilLevel.SetValue( 2 )
+	StorageUtil.SetIntValue( Game.GetPlayer(), "_SLSD_iDibellaSybilLevel" , 2)
+
 	InitiationLevelBuffer.SetValue( 0 )
 EndIf
  

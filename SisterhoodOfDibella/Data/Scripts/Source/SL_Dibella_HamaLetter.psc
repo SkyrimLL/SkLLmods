@@ -7,7 +7,10 @@ Event OnRead()
 	
 	DibellaCorruptionQuest.SetStage(50)
 	DibellaInitiationQuest.SetStage(25)
+	(SennaRef as Actor).SendModEvent("SLSDEquipOutfit","SisterCorrupted")
 
 EndEvent
 
 Quest Property DibellaCorruptionQuest  Auto  
+
+ObjectReference Property SennaRef  Auto  

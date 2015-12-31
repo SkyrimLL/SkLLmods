@@ -209,20 +209,20 @@ Event OnSexLabOrgasm(String _eventName, String _args, Float _argc, Form _sender)
 
 				EndIf
 
-		 		If (iRandomNum > 80) 
-					; Hormones compatibility
-					if (pActorBase.GetSex() == 0)
-						StorageUtil.SetFloatValue(PlayerActor, "_SLH_fSchlong",  StorageUtil.GetFloatValue(PlayerActor, "_SLH_fSchlong")  * 1.5) 	
-					else
-						StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast",  StorageUtil.GetFloatValue(PlayerActor, "_SLH_fBreast")  * 2.0) 	
-						StorageUtil.SetFloatValue(PlayerActor, "_SLH_fButt",  StorageUtil.GetFloatValue(PlayerActor, "_SLH_fButt")  * 1.5) 	
-					endIf
-
-					PlayerActor.SendModEvent("SLHRefresh")
-
-		 		endIf
-
 	 		Endif
+
+	 		If (iRandomNum > 80) 
+				; Hormones compatibility
+				if (pActorBase.GetSex() == 0)
+					StorageUtil.SetFloatValue(PlayerActor, "_SLH_fSchlong",  StorageUtil.GetFloatValue(PlayerActor, "_SLH_fSchlong")  * 1.5) 	
+				else
+					StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast",  StorageUtil.GetFloatValue(PlayerActor, "_SLH_fBreast")  * 2.0) 	
+					StorageUtil.SetFloatValue(PlayerActor, "_SLH_fButt",  StorageUtil.GetFloatValue(PlayerActor, "_SLH_fButt")  * 1.5) 	
+				endIf
+
+				PlayerActor.SendModEvent("SLHRefresh")
+
+	 		endIf	 		
 	 	EndIf
 	 ElseIf (_hasFaction(actors, DibellaTempleFaction)) && (_hasPlayer(actors))
 	 	Debug.Trace("[SLSD] Orgasm with Sister of Dibella!")

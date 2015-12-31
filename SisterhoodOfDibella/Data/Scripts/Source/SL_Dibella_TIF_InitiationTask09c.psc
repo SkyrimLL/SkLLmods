@@ -13,6 +13,13 @@ If ( StorageUtil.GetIntValue( Game.GetPlayer(), "_SD_iAPIInit") == 1 )
 Else
 	SD_ON.SetValue(0)
 EndIf
+
+
+if ( SybilLevel.GetValue() < 5 ) 
+	SybilLevel.SetValue( 5 )
+	StorageUtil.SetIntValue( Game.GetPlayer(), "_SLSD_iDibellaSybilLevel" , 5)
+
+EndIf
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -22,3 +29,5 @@ EndFunction
 GlobalVariable Property SD_ON  Auto  
 
 SPELL Property SanguineAgentFX  Auto  
+
+GlobalVariable Property SybilLevel  Auto  
