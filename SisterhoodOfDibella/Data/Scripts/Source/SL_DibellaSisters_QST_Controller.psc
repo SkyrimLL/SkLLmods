@@ -17,9 +17,10 @@ Event OnLocationChange(Location akOldLoc, Location akNewLoc)
 	; Check value of temple corruption from StorageUtil
 	; Set outfits accordingly
 
-	If (akNewLoc == TempleLocation) || (akOldLoc == TempleLocation)
+	If ((akNewLoc == TempleLocation) || (akOldLoc == TempleLocation))  && (iSybilLevel < 5)
 		Debug.Trace("[SLSD] Temple corruption: " + iTempleCorruption )
-		; Debug.Notification("[SLSD] Sybil Level: " + iSybilLevel )
+		Debug.Notification("[SLSD] Temple corruption: " + iTempleCorruption )
+		Debug.Notification("[SLSD] Sybil Level: " + iSybilLevel )
 		; Debug.Notification("[SLSD] SennaRef: " + SennaRef)
 		; Debug.Notification("[SLSD] OrlaRef: " + OrlaRef)
 		; Debug.Notification("[SLSD] AnwenRef: " + AnwenRef)
@@ -40,19 +41,19 @@ Event OnLocationChange(Location akOldLoc, Location akNewLoc)
 			(HamalRef as Actor).SetOutfit(HamalCorruptedOutfit)
 
 			If (SybilRef != None) 
-				If (iSybilLevel == 1) || (iSybilLevel == 2)
+				If (iSybilLevel == 1) 
 					(SybilRef as Actor).SetOutfit(FjotraNoviceOutfit)
 					; Debug.Notification("[SLSD] Fjotra is a Novice")
 
-				ElseIf (iSybilLevel == 3) || (iSybilLevel == 4)
+				ElseIf (iSybilLevel == 2)
 					(SybilRef as Actor).SetOutfit(FjotraAccolyteOutfit)
 					; Debug.Notification("[SLSD] Fjotra is a Accolyte")
 					
-				ElseIf (iSybilLevel == 5)
+				ElseIf (iSybilLevel == 3)
 					(SybilRef as Actor).SetOutfit(FjotraInitiateOutfit)
 					; Debug.Notification("[SLSD] Fjotra is a Initiate")
 					
-				ElseIf (iSybilLevel == 6)
+				ElseIf (iSybilLevel == 4)
 					(SybilRef as Actor).SetOutfit(FjotraCorruptedOutfit)
 					; Debug.Notification("[SLSD] Fjotra is a Mother")
 					
