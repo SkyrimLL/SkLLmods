@@ -2,11 +2,22 @@
 ;NEXT FRAGMENT INDEX 2
 Scriptname SL_Dibella_TIF_Corruption50 Extends TopicInfo Hidden
 
+;BEGIN FRAGMENT Fragment_1
+Function Fragment_1(ObjectReference akSpeakerRef)
+Actor akSpeaker = akSpeakerRef as Actor
+;BEGIN CODE
+_SLSD_Sanguine.Enable() 
+SanguineFX.Play( _SLSD_Sanguine, 15)
+Utility.Wait(2.0)
+;END CODE
+EndFunction
+;END FRAGMENT
+
 ;BEGIN FRAGMENT Fragment_0
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
-Self.GetOwningQuest().SetStage(50)
+Self.GetOwningQuest().SetStage(59)
 
 _SLSD_NPC_HamalCorrupted.Enable()   
 
@@ -30,17 +41,6 @@ If  (SexLab.ValidateActor( FjotraRef as Actor ) > 0) &&  (SexLab.ValidateActor(_
 	SexLab.StartSex(Positions = sexActors, Anims = anims, Victim = FjotraRef as Actor, CenterOn = AltarBedRef, AllowBed = true)
 
 EndIf
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_1
-Function Fragment_1(ObjectReference akSpeakerRef)
-Actor akSpeaker = akSpeakerRef as Actor
-;BEGIN CODE
-_SLSD_Sanguine.Enable() 
-SanguineFX.Play( _SLSD_Sanguine, 15)
-Utility.Wait(2.0)
 ;END CODE
 EndFunction
 ;END FRAGMENT
