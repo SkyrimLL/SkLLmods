@@ -6,6 +6,9 @@ Scriptname SL_Dibella_TIF_Corruption51start Extends TopicInfo Hidden
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
+Self.GetOwningQuest().SetStage(50)
+Self.GetOwningQuest().SetStage(51)
+
 TempleCorruptionLightRef.Enable()
 ;END CODE
 EndFunction
