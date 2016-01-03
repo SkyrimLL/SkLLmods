@@ -114,6 +114,9 @@ Event OnSLSDEquipOutfit(String _eventName, String _args, Float _argc = -1.0, For
 	elseif (sOutfit == "FjotraCorrupted")
 		kActor.SetOutfit(FjotraCorruptedOutfit)
 		
+	elseif (sOutfit == "TravelingSister")
+		kActor.SetOutfit(TravelingSisterOutfit  )
+		
 	else
 		Debug.Trace("[SL_DibellaSisters_QST_controller] Unknow outfit [" + sOutfit  + "]")
 	Endif
@@ -140,3 +143,5 @@ Outfit Property FjotraInitiateOutfit Auto
 Location Property TempleLocation Auto
 
 
+
+Outfit Property TravelingSisterOutfit  Auto  
