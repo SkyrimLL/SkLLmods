@@ -75,9 +75,12 @@ EndFunction
 Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 	Actor kPlayer = Game.GetPlayer() as Actor
 	Location kLocation = Game.GetPlayer().GetCurrentLocation()
+	Int iTempleCorruption = StorageUtil.GetIntValue( Game.GetPlayer(), "_SLSD_iDibellaTempleCorruption")
 
-	If kLocation.IsSameLocation( DibellaTempleBaths ) && (Utility.RandomInt(0,100)<= (TempleCorruption.GetValue() * 10) ) && (StorageUtil.GetIntValue(Game.getPlayer(), "_SD_iDisableDreamworldOnSleep") == 0) && ( StorageUtil.GetIntValue(Game.getPlayer(), "_SD_iSanguineBlessings") > 0)
-		SendModEvent("SDDreamworldPull")
+	If kLocation.IsSameLocation( DibellaTempleBaths ) && (iTempleCorruption >= 2)
+		If (Utility.RandomInt(0,100)<= (TempleCorruption.GetValue() * 10) ) && (StorageUtil.GetIntValue(Game.getPlayer(), "_SD_iDisableDreamworldOnSleep") == 0) && ( StorageUtil.GetIntValue(Game.getPlayer(), "_SD_iSanguineBlessings") > 0)
+			SendModEvent("SDDreamworldPull")
+		Endif
 	EndIf
 Endevent
 

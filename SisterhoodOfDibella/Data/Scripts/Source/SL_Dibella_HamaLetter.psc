@@ -5,9 +5,13 @@ Quest property DibellaInitiationQuest auto
 Event OnRead()
 ; 	;debug.trace(self + "OnRead() WE100ReadLetter = 1")
 	
-	DibellaCorruptionQuest.SetStage(50)
-	DibellaInitiationQuest.SetStage(25)
-	(SennaRef as Actor).SendModEvent("SLSDEquipOutfit","SisterCorrupted")
+	if (DibellaInitiationQuest.IsStageDone(24)) && !(DibellaInitiationQuest.IsStageDone(25))
+		; Why was Corruption quest set to 50 in this letter?
+		; DibellaCorruptionQuest.SetStage(50)
+		DibellaInitiationQuest.SetStage(25)
+		(SennaRef as Actor).SendModEvent("SLSDEquipOutfit","SisterCorrupted")
+	endif
+
 
 EndEvent
 

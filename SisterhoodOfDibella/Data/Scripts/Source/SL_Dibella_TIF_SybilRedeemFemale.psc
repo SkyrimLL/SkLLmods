@@ -20,12 +20,13 @@ MarksBuffer.SetValue( MarksBuffer.GetValue() + marksCount)
 While ( MarksBuffer.GetValue() >= 5)
 	InitiationLevelBuffer.SetValue( InitiationLevelBuffer.GetValue() + 1)
 
+	Debug.Notification("Dibella's Grace is with you.." )
 	Game.AddPerkPoints(1)
 	RedeemFX.Cast(Game.GetPlayer(),Game.GetPlayer())
 	MarksBuffer.SetValue( MarksBuffer.GetValue() - 5)
 
-	Debug.Notification("Sybil initiation buffer: " + InitiationLevelBuffer.GetValue())
-	Debug.Notification(MarksBuffer.GetValue() + " marks remain.")
+	Debug.Trace("Sybil initiation buffer: " + InitiationLevelBuffer.GetValue())
+	Debug.Trace(MarksBuffer.GetValue() + " marks remain.")
 EndWhile
 
 
@@ -36,8 +37,8 @@ While (InitiationLevelBuffer.GetValue() >= 10)
 	EndIf
 
 	InitiationLevelBuffer.SetValue(InitiationLevelBuffer.GetValue() - 10)
-	Debug.Notification("Sybil level: " + SybilLevel.GetValue() )
-	Debug.Notification(MarksBuffer.GetValue() + " marks remain.")
+	Debug.Trace("Sybil level: " + SybilLevel.GetValue() )
+	Debug.Trace(MarksBuffer.GetValue() + " marks remain.")
 EndWhile
 ;END CODE
 EndFunction
