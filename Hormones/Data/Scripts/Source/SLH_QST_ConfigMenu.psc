@@ -1241,12 +1241,14 @@ endState
 state STATE_SUCCUBUS ; TOGGLE
 	event OnSelectST()
 		GV_allowSuccubus.SetValueInt( Math.LogicalXor( 1, GV_allowSuccubus.GetValueInt() ) )
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_allowSuccubus", GV_allowTG.GetValue() as Int)
 		SetToggleOptionValueST( GV_allowSuccubus.GetValueInt() as Bool )
 		ForcePageReset()
 	endEvent
 
 	event OnDefaultST()
 		GV_allowSuccubus.SetValueInt( 0 )
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_allowSuccubus", GV_allowTG.GetValue() as Int)
 		SetToggleOptionValueST( false )
 		ForcePageReset()
 	endEvent
@@ -1259,12 +1261,14 @@ endState
 state STATE_BIMBO ; TOGGLE
 	event OnSelectST()
 		GV_allowBimbo.SetValueInt( Math.LogicalXor( 1, GV_allowBimbo.GetValueInt() ) )
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_allowBimbo", GV_allowTG.GetValue() as Int)
 		SetToggleOptionValueST( GV_allowBimbo.GetValueInt() as Bool )
 		ForcePageReset()
 	endEvent
 
 	event OnDefaultST()
 		GV_allowBimbo.SetValueInt( 0 )
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_allowBimbo", GV_allowTG.GetValue() as Int)
 		SetToggleOptionValueST( false )
 		ForcePageReset()
 	endEvent
@@ -1322,7 +1326,7 @@ state STATE_BEG_TRIGGER ; SLIDER
 		SetSliderDialogStartValue( GV_hornyBegArousal.GetValue() )
 		SetSliderDialogDefaultValue( 60.0 )
 		SetSliderDialogRange( 0.0, 100.0 )
-		SetSliderDialogInterval( 10.0 )
+		SetSliderDialogInterval( 1.0 )
 	endEvent
 
 	event OnSliderAcceptST(float value)
@@ -1362,12 +1366,14 @@ endState
 state STATE_SEX_CHANGE ; TOGGLE
 	event OnSelectST()
 		GV_allowHRT.SetValueInt( Math.LogicalXor( 1, GV_allowHRT.GetValueInt() ) )
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_allowHRT", GV_allowTG.GetValue() as Int)
 		SetToggleOptionValueST( GV_allowHRT.GetValueInt() as Bool )
 		ForcePageReset()
 	endEvent
 
 	event OnDefaultST()
 		GV_allowHRT.SetValueInt( 0 )
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_allowHRT", GV_allowTG.GetValue() as Int)
 		SetToggleOptionValueST( false )
 		ForcePageReset()
 	endEvent
@@ -1380,12 +1386,14 @@ endState
 state STATE_TG ; TOGGLE
 	event OnSelectST()
 		GV_allowTG.SetValueInt( Math.LogicalXor( 1, GV_allowTG.GetValueInt() ) )
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_allowTG", GV_allowTG.GetValue() as Int)
 		SetToggleOptionValueST( GV_allowTG.GetValueInt() as Bool )
 		ForcePageReset()
 	endEvent
 
 	event OnDefaultST()
 		GV_allowTG.SetValueInt( 0 )
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_allowTG", GV_allowTG.GetValue() as Int)
 		SetToggleOptionValueST( false )
 		ForcePageReset()
 	endEvent
@@ -1416,12 +1424,14 @@ endState
 state STATE_SELF_SPELLS ; TOGGLE
 	event OnSelectST()
 		GV_allowSelfSpells.SetValueInt( Math.LogicalXor( 1, GV_allowSelfSpells.GetValueInt() ) )
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_allowSelfSpells", GV_allowTG.GetValue() as Int)
 		SetToggleOptionValueST( GV_allowSelfSpells.GetValueInt() as Bool )
 		ForcePageReset()
 	endEvent
 
 	event OnDefaultST()
 		GV_allowSelfSpells.SetValueInt( 1 )
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_allowSelfSpells", GV_allowTG.GetValue() as Int)
 		SetToggleOptionValueST( false )
 		ForcePageReset()
 	endEvent

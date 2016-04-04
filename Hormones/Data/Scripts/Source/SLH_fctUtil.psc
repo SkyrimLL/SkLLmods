@@ -146,6 +146,29 @@ Bool function hasRace(Actor[] _actors, Race thisRace)
 	Return False
 EndFunction
 
+Actor function getRaceActor(Actor[] _actors, Race thisRace)
+	ActorBase aBase 
+	Race aRace 
+
+	; debugTrace("[SLH] Race check:" + _actors.Length + " actors" )
+
+	int idx = 0
+	while idx < _actors.Length
+		if (_actors[idx])
+			; aBase = _actors[idx].GetBaseObject() as ActorBase
+			aRace = _actors[idx].GetRace()
+
+			; debugTrace("[SLH] Race check:" + aRace + " / "  + thisRace)
+
+			if aRace == thisRace
+				return _actors[idx]
+			endif
+		EndIf
+		idx += 1
+	endwhile
+	Return None
+EndFunction
+
 Bool function isFemale(actor kActor)
 	Bool bIsFemale
 	ActorBase kActorBase = kActor.GetActorBase()
@@ -172,6 +195,13 @@ Bool function isMale(actor kActor)
 	return bIsMale
 EndFunction
 
+Bool function isSameSex(actor kActor1, actor kActor2)
+	Bool bIsSameSex = false
+
+	bIsSameSex = (isFemale(kActor1) && isFemale(kActor2)) || (isMale(kActor1) && isMale(kActor2)) 
+
+	return bIsSameSex
+EndFunction
 
 bool function isFHUCumFilledEnabled(actor kActor) 
   	return (StorageUtil.GetIntValue(Game.GetPlayer(), "CI_CumInflation_ON") == 1) 
@@ -230,8 +260,16 @@ function manageSexLabAroused(Actor kActor, int aiModRank = -1)
 	    slaUtil.UpdateActorExposureRate(kActor, AbsLibido / 10.0)
 	EndIf
 
-	if (StorageUtil.GetIntValue(kActor, "_SLH_isPregnant") == 1)
+	if (StorageUtil.GetIntValue(kActor, "_SLH_isSuccubus") == 1)
 		slaUtil.UpdateActorExposureRate(kActor, 9.0)
+	EndIf
+
+	if (StorageUtil.GetIntValue(kActor, "_SLH_isBimbo") == 1)
+		slaUtil.UpdateActorExposureRate(kActor, 5.0)
+	EndIf
+
+	if (StorageUtil.GetIntValue(kActor, "_SLH_isPregnant") == 1)
+		slaUtil.UpdateActorExposureRate(kActor, 3.0)
 	EndIf
 
 	if ( StorageUtil.GetIntValue(kActor, "_SLH_isDrugged") == 1)
