@@ -122,6 +122,10 @@ function bimboTransformEffectON(actor kActor)
 	ObjectReference kActorREF= kActor as ObjectReference
 	ActorBase pActorBase = kActor.GetActorBase()
 
+    GV_allowTG.SetValue( StorageUtil.GetIntValue(kActor, "_SLH_allowTG") as Int)
+    GV_allowHRT.SetValue( StorageUtil.GetIntValue(kActor, "_SLH_allowHRT") as Int)
+    GV_allowBimbo.SetValue( StorageUtil.GetIntValue(kActor, "_SLH_allowBimbo") as Int)
+
     ; Abort if no gender/bimbo option checked in MCM
     If (GV_allowBimbo.GetValue()==0) && (GV_allowHRT.GetValue()==0) && (GV_allowTG.GetValue()==0)
        Return
@@ -409,6 +413,9 @@ function bimboTransformEffectON(actor kActor)
 endFunction
 
 function bimboTransformEffectOFF(actor kActor)
+    GV_allowTG.SetValue( StorageUtil.GetIntValue(kActor, "_SLH_allowTG") as Int)
+    GV_allowHRT.SetValue( StorageUtil.GetIntValue(kActor, "_SLH_allowHRT") as Int)
+    GV_allowBimbo.SetValue( StorageUtil.GetIntValue(kActor, "_SLH_allowBimbo") as Int)
 
     ; PolymorphBimboFX.Cast(kActor,kActor) 
     debugTrace("[SLH] Bimbo Curse Shutdown - IsBimbo: " + GV_isBimbo.GetValue() as Int)
@@ -545,6 +552,10 @@ function HRTEffectON(actor kActor)
     ObjectReference kActorREF= kActor as ObjectReference
     ActorBase pActorBase = kActor.GetActorBase()
 
+    GV_allowTG.SetValue( StorageUtil.GetIntValue(kActor, "_SLH_allowTG") as Int)
+    GV_allowHRT.SetValue( StorageUtil.GetIntValue(kActor, "_SLH_allowHRT") as Int)
+    GV_allowBimbo.SetValue( StorageUtil.GetIntValue(kActor, "_SLH_allowBimbo") as Int)
+
     debugTrace("[SLH] HRT Start - IsHRT: " + GV_isHRT.GetValue() as Int)
 
     If (GV_allowHRT.GetValue()==0) 
@@ -568,6 +579,9 @@ function HRTEffectON(actor kActor)
 endFunction
 
 function HRTEffectOFF(actor kActor)
+    GV_allowTG.SetValue( StorageUtil.GetIntValue(kActor, "_SLH_allowTG") as Int)
+    GV_allowHRT.SetValue( StorageUtil.GetIntValue(kActor, "_SLH_allowHRT") as Int)
+    GV_allowBimbo.SetValue( StorageUtil.GetIntValue(kActor, "_SLH_allowBimbo") as Int)
 
     debugTrace("[SLH] HRT Shutdown - IsHRT: " + GV_isHRT.GetValue() as Int)
 
@@ -591,6 +605,10 @@ endFunction
 function TGEffectON(actor kActor)
     ObjectReference kActorREF= kActor as ObjectReference
     ActorBase pActorBase = kActor.GetActorBase()
+
+    GV_allowTG.SetValue( StorageUtil.GetIntValue(kActor, "_SLH_allowTG") as Int)
+    GV_allowHRT.SetValue( StorageUtil.GetIntValue(kActor, "_SLH_allowHRT") as Int)
+    GV_allowBimbo.SetValue( StorageUtil.GetIntValue(kActor, "_SLH_allowBimbo") as Int)
 
     If (GV_allowTG.GetValue()==0)
         Return
@@ -629,7 +647,10 @@ function TGEffectON(actor kActor)
 endFunction
 
 function TGEffectOFF(actor kActor)
-
+    GV_allowTG.SetValue( StorageUtil.GetIntValue(kActor, "_SLH_allowTG") as Int)
+    GV_allowHRT.SetValue( StorageUtil.GetIntValue(kActor, "_SLH_allowHRT") as Int)
+    GV_allowBimbo.SetValue( StorageUtil.GetIntValue(kActor, "_SLH_allowBimbo") as Int)
+    
     debugTrace("[SLH] TG Shutdown - IsTG: " + GV_isTG.GetValue() as Int)
 
     If (GV_allowTG.GetValue()==0)

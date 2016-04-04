@@ -17,6 +17,7 @@ GlobalVariable      Property GV_isBimbo                 Auto
 GlobalVariable      Property GV_allowTG                Auto
 GlobalVariable      Property GV_allowHRT                Auto
 GlobalVariable      Property GV_allowBimbo              Auto
+GlobalVariable      Property GV_hornyBegArousal              Auto
 
 GlobalVariable      Property GV_bimboClumsinessMod              Auto
 GlobalVariable      Property GV_bimboClumsinessDrop    	Auto
@@ -129,7 +130,9 @@ Event OnActorAction(int actionType, Actor akActor, Form source, int slot)
 		Return
 	Endif
 
-	clumsyBimboHands(actionType, akActor, source, slot)
+	if (akActor == BimboActor)
+		clumsyBimboHands(actionType, akActor, source, slot)
+	EndIf
 EndEvent
 
 Event OnUpdate()
@@ -153,6 +156,10 @@ Event OnUpdate()
 		; debug.trace("[slh+] bimbo OnUpdate, No TF Date")
 		Return
 	Endif
+
+	if ((GV_hornyBegArousal.GetValue() as Int) > 80)
+		GV_hornyBegArousal.SetValue(80)
+	endif
 
     iDaysPassed = Game.QueryStat("Days Passed")
 
@@ -356,7 +363,7 @@ Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile,
 
 		float bimboArousal = slaUtil.GetActorArousal(BimboActor) as float
 		float dropchance = 1.0 + (bimboArousal / 30.0 ) * (GV_bimboClumsinessMod.GetValue() as Float)
-		Debug.Trace("[slh+] bimbo beeing hit, drop chance: " + dropchance)
+		; Debug.Trace("[slh+] bimbo beeing hit, drop chance: " + dropchance)
       	If Utility.RandomInt() <= dropchance ; && (!(akAggressor as Actor).IsInFaction(pCreatureFaction)))
 				;
 
@@ -441,7 +448,7 @@ EndFunction
 int[] function dropWeapons(Actor pl, bool both = false, float chanceMult = 1.0)
 	; By default, drops only stuff on left hand, if both == true, also right hand
 	; returns an array of dropped item counts, weapon & shield at 0, spells at 1
-	debug.trace("[slh+] dropWeapons(both = "+both+", chanceMult = "+chanceMult+")")
+	; debug.trace("[slh+] dropWeapons(both = "+both+", chanceMult = "+chanceMult+")")
 	
 	; Calculate the drop chance
 	float spellDropChance = ( 100.0 - ( pl.GetAvPercentage("Stamina") * 100.0 ) ) ; inverse of stamina percentage
@@ -464,7 +471,7 @@ int[] function dropWeapons(Actor pl, bool both = false, float chanceMult = 1.0)
 		spellDropChance = 0
 	endif
 
-	debug.trace("[slh+] weapon drop chance: " + spellDropChance)
+	; debug.trace("[slh+] weapon drop chance: " + spellDropChance)
 	
 	int[] drops = new int[2]
 	drops[0] = 0
@@ -585,7 +592,7 @@ function clumsyBimboHands(int actionType, Actor bimbo, Form source, int slot)
 	;debug: checking why this is beeing called without doing an attack
 	BimboActor= BimboAliasRef.GetReference() as Actor
 	if (bimbo != BimboActor)
-		debug.trace("[slh+] bimbo clumsy hands, not the bimbo")
+		; debug.trace("[slh+] bimbo clumsy hands, not the bimbo")
 		return
 	endif
 

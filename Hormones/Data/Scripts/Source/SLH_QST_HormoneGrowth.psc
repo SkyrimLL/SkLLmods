@@ -93,14 +93,16 @@ GlobalVariable      Property GV_allowTG                 Auto
 GlobalVariable      Property GV_allowHRT 				Auto
 GlobalVariable      Property GV_allowBimbo 				Auto
 GlobalVariable      Property GV_allowSuccubus 			Auto
-GlobalVariable      Property GV_resetToggle 			Auto 
 GlobalVariable      Property GV_allowSelfSpells			Auto
+GlobalVariable      Property GV_resetToggle 			Auto 
 
+GlobalVariable      Property GV_isGagEquipped		Auto 
 GlobalVariable      Property GV_isPregnant		Auto 
 GlobalVariable      Property GV_isSuccubusFinal 				Auto
 
 FormList Property VanillaHairRaceList  Auto  
 FormList Property CustomHairRaceList  Auto  
+FormList Property HumanRaceList  Auto  
 
 
 Event OnInit()
@@ -162,6 +164,7 @@ Function Maintenance()
 
 	registerNewRacesForHair( VanillaHairRaceList  )
 	registerNewRacesForHair( CustomHairRaceList  )
+	registerNewRacesForHair( HumanRaceList  )
 
 	; Debug.Notification("[Hormones] s:" + iSexCountToday + " - v:" + iVaginalCountToday + " - a:" + iAnalCountToday + " - o:" + iOralCountToday)
 
@@ -234,6 +237,15 @@ Function maintenanceVersionEvents()
 	endif	
 
 	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fManualWeightChange",  -1)
+
+	; Hormones 2.0.3 - Transition to storageUtil config variables for curss
+	If (!StorageUtil.HasIntValue(PlayerActor, "_SLH_allowTG"))
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_allowTG", GV_allowTG.GetValue() as Int)
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_allowHRT", GV_allowHRT.GetValue() as Int)
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_allowBimbo", GV_allowBimbo.GetValue() as Int)
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_allowSuccubus", GV_allowSuccubus.GetValue() as Int)
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_allowSelfSpells", GV_allowSelfSpells.GetValue() as Int)
+	EndIf
 
 	RegisterForSleep()
 	RegisterForSingleUpdate(5)
@@ -316,12 +328,28 @@ Event OnUpdate()
 	PlayerActor= PlayerREF as Actor
 	pActorBase = PlayerActor.GetActorBase()
 	Int RandomNum = 0
+	Form kForm
 
 	if !Self
 		Return
 	EndIf
 
 	bExternalChangeModActive = fctUtil.isExternalChangeModActive(PlayerActor)
+	GV_allowTG.SetValue( StorageUtil.GetIntValue(PlayerActor, "_SLH_allowTG") as Int)
+	GV_allowHRT.SetValue( StorageUtil.GetIntValue(PlayerActor, "_SLH_allowHRT") as Int)
+	GV_allowBimbo.SetValue( StorageUtil.GetIntValue(PlayerActor, "_SLH_allowBimbo") as Int)
+	GV_allowSuccubus.SetValue( StorageUtil.GetIntValue(PlayerActor, "_SLH_allowSuccubus") as Int)
+	GV_allowSelfSpells.SetValue( StorageUtil.GetIntValue(PlayerActor, "_SLH_allowSelfSpells") as Int)
+
+	; Detect gags from ZAP and DD
+	kForm = PlayerActor.GetWornForm( 0x00004000 ) ; 44  DD Gags Mouthpieces
+
+	if ((GV_isGagEquipped.GetValue() as Int) == 0) && (kForm != None)
+		GV_isGagEquipped.SetValue(1)
+
+	Elseif ((GV_isGagEquipped.GetValue() as Int) == 1) && (kForm == None)
+		GV_isGagEquipped.SetValue(0)
+	Endif
 	
 	; Modifiers for each part - on update in case they were modified in MCM
 	; fctBodyShape.refreshGlobalValues()
@@ -825,6 +853,8 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 			_SLH_DaedricInfluence.Cast(PlayerActor,PlayerActor)
 			StorageUtil.SetFloatValue(PlayerActor, "_SLH_fTempGrowthMod",  2.0) 
 
+			SendModEvent("SDSanguineBlessingMod", 1)  
+
 			; modify succubus influence based on other daedric exposure
 			if (iDaedricInfluence >1) && (GV_allowSuccubus.GetValue()==1) && (GV_isSuccubus.GetValue()==0)
 				setSuccubusState(PlayerActor, TRUE)
@@ -839,21 +869,23 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 					_SLH_QST_Succubus.SetStage(30)
 					; ModEvent.Send(ModEvent.Create("HoSLDD_GivePlayerPowers"))
 
-				elseif (_SLH_QST_Succubus.GetStage()<=30) && (iDaedricInfluence >=30) && fctUtil.isMale(PlayerActor)
+				elseif (_SLH_QST_Succubus.GetStage()<=30) && (iDaedricInfluence >=30)
 					_SLH_QST_Succubus.SetStage(40)
 					ModEvent.Send(ModEvent.Create("HoSLDD_GivePlayerPowers"))
 
 			        ; Do not switch sex for female -> bimbo
-			        Utility.Wait(1.0)
-			        fctPolymorph.HRTEffectON( PlayerActor)
+			        If fctUtil.isMale(PlayerActor)
+				        Utility.Wait(1.0)
+				        fctPolymorph.HRTEffectON( PlayerActor)
 
-			        Utility.Wait(1.0)
-			        fctPolymorph.TGEffectON( PlayerActor)
+				        Utility.Wait(1.0)
+				        fctPolymorph.TGEffectON( PlayerActor)
 
-			        StorageUtil.SetFloatValue(PlayerActor, "_SLH_fWeight",  0.0)
-			        StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast",  0.9)
-			        StorageUtil.SetFloatValue(PlayerActor, "_SLH_fButt",  0.9)
-			        PlayerActor.SendModEvent("SLHRefresh")
+				        StorageUtil.SetFloatValue(PlayerActor, "_SLH_fWeight",  0.0)
+				        StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast",  0.9)
+				        StorageUtil.SetFloatValue(PlayerActor, "_SLH_fButt",  0.9)
+				        PlayerActor.SendModEvent("SLHRefresh")
+				    Endif
 
 				elseif (_SLH_QST_Succubus.GetStage()<=40) && (iDaedricInfluence >=40) && !fctUtil.isMale(PlayerActor)
 					_SLH_QST_Succubus.SetStage(50)
@@ -915,29 +947,74 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 
 	    ; Test if kPervert is in actors[] - small chance of repeat from current partner
 
-		actor kPervert = SexLab.FindAvailableActor(SexLab.PlayerRef as ObjectReference, 200.0)  
+		actor kPervert = SexLab.FindAvailableActor(PlayerActor as ObjectReference, 200.0)  
 
 		If (GV_allowBimbo.GetValue()==1) || (GV_allowHRT.GetValue()==1) || (GV_allowTG.GetValue()==1) 
 			If (GV_isBimbo.GetValue()==0) && (GV_isHRT.GetValue()==0) && (GV_isTG.GetValue()==0) && ( (fctUtil.hasRace(actors, _SLH_DremoraOutcastRace) || fctUtil.hasRace(actors, _SLH_BimboRace)))
 
 				If fctUtil.hasRace(actors, _SLH_BimboRace)
+					actor kBimbo = fctUtil.getRaceActor(actors, _SLH_BimboRace)
 					kPervert = None ; Disable pervert when transformation occurs
 
-					debugTrace("[SLH] Cast Bimbo Curse" )	  
 					; PolymorphBimbo.Cast(PlayerActor,PlayerActor)
-					PlayerActor.DoCombatSpellApply(_SLH_PolymorphBimbo, PlayerActor)
+					; PlayerActor.DoCombatSpellApply(_SLH_PolymorphBimbo, PlayerActor)
 
-					_SLH_QST_Bimbo.SetStage(10)
+					; _SLH_QST_Bimbo.SetStage(10)
 					iDaedricInfluence   = iDaedricInfluence   + 5
 
+					if fctUtil.isSameSex(PlayerActor,kBimbo)
+						if (Utility.RandomInt(0,100)>90) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo") == 0)					
+							PlayerActor.SendModEvent("SLHCastBimboCurse")
+							_SLH_QST_Bimbo.SetStage(10)
+						endIf
+					else
+						if (Utility.RandomInt(0,100)>60) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo") == 0)					
+							PlayerActor.SendModEvent("SLHCastBimboCurse")
+							_SLH_QST_Bimbo.SetStage(10)
+
+						elseif (Utility.RandomInt(0,100)>80)  && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iTG") == 0)										
+							PlayerActor.SendModEvent("SLHCastTGCurse")
+							_SLH_QST_Bimbo.SetStage(10)
+						endIf
+					endIf
+
 				elseIf fctUtil.hasRace(actors, _SLH_DremoraOutcastRace) && (Utility.RandomInt(0,100)>60)
+					actor kDremora = fctUtil.getRaceActor(actors, _SLH_DremoraOutcastRace)
 					kPervert = None ; Disable pervert when transformation occurs
 
-					debugTrace("[SLH] Cast Bimbo Curse" )	  
 					; PolymorphBimbo.Cast(PlayerActor,PlayerActor)
-					PlayerActor.DoCombatSpellApply(_SLH_PolymorphBimbo, PlayerActor)
+					; PlayerActor.DoCombatSpellApply(_SLH_PolymorphBimbo, PlayerActor)
 
-					_SLH_QST_Bimbo.SetStage(11)
+					; _SLH_QST_Bimbo.SetStage(11)
+
+					if fctUtil.isSameSex(PlayerActor,kDremora) && fctUtil.isFemale(kDremora)
+						if (Utility.RandomInt(0,100)>90) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo") == 0)					
+							PlayerActor.SendModEvent("SLHCastBimboCurse")
+							_SLH_QST_Bimbo.SetStage(11)
+						endIf
+					elseif !fctUtil.isSameSex(PlayerActor,kDremora) && fctUtil.isFemale(kDremora)
+						if (Utility.RandomInt(0,100)>90) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo") == 0)					
+							PlayerActor.SendModEvent("SLHCastBimboCurse")
+							_SLH_QST_Bimbo.SetStage(11)
+
+						elseif (Utility.RandomInt(0,100)>60)  && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iHRT") == 0)					
+							PlayerActor.SendModEvent("SLHCastHRTCurse")
+							_SLH_QST_Bimbo.SetStage(11)
+						endIf
+					else
+						if (Utility.RandomInt(0,100)>60) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo") == 0)					
+							PlayerActor.SendModEvent("SLHCastBimboCurse")
+							_SLH_QST_Bimbo.SetStage(11)
+
+						elseif (Utility.RandomInt(0,100)>80)  && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iTG") == 0)										
+							PlayerActor.SendModEvent("SLHCastTGCurse")
+							_SLH_QST_Bimbo.SetStage(11)
+
+						elseif (Utility.RandomInt(0,100)>50) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iHRT") == 0)					
+							PlayerActor.SendModEvent("SLHCastHRTCurse")
+							_SLH_QST_Bimbo.SetStage(11)
+						endIf
+					endIf
 				endif
 			Endif
 		Endif		
@@ -1501,7 +1578,7 @@ endFunction
 
 Function registerNewRacesForHair(FormList HairRaceList)
 
-    	If (!HairRaceList.HasForm( _SLH_BimboRace  as Form) )
+    If (!HairRaceList.HasForm( _SLH_BimboRace  as Form) )
 		HairRaceList.AddForm( _SLH_BimboRace  as Form) 
 	Endif
  

@@ -1147,6 +1147,8 @@ function LoadFaceValues(Actor _targetActor, int[] _presets = None, float[] _morp
 		targetBase.SetFaceMorph(_morphs[i], i)
 		i += 1
 	EndWhile
+
+	_targetActor.RegenerateHead() ;Refresh the Player's head mesh.
 EndFunction
 
 function SaveFaceValues(Actor _targetActor, int[] _presets = None, float[] _morphs = None)
