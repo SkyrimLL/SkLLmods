@@ -789,6 +789,10 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 		showSchlongMessage = false
 	endif
 
+	Int iBimboHairColor = Math.LeftShift(255, 24) + Math.LeftShift(30, 16) + Math.LeftShift(80, 8) + 80
+	StorageUtil.SetIntValue(BimboActor, "_SLH_iHairColor", iBimboHairColor ) 
+	BimboActor.SendModEvent("SLHRefresh")
+
 	;level 1: permanent makeup
 	if (transformationLevel == 1) 
 		;lipstick: pink, or should it be red? or random?

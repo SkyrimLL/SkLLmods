@@ -29,6 +29,8 @@ Int iHairColor = 0
 Int iHairColorSuccubus = 0
 Int iHairColorBimbo = 0
 
+ColorForm Property thisHairColor Auto
+
 GlobalVariable      Property GV_useColors 				Auto
 GlobalVariable      Property GV_redShiftColor  			Auto
 GlobalVariable      Property GV_redShiftColorMod 		Auto
@@ -273,7 +275,6 @@ EndFunction
 Int function alterHairColor(Actor kActor, int rgbacolor, HeadPart thisHair)
 	ActorBase pActorBase = kActor.GetActorBase()
 	ActorBase pLeveledActorBase = kActor.GetLeveledActorBase()
-	ColorForm thisHairColor 
 
 	kActor.ChangeHeadPart(thisHair)
 
@@ -649,6 +650,9 @@ function getColorState(Actor kActor)
 endFunction
 
 function refreshColors(Actor kActor)
+	ActorBase pActorBase = kActor.GetActorBase()
+	ActorBase pLeveledActorBase = kActor.GetLeveledActorBase()
+ 
 
 	if (GV_useColors.GetValue() == 1)
 		getColorState(kActor)
@@ -676,6 +680,9 @@ function refreshColors(Actor kActor)
 		Else
 			setTintMask(3,iEyelinerColor)
 		EndIf
+
+		thisHairColor.SetColor(iHairColor)
+		pLeveledActorBase.SetHairColor(thisHairColor)
 
 		setColorState( kActor)
 	EndIf
