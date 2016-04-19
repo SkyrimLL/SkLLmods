@@ -3,7 +3,35 @@ Scriptname SLS_PlayerAlias_Fetish extends ReferenceAlias
 ReferenceAlias Property PlayerAlias  Auto  
 SexLabFramework     property SexLab Auto
 
-Int iArousalThrottle = 20 ; Chance of success to consider updating arousal
+; slaUtil.SetActorExhibitionist(kSanguine, True)
+; slaUtil.UpdateActorExposureRate(kSanguine, 10.0)
+
+GlobalVariable Property _SLS_FetishID  Auto  
+slaUtilScr Property slaUtil  Auto  
+ 
+
+
+; bool nateOnMount = Nate.IsOnMount()
+
+; if (Game.QueryStat("Houses Owned") == 5)
+;     Debug.Trace("Player owns 5 houses!")
+; endif
+
+ 
+Keyword Property ArmorOn  Auto  
+
+Keyword Property ClothingOn  Auto  
+
+AssociationType Property SpouseType  Auto  
+GlobalVariable Property _SLS_NPCSexCount  Auto  
+GlobalVariable Property _SLS_NPCRumorsON  Auto  
+bool  bIsPregnant = false 
+bool  bBeeingFemale = false 
+bool  bEstrusChaurus = false 
+spell  BeeingFemalePregnancy 
+spell  ChaurusBreeder 
+
+Int iArousalThrottle ; Chance of success to consider updating arousal
 
 ;  0- No fetish
 ;  1- The Apprentice Stone - Craft / Hitting / Dom
@@ -20,10 +48,332 @@ Int iArousalThrottle = 20 ; Chance of success to consider updating arousal
 ; 12- The Tower Stone - Wearing leather / being hit / sub
 ; 13- The Warrior Stone - Using weapons
 
+objectreference property SLS_PlayerRedWaveStartMarker auto
+objectreference property SLS_PlayerSexbotStartMarker auto
+objectreference property SLS_PlayerPetStartMarker auto
+objectreference property SLS_PlayerMilkFarmStartMarker auto
+objectreference property SLS_PlayerAliciaStartMarker auto
+objectreference property SLS_PlayerSprigganStartMarker auto
+objectreference property SLS_PlayerKinStartMarker auto
+objectreference property SLS_PlayerDibellaStartMarker auto
+objectreference property SLS_PlayerNordicQueenStartMarker auto
+objectreference property SLS_PlayerChaurusQueenStartMarker auto
+objectreference property SLS_PlayerBroodMaidenStartMarker auto
+
+Faction Property RedWaveShipFaction  Auto  
+Faction Property RedWaveFaction  Auto  
+Faction Property RedWaveWhoreFaction  Auto  
+Faction Property FalmerFaction  Auto  
+Faction Property ChaurusFaction  Auto  
+Faction Property DremoraFaction  Auto  
+Faction Property NecromancerFaction  Auto  
+Faction Property ForswornFaction  Auto  
+Faction Property HagravenFaction  Auto  
+Faction Property DwemerBotFaction  Auto  
+Faction Property DraugrFaction  Auto  
+Faction Property AtronachFlameFaction  Auto  
+
+Spell Property NordicQueenPolymorph Auto
+Quest Property NordicQueenGauldurQuest Auto
+
+Event OnInit()
+	_maintenance()
+	_getGameStats()
+EndEvent	
+
 Event OnPlayerLoadGame()
 	_maintenance()
 	_getGameStats()
 EndEvent
+
+
+Function _Maintenance()
+	Actor PlayerActor= Game.GetPlayer() as Actor
+
+	If (!StorageUtil.HasIntValue(none, "_SLS_iStories"))
+		StorageUtil.SetIntValue(none, "_SLS_iStories", 1)
+	EndIf
+
+	; UnregisterForAllModEvents()
+	Debug.Trace("SexLab Stories: Reset SexLab events")
+	RegisterForModEvent("AnimationStart", "OnSexLabStart")
+	RegisterForModEvent("AnimationEnd",   "OnSexLabEnd")
+	RegisterForModEvent("OrgasmStart",    "OnSexLabOrgasm")
+
+	; Player holder registration of player start story events - will be replaced by their own quest eventually
+	RegisterForModEvent("_SLS_PCStartRedWave", "OnPCStartRedWave")
+	RegisterForModEvent("_SLS_PCStartSexbot", "OnPCStartSexbot")
+	RegisterForModEvent("_SLS_PCStartPet", "OnPCStartPet")
+	RegisterForModEvent("_SLS_PCStartMilkFarm", "OnPCStartMilkFarm")
+	RegisterForModEvent("_SLS_PCStartAlicia", "OnPCStartAlicia")
+	RegisterForModEvent("_SLS_PCStartSpriggan", "OnPCStartSpriggan")
+	RegisterForModEvent("_SLS_PCStartKin", "OnPCStartKin")
+	RegisterForModEvent("_SLS_PCStartDibella", "OnPCStartDibella")
+	RegisterForModEvent("_SLS_PCStartNordicQueen", "OnPCStartNordicQueen")
+	RegisterForModEvent("_SLS_PCStartChaurusQueen", "OnPCStartChaurusQueen")
+	RegisterForModEvent("_SLS_PCStartBroodMaiden", "OnPCStartBroodMaiden")
+
+	; _SLS_NPCSexCount.SetValue(-1)
+
+	; Init during upgrade
+	if !(StorageUtil.HasIntValue( PlayerActor, "_SLS_toggleNPCRumors" ))
+		StorageUtil.SetIntValue(PlayerActor, "_SLS_toggleNPCRumors",1 )
+		_SLS_NPCRumorsON.SetValue( 1 )
+	endif
+
+	_InitExternalPregancy()
+EndFunction
+
+Event OnPCStartRedWave(String _eventName, String _args, Float _argc = -1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+ 	Actor PlayerActor= Game.GetPlayer() as Actor
+
+	If (!StorageUtil.HasIntValue(none, "_SLS_iPlayerStartRedWave"))
+	 	StorageUtil.SetIntValue(none, "_SLS_iPlayerStartRedWave", 1)
+	EndIf
+
+	PlayerActor.MoveTo(SLS_PlayerRedWaveStartMarker)
+	PlayerActor.addtofaction(RedWaveShipFaction)  
+	PlayerActor.addtofaction(RedWaveFaction) 
+	PlayerActor.addtofaction(RedWaveWhoreFaction )  
+	StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryLevel", 3)
+	StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryExposure", 30)
+
+	SendModEvent("_SLS_PlayerRedWave")
+
+	Debug.MessageBox("Ohhh my head. Another night of drunken stupor. Maybe today I will make enough for the crew to earn a pass and get some air. The stench of sex is everywhere.")
+
+EndEvent
+
+Event OnPCStartSexbot(String _eventName, String _args, Float _argc = -1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+ 	Actor PlayerActor= Game.GetPlayer() as Actor
+
+	If (!StorageUtil.HasIntValue(none, "_SLS_iPlayerStartSexbot"))
+	 	StorageUtil.SetIntValue(none, "_SLS_iPlayerStartSexbot", 1)
+	EndIf
+
+	PlayerActor.MoveTo(SLS_PlayerSexBotStartMarker)
+	PlayerActor.addtofaction(DwemerBotFaction) 
+	StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryLevel", 5)
+	StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryExposure", 500)
+
+	Debug.MessageBox(">Who am I?\nMemory banks corrupted.\n>Where am I?\nThe Forge.\n> Why am I here?\nMemory banks corrupted.")
+
+EndEvent
+
+Event OnPCStartPet(String _eventName, String _args, Float _argc = -1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+ 	Actor PlayerActor= Game.GetPlayer() as Actor
+
+	If (!StorageUtil.HasIntValue(none, "_SLS_iPlayerStartPet"))
+	 	StorageUtil.SetIntValue(none, "_SLS_iPlayerStartPet", 1)
+	EndIf
+
+	PlayerActor.MoveTo(SLS_PlayerPetStartMarker)
+	PlayerActor.addtofaction(NecromancerFaction) 
+	PlayerActor.addtofaction(AtronachFlameFaction) 
+	StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryLevel", 5)
+	StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryExposure", 500)
+	PlayerActor.SendModEvent("SDEquipDevice",   "Gag", 1)
+	PlayerActor.SendModEvent("SDEquipDevice",   "PlugAnal", 1)
+	PlayerActor.SendModEvent("SDEquipDevice",   "Plugvaginal", 1)
+	PlayerActor.SendModEvent("SDEquipDevice",   "Belt", 1)
+	PlayerActor.SendModEvent("SDEquipDevice",   "Armbinder", 1)
+	PlayerActor.SendModEvent("SDEquipDevice",   "Collar", 1)
+	; PlayerActor.SendModEvent("SDEquipDevice",   "Harness")
+	; PlayerActor.SendModEvent("SDEquipDevice",   "Yoke")
+
+	Debug.MessageBox("There is your master and the fire repressed inside you. Nothing else. Your master gave you a new life. Who you were before doesn't matter anymore. Only your master and the fire.")
+
+EndEvent
+
+Event OnPCStartMilkFarm(String _eventName, String _args, Float _argc = -1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+ 	Actor PlayerActor= Game.GetPlayer() as Actor
+
+	If (!StorageUtil.HasIntValue(none, "_SLS_iPlayerStartMilkFarm"))
+		StorageUtil.SetIntValue(none, "_SLS_iPlayerStartMilkFarm", 1)
+	EndIf
+
+	PlayerActor.MoveTo(SLS_PlayerMilkFarmStartMarker)
+	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast", 2.0 ) 
+	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fWeight", 100.0 ) 
+	PlayerActor.SendModEvent("SLHRefresh")
+	PlayerActor.SendModEvent("_SLSDDi_EquipMilkingDevice")
+
+	StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryLevel", 2)
+	StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryExposure", 20)
+
+	Debug.MessageBox("You are so happy as one of Mistress Leonara's special flock. Each day, you can feel more milk flowing through your heavy breasts. If only you could find a way to produce more milk for her Divine Cheese...")
+
+EndEvent
+
+Event OnPCStartAlicia(String _eventName, String _args, Float _argc = -1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+ 	Actor PlayerActor= Game.GetPlayer() as Actor
+
+	If (!StorageUtil.HasIntValue(none, "_SLS_iPlayerStartAlicia"))
+	 	StorageUtil.SetIntValue(none, "_SLS_iPlayerStartAlicia", 1)
+	EndIf
+
+	PlayerActor.SendModEvent("SDEquipDevice",   "Collar", 10)
+	PlayerActor.SendModEvent("SDEquipDevice",   "LegCuffs", 10)
+
+	If (!StorageUtil.HasIntValue(none, "_SD_iSanguine")) && (!StorageUtil.HasIntValue(none, "_SD_version"))
+		PlayerActor.MoveTo(SLS_PlayerAliciaStartMarker)
+	Else
+		PlayerActor.SendModEvent("SDDreamworldStart")
+	EndIf
+
+	; a - r - g - b
+	Int iAliciaHairColor = Math.LeftShift(255, 24) + Math.LeftShift(60, 16) + Math.LeftShift(16, 8) + 13
+	StorageUtil.SetIntValue(PlayerActor, "_SLH_iHairColor", iAliciaHairColor ) 
+	PlayerActor.SendModEvent("SLHRefresh")
+
+	PlayerActor.addtofaction(DremoraFaction) 
+
+	StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryLevel", 5)
+	StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryExposure", 500)
+	PlayerActor.SendModEvent("SDSanguineBlessingMod",  20)
+
+	Debug.MessageBox("Lord Sanguine has chosen you as a concubine. It is up to you to embrace his gift, revel in his debauchery and, if you survive, even earn his love.")
+
+EndEvent
+
+Event OnPCStartSpriggan(String _eventName, String _args, Float _argc = -1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+ 	Actor PlayerActor= Game.GetPlayer() as Actor
+
+	If (!StorageUtil.HasIntValue(none, "_SLS_iPlayerStartSpriggan"))
+	 	StorageUtil.SetIntValue(none, "_SLS_iPlayerStartSpriggan", 1)
+	EndIf
+
+	PlayerActor.MoveTo(SLS_PlayerSprigganStartMarker)
+
+	Int iSprigganSkinColor = Math.LeftShift(255, 24) + Math.LeftShift(196, 16) + Math.LeftShift(238, 8) + 218
+	StorageUtil.SetIntValue(PlayerActor, "_SLH_iSkinColor", iSprigganSkinColor ) 
+	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast", 0.8 ) 
+	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fWeight", 20.0 ) 
+	StorageUtil.SetIntValue(PlayerActor, "_SLH_iForcedHairLoss", 1)
+	PlayerActor.SendModEvent("SLHRefresh")
+	StorageUtil.SetIntValue(PlayerActor, "_SD_iSprigganEnslavedCount",5)
+	SendModEvent("SDSprigganEnslave")
+
+	Debug.MessageBox("You are finally free to serve Kyne and tend to her flock. Her sweet sap pumps through your veins and makes you one with her creation.")
+
+EndEvent
+
+Event OnPCStartKin(String _eventName, String _args, Float _argc = -1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+ 	Actor PlayerActor= Game.GetPlayer() as Actor
+
+	If (!StorageUtil.HasIntValue(none, "_SLS_iPlayerStartKin"))
+	 	StorageUtil.SetIntValue(none, "_SLS_iPlayerStartKin", 1)
+	EndIf
+
+	PlayerActor.MoveTo(SLS_PlayerKinStartMarker)
+	PlayerActor.addtofaction(ForswornFaction) 
+	PlayerActor.addtofaction(HagravenFaction) 
+	StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryLevel", 2)
+	StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryExposure", 20)
+
+	If (bBeeingFemale) && isFemale(PlayerActor)
+	 	PlayerActor.SendModEvent("BeeingFemale", "ChangeState", 6)  ;5, 6, 7 for 2nd, 3rd, labor
+		StorageUtil.SetFloatValue(PlayerActor,"FW.UnbornHealth",100.0)
+		StorageUtil.UnsetIntValue(PlayerActor,"FW.Abortus")
+		StorageUtil.FormListClear(PlayerActor,"FW.ChildFather")
+		StorageUtil.SetIntValue(PlayerActor,"FW.NumChilds", 1)
+		StorageUtil.FormListAdd(PlayerActor,"FW.ChildFather", none )
+	EndIf
+
+	Debug.MessageBox("Times have been tough since Mother passed. Fortunately, Ri'Kin was there to take care of me and my adoptive siblings. As his sister-wives, I am so happy to bear his children and continue the covenant he has made with the Hargavens. Soon, I will give birth and this child will be theirs to take. But no matter, there will be another child soon growing inside me.. another child to replace the void.")
+
+EndEvent
+
+Event OnPCStartDibella(String _eventName, String _args, Float _argc = -1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+ 	Actor PlayerActor= Game.GetPlayer() as Actor
+
+	If (!StorageUtil.HasIntValue(none, "_SLS_iPlayerStartDibella"))
+		StorageUtil.SetIntValue(none, "_SLS_iPlayerStartDibella", 1)
+	EndIf
+
+	PlayerActor.MoveTo(SLS_PlayerDibellaStartMarker)
+ 
+	Debug.MessageBox("You made it... the Temple of Dibella in Markarth. Your childhood dream of becoming a servant of the Goddess is about to become reality. Talk to the Sister in charge in the Temple and ask her to join the Order.")
+
+EndEvent
+
+
+Event OnPCStartNordicQueen(String _eventName, String _args, Float _argc = -1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+ 	Actor PlayerActor= Game.GetPlayer() as Actor
+
+	If (!StorageUtil.HasIntValue(none, "_SLS_iPlayerStartNordicQueen"))
+	 	StorageUtil.SetIntValue(none, "_SLS_iPlayerStartNordicQueen", 1)
+	EndIf
+
+	PlayerActor.MoveTo(SLS_PlayerNordicQueenStartMarker)
+	PlayerActor.addtofaction(DraugrFaction) 
+	NordicQueenGauldurQuest.SetStage(10)
+	; StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryLevel", 1)
+	; StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryExposure", 10)
+
+	; ConsoleUtil.ExecuteCommand("psb")
+	; ConsoleUtil.ExecuteCommand("player.setav dragonsouls 1")
+	; PlayerActor.DoCombatSpellApply(NordicQueenPolymorph, PlayerActor)  
+
+	SendModEvent("_SLS_PlayerNordQueen")
+
+	Debug.MessageBox("A disturbance in the tomb woke you from your undying slumber. Echoes of an abduction and night after night of rapes and orgies are slowly coming back to you. What happened to Gauldur, your lover and mentor? You remember ... betrayal... so long ago. All gone to dust now. Your lover.. his murderers.. but not his legacy. You must reclaim his amulet and become who you were meant to be .. a true Nordic Queen.")
+
+EndEvent
+
+Event OnPCStartChaurusQueen(String _eventName, String _args, Float _argc = -1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+ 	Actor PlayerActor= Game.GetPlayer() as Actor
+
+	If (!StorageUtil.HasIntValue(none, "_SLS_iPlayerStartChaurusQueen"))
+	 	StorageUtil.SetIntValue(none, "_SLS_iPlayerStartChaurusQueen", 1)
+	EndIf
+
+	; Not needed - already covered by LAL start from Content Consumer
+	; PlayerActor.MoveTo(SLS_PlayerChaurusQueenStartMarker)
+	StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryLevel", 1)
+	StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryExposure", 10)
+
+	Int iFalmerSkinColor = Math.LeftShift(255, 24) + Math.LeftShift(100, 16) + Math.LeftShift(200, 8) + 255
+	Float breastMod = 1.0
+	Float weightMod = 0.0
+
+	StorageUtil.SetIntValue(PlayerActor, "_SLH_iSkinColor", iFalmerSkinColor ) 
+	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast", 3.0 ) 
+	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fWeight", 100.0 ) 
+	StorageUtil.SetIntValue(PlayerActor, "_SLH_iForcedHairLoss", 1)
+	PlayerActor.SendModEvent("SLHRefresh")
+
+	Debug.MessageBox("Repeated exposure to the Falmer's foul touch changed your body. Your growing breasts and pale blue skin make your purpose clear... you are theirs to breed.")
+EndEvent
+
+Event OnPCStartBroodMaiden(String _eventName, String _args, Float _argc = -1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+ 	Actor PlayerActor= Game.GetPlayer() as Actor
+
+	If (!StorageUtil.HasIntValue(none, "_SLS_iPlayerStartBroodMaiden"))
+	 	StorageUtil.SetIntValue(none, "_SLS_iPlayerStartBroodMaiden", 1)
+	EndIf
+
+	PlayerActor.MoveTo(SLS_PlayerBroodMaidenStartMarker)
+	PlayerActor.addtofaction(ChaurusFaction) 
+	; StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryLevel", 1)
+	; StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryExposure", 10)
+
+	Debug.MessageBox("Your childhood friend, Lotte, has convinced you to follow her in a more simple life, closer to the wildlife she loves so much. Especially the Chaurus for she now calls herself the Brood Maiden. Will you assist her in her new life?")
+
+EndEvent
+
+
 
 Event OnLocationChange(Location akOldLoc, Location akNewLoc)
 	ObjectReference akActorREF= Game.GetPlayer() as ObjectReference
@@ -35,7 +385,17 @@ Event OnLocationChange(Location akOldLoc, Location akNewLoc)
 ;  http://wiki.tesnexus.com/index.php/Skyrim_bodyparts_number
 	; _SLS_NPCSexCount.SetValue(-1)
 
-	if (Utility.RandomInt(0, 100) > iArousalThrottle)
+	; Debug.Notification("[SLS] Rumors global value: " + _SLS_NPCRumorsON.GetValue() as Int)
+	; Debug.Notification("[SLS] Rumors storageUtil: " + StorageUtil.GetIntValue(akActor, "_SLS_toggleNPCRumors" ))
+
+	If ( (_SLS_NPCRumorsON.GetValue() as Int) != StorageUtil.GetIntValue(akActor, "_SLS_toggleNPCRumors" ))
+	; 	Debug.Notification("[SLS] Updating Rumors valueiPad  ")
+		_SLS_NPCRumorsON.SetValue( StorageUtil.GetIntValue(akActor, "_SLS_toggleNPCRumors" ) )
+	endIf
+
+	iArousalThrottle = StorageUtil.GetFloatValue(akActor, "_SLS_fetishMod" ) as Int
+
+	if (Utility.RandomInt(0, 100) > iArousalThrottle) ||  (StorageUtil.GetIntValue(akActor, "_SLS_toggleFetish" ) == 0)
 		Return
 	Endif
 	
@@ -235,15 +595,6 @@ Event OnItemAdded(Form akBaseItem, int aiItemCount, ObjectReference akItemRefere
 	EndIf
 EndEvent
 
-Function _Maintenance()
-	; UnregisterForAllModEvents()
-	Debug.Trace("SexLab Stories: Reset SexLab events")
-	RegisterForModEvent("AnimationStart", "OnSexLabStart")
-	RegisterForModEvent("AnimationEnd",   "OnSexLabEnd")
-	RegisterForModEvent("OrgasmStart",    "OnSexLabOrgasm")
-
-	; _SLS_NPCSexCount.SetValue(-1)
-EndFunction
 
 Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 	ObjectReference PlayerREF= PlayerAlias.GetReference()
@@ -485,25 +836,64 @@ function _refreshGameStats()
 EndFunction
 
 
+Function _InitExternalPregancy()
+	bEstrusChaurus = false
+	bBeeingFemale = false
+	int idx = Game.GetModCount()
+	string modName = ""
+	while idx > 0
+	idx -= 1
+	modName = Game.GetModName(idx)
 
-; slaUtil.SetActorExhibitionist(kSanguine, True)
-; slaUtil.UpdateActorExposureRate(kSanguine, 10.0)
+	if modName == "EstrusChaurus.esp"
+	  bEstrusChaurus = true
+	  ChaurusBreeder = Game.GetFormFromFile(0x00019121, modName) as spell
 
-GlobalVariable Property _SLS_FetishID  Auto  
-slaUtilScr Property slaUtil  Auto  
+	elseif modName == "BeeingFemale.esm"
+	  bBeeingFemale = true
+	  BeeingFemalePregnancy = Game.GetFormFromFile(0x000028A0, modName) as spell
+	endif
+	endWhile
+EndFunction
+
+bool function isPregnantBySoulGemOven(actor kActor) 
+  	return (StorageUtil.GetIntValue(Game.GetPlayer(), "sgo_IsBellyScaling") == 1) || (StorageUtil.GetIntValue(Game.GetPlayer(), "sgo_IsBreastScaling ") == 1)
+
+endFunction
+
+bool function isPregnantBySimplePregnancy(actor kActor) 
+  	return StorageUtil.HasFloatValue(kActor, "SP_Visual")
+
+endFunction
+
+bool function isPregnantByBeeingFemale(actor kActor)
+	 if ( (bBeeingFemale==true) &&  ( (StorageUtil.GetIntValue(kActor, "FW.CurrentState")>=4) && (StorageUtil.GetIntValue(kActor, "FW.CurrentState")<=8))  )
+    	return true
+	endIf
+	return false
+endFunction
  
+bool function isPregnantByEstrusChaurus(actor kActor)
+	if bEstrusChaurus==true && ChaurusBreeder != none
+	return kActor.HasSpell(ChaurusBreeder)
+	endIf
+	return false
+endFunction
 
+bool function isPregnant(actor kActor)
+	bIsPregnant = ( isPregnantBySoulGemOven(kActor) || isPregnantBySimplePregnancy(kActor) || isPregnantByBeeingFemale(kActor) || isPregnantByEstrusChaurus(kActor) || ((StorageUtil.GetIntValue(Game.GetPlayer(), "PSQ_SuccubusON") == 1) && (StorageUtil.GetIntValue(Game.GetPlayer(), "PSQ_SoulGemPregnancyON") == 1)) )
+EndFunction
 
-; bool nateOnMount = Nate.IsOnMount()
+Bool function isFemale(actor kActor)
+	Bool bIsFemale
+	ActorBase kActorBase = kActor.GetActorBase()
 
-; if (Game.QueryStat("Houses Owned") == 5)
-;     Debug.Trace("Player owns 5 houses!")
-; endif
+	if (kActorBase.GetSex() == 1) ; female
+		bIsFemale = True
+	Else
+		bIsFemale = False
+	EndIf
 
- 
-Keyword Property ArmorOn  Auto  
+	return bIsFemale
+EndFunction
 
-Keyword Property ClothingOn  Auto  
-
-AssociationType Property SpouseType  Auto  
-GlobalVariable Property _SLS_NPCSexCount  Auto  

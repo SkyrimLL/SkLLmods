@@ -1,4 +1,4 @@
-;BEGIN FRAGMENT CODE - Do not edit anything between this and the end comment
+     ;BEGIN FRAGMENT CODE - Do not edit anything between this and the end comment
 ;NEXT FRAGMENT INDEX 2
 Scriptname SLS_TIF_SexBotQuest_1 Extends TopicInfo Hidden
 

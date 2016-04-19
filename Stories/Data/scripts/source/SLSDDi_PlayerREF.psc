@@ -2,8 +2,34 @@ Scriptname SLSDDi_PlayerREF extends ReferenceAlias
 
 ReferenceAlias Property PlayerAlias  Auto  
 SexLabFramework     property SexLab Auto
+zadLibs Property libs Auto
+slaUtilScr Property slaUtil  Auto  
+
+Potion Property Milk Auto
+
+GlobalVariable Property MilkProduced  Auto  
+
+GlobalVariable Property MilkProducedTotal  Auto  
+
+Keyword Property SLSD_CowHarness Auto
+Keyword Property SLSD_CowMilker Auto
+Keyword Property SLSD_MilkOMatic  Auto  
+Keyword Property SLSD_MilkOMatic2  Auto  
+
+SPELL Property SLSD_MilkOMaticSpell  Auto  
+SPELL Property SLSD_MilkOMaticSpell2  Auto  
+
+ObjectReference Property MilkOMaticSoundFX  Auto  
+ObjectReference Property LeonaraRef  Auto  
+
+SLS_QST_CowLife Property CowLife Auto
 
 int MilkLevel = 0
+
+Event OnInit()
+	_maintenance()
+
+EndEvent
 
 Event OnPlayerLoadGame()
 	_maintenance()
@@ -11,12 +37,51 @@ Event OnPlayerLoadGame()
 EndEvent
 
 Function _Maintenance()
+	If (!StorageUtil.HasIntValue(none, "_SLS_iStoriesDevious"))
+		StorageUtil.SetIntValue(none, "_SLS_iStoriesDevious", 1)
+	EndIf
+
 	UnregisterForAllModEvents()
 	Debug.Trace("SexLab Stories Devious: Reset SexLab events")
 	RegisterForModEvent("AnimationStart", "OnSexLabStart")
 	RegisterForModEvent("AnimationEnd",   "OnSexLabEnd")
 	RegisterForModEvent("OrgasmStart",    "OnSexLabOrgasm")
+
+	RegisterForModEvent("_SLSDDi_EquipMilkingDevice", "OnEquipMilkingDevice")
+	RegisterForModEvent("_SLSDDi_RemoveMilkingDevice", "OnRemoveMilkingDevice")
 EndFunction
+
+Event OnEquipMilkingDevice(String _eventName, String _args, Float _argc = -1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+ 	Actor PlayerActor= Game.GetPlayer() as Actor
+
+	If (kActor == None)
+		kActor = PlayerActor
+	EndIf
+
+	if (_args == "Auto")
+		CowLife.PlayerReceivedAutoCowharness(kActor)
+	else
+		CowLife.PlayerReceivedCowharness(kActor)
+	EndIf
+
+EndEvent
+
+Event OnRemoveMilkingDevice(String _eventName, String _args, Float _argc = -1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+ 	Actor PlayerActor= Game.GetPlayer() as Actor
+
+	If (kActor == None)
+		kActor = PlayerActor
+	EndIf
+
+	if (_args == "Auto")
+		CowLife.PlayerRemovedAutoCowharness(kActor)
+	else
+		CowLife.PlayerRemovedCowharness(kActor)
+	EndIf
+
+EndEvent
 
 Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 	ObjectReference PlayerREF= PlayerAlias.GetReference()
@@ -55,7 +120,7 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 			Endif
 
 
-			If ( PlayerActor.WornHasKeyword(SLSD_CowHarness) && ( Utility.RandomInt(0,80) < slaUtil.GetActorExposure(akRef = PlayerActor) ) ) || PlayerActor.WornHasKeyword(SLSD_CowMilker)
+			If ( PlayerActor.WornHasKeyword(SLSD_CowHarness) && ( Utility.RandomInt(0,80) < slaUtil.GetActorExposure(akRef = PlayerActor) ) ) || PlayerActor.WornHasKeyword(SLSD_CowMilker) || (StorageUtil.GetIntValue(PlayerActor, "_SLH_isPregnant") == 1)
 				; Hormones compatibility
 				Debug.Notification("Your breasts are aching from a strong rush of milk.")
 
@@ -64,7 +129,7 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 				PlayerActor.SendModEvent("SLHRefresh")
 
 				StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkLevel", StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkLevel") + 1)
-			ElseIf ( !PlayerActor.WornHasKeyword(SLSD_CowHarness) && ( Utility.RandomInt(0,200) < slaUtil.GetActorExposure(akRef = PlayerActor) ) ) 
+			ElseIf ( !PlayerActor.WornHasKeyword(SLSD_CowHarness) && ( Utility.RandomInt(0,200) < slaUtil.GetActorExposure(akRef = PlayerActor) ) )  || (StorageUtil.GetIntValue(PlayerActor, "_SLH_isPregnant") == 1)
 				; Hormones compatibility
 				Debug.Notification("Your breasts are tingling from a small rush of milk.")
 
@@ -96,7 +161,7 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 
 			Debug.Trace("[SLSDDi] NPC is lactating: " + actors[idx].GetName())
 
-			if ( actors[idx].WornHasKeyword(SLSD_CowHarness)  && ( Utility.RandomInt(0,80) < (slaUtil.GetActorExposure(akRef = actors[idx]) ) ) ) || actors[idx].WornHasKeyword(SLSD_CowMilker)
+			if ( actors[idx].WornHasKeyword(SLSD_CowHarness)  && ( Utility.RandomInt(0,80) < (slaUtil.GetActorExposure(akRef = actors[idx]) ) ) ) || actors[idx].WornHasKeyword(SLSD_CowMilker) || (StorageUtil.GetIntValue(PlayerActor, "_SLH_isPregnant") == 1) 
 
 				If (!StorageUtil.HasIntValue(actors[idx], "_SLH_iMilkLevel"))
 						StorageUtil.SetIntValue(actors[idx], "_SLH_iMilkLevel", 0)
@@ -111,7 +176,7 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 				StorageUtil.SetIntValue(actors[idx], "_SLH_iMilkLevel", StorageUtil.GetIntValue(actors[idx], "_SLH_iMilkLevel") + 1)
 				Debug.Notification("[SLSDDi] NPC Milk level: " + StorageUtil.GetIntValue(actors[idx], "_SLH_iMilkLevel"))
 
-			elseif ( !actors[idx].WornHasKeyword(SLSD_CowHarness)  && ( Utility.RandomInt(0,80) < (slaUtil.GetActorExposure(akRef = actors[idx]) ) ) )
+			elseif ( !actors[idx].WornHasKeyword(SLSD_CowHarness)  && ( Utility.RandomInt(0,80) < (slaUtil.GetActorExposure(akRef = actors[idx]) ) ) )  || (StorageUtil.GetIntValue(PlayerActor, "_SLH_isPregnant") == 1) 
 
 				If (!StorageUtil.HasIntValue(actors[idx], "_SLH_iMilkLevel"))
 						StorageUtil.SetIntValue(actors[idx], "_SLH_iMilkLevel", 0)
@@ -210,7 +275,7 @@ Event OnSexLabOrgasm(String _eventName, String _args, Float _argc, Form _sender)
 				
 				; Hormones compatibility
 				fBreastScale = StorageUtil.GetFloatValue(PlayerActor, "_SLH_fBreast") 
-				StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast",  0.9) 	
+				StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast",  fBreastScale * 0.9) 	
 				PlayerActor.SendModEvent("SLHRefresh")
 
 				StorageUtil.SetIntValue(PlayerActor, "_SLH_iMilkLevel", 0)	
@@ -249,6 +314,132 @@ Event OnSexLabOrgasm(String _eventName, String _args, Float _argc, Form _sender)
 		idx += 1
 	endwhile
 EndEvent
+
+Event OnSit(ObjectReference akFurniture)
+	ObjectReference PlayerREF= PlayerAlias.GetReference()
+	Actor PlayerActor= PlayerAlias.GetReference() as Actor
+	Actor LeonaraActor = LeonaraRef as Actor
+	Form fFurniture = akFurniture.GetBaseObject()
+	String sFurnitureName = fFurniture.GetName()
+	Float fBreastScale 
+	Int iCounter=0
+	Int iRandomEvent
+	Int iTimer
+	
+	if (sFurnitureName == "Dwarven Milking Machine")  && (akFurniture.GetActorOwner() == LeonaraActor.GetActorBase() )
+		; Debug.Notification("We just sat on " + sFurnitureName)
+		; Debug.Messagebox("The " + sFurnitureName + " painfully sucks and tugs at your nipples, leaving both your breasts and your body drained.")
+		
+		; Hormones compatibility
+		fBreastScale = StorageUtil.GetFloatValue(PlayerActor, "_SLH_fBreast") 
+
+		MilkOMaticSoundFX.Enable()
+		Game.DisablePlayerControls(abActivate = true)
+		iCounter = (fBreastScale * 60) as Int
+		While (iCounter>0)
+			iRandomEvent = Utility.RandomInt(0,100)
+			iTimer = 1 + iCounter  / 60
+
+			if (iRandomEvent>70)
+				libs.SexlabMoan(PlayerActor)
+				Utility.Wait(2.0)
+
+			elseif (iRandomEvent>40)
+				libs.Pant(PlayerActor)
+				Utility.Wait(1.0)
+
+			elseif (iRandomEvent>20)
+				Debug.Notification("Milk is pumping into the machine.. " + iTimer + " m left")
+			endif
+
+			iCounter = iCounter - 1
+		EndWhile
+		Game.EnablePlayerControls(abActivate = true)
+		MilkOMaticSoundFX.Disable()
+
+
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast",  fBreastScale * 0.8) 	
+		PlayerActor.SendModEvent("SLHRefresh")
+
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iMilkLevel", 0)	
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iMilkProduced", StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkProduced") +1)
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iMilkProducedTotal", StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkProducedTotal") +1)	
+
+		Debug.Notification("[SLSDDi] NPC Milk Produced: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkProduced"))
+		Debug.Notification("[SLSDDi] NPC Milk Total: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkProducedTotal"))
+
+		; SLSD_MilkOMaticSpell.Remotecast(PlayerREF,PlayerActor,PlayerREF)
+
+		PlayerActor.AddItem(Milk, 1)	
+
+		If  (StorageUtil.GetIntValue(none, "_SLS_fetishID") == 10 )
+			slaUtil.UpdateActorExposure(akRef = PlayerActor, val = 10, debugMsg = "producing breast milk as a cow.")
+		Else
+			slaUtil.UpdateActorExposure(akRef = PlayerActor, val = -20, debugMsg = "producing breast milk as a cow.")
+		EndIf
+
+
+
+
+	Elseif (sFurnitureName == "Dwarven Milking Machine II") && (akFurniture.GetActorOwner() == LeonaraActor.GetActorBase() )
+		; Debug.Notification("We just sat on " + sFurnitureName)
+		; Debug.Messagebox("The " + sFurnitureName + " painfully sucks and tugs at your nipples, leaving you drained both mentally and physically.")
+
+		; Hormones compatibility
+		fBreastScale = StorageUtil.GetFloatValue(PlayerActor, "_SLH_fBreast") 
+
+		MilkOMaticSoundFX.Enable()
+		Game.DisablePlayerControls(abActivate = true)
+		iCounter = (fBreastScale * 30) as Int
+		While (iCounter>0)
+			iRandomEvent = Utility.RandomInt(0,100)
+			iTimer = 1 + iCounter  / 60
+
+			if (iRandomEvent>80)
+				libs.SexlabMoan(PlayerActor)
+				Utility.Wait(2.0)
+
+			elseif (iRandomEvent>60)
+				libs.Moan(PlayerActor)
+				Utility.Wait(2.0)
+
+			elseif (iRandomEvent>40)
+				libs.Pant(PlayerActor)
+				Utility.Wait(3.0)
+
+			elseif (iRandomEvent>20)
+				Debug.Notification("Milk is pumping into the machine.. " + iTimer + " m left")
+				libs.Moan(PlayerActor)
+			endif
+
+			iCounter = iCounter - 1
+		EndWhile
+		Game.EnablePlayerControls(abActivate = true)
+		MilkOMaticSoundFX.Disable()
+
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast",  fBreastScale * 0.5) 	
+		PlayerActor.SendModEvent("SLHRefresh")
+
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iMilkLevel", 0)	
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iMilkProduced", StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkProduced") +1)
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iMilkProducedTotal", StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkProducedTotal") +1)	
+
+		Debug.Notification("[SLSDDi] NPC Milk Produced: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkProduced"))
+		Debug.Notification("[SLSDDi] NPC Milk Total: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkProducedTotal"))
+
+
+		; SLSD_MilkOMaticSpell2.Remotecast(PlayerREF,PlayerActor,PlayerREF)
+		
+		PlayerActor.AddItem(Milk, 2)	
+
+		If  (StorageUtil.GetIntValue(none, "_SLS_fetishID") == 10 )
+			slaUtil.UpdateActorExposure(akRef = PlayerActor, val = 10, debugMsg = "producing breast milk as a cow.")
+		Else
+			slaUtil.UpdateActorExposure(akRef = PlayerActor, val = -20, debugMsg = "producing breast milk as a cow.")
+		EndIf
+
+	EndIf
+endEvent
 
 Bool Function _hasPlayer(Actor[] _actors)
 	ObjectReference PlayerREF= PlayerAlias.GetReference()
@@ -294,17 +485,4 @@ Bool Function _hasRace(Actor[] _actors, Race thisRace)
 EndFunction
  
 
-
-
-Potion Property Milk Auto
-
-GlobalVariable Property MilkProduced  Auto  
-
-GlobalVariable Property MilkProducedTotal  Auto  
-
-zadLibs Property libs Auto
-slaUtilScr Property slaUtil  Auto  
-
-Keyword Property SLSD_CowHarness Auto
-Keyword Property SLSD_CowMilker Auto
 
