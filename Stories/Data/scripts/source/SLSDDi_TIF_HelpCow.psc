@@ -8,7 +8,7 @@ Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
 Debug.Notification( "The cow moans with relief..." )
 
-If  (SexLab.ValidateActor( SexLab.PlayerRef ) > 0) &&  (SexLab.ValidateActor(akSpeaker) > 0) 
+If  (SexLab.ValidateActor( Game.GetPlayer() ) > 0) &&  (SexLab.ValidateActor(akSpeaker) > 0) 
 	actor[] sexActors = new actor[2]
 	sexActors[0] = akSpeaker
 	sexActors[1] = Game.GetPlayer()

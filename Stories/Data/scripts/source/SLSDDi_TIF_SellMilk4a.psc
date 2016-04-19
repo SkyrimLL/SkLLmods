@@ -12,7 +12,9 @@ ActorBase pActorBase = pActor.GetActorBase()
 
 Debug.Notification( "Leonara opens your top excitedly..." )
 
-CowLife.PlayerReceivedCowharness()
+; CowLife.PlayerReceivedCowharness()
+SendModEvent("_SLSDDi_EquipMilkingDevice")
+
 
 Game.GetPlayer().AddItem(Gold, ( (pActorBase.GetWeight() as Int) + 10 )  )
 
