@@ -1241,14 +1241,14 @@ endState
 state STATE_SUCCUBUS ; TOGGLE
 	event OnSelectST()
 		GV_allowSuccubus.SetValueInt( Math.LogicalXor( 1, GV_allowSuccubus.GetValueInt() ) )
-		StorageUtil.SetIntValue(PlayerActor, "_SLH_allowSuccubus", GV_allowTG.GetValue() as Int)
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_allowSuccubus", GV_allowSuccubus.GetValue() as Int)
 		SetToggleOptionValueST( GV_allowSuccubus.GetValueInt() as Bool )
 		ForcePageReset()
 	endEvent
 
 	event OnDefaultST()
 		GV_allowSuccubus.SetValueInt( 0 )
-		StorageUtil.SetIntValue(PlayerActor, "_SLH_allowSuccubus", GV_allowTG.GetValue() as Int)
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_allowSuccubus", GV_allowSuccubus.GetValue() as Int)
 		SetToggleOptionValueST( false )
 		ForcePageReset()
 	endEvent
@@ -1261,14 +1261,14 @@ endState
 state STATE_BIMBO ; TOGGLE
 	event OnSelectST()
 		GV_allowBimbo.SetValueInt( Math.LogicalXor( 1, GV_allowBimbo.GetValueInt() ) )
-		StorageUtil.SetIntValue(PlayerActor, "_SLH_allowBimbo", GV_allowTG.GetValue() as Int)
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_allowBimbo", GV_allowBimbo.GetValue() as Int)
 		SetToggleOptionValueST( GV_allowBimbo.GetValueInt() as Bool )
 		ForcePageReset()
 	endEvent
 
 	event OnDefaultST()
 		GV_allowBimbo.SetValueInt( 0 )
-		StorageUtil.SetIntValue(PlayerActor, "_SLH_allowBimbo", GV_allowTG.GetValue() as Int)
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_allowBimbo", GV_allowBimbo.GetValue() as Int)
 		SetToggleOptionValueST( false )
 		ForcePageReset()
 	endEvent
@@ -1366,14 +1366,14 @@ endState
 state STATE_SEX_CHANGE ; TOGGLE
 	event OnSelectST()
 		GV_allowHRT.SetValueInt( Math.LogicalXor( 1, GV_allowHRT.GetValueInt() ) )
-		StorageUtil.SetIntValue(PlayerActor, "_SLH_allowHRT", GV_allowTG.GetValue() as Int)
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_allowHRT", GV_allowHRT.GetValue() as Int)
 		SetToggleOptionValueST( GV_allowHRT.GetValueInt() as Bool )
 		ForcePageReset()
 	endEvent
 
 	event OnDefaultST()
 		GV_allowHRT.SetValueInt( 0 )
-		StorageUtil.SetIntValue(PlayerActor, "_SLH_allowHRT", GV_allowTG.GetValue() as Int)
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_allowHRT", GV_allowHRT.GetValue() as Int)
 		SetToggleOptionValueST( false )
 		ForcePageReset()
 	endEvent

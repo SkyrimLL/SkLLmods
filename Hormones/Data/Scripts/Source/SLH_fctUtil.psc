@@ -219,8 +219,8 @@ bool function isPregnantBySimplePregnancy(actor kActor)
 endFunction
 
 bool function isPregnantByBeeingFemale(actor kActor)
-  if bBeeingFemale==true && BeeingFemalePregnancy != none
-    return kActor.HasSpell(BeeingFemalePregnancy)
+  if ( (bBeeingFemale==true) &&  ( (StorageUtil.GetIntValue(kActor, "FW.CurrentState")>=4) && (StorageUtil.GetIntValue(kActor, "FW.CurrentState")<=8))  )
+    return true
   endIf
   return false
 endFunction
