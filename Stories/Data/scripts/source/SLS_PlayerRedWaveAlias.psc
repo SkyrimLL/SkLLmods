@@ -110,7 +110,7 @@ Event OnLocationChange(Location akOldLoc, Location akNewLoc)
  	daysPassed = Game.QueryStat("Days Passed")
 	daysSinceLastPass = daysPassed - (PlayerDayPass.GetValue() as Int )
 	
-	If (StorageUtil.GetIntValue(none, "_SLS_iStoriesPlayerRedWave")==0)
+	If  !Self || !SexLab || (StorageUtil.GetIntValue(none, "_SLS_iStoriesPlayerRedWave")==0)
 		Return
 	EndIf
 
