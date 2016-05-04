@@ -128,9 +128,7 @@ Event OnPCStartRedWave(String _eventName, String _args, Float _argc = -1.0, Form
  	Actor kActor = _sender as Actor
  	Actor PlayerActor= Game.GetPlayer() as Actor
 
-	If (!StorageUtil.HasIntValue(none, "_SLS_iPlayerStartRedWave"))
-	 	StorageUtil.SetIntValue(none, "_SLS_iPlayerStartRedWave", 1)
-	EndIf
+	StorageUtil.SetIntValue(none, "_SLS_iPlayerStartRedWave", 1)
 
 	PlayerActor.MoveTo(SLS_PlayerRedWaveStartMarker)
 	PlayerActor.addtofaction(RedWaveShipFaction)  
@@ -149,9 +147,7 @@ Event OnPCStartSexbot(String _eventName, String _args, Float _argc = -1.0, Form 
  	Actor kActor = _sender as Actor
  	Actor PlayerActor= Game.GetPlayer() as Actor
 
-	If (!StorageUtil.HasIntValue(none, "_SLS_iPlayerStartSexbot"))
-	 	StorageUtil.SetIntValue(none, "_SLS_iPlayerStartSexbot", 1)
-	EndIf
+	StorageUtil.SetIntValue(none, "_SLS_iPlayerStartSexbot", 1)
 
 	PlayerActor.MoveTo(SLS_PlayerSexBotStartMarker)
 	PlayerActor.addtofaction(DwemerBotFaction) 
@@ -166,9 +162,7 @@ Event OnPCStartPet(String _eventName, String _args, Float _argc = -1.0, Form _se
  	Actor kActor = _sender as Actor
  	Actor PlayerActor= Game.GetPlayer() as Actor
 
-	If (!StorageUtil.HasIntValue(none, "_SLS_iPlayerStartPet"))
-	 	StorageUtil.SetIntValue(none, "_SLS_iPlayerStartPet", 1)
-	EndIf
+	StorageUtil.SetIntValue(none, "_SLS_iPlayerStartPet", 1)
 
 	PlayerActor.MoveTo(SLS_PlayerPetStartMarker)
 	PlayerActor.addtofaction(NecromancerFaction) 
@@ -192,9 +186,7 @@ Event OnPCStartMilkFarm(String _eventName, String _args, Float _argc = -1.0, For
  	Actor kActor = _sender as Actor
  	Actor PlayerActor= Game.GetPlayer() as Actor
 
-	If (!StorageUtil.HasIntValue(none, "_SLS_iPlayerStartMilkFarm"))
-		StorageUtil.SetIntValue(none, "_SLS_iPlayerStartMilkFarm", 1)
-	EndIf
+	StorageUtil.SetIntValue(none, "_SLS_iPlayerStartMilkFarm", 1)
 
 	PlayerActor.MoveTo(SLS_PlayerMilkFarmStartMarker)
 	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast", 2.0 ) 
@@ -213,9 +205,7 @@ Event OnPCStartAlicia(String _eventName, String _args, Float _argc = -1.0, Form 
  	Actor kActor = _sender as Actor
  	Actor PlayerActor= Game.GetPlayer() as Actor
 
-	If (!StorageUtil.HasIntValue(none, "_SLS_iPlayerStartAlicia"))
-	 	StorageUtil.SetIntValue(none, "_SLS_iPlayerStartAlicia", 1)
-	EndIf
+	StorageUtil.SetIntValue(none, "_SLS_iPlayerStartAlicia", 1)
 
 	PlayerActor.SendModEvent("SDEquipDevice",   "Collar", 10)
 	PlayerActor.SendModEvent("SDEquipDevice",   "LegCuffs", 10)
@@ -245,9 +235,7 @@ Event OnPCStartSpriggan(String _eventName, String _args, Float _argc = -1.0, For
  	Actor kActor = _sender as Actor
  	Actor PlayerActor= Game.GetPlayer() as Actor
 
-	If (!StorageUtil.HasIntValue(none, "_SLS_iPlayerStartSpriggan"))
-	 	StorageUtil.SetIntValue(none, "_SLS_iPlayerStartSpriggan", 1)
-	EndIf
+	StorageUtil.SetIntValue(none, "_SLS_iPlayerStartSpriggan", 1)
 
 	PlayerActor.MoveTo(SLS_PlayerSprigganStartMarker)
 
@@ -268,9 +256,7 @@ Event OnPCStartKin(String _eventName, String _args, Float _argc = -1.0, Form _se
  	Actor kActor = _sender as Actor
  	Actor PlayerActor= Game.GetPlayer() as Actor
 
-	If (!StorageUtil.HasIntValue(none, "_SLS_iPlayerStartKin"))
-	 	StorageUtil.SetIntValue(none, "_SLS_iPlayerStartKin", 1)
-	EndIf
+	StorageUtil.SetIntValue(none, "_SLS_iPlayerStartKin", 1)
 
 	PlayerActor.MoveTo(SLS_PlayerKinStartMarker)
 	PlayerActor.addtofaction(ForswornFaction) 
@@ -295,9 +281,7 @@ Event OnPCStartDibella(String _eventName, String _args, Float _argc = -1.0, Form
  	Actor kActor = _sender as Actor
  	Actor PlayerActor= Game.GetPlayer() as Actor
 
-	If (!StorageUtil.HasIntValue(none, "_SLS_iPlayerStartDibella"))
-		StorageUtil.SetIntValue(none, "_SLS_iPlayerStartDibella", 1)
-	EndIf
+	StorageUtil.SetIntValue(none, "_SLS_iPlayerStartDibella", 1)
 
 	PlayerActor.MoveTo(SLS_PlayerDibellaStartMarker)
  
@@ -310,9 +294,7 @@ Event OnPCStartNordicQueen(String _eventName, String _args, Float _argc = -1.0, 
  	Actor kActor = _sender as Actor
  	Actor PlayerActor= Game.GetPlayer() as Actor
 
-	If (!StorageUtil.HasIntValue(none, "_SLS_iPlayerStartNordicQueen"))
-	 	StorageUtil.SetIntValue(none, "_SLS_iPlayerStartNordicQueen", 1)
-	EndIf
+	StorageUtil.SetIntValue(none, "_SLS_iPlayerStartNordicQueen", 1)
 
 	PlayerActor.MoveTo(SLS_PlayerNordicQueenStartMarker)
 	PlayerActor.addtofaction(DraugrFaction) 
@@ -334,9 +316,7 @@ Event OnPCStartChaurusQueen(String _eventName, String _args, Float _argc = -1.0,
  	Actor kActor = _sender as Actor
  	Actor PlayerActor= Game.GetPlayer() as Actor
 
-	If (!StorageUtil.HasIntValue(none, "_SLS_iPlayerStartChaurusQueen"))
-	 	StorageUtil.SetIntValue(none, "_SLS_iPlayerStartChaurusQueen", 1)
-	EndIf
+	StorageUtil.SetIntValue(none, "_SLS_iPlayerStartChaurusQueen", 1)
 
 	; Not needed - already covered by LAL start from Content Consumer
 	; PlayerActor.MoveTo(SLS_PlayerChaurusQueenStartMarker)
@@ -360,9 +340,7 @@ Event OnPCStartBroodMaiden(String _eventName, String _args, Float _argc = -1.0, 
  	Actor kActor = _sender as Actor
  	Actor PlayerActor= Game.GetPlayer() as Actor
 
-	If (!StorageUtil.HasIntValue(none, "_SLS_iPlayerStartBroodMaiden"))
-	 	StorageUtil.SetIntValue(none, "_SLS_iPlayerStartBroodMaiden", 1)
-	EndIf
+	StorageUtil.SetIntValue(none, "_SLS_iPlayerStartBroodMaiden", 1)
 
 	PlayerActor.MoveTo(SLS_PlayerBroodMaidenStartMarker)
 	PlayerActor.addtofaction(ChaurusFaction) 

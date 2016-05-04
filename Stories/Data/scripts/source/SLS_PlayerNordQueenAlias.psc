@@ -105,8 +105,10 @@ Event OnPlayerNordQueen(String _eventName, String _args, Float _argc = -1.0, For
  	Actor kActor = _sender as Actor
  	Actor PlayerActor= Game.GetPlayer() as Actor
 
-	If (!StorageUtil.HasIntValue(none, "_SLS_iStoriesPlayerNordQueen"))
-	 	StorageUtil.SetIntValue(none, "_SLS_iStoriesPlayerNordQueen", 1)
+	StorageUtil.SetIntValue(none, "_SLS_iStoriesPlayerNordQueen", 1)
+
+	If (!(StorageUtil.HasIntValue(none, "_SLS_iPlayerStartNordQueen")))
+		StorageUtil.SetIntValue(none, "_SLS_iPlayerStartNordQueen", 0)
 	EndIf
 
 	; PlayerActor.MoveTo(SLS_PlayerRedWaveStartMarker)
@@ -235,6 +237,7 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 
 			StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast", 0.5 ) 
 			StorageUtil.SetFloatValue(PlayerActor, "_SLH_fWeight", 10.0 ) 
+			StorageUtil.SetIntValue(PlayerActor, "_SLH_iForcedHairLoss", 1)
 			PlayerActor.SendModEvent("SLHRefresh")
 
 			Debug.MessageBox("The sweet taste of life force at last! You feel stronger as you skin regains some substance.")
@@ -251,6 +254,7 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 
 			StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast", 1.0 ) 
 			StorageUtil.SetFloatValue(PlayerActor, "_SLH_fWeight", 30.0 ) 
+			StorageUtil.SetIntValue(PlayerActor, "_SLH_iForcedHairLoss", 1)
 			PlayerActor.SendModEvent("SLHRefresh")
 
 			Debug.MessageBox("Sensations are slowly reaching your soul again, like an owverwhelming swarm of pins and needles.")
@@ -267,6 +271,7 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 
 			StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast", 1.5 ) 
 			StorageUtil.SetFloatValue(PlayerActor, "_SLH_fWeight", 5.0 ) 
+			StorageUtil.SetIntValue(PlayerActor, "_SLH_iForcedHairLoss", 1)
 			PlayerActor.SendModEvent("SLHRefresh")
 
 			Debug.MessageBox("You can feel the cold caress of air on your skin and the wetness between your legs. Your transformation is almost complete.")
