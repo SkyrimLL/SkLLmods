@@ -141,8 +141,10 @@ Event OnPlayerRedWave(String _eventName, String _args, Float _argc = -1.0, Form 
  	Actor kActor = _sender as Actor
  	Actor PlayerActor= Game.GetPlayer() as Actor
 
-	If (!StorageUtil.HasIntValue(none, "_SLS_iStoriesPlayerRedWave"))
-	 	StorageUtil.SetIntValue(none, "_SLS_iStoriesPlayerRedWave", 1)
+	StorageUtil.SetIntValue(none, "_SLS_iStoriesPlayerRedWave", 1)
+
+	If (!(StorageUtil.HasIntValue(none, "_SLS_iPlayerStartRedWave")))
+		StorageUtil.SetIntValue(none, "_SLS_iPlayerStartRedWave", 0)
 	EndIf
 
 	; PlayerActor.MoveTo(SLS_PlayerRedWaveStartMarker)
@@ -164,7 +166,8 @@ Event OnPlayerRedWave(String _eventName, String _args, Float _argc = -1.0, Form 
 	StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryLevel", 3)
 	StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryExposure", 30)
 
-	If (bBeeingFemale) && isFemale(PlayerActor)
+
+	If (bBeeingFemale) && isFemale(PlayerActor) && (StorageUtil.GetIntValue(none, "_SLS_iPlayerStartRedWave") == 1)
 		PlayerActor.SendModEvent("BeeingFemale", "ChangeState", 5)  ;5, 6, 7 for 2nd, 3rd, labor
 		StorageUtil.SetFloatValue(PlayerActor,"FW.UnbornHealth",100.0)
 		StorageUtil.UnsetIntValue(PlayerActor,"FW.Abortus")

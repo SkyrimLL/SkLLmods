@@ -8,7 +8,7 @@ Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
 RedWavePlayerDebt.SetValue(2000)
 
-Game.GetPlayer().SendModEvent("_SLS_PCStartRedWave")
+Game.GetPlayer().SendModEvent("_SLS_PlayerRedWave")
 ;END CODE
 EndFunction
 ;END FRAGMENT
