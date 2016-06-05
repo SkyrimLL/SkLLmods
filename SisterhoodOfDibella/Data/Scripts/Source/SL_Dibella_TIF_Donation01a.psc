@@ -27,7 +27,7 @@ Self.GetOwningQuest().ModObjectiveGlobal( iNumDonations , TempleDonations, 10, 1
 
 kSatchel.RemoveAllItems(akTransferTo = TempleDonationsChest, abKeepOwnership = True, abRemoveQuestItems = false)
 
-SatchelItemsCount.SetValue( kSatchel.GetNumItems() )
+SatchelItemsCount.SetValue( 0 ) ; removed all items - count set to 0 - kSatchel.GetNumItems() )
 ;END CODE
 EndFunction
 ;END FRAGMENT

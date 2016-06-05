@@ -21,6 +21,10 @@ Event OnLocationChange(Location akOldLoc, Location akNewLoc)
 EndEvent
 
 Function _Maintenance()
+	If (!StorageUtil.HasIntValue(none, "_SLSD_iDibellaSisterhood"))
+		StorageUtil.SetIntValue(none, "_SLSD_iDibellaSisterhood", 1)
+	EndIf
+
 	; UnregisterForAllModEvents()
 	Debug.Trace("[SLD] Reset SexLab events")
 	RegisterForModEvent("AnimationStart", "OnSexLabStart")

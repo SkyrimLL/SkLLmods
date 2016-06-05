@@ -73,8 +73,18 @@ EndEvent
 
 Function _Maintenance()
 ;
+	Int iTempleCorruption = StorageUtil.GetIntValue( Game.GetPlayer(), "_SLSD_iDibellaTempleCorruption")
+
 	RegisterForModEvent("SLSDEquipOutfit",   "OnSLSDEquipOutfit")
 
+	If (iTempleCorruption <= 2)
+ 		_SLS_SisterClothingDresserPurified.Enable()
+ 		_SLS_SisterClothingDresserCorrupted.Disable()
+
+	ElseIf  (iTempleCorruption >=3)
+ 		_SLS_SisterClothingDresserPurified.Disable()
+ 		_SLS_SisterClothingDresserCorrupted.Enable()
+	Endif
 EndFunction
 
 
@@ -145,3 +155,7 @@ Location Property TempleLocation Auto
 
 
 Outfit Property TravelingSisterOutfit  Auto  
+
+ObjectReference Property _SLS_SisterClothingDresserPurified  Auto  
+
+ObjectReference Property _SLS_SisterClothingDresserCorrupted  Auto  
