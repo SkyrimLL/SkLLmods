@@ -25,6 +25,26 @@ Event OnActivate(ObjectReference akActionRef)
 			Debug.Notification("[SL Dibella] Temple Sweat effect disabled")
 			_SLSD_TempleSweatON.SetValue(0)
 		Endif
+
+	ElseIf (IButton == 2 ) 
+		If ( _SLSD_GV_BardsCollegeQuestON.GetValue()==0)
+			Debug.Notification("[SL Dibella] Bards college quest enabled")
+			 _SLSD_GV_BardsCollegeQuestON.SetValue(1)
+
+		Else
+			Debug.Notification("[SL Dibella] Bards college quest disabled")
+			 _SLSD_GV_BardsCollegeQuestON.SetValue(0)
+		Endif
+
+	ElseIf (IButton == 3 ) 
+		If (_SLSD_GV_MaraLoveQuestON.GetValue()==0)
+			Debug.Notification("[SL Dibella] Mara's Love quest enabled")
+			_SLSD_GV_MaraLoveQuestON.SetValue(1)
+
+		Else
+			Debug.Notification("[SL Dibella] Mara's Love quest disabled")
+			_SLSD_GV_MaraLoveQuestON.SetValue(0)
+		Endif
 	Endif
 
 endevent
@@ -33,3 +53,7 @@ endevent
 Message Property SexchangeConfigMenu  Auto  
 GlobalVariable Property _SLSD_HormonesSexChange  Auto  
 GlobalVariable Property _SLSD_TempleSweatON  Auto  
+
+GlobalVariable Property _SLSD_GV_BardsCollegeQuestON  Auto  
+
+GlobalVariable Property _SLSD_GV_MaraLoveQuestON  Auto  
