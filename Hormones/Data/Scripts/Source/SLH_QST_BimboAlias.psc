@@ -203,8 +203,13 @@ Event OnUpdate()
         ;[mod] progressive tf - end
 
         If (isMaleToBimbo) && (daysSinceEnslavement<=6) ; !_SLH_QST_Bimbo.IsStageDone(18) 
-            fctBodyshape.alterBodyByPercent(BimboActor, "Weight", 50.0)
-            fctBodyshape.alterBodyByPercent(BimboActor, "Breast", 50.0)
+ 			if (StorageUtil.GetIntValue(BimboActor, "_SLH_allowBimboRace")==0)
+	            fctBodyshape.alterBodyByPercent(BimboActor, "Weight", 50.0)
+	            fctBodyshape.alterBodyByPercent(BimboActor, "Breast", 50.0)
+	        else
+	            fctBodyshape.alterBodyByPercent(BimboActor, "Weight", 20.0)
+	            fctBodyshape.alterBodyByPercent(BimboActor, "Breast", 20.0)
+	        endif
 
             ; Male to female bimbo
             if (daysSinceEnslavement==1)
@@ -232,8 +237,13 @@ Event OnUpdate()
 
         ElseIf (!isMaleToBimbo) && (daysSinceEnslavement<=6) ; !_SLH_QST_Bimbo.IsStageDone(16) 
  
-            fctBodyshape.alterBodyByPercent(BimboActor, "Weight", 50.0)
-            fctBodyshape.alterBodyByPercent(BimboActor, "Breast", 50.0)
+ 			if (StorageUtil.GetIntValue(BimboActor, "_SLH_allowBimboRace")==0)
+	            fctBodyshape.alterBodyByPercent(BimboActor, "Weight", 50.0)
+	            fctBodyshape.alterBodyByPercent(BimboActor, "Breast", 50.0)
+	        else
+	            fctBodyshape.alterBodyByPercent(BimboActor, "Weight", 20.0)
+	            fctBodyshape.alterBodyByPercent(BimboActor, "Breast", 20.0)
+	        endif
 
             ; Female to female bimbo
             if (daysSinceEnslavement==1)

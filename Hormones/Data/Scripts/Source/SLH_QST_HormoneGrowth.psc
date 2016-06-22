@@ -172,6 +172,7 @@ Function Maintenance()
 		initHormonesState(PlayerActor)
 	EndIf
 
+	fctColor.refreshColors(PlayerActor)
 	NextAllowed = -1.0
 
  	daysPassed = Game.QueryStat("Days Passed")
@@ -565,6 +566,7 @@ Event OnCastBimboCurseEvent(String _eventName, String _args, Float _argc = 1.0, 
 	debugTrace("[SLH] Cast Bimbo Curse event" )	  
 	; PolymorphBimbo.Cast(PlayerActor,PlayerActor)
 	fctPolymorph.bimboTransformEffectON(kActor)
+	Game.ShowRaceMenu()
 
 endEvent
 
@@ -574,7 +576,8 @@ Event OnCureBimboCurseEvent(String _eventName, String _args, Float _argc = 1.0, 
 	debugTrace("[SLH] Cure Bimbo Curse event" )	  
 
 	fctPolymorph.bimboTransformEffectOFF(kActor)
- 	
+    Game.ShowRaceMenu()
+
 endEvent
 
 Event OnCastHRTCurseEvent(String _eventName, String _args, Float _argc = 1.0, Form _sender)
@@ -950,72 +953,69 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 		actor kPervert = SexLab.FindAvailableActor(PlayerActor as ObjectReference, 200.0)  
 
 		If (GV_allowBimbo.GetValue()==1) || (GV_allowHRT.GetValue()==1) || (GV_allowTG.GetValue()==1) 
-			If (GV_isBimbo.GetValue()==0) && (GV_isHRT.GetValue()==0) && (GV_isTG.GetValue()==0) && ( (fctUtil.hasRace(actors, _SLH_DremoraOutcastRace) || fctUtil.hasRace(actors, _SLH_BimboRace)))
+			If fctUtil.hasRace(actors, _SLH_BimboRace)
+				actor kBimbo = fctUtil.getRaceActor(actors, _SLH_BimboRace)
+				kPervert = None ; Disable pervert when transformation occurs
 
-				If fctUtil.hasRace(actors, _SLH_BimboRace)
-					actor kBimbo = fctUtil.getRaceActor(actors, _SLH_BimboRace)
-					kPervert = None ; Disable pervert when transformation occurs
+				; PolymorphBimbo.Cast(PlayerActor,PlayerActor)
+				; PlayerActor.DoCombatSpellApply(_SLH_PolymorphBimbo, PlayerActor)
 
-					; PolymorphBimbo.Cast(PlayerActor,PlayerActor)
-					; PlayerActor.DoCombatSpellApply(_SLH_PolymorphBimbo, PlayerActor)
+				; _SLH_QST_Bimbo.SetStage(10)
+				iDaedricInfluence   = iDaedricInfluence   + 5
 
-					; _SLH_QST_Bimbo.SetStage(10)
-					iDaedricInfluence   = iDaedricInfluence   + 5
-
-					if fctUtil.isSameSex(PlayerActor,kBimbo)
-						if (Utility.RandomInt(0,100)>90) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo") == 0)					
-							PlayerActor.SendModEvent("SLHCastBimboCurse")
-							_SLH_QST_Bimbo.SetStage(10)
-						endIf
-					else
-						if (Utility.RandomInt(0,100)>60) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo") == 0)					
-							PlayerActor.SendModEvent("SLHCastBimboCurse")
-							_SLH_QST_Bimbo.SetStage(10)
-
-						elseif (Utility.RandomInt(0,100)>80)  && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iTG") == 0)										
-							PlayerActor.SendModEvent("SLHCastTGCurse")
-							_SLH_QST_Bimbo.SetStage(10)
-						endIf
+				if fctUtil.isSameSex(PlayerActor,kBimbo)
+					if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo") == 0) && (GV_allowBimbo.GetValue()==1)						
+						PlayerActor.SendModEvent("SLHCastBimboCurse")
+						_SLH_QST_Bimbo.SetStage(10)
 					endIf
+				else
+					if (Utility.RandomInt(0,100)>60) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo") == 0) && (GV_allowBimbo.GetValue()==1)													
+						PlayerActor.SendModEvent("SLHCastBimboCurse")
+						_SLH_QST_Bimbo.SetStage(10)
 
-				elseIf fctUtil.hasRace(actors, _SLH_DremoraOutcastRace) && (Utility.RandomInt(0,100)>60)
-					actor kDremora = fctUtil.getRaceActor(actors, _SLH_DremoraOutcastRace)
-					kPervert = None ; Disable pervert when transformation occurs
-
-					; PolymorphBimbo.Cast(PlayerActor,PlayerActor)
-					; PlayerActor.DoCombatSpellApply(_SLH_PolymorphBimbo, PlayerActor)
-
-					; _SLH_QST_Bimbo.SetStage(11)
-
-					if fctUtil.isSameSex(PlayerActor,kDremora) && fctUtil.isFemale(kDremora)
-						if (Utility.RandomInt(0,100)>90) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo") == 0)					
-							PlayerActor.SendModEvent("SLHCastBimboCurse")
-							_SLH_QST_Bimbo.SetStage(11)
-						endIf
-					elseif !fctUtil.isSameSex(PlayerActor,kDremora) && fctUtil.isFemale(kDremora)
-						if (Utility.RandomInt(0,100)>90) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo") == 0)					
-							PlayerActor.SendModEvent("SLHCastBimboCurse")
-							_SLH_QST_Bimbo.SetStage(11)
-
-						elseif (Utility.RandomInt(0,100)>60)  && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iHRT") == 0)					
-							PlayerActor.SendModEvent("SLHCastHRTCurse")
-							_SLH_QST_Bimbo.SetStage(11)
-						endIf
-					else
-						if (Utility.RandomInt(0,100)>60) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo") == 0)					
-							PlayerActor.SendModEvent("SLHCastBimboCurse")
-							_SLH_QST_Bimbo.SetStage(11)
-
-						elseif (Utility.RandomInt(0,100)>80)  && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iTG") == 0)										
-							PlayerActor.SendModEvent("SLHCastTGCurse")
-							_SLH_QST_Bimbo.SetStage(11)
-
-						elseif (Utility.RandomInt(0,100)>50) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iHRT") == 0)					
-							PlayerActor.SendModEvent("SLHCastHRTCurse")
-							_SLH_QST_Bimbo.SetStage(11)
-						endIf
+					elseif (StorageUtil.GetIntValue(PlayerActor, "_SLH_iTG") == 0) && (GV_allowTG.GetValue()==1)									
+						PlayerActor.SendModEvent("SLHCastTGCurse")
+						_SLH_QST_Bimbo.SetStage(10)
 					endIf
-				endif
+				endIf
+
+			elseIf fctUtil.hasRace(actors, _SLH_DremoraOutcastRace) && (Utility.RandomInt(0,100)>60)
+				actor kDremora = fctUtil.getRaceActor(actors, _SLH_DremoraOutcastRace)
+				kPervert = None ; Disable pervert when transformation occurs
+
+				; PolymorphBimbo.Cast(PlayerActor,PlayerActor)
+				; PlayerActor.DoCombatSpellApply(_SLH_PolymorphBimbo, PlayerActor)
+
+				; _SLH_QST_Bimbo.SetStage(11)
+
+				if fctUtil.isSameSex(PlayerActor,kDremora) && fctUtil.isFemale(kDremora)
+					if (Utility.RandomInt(0,100)>90) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo") == 0)					
+						PlayerActor.SendModEvent("SLHCastBimboCurse")
+						_SLH_QST_Bimbo.SetStage(11)
+					endIf
+				elseif !fctUtil.isSameSex(PlayerActor,kDremora) && fctUtil.isFemale(kDremora)
+					if (Utility.RandomInt(0,100)>90) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo") == 0)					
+						PlayerActor.SendModEvent("SLHCastBimboCurse")
+						_SLH_QST_Bimbo.SetStage(11)
+
+					elseif (Utility.RandomInt(0,100)>60)  && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iHRT") == 0)					
+						PlayerActor.SendModEvent("SLHCastHRTCurse")
+						_SLH_QST_Bimbo.SetStage(11)
+					endIf
+				else
+					if (Utility.RandomInt(0,100)>60) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo") == 0)					
+						PlayerActor.SendModEvent("SLHCastBimboCurse")
+						_SLH_QST_Bimbo.SetStage(11)
+
+					elseif (Utility.RandomInt(0,100)>80)  && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iTG") == 0)										
+						PlayerActor.SendModEvent("SLHCastTGCurse")
+						_SLH_QST_Bimbo.SetStage(11)
+
+					elseif (Utility.RandomInt(0,100)>50) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iHRT") == 0)					
+						PlayerActor.SendModEvent("SLHCastHRTCurse")
+						_SLH_QST_Bimbo.SetStage(11)
+					endIf
+				endIf
 			Endif
 		Endif		
 

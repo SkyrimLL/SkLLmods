@@ -419,6 +419,15 @@ Int function alterTintMaskTarget(int colorBase, int maskType = 6, int maskIndex 
     return color
 EndFunction
 
+Int function colorFormtoRGBA (ColorForm color)
+	int red = color.GetRed() 
+	int green = color.GetGreen() 
+	int blue = color.GetBlue() 
+    int iColor = Math.LeftShift(255, 24) + Math.LeftShift(red, 16) + Math.LeftShift(green, 8) + blue
+    return iColor
+
+endFunction
+
 ; HSL to RGB conversion - see: http://stackoverflow.com/questions/2353211/hsl-to-rgb-color-conversion
 
 int[] function HSLtoRGB(float H, float S, float L)
@@ -563,7 +572,9 @@ function initColorConstants(Actor kActor)
 endFunction
 
 function initColorState(Actor kActor)
-	; Player by default  - kActor ignored
+	; Player by default  - kActor ignored 
+	ActorBase pLeveledActorBase = Game.GetPlayer().GetLeveledActorBase()
+	ColorForm color
 
 	iOrigSkinColor = Game.GetTintMaskColor(6,0)
 	iSkinColor = iOrigSkinColor
@@ -573,11 +584,17 @@ function initColorState(Actor kActor)
 	iLipsColor = iOrigLipsColor
 	iOrigEyelinerColor = Game.GetTintMaskColor(3,0)
 	iEyelinerColor = iOrigEyelinerColor
+
+	color = pLeveledActorBase.GetHairColor()
+	iOrigHairColor = colorFormtoRGBA (color)
+	iHairColor = iOrigHairColor
 
 endFunction
 
 function setColorStateDefault(Actor kActor)
 	; Player by default  - kActor ignored
+	ActorBase pLeveledActorBase = Game.GetPlayer().GetLeveledActorBase()
+	ColorForm color
 
 	iOrigSkinColor = Game.GetTintMaskColor(6,0)
 	iSkinColor = iOrigSkinColor
@@ -587,6 +604,10 @@ function setColorStateDefault(Actor kActor)
 	iLipsColor = iOrigLipsColor
 	iOrigEyelinerColor = Game.GetTintMaskColor(3,0)
 	iEyelinerColor = iOrigEyelinerColor
+
+	color = pLeveledActorBase.GetHairColor()
+	iOrigHairColor = colorFormtoRGBA (color)
+	iHairColor = iOrigHairColor
 
 	setColorState(kActor)
 
@@ -603,6 +624,8 @@ function resetColorState(Actor kActor)
 	iLipsColor = iOrigLipsColor
 	; iOrigEyelinerColor = Game.GetTintMaskColor(3,0)
 	iEyelinerColor = iOrigEyelinerColor
+
+	iHairColor = iOrigHairColor
 
 	setColorState(kActor)
 
@@ -652,7 +675,8 @@ endFunction
 function refreshColors(Actor kActor)
 	ActorBase pActorBase = kActor.GetActorBase()
 	ActorBase pLeveledActorBase = kActor.GetLeveledActorBase()
- 
+ 	ColorForm color
+
 
 	if (GV_useColors.GetValue() == 1)
 		getColorState(kActor)
@@ -681,6 +705,11 @@ function refreshColors(Actor kActor)
 			setTintMask(3,iEyelinerColor)
 		EndIf
 
+		if (iHairColor == 0)
+			color = pLeveledActorBase.GetHairColor()
+			iHairColor = colorFormtoRGBA (color)
+		endIf
+		
 		thisHairColor.SetColor(iHairColor)
 		pLeveledActorBase.SetHairColor(thisHairColor)
 
@@ -690,6 +719,9 @@ function refreshColors(Actor kActor)
 endFunction
 
 function getColorsFromSkin(Actor kActor)
+	ActorBase pLeveledActorBase = Game.GetPlayer().GetLeveledActorBase()
+	ColorForm color
+
 	if (GV_useColors.GetValue() == 1)
 		iSkinColor = Game.GetTintMaskColor(6,0)
 		setTintMask(6,iSkinColor)
@@ -703,10 +735,27 @@ function getColorsFromSkin(Actor kActor)
 		iEyelinerColor = Game.GetTintMaskColor(3,0)
 		setTintMask(3,iEyelinerColor)
 
+		color = pLeveledActorBase.GetHairColor()
+		iHairColor = colorFormtoRGBA (color)
+
 		setColorState( kActor)
 	EndIf
 	
 
+endFunction
+
+function applyColorChanges(Actor kActor)
+	if (GV_useColors.GetValue() == 1)
+	 	If SKSE.GetPluginVersion("NiOverride") >= 1
+	 		debugTrace("[SLH]  Applying NiOverride")
+		 	NiOverride.ApplyOverrides(kActor)
+	 		NiOverride.ApplyNodeOverrides(kActor)
+	 	Endif
+
+		; Game.UpdateHairColor()
+		debugTrace("[SLH]  Updating TintMaskColors")
+		Game.UpdateTintMaskColors()
+	EndIf
 endFunction
 
 Function debugTrace(string traceMsg)

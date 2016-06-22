@@ -68,6 +68,7 @@ GlobalVariable      Property GV_blueShiftColorMod 		Auto
 GlobalVariable      Property GV_allowTG 				Auto
 GlobalVariable      Property GV_allowHRT 				Auto
 GlobalVariable      Property GV_allowBimbo 		 		Auto
+GlobalVariable      Property GV_allowBimboRace	 		Auto
 GlobalVariable      Property GV_allowSuccubus 			Auto
 GlobalVariable      Property GV_setshapeToggle 			Auto
 GlobalVariable      Property GV_resetToggle 			Auto
@@ -165,7 +166,8 @@ bool		_allowSelfSpells		= false
 bool		_allowTG				= false
 bool		_allowHRT				= false
 bool		_allowBimbo				= false
-bool		_allowSuccubus				= false
+bool		_allowBimboRace			= false
+bool		_allowSuccubus			= false
 
 bool		_statusToggle			= false
 bool		_setshapeToggle			= false
@@ -289,6 +291,7 @@ event OnPageReset(string a_page)
 	_allowTG = GV_allowTG.GetValue()  as Int
 	_allowHRT = GV_allowHRT.GetValue()  as Int
 	_allowBimbo = GV_allowBimbo.GetValue()  as Int
+	_allowBimboRace = GV_allowBimboRace.GetValue()  as Int
 	_allowSuccubus = GV_allowSuccubus.GetValue()  as Int
 
 	_changeOverrideToggle = GV_changeOverrideToggle.GetValue()  as Int
@@ -397,6 +400,7 @@ event OnPageReset(string a_page)
 		AddToggleOptionST("STATE_SEX_CHANGE","Sex Change Curse", _allowHRT as Float)
 		AddToggleOptionST("STATE_TG","Allow Transgender", _allowTG as Float)
 		AddToggleOptionST("STATE_BIMBO","Bimbo Curse", _allowBimbo as Float)
+		AddToggleOptionST("STATE_BIMBO_RACE","Bimbo Race", _allowBimboRace as Float)
 		AddSliderOptionST("STATE_BIMBO_CLUMSINESS","Clumsiness factor", _bimboClumsinessMod as Float,"{1}")
 		AddToggleOptionST("STATE_HORNY_BEG","Beg for sex", _hornyBegON   as Bool)
 		AddSliderOptionST("STATE_BEG_TRIGGER","Beg arousal trigger", _hornyBegArousal  as Float,"{1}")
@@ -1257,7 +1261,7 @@ state STATE_SUCCUBUS ; TOGGLE
 		SetInfoText("Succubus curse - Caused by exposure to Daedric influence.")
 	endEvent
 endState
-; AddToggleOptionST("STATE_SEX_CHANGE","Sex Change Curse", _allowBimbo)
+; AddToggleOptionST("STATE_BIMBO","Sex Change Curse", _allowBimbo)
 state STATE_BIMBO ; TOGGLE
 	event OnSelectST()
 		GV_allowBimbo.SetValueInt( Math.LogicalXor( 1, GV_allowBimbo.GetValueInt() ) )
@@ -1275,6 +1279,26 @@ state STATE_BIMBO ; TOGGLE
 
 	event OnHighlightST()
 		SetInfoText("Bimbo Curse - This curse could turn you into a mindless sex-starved blonde.")
+	endEvent
+endState
+; AddToggleOptionST("STATE_BIMBO","Sex Change Curse", _allowBimboRace)
+state STATE_BIMBO_RACE ; TOGGLE
+	event OnSelectST()
+		GV_allowBimboRace.SetValueInt( Math.LogicalXor( 1, GV_allowBimboRace.GetValueInt() ) )
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_allowBimboRace", GV_allowBimboRace.GetValue() as Int)
+		SetToggleOptionValueST( GV_allowBimboRace.GetValueInt() as Bool )
+		ForcePageReset()
+	endEvent
+
+	event OnDefaultST()
+		GV_allowBimboRace.SetValueInt( 0 )
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_allowBimboRace", GV_allowBimboRace.GetValue() as Int)
+		SetToggleOptionValueST( false )
+		ForcePageReset()
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Bimbo Race - Use the custom Bimbo race for the transformation. If unselected, the current race of the player will be preserved.")
 	endEvent
 endState
 ; AddSliderOptionST("STATE_BIMBO_CLUMSINESS","Bimbo clumsiness factor", _bimboClumsinessMod)
