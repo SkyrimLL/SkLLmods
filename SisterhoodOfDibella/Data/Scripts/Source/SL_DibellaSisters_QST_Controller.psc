@@ -19,8 +19,8 @@ Event OnLocationChange(Location akOldLoc, Location akNewLoc)
 
 	If ((akNewLoc == TempleLocation) || (akOldLoc == TempleLocation))  && (iSybilLevel < 5)
 		Debug.Trace("[SLSD] Temple corruption: " + iTempleCorruption )
-		Debug.Notification("[SLSD] Temple corruption: " + iTempleCorruption )
-		Debug.Notification("[SLSD] Sybil Level: " + iSybilLevel )
+		; Debug.Notification("[SLSD] Temple corruption: " + iTempleCorruption )
+		Debug.Trace("[SLSD] Sybil Level: " + iSybilLevel )
 		; Debug.Notification("[SLSD] SennaRef: " + SennaRef)
 		; Debug.Notification("[SLSD] OrlaRef: " + OrlaRef)
 		; Debug.Notification("[SLSD] AnwenRef: " + AnwenRef)
@@ -91,9 +91,6 @@ EndFunction
 Event OnSLSDEquipOutfit(String _eventName, String _args, Float _argc = -1.0, Form _sender)
  	Actor kActor = _sender as Actor
 	String sOutfit = _args
-
-	; Example: akSpeaker forcing a gag on player using OutfitID = 1 [between 0 and 10] 
-	; akSpeaker.SendModEvent("SDEquipDevice", "Gag", 1) 
 
 	Debug.Trace("[SL_DibellaSisters_QST_controller] Receiving equip outfit story event [" + _args  + "] [" + _argc as Int + "]")
 
