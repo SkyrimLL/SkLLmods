@@ -1278,17 +1278,7 @@ function applyBodyShapeChanges(Actor kActor)
 		StorageUtil.SetFormValue(kActor, "_SLH_fOrigRace",thisRace) 
 	EndIf
 
-	if (GV_useColors.GetValue() == 1)
-	 	If SKSE.GetPluginVersion("NiOverride") >= 1
-	 		debugTrace("[SLH]  Applying NiOverride")
-		 	NiOverride.ApplyOverrides(kActor)
-	 		NiOverride.ApplyNodeOverrides(kActor)
-	 	Endif
-
-		; Game.UpdateHairColor()
-		debugTrace("[SLH]  Updating TintMaskColors")
-		Game.UpdateTintMaskColors()
-	EndIf
+	fctColor.applyColorChanges(kActor)
 
  
 	If ((GV_useNodes.GetValue() == 1) || (GV_useWeight.GetValue() == 1)) && (GV_enableNiNodeUpdate.GetValue() == 1)
