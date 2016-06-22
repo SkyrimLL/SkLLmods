@@ -323,8 +323,8 @@ Bool Function _hasRace(Actor[] _actors, Race thisRace)
 	int idx = 0
 	while idx < _actors.Length
 		if (_actors[idx])
-			aBase = _actors[idx].GetBaseObject() as ActorBase
-			aRace = aBase.GetRace()
+			; aBase = _actors[idx].GetBaseObject() as ActorBase
+			aRace = _actors[idx].GetLeveledActorBase().GetRace()
 			if aRace == thisRace
 				return True
 			endif
