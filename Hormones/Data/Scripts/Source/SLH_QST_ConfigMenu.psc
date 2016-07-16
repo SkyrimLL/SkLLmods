@@ -84,6 +84,7 @@ GlobalVariable      Property GV_shapeUpdateOnCellChange	Auto
 GlobalVariable      Property GV_shapeUpdateAfterSex		Auto
 GlobalVariable      Property GV_shapeUpdateOnTimer		Auto
 GlobalVariable      Property GV_enableNiNodeUpdate		Auto
+GlobalVariable      Property GV_enableNiNodeOverride	Auto
 
 GlobalVariable      Property GV_allowExhibitionist		Auto
 GlobalVariable      Property GV_allowSelfSpells			Auto
@@ -109,6 +110,13 @@ String                   Property NINODE_BELLY          = "NPC Belly" AutoReadOn
 Float                    Property NINODE_MAX_SCALE      = 2.0 AutoReadOnly
 Float                    Property NINODE_MIN_SCALE      = 0.1 AutoReadOnly
 
+; NiOverride version data
+int Property NIOVERRIDE_VERSION = 4 AutoReadOnly
+int Property NIOVERRIDE_SCRIPT_VERSION = 4 AutoReadOnly
+
+; XPMSE version data
+float Property XPMSE_VERSION = 3.0 AutoReadOnly
+float Property XPMSELIB_VERSION = 3.0 AutoReadOnly
 
 
 ; PRIVATE VARIABLES -------------------------------------------------------------------------------
@@ -143,6 +151,11 @@ float 		_bellyMax       		= 8.0
 float 		_buttMax       			= 4.0
 float 		_schlongMax       		= 4.0
 
+float 		_breastMin      		= 0.8
+float 		_bellyMin       		= 0.9
+float 		_buttMin       			= 0.9
+float 		_schlongMin       		= 0.5
+
 bool		_useNodes				= true
 bool		_useBreastNode			= true
 bool		_useButtNode			= true
@@ -155,6 +168,7 @@ bool		_shapeUpdateOnCellChange = true
 bool		_shapeUpdateAfterSex 	= true
 bool		_shapeUpdateOnTimer 	= true
 bool		_enableNiNodeUpdate 	= true
+bool		_enableNiNodeOverride	= true
 int			_redShiftColor 			= 0
 float		_redShiftColorMod 		= 1.0
 int			_blueShiftColor 		= 0
@@ -187,6 +201,11 @@ bool 		_refreshToggle 			= false
 ObjectReference PlayerREF
 Actor PlayerActor
 ActorBase pActorBase 
+Int PlayerGender
+
+bool Function CheckXPMSERequirements(Actor akActor, bool isFemale)
+	return XPMSELib.CheckXPMSEVersion(akActor, isFemale, XPMSE_VERSION, true) && XPMSELib.CheckXPMSELibVersion(XPMSELIB_VERSION) && SKSE.GetPluginVersion("NiOverride") >= NIOVERRIDE_VERSION && NiOverride.GetScriptVersion() >= NIOVERRIDE_SCRIPT_VERSION
+EndFunction
 
 ; INITIALIZATION ----------------------------------------------------------------------------------
 
@@ -263,6 +282,11 @@ event OnPageReset(string a_page)
 	_schlongMax = GV_schlongMax.GetValue()  as Float 
 	_buttMax = GV_buttMax.GetValue()  as Float 
 
+	_breastMin = GV_breastMin.GetValue()  as Float
+	_bellyMin = GV_bellyMin.GetValue()  as Float 
+	_schlongMin = GV_schlongMin.GetValue()  as Float 
+	_buttMin = GV_buttMin.GetValue()  as Float 
+
 	_weightSetValue 		= GV_weightValue.GetValue()
 	_breastSetValue 		= GV_breastValue.GetValue()
 	_bellySetValue 			= GV_bellyValue.GetValue()
@@ -299,6 +323,7 @@ event OnPageReset(string a_page)
 	_shapeUpdateAfterSex = GV_shapeUpdateAfterSex.GetValue()  as Int
 	_shapeUpdateOnTimer = GV_shapeUpdateOnTimer.GetValue()  as Int
 	_enableNiNodeUpdate = GV_enableNiNodeUpdate.GetValue()  as Int
+	_enableNiNodeOverride = GV_enableNiNodeOverride.GetValue()  as Int
 
 	_setshapeToggle = GV_setshapeToggle.GetValue()  as Int
 	_resetToggle = GV_resetToggle.GetValue()  as Int
@@ -306,6 +331,7 @@ event OnPageReset(string a_page)
 	PlayerREF= PlayerAlias.GetReference()
 	PlayerActor= PlayerAlias.GetReference() as Actor
 	pActorBase = PlayerActor.GetActorBase()
+	PlayerGender = pActorBase.GetSex() ; 0 = Male ; 1 = Female
 
 	Bool bEnableLeftBreast  = NetImmerse.HasNode(PlayerActor, NINODE_LEFT_BREAST, false)
 	Bool bEnableRightBreast = NetImmerse.HasNode(PlayerActor, NINODE_RIGHT_BREAST, false)
@@ -318,6 +344,7 @@ event OnPageReset(string a_page)
 	Bool bButtEnabled       = ( bEnableLeftButt && bEnableRightButt  as bool )
 	Bool bBellyEnabled      = ( bEnableBelly  as bool )
 	Bool bSchlongEnabled    = ( bEnableSchlong as bool )
+
 
 	If (a_page == "Customization")
 		SetCursorFillMode(TOP_TO_BOTTOM)
@@ -352,41 +379,45 @@ event OnPageReset(string a_page)
 		If (bBreastEnabled)
 			AddToggleOptionST("STATE_CHANGE_BREAST_NODE","Change Breast Node", _useBreastNode as Float)	
 			AddSliderOptionST("STATE_BREAST_SWELL","Breast swell modifier", _breastSwellMod as Float,"{1}")
+			AddSliderOptionST("STATE_BREAST_MIN","Breast swell min", _breastMin as Float,"{1}")
 			AddSliderOptionST("STATE_BREAST_MAX","Breast swell max", _breastMax as Float,"{1}")
 		else
 			AddToggleOptionST("STATE_CHANGE_BREAST_NODE","Change Breast Node", _useBreastNode as Float, OPTION_FLAG_DISABLED)	
-			AddSliderOptionST("STATE_BREAST_SWELL","Breast swell modifier", _breastSwellMod as Float,"{1}", OPTION_FLAG_DISABLED)
-			AddSliderOptionST("STATE_BREAST_MAX","Breast swell max", _breastMax as Float,"{1}", OPTION_FLAG_DISABLED)
+			; AddSliderOptionST("STATE_BREAST_SWELL","Breast swell modifier", _breastSwellMod as Float,"{1}", OPTION_FLAG_DISABLED)
+			; AddSliderOptionST("STATE_BREAST_MAX","Breast swell max", _breastMax as Float,"{1}", OPTION_FLAG_DISABLED)
 		EndIf
 
 		If (bBellyEnabled)
 			AddToggleOptionST("STATE_CHANGE_BELLY_NODE","Change Belly Node", _useBellyNode as Float)	
 			AddSliderOptionST("STATE_BELLY_SWELL","Belly swell modifier", _bellySwellMod as Float,"{1}")
+			AddSliderOptionST("STATE_BELLY_MIN","Belly swell min", _bellyMin as Float,"{1}")
 			AddSliderOptionST("STATE_BELLY_MAX","Belly swell max", _bellyMax as Float,"{1}")
 		else
 			AddToggleOptionST("STATE_CHANGE_BELLY_NODE","Change Belly Node", _useBellyNode as Float, OPTION_FLAG_DISABLED)	
-			AddSliderOptionST("STATE_BELLY_SWELL","Belly swell modifier", _bellySwellMod as Float,"{1}", OPTION_FLAG_DISABLED)
-			AddSliderOptionST("STATE_BELLY_MAX","Belly swell max", _bellyMax as Float,"{1}", OPTION_FLAG_DISABLED)
+			; AddSliderOptionST("STATE_BELLY_SWELL","Belly swell modifier", _bellySwellMod as Float,"{1}", OPTION_FLAG_DISABLED)
+			; AddSliderOptionST("STATE_BELLY_MAX","Belly swell max", _bellyMax as Float,"{1}", OPTION_FLAG_DISABLED)
 		EndIf
 
 		If (bButtEnabled)
 			AddToggleOptionST("STATE_CHANGE_BUTT_NODE","Change Butt Node", _useButtNode as Float)		
 			AddSliderOptionST("STATE_BUTT_SWELL","Butt swell modifier", _buttSwellMod as Float,"{1}")
+			AddSliderOptionST("STATE_BUTT_MIN","Butt swell min", _buttMin as Float,"{1}")
 			AddSliderOptionST("STATE_BUTT_MAX","Butt swell max", _buttMax as Float,"{1}")
 		else
 			AddToggleOptionST("STATE_CHANGE_BUTT_NODE","Change Butt Node", _useButtNode as Float, OPTION_FLAG_DISABLED)		
-			AddSliderOptionST("STATE_BUTT_SWELL","Butt swell modifier", _buttSwellMod as Float,"{1}", OPTION_FLAG_DISABLED)
-			AddSliderOptionST("STATE_BUTT_MAX","Butt swell max", _buttMax as Float,"{1}", OPTION_FLAG_DISABLED)
+			; AddSliderOptionST("STATE_BUTT_SWELL","Butt swell modifier", _buttSwellMod as Float,"{1}", OPTION_FLAG_DISABLED)
+			; AddSliderOptionST("STATE_BUTT_MAX","Butt swell max", _buttMax as Float,"{1}", OPTION_FLAG_DISABLED)
 		EndIf
 
 		If (bSchlongEnabled)
 			AddToggleOptionST("STATE_CHANGE_SCHLONG_NODE","Change Schlong Node", _useSchlongNode as Float)
 			AddSliderOptionST("STATE_SCHLONG_SWELL","Schlong swell modifier", _schlongSwellMod as Float,"{1}")
+			AddSliderOptionST("STATE_SCHLONG_MIN","Schlong swell min", _schlongMin as Float,"{1}")
 			AddSliderOptionST("STATE_SCHLONG_MAX","Schlong swell max", _schlongMax as Float,"{1}")
 		else
 			AddToggleOptionST("STATE_CHANGE_SCHLONG_NODE","Change Schlong Node", _useSchlongNode as Float, OPTION_FLAG_DISABLED)
-			AddSliderOptionST("STATE_SCHLONG_SWELL","Schlong swell modifier", _schlongSwellMod as Float,"{1}", OPTION_FLAG_DISABLED)
-			AddSliderOptionST("STATE_SCHLONG_MAX","Schlong swell max", _schlongMax as Float,"{1}", OPTION_FLAG_DISABLED)
+			; AddSliderOptionST("STATE_SCHLONG_SWELL","Schlong swell modifier", _schlongSwellMod as Float,"{1}", OPTION_FLAG_DISABLED)
+			; AddSliderOptionST("STATE_SCHLONG_MAX","Schlong swell max", _schlongMax as Float,"{1}", OPTION_FLAG_DISABLED)
 		EndIf
 
 
@@ -411,7 +442,13 @@ event OnPageReset(string a_page)
 		AddToggleOptionST("STATE_UPDATE_ON_CELL","Update on cell change", _shapeUpdateOnCellChange as Float)
 		AddToggleOptionST("STATE_UPDATE_ON_SEX","Update after sex", _shapeUpdateAfterSex as Float)
 		AddToggleOptionST("STATE_UPDATE_ON_TIMER","Update on timer", _shapeUpdateOnTimer as Float)
-		AddToggleOptionST("STATE_ENABLE_NODE_UPDATE","Enable node updates", _enableNiNodeUpdate as Float)
+		AddToggleOptionST("STATE_ENABLE_NODE_UPDATE","Enable QueueNodeUpdate", _enableNiNodeUpdate as Float)
+
+		If CheckXPMSERequirements(PlayerActor, PlayerGender as Bool)
+			AddToggleOptionST("STATE_ENABLE_NODE_OVERRIDE","Enable NiOverride", _enableNiNodeOverride as Float)
+		else
+			AddToggleOptionST("STATE_ENABLE_NODE_OVERRIDE","Enable NiOverride", _enableNiNodeOverride as Float, OPTION_FLAG_DISABLED)
+		endif
 
 		AddEmptyOption()
 		AddToggleOptionST("STATE_SHOW_STATUS","Show Status messages", _showStatus as Bool)
@@ -756,6 +793,33 @@ state STATE_BREAST_MAX ; SLIDER
 		SetInfoText("Maximum breast size multiplier allowed")
 	endEvent
 endState
+; AddSliderOptionST("STATE_BREAST_MIN","Breast swell min", _breastMin)
+state STATE_BREAST_MIN ; SLIDER
+	event OnSliderOpenST()
+		SetSliderDialogStartValue( GV_breastMin.GetValue() )
+		SetSliderDialogDefaultValue( 0.8 )
+		SetSliderDialogRange( 0.1 , GV_breastMax.GetValue() )
+		SetSliderDialogInterval( 0.2 )
+	endEvent
+
+	event OnSliderAcceptST(float value)
+		float thisValue = value 
+		GV_breastMin.SetValue( thisValue ) 
+		SetSliderOptionValueST( thisValue, "{1}" )
+
+		refreshStorageFromGlobals()
+
+	endEvent
+
+	event OnDefaultST()
+		GV_breastMin.SetValue( 0.8 )
+		SetSliderOptionValueST( 0.8, "{1}" )
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Minimum breast size multiplier allowed")
+	endEvent
+endState
 ; AddSliderOptionST("STATE_BELLY_SWELL","Belly swell modifier", _bellySwellMod)
 state STATE_BELLY_SWELL ; SLIDER
 	event OnSliderOpenST()
@@ -808,6 +872,33 @@ state STATE_BELLY_MAX ; SLIDER
 
 	event OnHighlightST()
 		SetInfoText("Maximum belly size multiplier allowed")
+	endEvent
+endState
+; AddSliderOptionST("STATE_BELLY_MIN","Belly swell min", _bellyMin)
+state STATE_BELLY_MIN ; SLIDER
+	event OnSliderOpenST()
+		SetSliderDialogStartValue( GV_bellyMin.GetValue() )
+		SetSliderDialogDefaultValue( 0.8 )
+		SetSliderDialogRange( 0.1 , GV_bellyMax.GetValue() )
+		SetSliderDialogInterval( 0.2 )
+	endEvent
+
+	event OnSliderAcceptST(float value)
+		float thisValue = value 
+		GV_bellyMin.SetValue( thisValue ) 
+		SetSliderOptionValueST( thisValue, "{1}" )
+
+		refreshStorageFromGlobals()
+
+	endEvent
+
+	event OnDefaultST()
+		GV_bellyMin.SetValue( 0.8 )
+		SetSliderOptionValueST( 0.8, "{1}" )
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Minimum belly size multiplier allowed")
 	endEvent
 endState
 ; AddSliderOptionST("STATE_BUTT_SWELL","Butt swell modifier", _buttSwellMod)
@@ -864,6 +955,33 @@ state STATE_BUTT_MAX ; SLIDER
 		SetInfoText("Maximum butt size multiplier allowed")
 	endEvent
 endState
+; AddSliderOptionST("STATE_BUTT_MIN","Butt swell min", _buttMin)
+state STATE_BUTT_MIN ; SLIDER
+	event OnSliderOpenST()
+		SetSliderDialogStartValue( GV_buttMin.GetValue() )
+		SetSliderDialogDefaultValue( 0.8 )
+		SetSliderDialogRange( 0.1 , GV_buttMax.GetValue() )
+		SetSliderDialogInterval( 0.2 )
+	endEvent
+
+	event OnSliderAcceptST(float value)
+		float thisValue = value 
+		GV_buttMin.SetValue( thisValue ) 
+		SetSliderOptionValueST( thisValue, "{1}" )
+
+		refreshStorageFromGlobals()
+
+	endEvent
+
+	event OnDefaultST()
+		GV_buttMin.SetValue( 0.8 )
+		SetSliderOptionValueST( 0.8, "{1}" )
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Minimum butt size multiplier allowed")
+	endEvent
+endState
 ; AddSliderOptionST("STATE_SCHLONG_SWELL","Schlong swell modifier", _schlongSwellMod)
 state STATE_SCHLONG_SWELL ; SLIDER
 	event OnSliderOpenST()
@@ -918,7 +1036,33 @@ state STATE_SCHLONG_MAX ; SLIDER
 		SetInfoText("Maximum schlong size multiplier allowed")
 	endEvent
 endState
+; AddSliderOptionST("STATE_SCHLONG_MIN","Schlong swell min", _schlongMin)
+state STATE_SCHLONG_MIN ; SLIDER
+	event OnSliderOpenST()
+		SetSliderDialogStartValue( GV_schlongMin.GetValue() )
+		SetSliderDialogDefaultValue( 0.5 )
+		SetSliderDialogRange( 0.1 , GV_schlongMax.GetValue() )
+		SetSliderDialogInterval( 0.2 )
+	endEvent
 
+	event OnSliderAcceptST(float value)
+		float thisValue = value 
+		GV_schlongMin.SetValue( thisValue ) 
+		SetSliderOptionValueST( thisValue, "{1}" )
+
+		refreshStorageFromGlobals()
+
+	endEvent
+
+	event OnDefaultST()
+		GV_schlongMin.SetValue( 0.5 )
+		SetSliderOptionValueST( 0.5, "{1}" )
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Minimum schlong size multiplier allowed")
+	endEvent
+endState
 ; AddToggleOptionST("STATE_CHANGE_WEIGHT","Change Weight scale", _useWeight)
 state STATE_CHANGE_WEIGHT ; TOGGLE
 	event OnSelectST()
@@ -1604,8 +1748,11 @@ endState
 ; AddToggleOptionST("STATE_ENABLE_NODE_UPDATE","Enable node updates", _enableNiNodeUpdate as Float)
 state STATE_ENABLE_NODE_UPDATE ; TOGGLE
 	event OnSelectST()
+		; NiOverride and QueueNodeUpdates are mutually exclusive
 		GV_enableNiNodeUpdate.SetValueInt( Math.LogicalXor( 1, GV_enableNiNodeUpdate.GetValueInt() ) )
+		GV_enableNiNodeOverride.SetValueInt( 0 )
 		SetToggleOptionValueST( GV_enableNiNodeUpdate.GetValueInt() as Bool )
+		refreshStorageFromGlobals()
 		ForcePageReset()
 	endEvent
 
@@ -1616,7 +1763,29 @@ state STATE_ENABLE_NODE_UPDATE ; TOGGLE
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Check to let Hormones apply node changes directly. Uncheck if you already have a mod making regular node changes (Bathing/Dirt mod for example).")
+		SetInfoText("Check to let Hormones apply node changes directly. Uncheck if you already have a mod making regular node changes (Bathing/Dirt mod for example) as too frequent changes can cause crashes.")
+	endEvent
+
+endState
+; AddToggleOptionST("STATE_ENABLE_NODE_OVERRIDE","Enable node override", _enableNiNodeOverride as Float)
+state STATE_ENABLE_NODE_OVERRIDE ; TOGGLE
+	event OnSelectST()
+		; NiOverride and QueueNodeUpdates are mutually exclusive
+		GV_enableNiNodeOverride.SetValueInt( Math.LogicalXor( 1, GV_enableNiNodeOverride.GetValueInt() ) )
+		GV_enableNiNodeUpdate.SetValueInt( 0)
+		SetToggleOptionValueST( GV_enableNiNodeOverride.GetValueInt() as Bool )
+		refreshStorageFromGlobals()
+		ForcePageReset()
+	endEvent
+
+	event OnDefaultST()
+		GV_enableNiNodeOverride.SetValueInt( 1 )
+		SetToggleOptionValueST( true )
+		ForcePageReset()
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Check to let Hormones use NiOverride. Useful if you are using other mods compatible with NiOverride to apply changes to the player's body.")
 	endEvent
 
 endState
@@ -1687,6 +1856,11 @@ Function refreshStorageFromGlobals()
 	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBellyMax",  GV_bellyMax.GetValue() as Float) 
 	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fSchlongMax",  GV_schlongMax.GetValue() as Float) 
 	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fWeightMax",  GV_weightMax.GetValue() as Float) 
+
+	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreastMin",  GV_breastMin.GetValue() as Float) 
+	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fButtMin",  GV_buttMin.GetValue() as Float) 
+	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBellyMin",  GV_bellyMin.GetValue() as Float) 
+	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fSchlongMin",  GV_schlongMin.GetValue() as Float) 
 
 	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast",  GV_breastValue.GetValue() as Float) 
 	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fButt",  GV_buttValue.GetValue() as Float) 

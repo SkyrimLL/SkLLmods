@@ -11,6 +11,7 @@ slaUtilScr Property slaUtil  Auto
 SexLabFramework Property SexLab  Auto  
 
 SLH_QST_HormoneGrowth Property SLH_Control Auto
+SLH_QST_BimboAlias Property SLH_BimboControl Auto
 
 Quest Property _SLH_QST_Bimbo  Auto  
 
@@ -293,7 +294,7 @@ function bimboTransformEffectON(actor kActor)
         fctBodyShape.LoadFaceValues( StorageUtil.GetFormValue(none, "_SLH_bimboOriginalActor") as Actor, _bimboPresets,  _bimboMorphs ) 
     Endif
 
-    Int iBimboHairColor = Math.LeftShift(255, 24) + Math.LeftShift(30, 16) + Math.LeftShift(80, 8) + 80
+    Int iBimboHairColor = Math.LeftShift(255, 24) + Math.LeftShift(92, 16) + Math.LeftShift(80, 8) + 80
     StorageUtil.SetIntValue(kActor, "_SLH_iHairColor", iBimboHairColor ) 
 
     If (GV_allowBimboRace.GetValue()==0)
@@ -418,6 +419,8 @@ function bimboTransformEffectON(actor kActor)
 
     SLH_Control.setBimboState(kActor, TRUE)
     kActor.SendModEvent("SLHRefresh")
+
+    SLH_BimboControl.initBimbo()
 
     debugTrace("[SLH] Bimbo ON")
 
@@ -649,7 +652,7 @@ function TGEffectON(actor kActor)
         ; Female to Female + Schlong
 
         kActor.SendModEvent("SLHSetSchlong", "UNP Bimbo")
-        StorageUtil.SetFloatValue(kActor, "_SLH_fSchlong", 1.0 ) 
+        StorageUtil.SetFloatValue(kActor, "_SLH_fSchlong",0.7 ) 
         kActor.SendModEvent("SLHRefresh")
 
         Sexlab.TreatAsMale(kActor)

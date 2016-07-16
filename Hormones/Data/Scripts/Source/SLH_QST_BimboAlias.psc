@@ -55,20 +55,20 @@ Bool isClumsyLegsRegistered = False
 ;how much gold hypnosis victim earns each day
 Event OnLocationChange(Location akOldLoc, Location akNewLoc)
 	; Safeguard - Exit if alias not set
-	if (Game.GetPlayer().GetActorBase().GetRace() != _SLH_BimboRace)
+	if (StorageUtil.GetIntValue(Game.GetPlayer(), "_SLH_iBimbo")==0) ; (Game.GetPlayer().GetActorBase().GetRace() != _SLH_BimboRace)
 		Return
 	Endif
 
 	BimboActor= BimboAliasRef.GetReference() as Actor
 
 	; Safeguard - Evaluate the rest only when transformation happened
-	if (StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") == 0)
+	if (StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") == -1)
 		Return
 	Endif
 
 	; debug.Notification("[SLH] Bimbo changing location")
 	; if (!isUpdating)
-    	RegisterForSingleUpdate( fRFSU )
+    ;	RegisterForSingleUpdate( fRFSU )
     ; endif
 endEvent
 
@@ -78,12 +78,17 @@ endEvent
 Event OnPlayerLoadGame()
 	; if (!isUpdating)
 		debug.trace("[slh+] game loaded, registering for update")
-		if Game.GetPlayer().GetActorBase().GetRace() == _SLH_BimboRace && StorageUtil.GetIntValue(Game.GetPlayer(), "_SLH_bimboTransformDate") == 0
-			StorageUtil.SetIntValue(Game.GetPlayer(), "_SLH_bimboTransformDate", 1)
+		if (StorageUtil.GetIntValue(Game.GetPlayer(), "_SLH_iBimbo")==0) && StorageUtil.GetIntValue(Game.GetPlayer(), "_SLH_bimboTransformDate") == 0
+			StorageUtil.SetIntValue(Game.GetPlayer(), "_SLH_bimboTransformDate", -1)
 			debug.trace("[slh+] poor bimbo, are you lost?")
 		endif
 
 		isMaleToBimbo =  StorageUtil.GetIntValue(none, "_SLH_bimboIsOriginalActorMale") as Bool
+
+		BimboActor= BimboAliasRef.GetReference() as Actor
+		debug.trace("[slh+] BimboActor: " + BimboActor)
+		debug.trace("[slh+] Bimbo Transform date: " + StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") )
+		debug.trace("[slh+] Player is bimbo: " + StorageUtil.GetIntValue(Game.GetPlayer(), "_SLH_iBimbo"))
 
     	RegisterForSingleUpdate( 10 )
     ; else
@@ -91,12 +96,25 @@ Event OnPlayerLoadGame()
     ; endif
 EndEvent
 
+Function initBimbo()
+	isMaleToBimbo =  StorageUtil.GetIntValue(none, "_SLH_bimboIsOriginalActorMale") as Bool
+
+	BimboActor= BimboAliasRef.GetReference() as Actor
+	debug.trace("[slh+] Init BimboActor: " + BimboActor)
+	debug.trace("[slh+] Bimbo Transform date: " + StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") )
+	debug.trace("[slh+] Player is bimbo: " + StorageUtil.GetIntValue(Game.GetPlayer(), "_SLH_iBimbo"))
+
+	debug.notification("(Giggle)")
+	
+	RegisterForSingleUpdate( 10 )
+EndFunction
+
 ;===========================================================================
 ;[mod] stumbling happens here
 ;===========================================================================
 Event OnUpdateGameTime()
 	; Safeguard - Exit if alias not set
-	if (Game.GetPlayer().GetActorBase().GetRace() != _SLH_BimboRace)
+	if (StorageUtil.GetIntValue(Game.GetPlayer(), "_SLH_iBimbo")==0)
 		; try again later
     	RegisterForSingleUpdate( 10 )
 		Return
@@ -106,7 +124,8 @@ Event OnUpdateGameTime()
 	BimboActor= BimboAliasRef.GetReference() as Actor
 
 	; Safeguard - Evaluate the rest only when transformation happened
-	if (StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") == 0)
+	if (StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") == -1)
+    	RegisterForSingleUpdate( 10 )
 		Return
 	Endif
 
@@ -118,7 +137,7 @@ EndEvent
 
 Event OnActorAction(int actionType, Actor akActor, Form source, int slot)
 	; Safeguard - Exit if alias not set
-	if (Game.GetPlayer().GetActorBase().GetRace() != _SLH_BimboRace)
+	if (StorageUtil.GetIntValue(Game.GetPlayer(), "_SLH_iBimbo")==0)
 		;debug.trace("[slh+] bimbo OnActorAction, None")
 		Return
 	Endif
@@ -126,7 +145,7 @@ Event OnActorAction(int actionType, Actor akActor, Form source, int slot)
 	BimboActor= BimboAliasRef.GetReference() as Actor
 
 	; Safeguard - Evaluate the rest only when transformation happened
-	if (StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") == 0)
+	if (StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") == -1)
 		Return
 	Endif
 
@@ -138,7 +157,7 @@ EndEvent
 Event OnUpdate()
 	; Safeguard - Exit if alias not set
 
-	if (Game.GetPlayer().GetActorBase().GetRace() != _SLH_BimboRace)
+	if (StorageUtil.GetIntValue(Game.GetPlayer(), "_SLH_iBimbo")==0)
 		; Debug.Notification( "[SLH] Bimbo status update: " + StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") as Int )
 		Debug.Trace( "[SLH] Bimbo alias is None: " )
 		; try again later
@@ -152,8 +171,9 @@ Event OnUpdate()
 	BimboActor= BimboAliasRef.GetReference() as Actor
 
 	; Safeguard - Evaluate the rest only when transformation happened
-	if (StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") == 0)
+	if (StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") == -1)
 		; debug.trace("[slh+] bimbo OnUpdate, No TF Date")
+    	RegisterForSingleUpdate( 10 )
 		Return
 	Endif
 
@@ -259,7 +279,7 @@ Event OnUpdate()
             ; bimboDailyProgressiveTransformation(BimboActor, true) ;[mod]
             if (GV_isTG.GetValue() == 1) && (StorageUtil.GetFloatValue(BimboActor, "_SLH_fSchlong") <= fSchlongMax )  && ( daysSinceEnslavement < 5 )
                 ; StorageUtil.SetFloatValue(BimboActor, "_SLH_fSchlong", 0.1 + StorageUtil.GetFloatValue(BimboActor, "_SLH_fSchlong") * 1.2 ) 
-                fctBodyshape.alterBodyByPercent(BimboActor, "Schlong", -30.0)
+                fctBodyshape.alterBodyByPercent(BimboActor, "Schlong", 30.0)
                 BimboActor.SendModEvent("SLHRefresh")
 
             elseif (GV_isTG.GetValue() == 1) && (daysSinceEnslavement >= 5 )
@@ -292,14 +312,14 @@ EndEvent
 
 Event OnCombatStateChanged(Actor akTarget, int aeCombatState)
 	; Safeguard - Exit if alias not set
-	if (Game.GetPlayer().GetActorBase().GetRace() != _SLH_BimboRace)
+	if (StorageUtil.GetIntValue(Game.GetPlayer(), "_SLH_iBimbo")==0)
 		Return
 	Endif
 
 	BimboActor= BimboAliasRef.GetReference() as Actor
 
 	; Safeguard - Evaluate the rest only when transformation happened
-	if (StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") == 0)
+	if (StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") == -1)
 		Return
 	Endif
 	
@@ -348,14 +368,14 @@ EndEvent
 
 Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile, bool abPowerAttack, bool abSneakAttack, bool abBashAttack, bool abHitBlocked)
 	; Safeguard - Exit if alias not set
-	if (Game.GetPlayer().GetActorBase().GetRace() != _SLH_BimboRace)
+	if (StorageUtil.GetIntValue(Game.GetPlayer(), "_SLH_iBimbo")==0)
 		Return
 	Endif
 
 	BimboActor= BimboAliasRef.GetReference() as Actor
 
 	; Safeguard - Evaluate the rest only when transformation happened
-	if (StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") == 0)
+	if (StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") == -1)
 		Return
 	Endif
 	
@@ -406,14 +426,14 @@ EndEvent
 
 Event OnItemAdded(Form akBaseItem, int aiItemCount, ObjectReference akItemReference, ObjectReference akSourceContainer)
 	; Safeguard - Exit if alias not set
-	if (Game.GetPlayer().GetActorBase().GetRace() != _SLH_BimboRace)
+	if (StorageUtil.GetIntValue(Game.GetPlayer(), "_SLH_iBimbo")==0)
 		Return
 	Endif
 
 	BimboActor= BimboAliasRef.GetReference() as Actor
     
  	; Safeguard - Evaluate the rest only when transformation happened
-	if (StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") == 0)
+	if (StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") == -1)
 		Return
 	Endif
 	
@@ -799,9 +819,10 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 		showSchlongMessage = false
 	endif
 
-	Int iBimboHairColor = Math.LeftShift(255, 24) + Math.LeftShift(30, 16) + Math.LeftShift(80, 8) + 80
+	Int iBimboHairColor = Math.LeftShift(255, 24) + Math.LeftShift(92, 16) + Math.LeftShift(80, 8) + 80
 	StorageUtil.SetIntValue(BimboActor, "_SLH_iHairColor", iBimboHairColor ) 
-	BimboActor.SendModEvent("SLHRefresh")
+	debug.trace("[slh+] 	bimbo hair color: " + iBimboHairColor)
+	BimboActor.SendModEvent("SLHRefreshColor")
 
 	;level 1: permanent makeup
 	if (transformationLevel == 1) 
@@ -810,26 +831,26 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 		Debug.Notification("You feel a little tingling on your face.")
 		; SlaveTats.simple_add_tattoo(bimbo, "Bimbo", "Lipstick", color = 0x66FF0984, last = false, silent = true)
 		fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Lipstick", iColor = 0x66FF0984)
-		fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Eye Shadow", iColor = 0x99000000)
+		fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Eye Shadow", iColor = 0x99000000, bRefresh = True)
 
 	;level 2, nails, weak body (can drop weapons when hit)
 	elseif transformationLevel == 2
 		Debug.Notification("Your body feels weak and your boobs are sizzling.")
 		fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Feet Nails", iColor = 0x00FF0984 )
-		fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Hand Nails", iColor = 0x00FF0984 )
+		fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Hand Nails", iColor = 0x00FF0984, bRefresh = True )
 		fctBodyshape.alterBodyByPercent(bimbo, "Breast", 20.0)
 		isBimboFrailBody = true
 
 	;level 3: back tattoo, clumsy hands
 	elseif transformationLevel == 3
 		Debug.Notification("A naughty shiver runs down your back.")
-		fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Tramp Stamp" )
+		fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Tramp Stamp", bRefresh = True )
 		isBimboClumsyHands = true
 
 	;level 4: belly tattoo, bigger butt, clumsy legs
 	elseif transformationLevel == 4
 		Debug.Notification("Your butt feels bloated, your belly craves cock.")
-		fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Belly" )
+		fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Belly", bRefresh = True )
  
 		;butt
 		fButtMin = StorageUtil.GetFloatValue(bimbo, "_SLH_fButtMin")
@@ -861,7 +882,7 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 		if !isMale ;no schlong on the way
 			; SlaveTats.simple_add_tattoo(bimbo, "Bimbo", "Pubic Tattoo", last = true, silent = true)
 			Debug.Notification("Your pussy feels so hot and empty.")
-			fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Pubic Tattoo"  )
+			fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Pubic Tattoo", bRefresh = True  )
 		endif
 	endif
 
