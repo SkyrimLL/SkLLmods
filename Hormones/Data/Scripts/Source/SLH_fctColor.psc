@@ -36,57 +36,168 @@ GlobalVariable      Property GV_redShiftColor  			Auto
 GlobalVariable      Property GV_redShiftColorMod 		Auto
 GlobalVariable      Property GV_blueShiftColor 			Auto
 GlobalVariable      Property GV_blueShiftColorMod 		Auto
+GlobalVariable      Property GV_enableNiNodeOverride	Auto
 
-function alterColorsAfterRest(Actor kActor, float fSwellFactor)				
+
+function alterColorAfterRest(Actor kActor)				
 	int iSuccubus = StorageUtil.GetIntValue(kActor, "_SLH_iSuccubus") 
 	int iDaedricInfluence = StorageUtil.GetIntValue(kActor, "_SLH_iDaedricInfluence") 
 
-	; SKIN TONE =======================================================
+	Float fSwellFactor = StorageUtil.GetFloatValue(kActor, "_SLH_fSwellFactor") 
 
-	; Types
-	; 0 - Frekles
-	; 1 - Lips
-	; 2 - Cheeks
-	; 3 - Eyeliner
-	; 4 - Upper Eyesocket
-	; 5 - Lower Eyesocket
-	; 6 - SkinTone
-	; 7 - Warpaint
-	; 8 - Frownlines
-	; 9 - Lower Cheeks
-	; 10 - Nose
-	; 11 - Chin
-	; 12 - Neck
-	; 13 - Forehead
-	; 14 - Dirt
+	if (GV_useColors.GetValue() == 1)
+		debugTrace("[SLH]  Set color"  )
 
-	Float fColorOffset = ( fSwellFactor * 0.2 / 100.0 ) ; max 0.2 increments
-	Int rgbColorOffset = ( (fSwellFactor as Int) * 10 / 100 ) ; max 10 increments
-	debugTrace("[SLH]  fColorOffset: " + fColorOffset )
-	debugTrace("[SLH]  rgbColorOffset: " + rgbColorOffset )
+		; SKIN TONE =======================================================
 
-	; skin
-	; alterTintMask(type = 6, alpha = (255.0 * colorFactor) as Int, red = 236, green =194, blue = 184)
-	iRedSkinColor = Math.LeftShift(128, 24) + (GV_redShiftColor.GetValue() as Int)
-	iBlueSkinColor = Math.LeftShift(128, 24) + (GV_blueShiftColor.GetValue() as Int)
-	iSuccubusRedSkinColor = Math.LeftShift(255, 24) + (GV_redShiftColor.GetValue() as Int)
-	iSuccubusBlueSkinColor = Math.LeftShift(255, 24) + (GV_blueShiftColor.GetValue() as Int)
+		; Types
+		; 0 - Frekles
+		; 1 - Lips
+		; 2 - Cheeks
+		; 3 - Eyeliner
+		; 4 - Upper Eyesocket
+		; 5 - Lower Eyesocket
+		; 6 - SkinTone
+		; 7 - Warpaint
+		; 8 - Frownlines
+		; 9 - Lower Cheeks
+		; 10 - Nose
+		; 11 - Chin
+		; 12 - Neck
+		; 13 - Forehead
+		; 14 - Dirt
 
-	If ((iSuccubus == 1)  && (iDaedricInfluence>=10))
-		fColorOffset = fColorOffset * 5.0
-		rgbColorOffset = rgbColorOffset * 2
+		Float fColorOffset = ( fSwellFactor * 0.2 / 100.0 ) ; max 0.2 increments
+		Int rgbColorOffset = ( (fSwellFactor as Int) * 10 / 100 ) ; max 10 increments
+		debugTrace("[SLH]  fColorOffset: " + fColorOffset )
+		debugTrace("[SLH]  rgbColorOffset: " + rgbColorOffset )
+		
+		debug.trace("[slh+] 	bimbo hair color before offset: " + StorageUtil.GetIntValue(kActor, "_SLH_iHairColor") )
+
+		; skin
+		; alterTintMask(type = 6, alpha = (255.0 * colorFactor) as Int, red = 236, green =194, blue = 184)
+		iRedSkinColor = Math.LeftShift(128, 24) + (GV_redShiftColor.GetValue() as Int)
+		iBlueSkinColor = Math.LeftShift(128, 24) + (GV_blueShiftColor.GetValue() as Int)
+		iSuccubusRedSkinColor = Math.LeftShift(255, 24) + (GV_redShiftColor.GetValue() as Int)
+		iSuccubusBlueSkinColor = Math.LeftShift(255, 24) + (GV_blueShiftColor.GetValue() as Int)
+
+		If ((iSuccubus == 1)  && (iDaedricInfluence>=10))
+			fColorOffset = fColorOffset * 5.0
+			rgbColorOffset = rgbColorOffset * 2
+		EndIf
+
+		if (fSwellFactor > 0) ; Aroused
+			; skin
+			; alterTintMask(type = 6, alpha = (255.0 * colorFactor) as Int, red = 236, green =194, blue = 184)
+
+			; iSkinColor = alterTintMaskRelativeHSL(colorOrig = iOrigSkinColor, colorBase = iSkinColor, maskType = 6, maskIndex = 0, aOffset = rgbColorOffset, hOffset = 0.0, sOffset = 0.0, lOffset = -1.0 * fColorOffset  )
+			iSkinColor = alterTintMaskTarget(colorBase = iSkinColor, maskType = 6, maskIndex = 0, colorTarget = iOrigSkinColor, colorMod = 1.0/3.0 )
+
+			; If (fctUtil.isFemale(kActor))
+				; SkinColor only for now - issues with coloring of tattoos and other layers
+
+				; cheeks
+				; iCheeksColor = alterTintMaskRelativeRGB(colorBase = iCheeksColor, maskType = 9, maskIndex = 0, aOffset = rgbColorOffset, rOffset = rgbColorOffset, gOffset = 0, bOffset = 0)
+
+				; lips
+				; iLipsColor = alterTintMaskRelativeRGB(colorBase = iLipsColor, maskType = 1, maskIndex = 0, aOffset = rgbColorOffset, rOffset = rgbColorOffset * 2, gOffset = 0, bOffset = 0)
+
+				; Eyeliner 
+				; iEyelinerColor = alterTintMaskRelativeRGB(colorBase = iEyelinerColor, maskType = 3, maskIndex = 0, aOffset = rgbColorOffset, rOffset = -5, gOffset = -5, bOffset = -5)
+			; EndIf
+
+		ElseIf (fSwellFactor == 0) ; Healthy
+			; Coverge back to default skin color
+			iSkinColor = alterTintMaskTarget(colorBase = iSkinColor, maskType = 6, maskIndex = 0, colorTarget = iOrigSkinColor, colorMod = 1.0/3.0 )
+		Else ; Pale
+			; skin
+			; alterTintMask(type = 6, alpha = (-1.0 * 255.0 * colorFactor) as Int, red = 220, green =229, blue = 255)
+			; alterTintMaskRelativeHSL(maskType = 6, maskIndex = 0, aOffset = colorOffset as Int, hOffset = 0.0, sOffset = 0.0, lOffset = colorOffset * 0.05 )
+
+			; Coverge back to default skin color
+			If ((iSuccubus == 1) && (iDaedricInfluence>=20))
+				iSkinColor = alterTintMaskTarget(colorBase = iSkinColor, maskType = 6, maskIndex = 0, colorTarget = iSuccubusBlueSkinColor, colorMod = 1.0/4.0 * GV_redShiftColorMod.GetValue() )
+			Else
+				iSkinColor = alterTintMaskTarget(colorBase = iSkinColor, maskType = 6, maskIndex = 0, colorTarget = iBlueSkinColor, colorMod = 1.0/8.0  * GV_redShiftColorMod.GetValue())
+			EndIf
+
+			iSkinColor = alterTintMaskRelativeHSL(colorOrig = iOrigSkinColor, colorBase = iSkinColor, maskType = 6, maskIndex = 0, aOffset = rgbColorOffset, hOffset = 0.0, sOffset = 0.0, lOffset = fColorOffset )
+
+			; If (fctUtil.isFemale(kActor))
+				; cheeks
+				; iCheeksColor = alterTintMaskRelativeRGB(colorBase = iCheeksColor, maskType = 9, maskIndex = 0, aOffset = rgbColorOffset, rOffset = 0, gOffset = 0, bOffset = rgbColorOffset)
+
+				; lips
+				; iLipsColor = alterTintMaskRelativeRGB(colorBase = iLipsColor, maskType = 1, maskIndex = 0, aOffset = rgbColorOffset, rOffset = 0, gOffset = 0, bOffset = rgbColorOffset  )
+
+				; Eyeliner 
+				; iEyelinerColor = alterTintMaskRelativeRGB(colorBase = iEyelinerColor, maskType = 3, maskIndex = 0, aOffset = rgbColorOffset, rOffset = 5, gOffset = 0, bOffset = 0)
+			; EndIf
+		EndIf
+
+		debug.trace("[slh+] 	bimbo hair color after offset: " + StorageUtil.GetIntValue(kActor, "_SLH_iHairColor") )
+
 	EndIf
+endfunction
 
-	if (fSwellFactor > 0) ; Aroused
+function alterColorAfterSex(Actor kActor)				
+	int iSuccubus = StorageUtil.GetIntValue(kActor, "_SLH_iSuccubus") 
+	int iDaedricInfluence = StorageUtil.GetIntValue(kActor, "_SLH_iDaedricInfluence") 
+
+	Float fSwellFactor = StorageUtil.GetFloatValue(kActor, "_SLH_fSwellFactor") 
+
+	if (GV_useColors.GetValue() == 1)
+
+		; SKIN TONE =======================================================
+
+		; Types
+		; 0 - Frekles
+		; 1 - Lips
+		; 2 - Cheeks
+		; 3 - Eyeliner
+		; 4 - Upper Eyesocket
+		; 5 - Lower Eyesocket
+		; 6 - SkinTone
+		; 7 - Warpaint
+		; 8 - Frownlines
+		; 9 - Lower Cheeks
+		; 10 - Nose
+		; 11 - Chin
+		; 12 - Neck
+		; 13 - Forehead
+		; 14 - Dirt
+
+
+		Float fColorOffset = ( fSwellFactor * 0.4 / 100.0 ) ; max 0.2 increments
+		Int rgbColorOffset = ( (fSwellFactor as Int) * 20 / 100 ) ; max 10 increments
+		debugTrace("[SLH]  fColorOffset: " + fColorOffset )
+		debugTrace("[SLH]  rgbColorOffset: " + rgbColorOffset )
+		debug.trace("[slh+] 	bimbo hair color before offset: " + StorageUtil.GetIntValue(kActor, "_SLH_iHairColor") )
+
 		; skin
 		; alterTintMask(type = 6, alpha = (255.0 * colorFactor) as Int, red = 236, green =194, blue = 184)
 
-		; iSkinColor = alterTintMaskRelativeHSL(colorOrig = iOrigSkinColor, colorBase = iSkinColor, maskType = 6, maskIndex = 0, aOffset = rgbColorOffset, hOffset = 0.0, sOffset = 0.0, lOffset = -1.0 * fColorOffset  )
-		iSkinColor = alterTintMaskTarget(colorBase = iSkinColor, maskType = 6, maskIndex = 0, colorTarget = iOrigSkinColor, colorMod = 1.0/3.0 )
+		iRedSkinColor = Math.LeftShift(128, 24) + (GV_redShiftColor.GetValue() as Int)
+		iBlueSkinColor = Math.LeftShift(128, 24) + (GV_blueShiftColor.GetValue() as Int)
+		iSuccubusRedSkinColor = Math.LeftShift(255, 24) + (GV_redShiftColor.GetValue() as Int)
+		iSuccubusBlueSkinColor = Math.LeftShift(255, 24) + (GV_blueShiftColor.GetValue() as Int)
 
-		If (fctUtil.isFemale(kActor))
-			; SkinColor only for now - issues with coloring of tattoos and other layers
+		If ((iSuccubus == 1) && (iDaedricInfluence>=10))
+			fColorOffset = fColorOffset * 2.0
+			rgbColorOffset = rgbColorOffset * 2
+		EndIf
 
+		
+		; Coverge back to default skin color
+		If ((iSuccubus == 1) && (iDaedricInfluence>=20))
+			iSkinColor = alterTintMaskTarget(colorBase = iSkinColor, maskType = 6, maskIndex = 0, colorTarget = iSuccubusRedSkinColor, colorMod = 1.0/4.0 * GV_redShiftColorMod.GetValue() )
+		Else
+			iSkinColor = alterTintMaskTarget(colorBase = iSkinColor, maskType = 6, maskIndex = 0, colorTarget = iRedSkinColor, colorMod = 1.0/8.0 * GV_redShiftColorMod.GetValue() )
+		EndIf
+
+		iSkinColor = alterTintMaskRelativeHSL(colorOrig = iOrigSkinColor, colorBase = iSkinColor, maskType = 6, maskIndex = 0, aOffset = rgbColorOffset, hOffset = 0.0, sOffset = 0.0, lOffset = -1.0 * fColorOffset  )
+
+		; If (fctUtil.isFemale(kActor))
 			; cheeks
 			; iCheeksColor = alterTintMaskRelativeRGB(colorBase = iCheeksColor, maskType = 9, maskIndex = 0, aOffset = rgbColorOffset, rOffset = rgbColorOffset, gOffset = 0, bOffset = 0)
 
@@ -95,102 +206,10 @@ function alterColorsAfterRest(Actor kActor, float fSwellFactor)
 
 			; Eyeliner 
 			; iEyelinerColor = alterTintMaskRelativeRGB(colorBase = iEyelinerColor, maskType = 3, maskIndex = 0, aOffset = rgbColorOffset, rOffset = -5, gOffset = -5, bOffset = -5)
-		EndIf
+		; EndIf
 
-	ElseIf (fSwellFactor == 0) ; Healthy
-		; Coverge back to default skin color
-		iSkinColor = alterTintMaskTarget(colorBase = iSkinColor, maskType = 6, maskIndex = 0, colorTarget = iOrigSkinColor, colorMod = 1.0/3.0 )
-	Else ; Pale
-		; skin
-		; alterTintMask(type = 6, alpha = (-1.0 * 255.0 * colorFactor) as Int, red = 220, green =229, blue = 255)
-		; alterTintMaskRelativeHSL(maskType = 6, maskIndex = 0, aOffset = colorOffset as Int, hOffset = 0.0, sOffset = 0.0, lOffset = colorOffset * 0.05 )
-
-		; Coverge back to default skin color
-		If ((iSuccubus == 1) && (iDaedricInfluence>=20))
-			iSkinColor = alterTintMaskTarget(colorBase = iSkinColor, maskType = 6, maskIndex = 0, colorTarget = iSuccubusBlueSkinColor, colorMod = 1.0/4.0 * GV_redShiftColorMod.GetValue() )
-		Else
-			iSkinColor = alterTintMaskTarget(colorBase = iSkinColor, maskType = 6, maskIndex = 0, colorTarget = iBlueSkinColor, colorMod = 1.0/8.0  * GV_redShiftColorMod.GetValue())
-		EndIf
-
-		iSkinColor = alterTintMaskRelativeHSL(colorOrig = iOrigSkinColor, colorBase = iSkinColor, maskType = 6, maskIndex = 0, aOffset = rgbColorOffset, hOffset = 0.0, sOffset = 0.0, lOffset = fColorOffset )
-
-		If (fctUtil.isFemale(kActor))
-			; cheeks
-			; iCheeksColor = alterTintMaskRelativeRGB(colorBase = iCheeksColor, maskType = 9, maskIndex = 0, aOffset = rgbColorOffset, rOffset = 0, gOffset = 0, bOffset = rgbColorOffset)
-
-			; lips
-			; iLipsColor = alterTintMaskRelativeRGB(colorBase = iLipsColor, maskType = 1, maskIndex = 0, aOffset = rgbColorOffset, rOffset = 0, gOffset = 0, bOffset = rgbColorOffset  )
-
-			; Eyeliner 
-			; iEyelinerColor = alterTintMaskRelativeRGB(colorBase = iEyelinerColor, maskType = 3, maskIndex = 0, aOffset = rgbColorOffset, rOffset = 5, gOffset = 0, bOffset = 0)
-		EndIf
-	EndIf
-
-endfunction
-
-function alterColorsAfterSex(Actor kActor, float fSwellFactor)				
-	int iSuccubus = StorageUtil.GetIntValue(kActor, "_SLH_iSuccubus") 
-	int iDaedricInfluence = StorageUtil.GetIntValue(kActor, "_SLH_iDaedricInfluence") 
-
-	; SKIN TONE =======================================================
-
-	; Types
-	; 0 - Frekles
-	; 1 - Lips
-	; 2 - Cheeks
-	; 3 - Eyeliner
-	; 4 - Upper Eyesocket
-	; 5 - Lower Eyesocket
-	; 6 - SkinTone
-	; 7 - Warpaint
-	; 8 - Frownlines
-	; 9 - Lower Cheeks
-	; 10 - Nose
-	; 11 - Chin
-	; 12 - Neck
-	; 13 - Forehead
-	; 14 - Dirt
-
-
-	Float fColorOffset = ( fSwellFactor * 0.4 / 100.0 ) ; max 0.2 increments
-	Int rgbColorOffset = ( (fSwellFactor as Int) * 20 / 100 ) ; max 10 increments
-	debugTrace("[SLH]  fColorOffset: " + fColorOffset )
-	debugTrace("[SLH]  rgbColorOffset: " + rgbColorOffset )
-
-	; skin
-	; alterTintMask(type = 6, alpha = (255.0 * colorFactor) as Int, red = 236, green =194, blue = 184)
-
-	iRedSkinColor = Math.LeftShift(128, 24) + (GV_redShiftColor.GetValue() as Int)
-	iBlueSkinColor = Math.LeftShift(128, 24) + (GV_blueShiftColor.GetValue() as Int)
-	iSuccubusRedSkinColor = Math.LeftShift(255, 24) + (GV_redShiftColor.GetValue() as Int)
-	iSuccubusBlueSkinColor = Math.LeftShift(255, 24) + (GV_blueShiftColor.GetValue() as Int)
-
-	If ((iSuccubus == 1) && (iDaedricInfluence>=10))
-		fColorOffset = fColorOffset * 2.0
-		rgbColorOffset = rgbColorOffset * 2
-	EndIf
-
-	
-	; Coverge back to default skin color
-	If ((iSuccubus == 1) && (iDaedricInfluence>=20))
-		iSkinColor = alterTintMaskTarget(colorBase = iSkinColor, maskType = 6, maskIndex = 0, colorTarget = iSuccubusRedSkinColor, colorMod = 1.0/4.0 * GV_redShiftColorMod.GetValue() )
-	Else
-		iSkinColor = alterTintMaskTarget(colorBase = iSkinColor, maskType = 6, maskIndex = 0, colorTarget = iRedSkinColor, colorMod = 1.0/8.0 * GV_redShiftColorMod.GetValue() )
-	EndIf
-
-	iSkinColor = alterTintMaskRelativeHSL(colorOrig = iOrigSkinColor, colorBase = iSkinColor, maskType = 6, maskIndex = 0, aOffset = rgbColorOffset, hOffset = 0.0, sOffset = 0.0, lOffset = -1.0 * fColorOffset  )
-
-	If (fctUtil.isFemale(kActor))
-		; cheeks
-		; iCheeksColor = alterTintMaskRelativeRGB(colorBase = iCheeksColor, maskType = 9, maskIndex = 0, aOffset = rgbColorOffset, rOffset = rgbColorOffset, gOffset = 0, bOffset = 0)
-
-		; lips
-		; iLipsColor = alterTintMaskRelativeRGB(colorBase = iLipsColor, maskType = 1, maskIndex = 0, aOffset = rgbColorOffset, rOffset = rgbColorOffset * 2, gOffset = 0, bOffset = 0)
-
-		; Eyeliner 
-		; iEyelinerColor = alterTintMaskRelativeRGB(colorBase = iEyelinerColor, maskType = 3, maskIndex = 0, aOffset = rgbColorOffset, rOffset = -5, gOffset = -5, bOffset = -5)
-	EndIf
-
+		debug.trace("[slh+] 	bimbo hair color after offset: " + StorageUtil.GetIntValue(kActor, "_SLH_iHairColor") )
+	Endif
 endfunction
 
 function alterSkinToOrigin(Actor kActor = None, float fSwellFactor = 0.125)		
@@ -228,7 +247,8 @@ function alterTintMask(int type = 6, int alpha = 0, int red = 125, int green = 9
 EndFunction
 
 function setTintMask(int type = 6, int rgbacolor = 0, int setIndex = 0, Bool setAll = False)
- 
+  	Int slotMask
+  	Actor kPlayer = Game.GetPlayer()
 	; Sets the tintMask color for the particular type and index
 	; r,g,b,a: 0-255 range
 
@@ -251,7 +271,16 @@ function setTintMask(int type = 6, int rgbacolor = 0, int setIndex = 0, Bool set
 
 	; int color = Math.LeftShift(alpha, 24) + Math.LeftShift(red, 16) + Math.LeftShift(green, 8) + blue
 	; int color = Math.LogicalOr(Math.LogicalAnd(rgb, 0xFFFFFF), Math.LeftShift((alpha * 255) as Int, 24))
-	setTintMaskColor(itype = type, irgbacolor = rgbacolor, isetIndex = setIndex, bsetAll = setAll)
+
+	if (type == 6) ; Skin
+		; Function AddSkinOverrideInt(ObjectReference ref, bool isFemale, bool firstPerson, int slotMask, int key, int index, int value, bool persist) native global
+		slotMask = 0
+
+		NiOverride.AddSkinOverrideInt(kPlayer as ObjectReference, fctUtil.isFemale(kPlayer), True, slotMask, 0, 7, rgbacolor, True)
+		; Game.SetTintMaskColor(rgbacolor, 6, 0)
+	else
+		setTintMaskColor(itype = type, irgbacolor = rgbacolor, isetIndex = setIndex, bsetAll = setAll)
+	endif
 
 EndFunction
 
@@ -524,7 +553,7 @@ EndFunction
 
 ; STAddTattoo(Form _form, String _section, String _name, int _color, bool _last, bool _silent, int _glowColor, bool _gloss, bool _lock): add a tattoo with more parameters, including glow, gloss (use it to apply makeup, looks much better) and locked tattoos.
 
-function sendSlaveTatModEvent(actor akActor, string sType, string sTatooName, int iColor = 0x99000000)
+function sendSlaveTatModEvent(actor akActor, string sType, string sTatooName, int iColor = 0x99000000, bool bRefresh = False)
 	; SlaveTats.simple_add_tattoo(bimbo, "Bimbo", "Tramp Stamp", last = false, silent = true)
   	int STevent = ModEvent.Create("STSimpleAddTattoo")  
 
@@ -533,7 +562,7 @@ function sendSlaveTatModEvent(actor akActor, string sType, string sTatooName, in
         ModEvent.PushString(STevent, sType)    	; String - type of tattoo?
         ModEvent.PushString(STevent, sTatooName)  	; String - name of tattoo
         ModEvent.PushInt(STevent, iColor)  			; Int - color
-        ModEvent.PushBool(STevent, false)        	; Bool - last = false
+        ModEvent.PushBool(STevent, bRefresh)        	; Bool - last = false
         ModEvent.PushBool(STevent, true)         	; Bool - silent = true
 
         ModEvent.Send(STevent)
@@ -588,6 +617,8 @@ function initColorState(Actor kActor)
 	color = pLeveledActorBase.GetHairColor()
 	iOrigHairColor = colorFormtoRGBA (color)
 	iHairColor = iOrigHairColor
+
+	setColorState(kActor)
 
 endFunction
 
@@ -678,62 +709,63 @@ function refreshColors(Actor kActor)
  	ColorForm color
 
 
+ 	Debug.Trace("[SLH] Hair Color in storage: " + 	StorageUtil.GetIntValue(kActor, "_SLH_iHairColor") )
+ 	Debug.Trace("[SLH] - Original Hair Color in storage: " + 	StorageUtil.GetIntValue(kActor, "_SLH_iOrigHairColor") )
+ 	Debug.Trace("[SLH] - Current Hair Color: " + 	colorFormtoRGBA (pLeveledActorBase.GetHairColor()))
+
 	if (GV_useColors.GetValue() == 1)
 		getColorState(kActor)
 
 		If (iSkinColor == 0)
-			iSkinColor = Game.GetTintMaskColor(6,0)
-		Else
-			setTintMask(6,iSkinColor)
+			iSkinColor = iOrigSkinColor ; Game.GetTintMaskColor(6,0)
 		EndIf
+			setTintMask(6,iSkinColor)
 
 		If (iCheeksColor == 0)
-			iCheeksColor = Game.GetTintMaskColor(9,0)
-		Else
-			setTintMask(9,iCheeksColor)
+			iCheeksColor = iOrigCheeksColor ; Game.GetTintMaskColor(9,0)
 		EndIf
+		;	setTintMask(9,iCheeksColor)
 
 		If (iLipsColor == 0)
-			iLipsColor = Game.GetTintMaskColor(1,0)
-		Else
-			setTintMask(1,iLipsColor)
+			iLipsColor = iOrigLipsColor ; Game.GetTintMaskColor(1,0)
 		EndIf
-
+		;	setTintMask(1,iLipsColor)
+ 
 		If (iEyelinerColor  == 0)
-			iEyelinerColor = Game.GetTintMaskColor(3,0)
-		Else
-			setTintMask(3,iEyelinerColor)
+			iEyelinerColor = iOrigEyelinerColor ; Game.GetTintMaskColor(3,0)
 		EndIf
-
+		;	setTintMask(3,iEyelinerColor)
+ 
 		if (iHairColor == 0)
-			color = pLeveledActorBase.GetHairColor()
-			iHairColor = colorFormtoRGBA (color)
+			; thisHairColor =  pLeveledActorBase.GetHairColor()
+			iHairColor = iOrigHairColor ; colorFormtoRGBA (thisHairColor)
 		endIf
 		
 		thisHairColor.SetColor(iHairColor)
 		pLeveledActorBase.SetHairColor(thisHairColor)
+		iHairColor = colorFormtoRGBA (thisHairColor)
 
 		setColorState( kActor)
 	EndIf
 
 endFunction
 
-function getColorsFromSkin(Actor kActor)
+function getColorFromSkin(Actor kActor)
 	ActorBase pLeveledActorBase = Game.GetPlayer().GetLeveledActorBase()
 	ColorForm color
 
 	if (GV_useColors.GetValue() == 1)
 		iSkinColor = Game.GetTintMaskColor(6,0)
-		setTintMask(6,iSkinColor)
+		; setTintMask(6,iSkinColor)
 
 		iCheeksColor = Game.GetTintMaskColor(9,0)
-		setTintMask(9,iCheeksColor)
+		; setTintMask(9,iCheeksColor)
 
 		iLipsColor = Game.GetTintMaskColor(1,0)
-		setTintMask(1,iLipsColor)
+		; setTintMask(1,iLipsColor)
 
 		iEyelinerColor = Game.GetTintMaskColor(3,0)
-		setTintMask(3,iEyelinerColor)
+		; setTintMask(3,iEyelinerColor)
 
 		color = pLeveledActorBase.GetHairColor()
 		iHairColor = colorFormtoRGBA (color)
@@ -746,15 +778,18 @@ endFunction
 
 function applyColorChanges(Actor kActor)
 	if (GV_useColors.GetValue() == 1)
-	 	If SKSE.GetPluginVersion("NiOverride") >= 1
+	 	If (SKSE.GetPluginVersion("NiOverride") >= 1) && (GV_enableNiNodeOverride.GetValue()==1)
 	 		debugTrace("[SLH]  Applying NiOverride")
 		 	NiOverride.ApplyOverrides(kActor)
 	 		NiOverride.ApplyNodeOverrides(kActor)
 	 	Endif
 
-		; Game.UpdateHairColor()
-		debugTrace("[SLH]  Updating TintMaskColors")
-		Game.UpdateTintMaskColors()
+	 	; Deprecated? Trying NiO functions as alternative for Tint Masks
+	 	;	- Issues with tint Mask colors 'bleeding' into other areas (skin color -> hair)
+
+		Game.UpdateHairColor()
+		; debugTrace("[SLH]  Updating TintMaskColors")
+		; Game.UpdateTintMaskColors()
 	EndIf
 endFunction
 

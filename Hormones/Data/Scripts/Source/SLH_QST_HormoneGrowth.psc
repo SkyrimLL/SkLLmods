@@ -136,12 +136,23 @@ Function doInit()
 	NextAllowed = -1.0
 	; initHormones()
 
+	; Debug.Notification("SexLab Hormones: Init: " + bInit)
+	if !bInit
+		initHormones()
+	EndIf
 EndFunction
 
 Function Maintenance()
 	PlayerREF= PlayerAlias.GetReference()
 	PlayerActor= PlayerREF as Actor
 	pActorBase = PlayerActor.GetActorBase()
+
+
+	; Debug.Notification("SexLab Hormones: Init: " + bInit)
+	if !bInit
+		Debug.Trace("SexLab Hormones: Init: " + bInit)
+		initHormones()
+	EndIf
 
 	; Debug.Notification("[SLH] PlayerAlias: " + PlayerAlias)
 	; Debug.Notification("[SLH] PlayerREF: " + PlayerREF)
@@ -150,30 +161,44 @@ Function Maintenance()
 
 	StorageUtil.SetIntValue(none, "_SLH_debugTraceON", 1)
 
-	If (!StorageUtil.HasIntValue(none, "_SLH_iHormones"))
+	; If (!StorageUtil.HasIntValue(none, "_SLH_iHormones"))
 		; StorageUtil.SetIntValue(none, "_SLH_iHormones", 1)
-		Return
-	EndIf
+	;	Return
+	; EndIf
 
 	maintenanceVersionEvents()
+	NextAllowed = -1.0
 
 	; Loading shape and hormone state
-	getHormonesState(PlayerActor)	
 	fctBodyShape.initShapeConstants(PlayerActor)
 	fctColor.initColorConstants(PlayerActor)
+
+	If (iGameDateLastSex  == -1)  ; Variable never set - initialize state
+		; Debug.Notification("SexLab Hormones: iGameDateLastSex: " + iGameDateLastSex)
+		initHormonesState(PlayerActor)
+	EndIf
 
 	registerNewRacesForHair( VanillaHairRaceList  )
 	registerNewRacesForHair( CustomHairRaceList  )
 	registerNewRacesForHair( HumanRaceList  )
 
-	; Debug.Notification("[Hormones] s:" + iSexCountToday + " - v:" + iVaginalCountToday + " - a:" + iAnalCountToday + " - o:" + iOralCountToday)
+	; setHormonesState(PlayerActor)	
+	fctBodyShape.getShapeState(PlayerActor)
+	fctColor.getColorState(PlayerActor)
 
-	If (iGameDateLastSex  == 0)  ; Variable never set - initialize state
-		initHormonesState(PlayerActor)
+	fctColor.alterSkinToOrigin(PlayerActor)
+
+	fctBodyShape.refreshBodyShape(PlayerActor)
+	fctColor.refreshColors(PlayerActor)
+	setHormonesState(PlayerActor)
+
+	If (GV_shapeUpdateOnCellChange.GetValue()==1)
+		fctColor.applyColorChanges(PlayerActor)
+		fctBodyShape.applyBodyShapeChanges(PlayerActor)
 	EndIf
 
-	fctColor.refreshColors(PlayerActor)
-	NextAllowed = -1.0
+	; Debug.Notification("[Hormones] s:" + iSexCountToday + " - v:" + iVaginalCountToday + " - a:" + iAnalCountToday + " - o:" + iOralCountToday)
+
 
  	daysPassed = Game.QueryStat("Days Passed")
 
@@ -192,8 +217,8 @@ Function Maintenance()
 EndFunction
 
 Function maintenanceVersionEvents()
-	Float fVersionNumber = 2.022
-	String sVersion = "2015-10-10 v " + fVersionNumber
+	Float fVersionNumber = 2.4
+	String sVersion = "2016-07-01 v " + fVersionNumber
 	PlayerREF= PlayerAlias.GetReference()
 	PlayerActor= PlayerREF as Actor
 	pActorBase = PlayerActor.GetActorBase()
@@ -207,10 +232,14 @@ Function maintenanceVersionEvents()
 	
 	UnregisterForAllModEvents()
 	debugTrace("[SLH]  Reset SexLab events")
-	RegisterForModEvent("AnimationStart", "OnSexLabStart")
+	; RegisterForModEvent("AnimationStart", "OnSexLabStart")
 	RegisterForModEvent("AnimationEnd",   "OnSexLabEnd")
 	RegisterForModEvent("OrgasmStart",    "OnSexLabOrgasm")
+
+
+	RegisterForModEvent("SLHShaveHead",   "OnShaveHead")
 	RegisterForModEvent("SLHRefresh",    "OnRefreshShapeEvent")
+	RegisterForModEvent("SLHRefreshColors",    "OnRefreshColorsEvent")
 	RegisterForModEvent("SLHSetShape",    "OnSetShapeEvent")
 	RegisterForModEvent("SLHResetShape",    "OnResetShapeEvent")
 	RegisterForModEvent("SLHSetSchlong",    "OnSetSchlongEvent")
@@ -239,14 +268,12 @@ Function maintenanceVersionEvents()
 
 	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fManualWeightChange",  -1)
 
-	; Hormones 2.0.3 - Transition to storageUtil config variables for curss
-	If (!StorageUtil.HasIntValue(PlayerActor, "_SLH_allowTG"))
-		StorageUtil.SetIntValue(PlayerActor, "_SLH_allowTG", GV_allowTG.GetValue() as Int)
-		StorageUtil.SetIntValue(PlayerActor, "_SLH_allowHRT", GV_allowHRT.GetValue() as Int)
-		StorageUtil.SetIntValue(PlayerActor, "_SLH_allowBimbo", GV_allowBimbo.GetValue() as Int)
-		StorageUtil.SetIntValue(PlayerActor, "_SLH_allowSuccubus", GV_allowSuccubus.GetValue() as Int)
-		StorageUtil.SetIntValue(PlayerActor, "_SLH_allowSelfSpells", GV_allowSelfSpells.GetValue() as Int)
-	EndIf
+	StorageUtil.SetIntValue(PlayerActor, "_SLH_allowTG", GV_allowTG.GetValue() as Int)
+	StorageUtil.SetIntValue(PlayerActor, "_SLH_allowHRT", GV_allowHRT.GetValue() as Int)
+	StorageUtil.SetIntValue(PlayerActor, "_SLH_allowBimbo", GV_allowBimbo.GetValue() as Int)
+	StorageUtil.SetIntValue(PlayerActor, "_SLH_allowSuccubus", GV_allowSuccubus.GetValue() as Int)
+	StorageUtil.SetIntValue(PlayerActor, "_SLH_allowSelfSpells", GV_allowSelfSpells.GetValue() as Int)
+
 
 	RegisterForSleep()
 	RegisterForSingleUpdate(5)
@@ -262,7 +289,7 @@ function initHormones()
 
 	StorageUtil.SetIntValue(none, "_SLH_debugTraceON", 1)
 
-	If (!StorageUtil.HasIntValue(none, "_SLH_iHormones"))
+	If (StorageUtil.GetIntValue(none, "_SLH_iHormones")!=1)
 		StorageUtil.SetIntValue(none, "_SLH_iHormones", 1)
 	EndIf
 
@@ -281,16 +308,16 @@ function initHormones()
 	fctBodyShape.initShapeConstants(PlayerActor)
 	fctColor.initColorConstants(PlayerActor)
 
-
 	initHormonesState(PlayerActor)
 
-	setHormonesState(PlayerActor)	
+	setHormonesState(PlayerActor)	; set storageUtil variables from init values
 	getHormonesState(PlayerActor)	
 
 	StorageUtil.SetIntValue(PlayerActor, "Puppet_SpellON", -1)
 	StorageUtil.SetIntValue(PlayerActor, "PSQ_SpellON", -1)
 
 	fctBodyShape.alterBodyAfterRest(PlayerActor)
+	fctColor.alterColorAfterRest(PlayerActor)
 	traceStatus()
 
 	iOrgasmsCountToday   = 0
@@ -298,6 +325,9 @@ function initHormones()
 	iOralCountToday   = 0
 	iAnalCountToday   = 0
 	iVaginalCountToday   = 0
+
+    StorageUtil.SetIntValue(PlayerActor, "_SLH_bimboTransformDate", -1)
+
 
 	maintenanceVersionEvents()
 
@@ -313,16 +343,7 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 	fRefreshAfterSleep = (afDesiredSleepEndTime - afSleepStartTime)
 	Debug.Trace("SexLab Hormones: fRefreshAfterSleep: " + fRefreshAfterSleep)
 endEvent
-
-Event OnSleepStop(bool abInterrupted)
-
-	if abInterrupted
-	    ; Debug.Trace("Player was woken by something!")
-	else
-	    ; Debug.Trace("Player woke up naturally")
-	endIf
-
-endEvent
+ 
 
 Event OnUpdate()
 	PlayerREF= PlayerAlias.GetReference()
@@ -354,11 +375,6 @@ Event OnUpdate()
 	
 	; Modifiers for each part - on update in case they were modified in MCM
 	; fctBodyShape.refreshGlobalValues()
-
-	; Debug.Notification("SexLab Hormones: Init: " + bInit)
-	if !bInit
-		initHormones()
-	EndIf
 
  	daysPassed = Game.QueryStat("Days Passed")
  
@@ -417,12 +433,15 @@ Event OnUpdate()
 		; Check if body modifications are applicable
 			
 		fctBodyShape.getShapeState(PlayerActor)
+		fctColor.getColorState(PlayerActor)
 
-		If ( fctUtil.isExternalChangeModActive(PlayerActor) )
+		If bExternalChangeModActive
 			fctBodyShape.getShapeFromNodes(PlayerActor)
+			fctColor.getColorFromSkin(PlayerActor)
 		EndIf
 
 		fctBodyShape.alterBodyAfterRest(PlayerActor)
+		fctColor.alterColorAfterRest(PlayerActor)
 		setHormonesState(PlayerActor)	
 		traceStatus()
 
@@ -433,16 +452,17 @@ Event OnUpdate()
 		iVaginalCountToday   = 0
 
 		If !( bExternalChangeModActive ) && (NextAllowed!= -1) && (GV_shapeUpdateOnTimer.GetValue()==1)
+			fctColor.applyColorChanges(PlayerActor)
 			fctBodyShape.applyBodyShapeChanges(PlayerActor)
 		EndIf
 
 	Else
 		RandomNum = Utility.RandomInt(0,100)
-		If (RandomNum>90)
+		; If (RandomNum>90)
 			; debugTrace("[SLH]  Today: Sex acts: " + iSexCountToday + " - Orgasms: " + iOrgasmsCountToday)
 			; debugTrace("[SLH]  Sex dates: " + Game.QueryStat("Days Passed") + " - " + iGameDateLastSex + " = " + iDaysSinceLastSex)
 			; debugTrace("[SLH]  Check dates: " + Game.QueryStat("Days Passed") + " - " + iGameDateLastCheck + " = " + iDaysSinceLastCheck)
-		EndIf
+		; EndIf
 
 		; Debug.Notification("[Hormones] Next: " + NextAllowed)
 		; Debug.Notification("[Hormones] Day passed stat: " +  Game.QueryStat("Days Passed"))
@@ -507,6 +527,7 @@ Event OnUpdate()
 			; _setHormonesState(PlayerActor)
 
 			; If !( fctUtil.isExternalChangeModActive(PlayerActor) )
+				fctColor.applyColorChanges(PlayerActor)
 				fctBodyShape.applyBodyShapeChanges(PlayerActor)
 			; EndIf
 
@@ -521,6 +542,7 @@ Event OnUpdate()
 
 				; Refreshing values in case of any external change from other mods
 				fctBodyShape.getShapeFromNodes(PlayerActor)
+				fctColor.getColorFromSkin(PlayerActor)
 				; refreshBodyShape(PlayerActor)
 				setHormonesState(PlayerActor)
 
@@ -534,6 +556,7 @@ Event OnUpdate()
 				; Refreshing values in case of any external change from other mods
 				; fctBodyShape.getShapeState(bUseNodes = True)
 				fctBodyShape.getShapeState(PlayerActor)
+				fctColor.getColorState(PlayerActor)
 
 				fctColor.alterSkinToOrigin(PlayerActor)
 
@@ -542,7 +565,8 @@ Event OnUpdate()
 				setHormonesState(PlayerActor)
 
 				If (GV_shapeUpdateOnCellChange.GetValue()==1)
-					fctBodyShape.applyBodyShapeChanges(PlayerActor)
+					fctColor.applyColorChanges(PlayerActor)
+				;	fctBodyShape.applyBodyShapeChanges(PlayerActor)
 				EndIf
 
 				; Debug.Notification("SexLab Hormones: After: " + fBelly + " from " + NetImmerse.GetNodeScale(PlayerActor, NINODE_BELLY, false) )
@@ -586,6 +610,7 @@ Event OnCastHRTCurseEvent(String _eventName, String _args, Float _argc = 1.0, Fo
 	debugTrace("[SLH] Cast HRT Curse event" )	  
 	; PolymorphBimbo.Cast(PlayerActor,PlayerActor)
 	fctPolymorph.HRTEffectON(kActor)
+    Game.ShowRaceMenu()
 
 endEvent
 
@@ -595,7 +620,8 @@ Event OnCureHRTCurseEvent(String _eventName, String _args, Float _argc = 1.0, Fo
 	debugTrace("[SLH] Cure HRT Curse event" )	  
 
 	fctPolymorph.HRTEffectOFF(kActor)
- 	
+     Game.ShowRaceMenu()
+	
 endEvent
 
 Event OnCastTGCurseEvent(String _eventName, String _args, Float _argc = 1.0, Form _sender)
@@ -619,35 +645,29 @@ endEvent
 Event OnRefreshShapeEvent(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
 
-	bExternalChangeModActive = fctUtil.isExternalChangeModActive(kActor)
-
-	debugTrace("[SLH] Updating shape" )
 	debugTrace("[SLH] Receiving 'refresh shape' event. Actor: " + kActor )
 
-	If ( StorageUtil.GetIntValue(kActor, "_SLH_iForcedHairLoss") == 1)
-		debugTrace("[SLH] Detected forced hair change")
-		fctBodyShape.shaveHair(kActor)		
-		StorageUtil.SetIntValue(kActor, "_SLH_iForcedHairLoss", 0) 
-	Endif
-
-	fctBodyShape.getShapeState(kActor)
-	fctColor.getColorState(kActor)
-
-	Utility.Wait(1.0)
-
-	fctBodyShape.refreshBodyShape(kActor)
-	fctColor.refreshColors(kActor)
-	setHormonesState(kActor)
-
-	If !( bExternalChangeModActive ) && (NextAllowed!= -1)
-		fctBodyShape.applyBodyShapeChanges(kActor)
-	EndIf
-	
-	StorageUtil.SetIntValue(kActor, "_SLH_iForcedRefresh", 0) 
-	GV_forcedRefresh.SetValue(0)
-
+	refreshShape(kActor)
 	
 EndEvent
+
+Event OnRefreshColorsEvent(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+ 
+	debugTrace("[SLH] Receiving 'refresh colors' event. Actor: " + kActor )
+
+	refreshColor(kActor)
+EndEvent
+
+Event OnShaveHead(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+		
+	debugTrace("[SLH] Detected forced hair change")
+	fctBodyShape.shaveHair(kActor)		
+	StorageUtil.SetIntValue(kActor, "_SLH_iForcedHairLoss", 0) 
+
+EndEvent
+
 
 Event OnSetShapeEvent(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
@@ -685,30 +705,6 @@ Event OnRemoveSchlongEvent(String _eventName, String _args, Float _argc = 1.0, F
 	
 EndEvent
 
-Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
-	if !Self || !SexLab 
-		debugTrace("[SLH] Critical error on SexLab Start")
-		Return
-	EndIf
-	
-	; Debug.Notification("SexLab Hormones: Sex start")
-
-	; Actor[] actors = SexLab.HookActors(_args)
-	; Actor   victim = SexLab.HookVictim(_args)
-	; Actor[] victims = new Actor[1]
-	; victims[0] = victim
-	
-	
-	; If victim	;none consensual
-		;
-
-	; Else        ;consensual
-		;
-		
-	; EndIf
-
-
-EndEvent
 
 Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 	PlayerREF= PlayerAlias.GetReference()
@@ -739,13 +735,13 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 	If (fctUtil.hasPlayer(actors))
 	    debugTrace("[SLH]  Sex end: " + animation.name)
 
-		If victim  ;none consensual
+		; If victim  ;none consensual
 			;
 	
-		Else  ;consensual
+		; Else  ;consensual
 			;
 	
-		EndIf
+		; EndIf
 
 		; Manage orgasms count ==================================================
 		If (iGameDateLastSex  == 0) 
@@ -926,11 +922,16 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 		If (bOral || bVaginal || bAnal)
 			; Refreshing values in case of any external change from other mods
 			fctBodyShape.getShapeState(PlayerActor)
+			fctColor.getColorState(PlayerActor)
+
 	    	fctBodyShape.alterBodyAfterSex(PlayerActor, bOral, bVaginal, bAnal )
+	    	fctColor.alterColorAfterSex(PlayerActor )
+
 			setHormonesState(PlayerActor)	
 			traceStatus()
 
 			If !( fctUtil.isExternalChangeModActive(PlayerActor) ) && (GV_shapeUpdateAfterSex.GetVAlue() == 1)
+				fctColor.applyColorChanges(PlayerActor)
 				fctBodyShape.applyBodyShapeChanges(PlayerActor)
 			EndIf
 		Else
@@ -950,10 +951,11 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 
 	    ; Test if kPervert is in actors[] - small chance of repeat from current partner
 
-		actor kPervert = SexLab.FindAvailableActor(PlayerActor as ObjectReference, 200.0)  
+		actor kPervert = none
 
 		If (GV_allowBimbo.GetValue()==1) || (GV_allowHRT.GetValue()==1) || (GV_allowTG.GetValue()==1) 
 			If fctUtil.hasRace(actors, _SLH_BimboRace)
+				debugTrace("[SLH] Sex with Bimbo - risk of bimbo/sex change curse")
 				actor kBimbo = fctUtil.getRaceActor(actors, _SLH_BimboRace)
 				kPervert = None ; Disable pervert when transformation occurs
 
@@ -965,15 +967,18 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 
 				if fctUtil.isSameSex(PlayerActor,kBimbo)
 					if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo") == 0) && (GV_allowBimbo.GetValue()==1)						
+						debugTrace("[SLH]	 Casting Bimbo curse")
 						PlayerActor.SendModEvent("SLHCastBimboCurse")
 						_SLH_QST_Bimbo.SetStage(10)
 					endIf
 				else
 					if (Utility.RandomInt(0,100)>60) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo") == 0) && (GV_allowBimbo.GetValue()==1)													
+						debugTrace("[SLH]	 Casting Bimbo curse")
 						PlayerActor.SendModEvent("SLHCastBimboCurse")
 						_SLH_QST_Bimbo.SetStage(10)
 
 					elseif (StorageUtil.GetIntValue(PlayerActor, "_SLH_iTG") == 0) && (GV_allowTG.GetValue()==1)									
+						debugTrace("[SLH]	 Casting TG curse")
 						PlayerActor.SendModEvent("SLHCastTGCurse")
 						_SLH_QST_Bimbo.SetStage(10)
 					endIf
@@ -982,6 +987,7 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 			elseIf fctUtil.hasRace(actors, _SLH_DremoraOutcastRace) && (Utility.RandomInt(0,100)>60)
 				actor kDremora = fctUtil.getRaceActor(actors, _SLH_DremoraOutcastRace)
 				kPervert = None ; Disable pervert when transformation occurs
+				debugTrace("[SLH] Sex with Dremora - risk of bimbo/sex change curse")
 
 				; PolymorphBimbo.Cast(PlayerActor,PlayerActor)
 				; PlayerActor.DoCombatSpellApply(_SLH_PolymorphBimbo, PlayerActor)
@@ -989,34 +995,51 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 				; _SLH_QST_Bimbo.SetStage(11)
 
 				if fctUtil.isSameSex(PlayerActor,kDremora) && fctUtil.isFemale(kDremora)
-					if (Utility.RandomInt(0,100)>90) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo") == 0)					
+					; Dremora and player are both female - small chance of bimbo curse
+					if (Utility.RandomInt(0,100)>90) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo") == 0) && (GV_allowBimbo.GetValue()==1)						
+						debugTrace("[SLH]	 Casting Bimbo curse")
 						PlayerActor.SendModEvent("SLHCastBimboCurse")
 						_SLH_QST_Bimbo.SetStage(11)
+					else
+						debugTrace("[SLH]	 Lucky you - sex with Dremora left you unchanged")
 					endIf
 				elseif !fctUtil.isSameSex(PlayerActor,kDremora) && fctUtil.isFemale(kDremora)
-					if (Utility.RandomInt(0,100)>90) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo") == 0)					
+					; Dremora is female and player is male - small chance of bimbo or sex change curse
+					if (Utility.RandomInt(0,100)>60) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo") == 0)	 && (GV_allowBimbo.GetValue()==1)					
+						debugTrace("[SLH]	 Casting Bimbo curse")
 						PlayerActor.SendModEvent("SLHCastBimboCurse")
 						_SLH_QST_Bimbo.SetStage(11)
 
-					elseif (Utility.RandomInt(0,100)>60)  && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iHRT") == 0)					
+					elseif (Utility.RandomInt(0,100)>40)  && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iHRT") == 0) && (GV_allowHRT.GetValue()==1)						
+						debugTrace("[SLH]	 Casting Sex change curse")
 						PlayerActor.SendModEvent("SLHCastHRTCurse")
 						_SLH_QST_Bimbo.SetStage(11)
+					else
+						debugTrace("[SLH]	 Lucky you - sex with Dremora left you unchanged")
 					endIf
 				else
-					if (Utility.RandomInt(0,100)>60) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo") == 0)					
+					; Dremora is male - small chance of all 3 curses
+					if (Utility.RandomInt(0,100)>60) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo") == 0)	 && (GV_allowBimbo.GetValue()==1)					
+						debugTrace("[SLH]	 Casting Bimbo curse")
 						PlayerActor.SendModEvent("SLHCastBimboCurse")
 						_SLH_QST_Bimbo.SetStage(11)
 
-					elseif (Utility.RandomInt(0,100)>80)  && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iTG") == 0)										
+					elseif (Utility.RandomInt(0,100)>80)  && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iTG") == 0) && (GV_allowTG.GetValue()==1)									
+						debugTrace("[SLH]	 Casting Transgender curse")
 						PlayerActor.SendModEvent("SLHCastTGCurse")
 						_SLH_QST_Bimbo.SetStage(11)
 
-					elseif (Utility.RandomInt(0,100)>50) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iHRT") == 0)					
+					elseif (Utility.RandomInt(0,100)>50) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iHRT") == 0) && (GV_allowHRT.GetValue()==1)													
+						debugTrace("[SLH]	 Casting Sex change curse")
 						PlayerActor.SendModEvent("SLHCastHRTCurse")
 						_SLH_QST_Bimbo.SetStage(11)
+					else
+						debugTrace("[SLH]	 Lucky you - sex with Dremora left you unchanged")
 					endIf
 				endIf
 			Endif
+		Else
+			kPervert = SexLab.FindAvailableActor(PlayerActor as ObjectReference, 200.0)  
 		Endif		
 
 		If (kPervert) 
@@ -1308,6 +1331,37 @@ function setSuccubusState(Actor kActor, Bool bSuccubusState)
 	StorageUtil.SetIntValue(kActor, "_SLH_iSuccubus", iSuccubus as Int)
 endFunction
 
+Function refreshShape(Actor kActor)
+
+	bExternalChangeModActive = fctUtil.isExternalChangeModActive(kActor)
+
+	debugTrace("[SLH] Updating shape" )
+
+	fctBodyShape.getShapeState(kActor)
+	fctBodyShape.refreshBodyShape(kActor)
+
+	setHormonesState(kActor)
+
+	If !( bExternalChangeModActive ) && (NextAllowed!= -1)
+		fctBodyShape.applyBodyShapeChanges(kActor)
+	EndIf
+	
+	StorageUtil.SetIntValue(kActor, "_SLH_iForcedRefresh", 0) 
+	GV_forcedRefresh.SetValue(0)
+
+EndFunction
+
+Function refreshColor(Actor kActor)
+
+	debugTrace("[SLH] Updating colors only" )
+
+	fctColor.getColorState(kActor)
+	fctColor.refreshColors(kActor)
+	; fctColor.setColorState(kActor) - included in refreshColors()
+	
+EndFunction
+
+
 function initHormonesState(Actor kActor)
 
 	; Debug.Notification("SexLab Hormones: Initialization of body state")
@@ -1341,7 +1395,10 @@ function setHormonesStateDefault(Actor kActor)
 	StorageUtil.SetFloatValue(kActor, "_SLH_fLibido",  fLibido) 
 
 	fctBodyShape.alterBodyAfterRest(kActor)
+	fctColor.alterColorAfterRest(kActor)
+
 	setHormonesState(kActor)	
+
 	traceStatus()
 
 	iOrgasmsCountToday   = 0
@@ -1351,6 +1408,7 @@ function setHormonesStateDefault(Actor kActor)
 	iVaginalCountToday   = 0
 
 	If !( fctUtil.isExternalChangeModActive(PlayerActor) ) && (NextAllowed!= -1)
+		fctColor.applyColorChanges(kActor)
 		fctBodyShape.applyBodyShapeChanges(kActor)
 	EndIf
 
@@ -1369,7 +1427,10 @@ function resetHormonesState(Actor kActor)
 	StorageUtil.SetFloatValue(kActor, "_SLH_fLibido",  fLibido) 
 
 	fctBodyShape.alterBodyAfterRest(kActor)
+	fctColor.alterColorAfterRest(kActor)
+
 	setHormonesState(kActor)	
+
 	traceStatus()
 
 	iOrgasmsCountToday   = 0
@@ -1379,6 +1440,7 @@ function resetHormonesState(Actor kActor)
 	iVaginalCountToday   = 0
 
 	If !( fctUtil.isExternalChangeModActive(PlayerActor) ) && (NextAllowed!= -1)
+		fctColor.applyColorChanges(kActor)
 		fctBodyShape.applyBodyShapeChanges(kActor)
 	EndIf
 

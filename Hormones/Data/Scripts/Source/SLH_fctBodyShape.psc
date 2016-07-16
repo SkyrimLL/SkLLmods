@@ -9,6 +9,7 @@ SLH_fctUtil Property fctUtil Auto
 SOS_API _SOS
 
 ; String                   Property NINODE_SCHLONG	 	= "NPC Genitals01 [Gen01]" AutoReadOnly
+string                   Property SLH_KEY               = "SexLab_Hormones.esp" AutoReadOnly
 String                   Property NINODE_SCHLONG	 	= "NPC GenitalsBase [GenBase]" AutoReadOnly
 String                   Property NINODE_LEFT_BREAST    = "NPC L Breast" AutoReadOnly
 String                   Property NINODE_LEFT_BREAST01  = "NPC L Breast01" AutoReadOnly
@@ -19,8 +20,17 @@ String                   Property NINODE_RIGHT_BUTT     = "NPC R Butt" AutoReadO
 String                   Property NINODE_SKIRT02        = "SkirtBBone02" AutoReadOnly
 String                   Property NINODE_SKIRT03        = "SkirtBBone03" AutoReadOnly
 String                   Property NINODE_BELLY          = "NPC Belly" AutoReadOnly
-Float                    Property NINODE_MAX_SCALE      = 2.0 AutoReadOnly
+Float                    Property NINODE_MAX_SCALE      = 4.0 AutoReadOnly
 Float                    Property NINODE_MIN_SCALE      = 0.1 AutoReadOnly
+
+; NiOverride version data
+int                      Property NIOVERRIDE_VERSION    = 4 AutoReadOnly
+int                      Property NIOVERRIDE_SCRIPT_VERSION = 4 AutoReadOnly
+
+; XPMSE version data
+float                    Property XPMSE_VERSION         = 3.0 AutoReadOnly
+float                    Property XPMSELIB_VERSION      = 3.0 AutoReadOnly
+
 
 int Property MAX_PRESETS = 4 AutoReadOnly
 int Property MAX_MORPHS = 19 AutoReadOnly
@@ -156,6 +166,7 @@ GlobalVariable      Property GV_useSchlongNode 			Auto
 GlobalVariable      Property GV_useHeight 				Auto
 GlobalVariable      Property GV_useWeight 				Auto
 GlobalVariable      Property GV_enableNiNodeUpdate		Auto
+GlobalVariable      Property GV_enableNiNodeOverride	Auto
 GlobalVariable      Property GV_armorMod 				Auto
 GlobalVariable      Property GV_clothMod	 			Auto
 
@@ -179,6 +190,9 @@ HeadPart Property hpHairBimbo Auto
 
 Keyword Property ArmorOn  Auto  
 Keyword Property ClothingOn  Auto  
+
+Bool isNiOInstalled = false
+
 
 SOS_API Property SOS
   SOS_API Function Get()
@@ -244,6 +258,10 @@ Function removeSchlong(Actor kActor)
     endIf
 Endfunction
 
+ 
+bool Function CheckXPMSERequirements(Actor akActor, bool isFemale)
+	return XPMSELib.CheckXPMSEVersion(akActor, isFemale, XPMSE_VERSION, true) && XPMSELib.CheckXPMSELibVersion(XPMSELIB_VERSION) && SKSE.GetPluginVersion("NiOverride") >= NIOVERRIDE_VERSION && NiOverride.GetScriptVersion() >= NIOVERRIDE_SCRIPT_VERSION
+EndFunction
 
 
 function alterBodyAfterRest(Actor kActor)
@@ -255,11 +273,11 @@ function alterBodyAfterRest(Actor kActor)
 	Float fNodeMax
 	Bool bExternalChangeModActive = fctUtil.isExternalChangeModActive(kActor)
 	Float fLibido = StorageUtil.GetFloatValue(kActor, "_SLH_fLibido")
-	Float fBreastSwellMod    = StorageUtil.GetFloatValue(kActor, "_SLH_fBreastSwellMod")
-	Float fButtSwellMod      = StorageUtil.GetFloatValue(kActor, "_SLH_fButtSwellMod")
-	Float fBellySwellMod      = StorageUtil.GetFloatValue(kActor, "_SLH_fBellySwellMod")
-	Float fWeightSwellMod    = StorageUtil.GetFloatValue(kActor, "_SLH_fWeightSwellMod")
-	Float fSchlongSwellMod = StorageUtil.GetFloatValue(kActor, "_SLH_fSchlongSwellMod")
+	Float fBreastSwellMod   = StorageUtil.GetFloatValue(kActor, "_SLH_fBreastSwellMod")
+	Float fButtSwellMod     = StorageUtil.GetFloatValue(kActor, "_SLH_fButtSwellMod")
+	Float fBellySwellMod    = StorageUtil.GetFloatValue(kActor, "_SLH_fBellySwellMod")
+	Float fSchlongSwellMod  = StorageUtil.GetFloatValue(kActor, "_SLH_fSchlongSwellMod")
+	Float fWeightSwellMod   = StorageUtil.GetFloatValue(kActor, "_SLH_fWeightSwellMod")
 	Float fBreastMax      	= StorageUtil.GetFloatValue(kActor, "_SLH_fBreastMax")
 	Float fBellyMax       	= StorageUtil.GetFloatValue(kActor, "_SLH_fBellyMax")
 	Float fButtMax       	= StorageUtil.GetFloatValue(kActor, "_SLH_fButtMax")
@@ -383,7 +401,7 @@ function alterBodyAfterRest(Actor kActor)
 
 	EndIf
 
-	If (fSwellFactor != 0) && (fctUtil.isFemale(kActor)) && (GV_useNodes.GetValue() == 1)
+	If (fSwellFactor != 0) 
 		; --------
 		; BREAST SWELL ====================================================
 		If ((iSexCountToday > 0) || (fSwellFactor < 0)) && (GV_useBreastNode.GetValue() == 1)
@@ -454,7 +472,7 @@ function alterBodyAfterRest(Actor kActor)
 		EndIf
 	EndIf
 	
-	If (fSwellFactor != 0) && (!(fctUtil.isFemale(kActor)) || ((fctUtil.isFemale(kActor) && (StorageUtil.GetIntValue(kActor, "_SLH_iTG") == 1))) ) && (GV_useNodes.GetValue() == 1)
+	If (fSwellFactor != 0) && (GV_useNodes.GetValue() == 1)
 		; Debug.Notification("SexLab Hormones: Male: Schlong updates: " + fSchlong )
 		; SCHLONG SWELL ======================================================
 		If  (iVaginalCountToday > 0) || (iAnalCountToday > 0) || (iOralCountToday > 0)  || (fSwellFactor < 0)
@@ -469,12 +487,8 @@ function alterBodyAfterRest(Actor kActor)
 		EndIf
 	EndIf
 
-	if (GV_useColors.GetValue() == 1)
-		debugTrace("[SLH]  Set skin color"  )
-
-		fctColor.alterColorsAfterRest(kActor, fSwellFactor)	
-
-	EndIf
+	StorageUtil.SetFloatValue(kActor, "_SLH_fSwellFactor",  fSwellFactor) 
+ 
 	
  	; _refreshBodyShape()
  	; _applyBodyShapeChanges()
@@ -558,7 +572,7 @@ function alterBodyAfterSex(Actor kActor, Bool bOral = False, Bool bVaginal = Fal
 		debugTrace( "[SLH] Global Value: " + GV_weightValue.GetValue() )
 
 
-	If (fctUtil.isFemale(kActor)) && (GV_useNodes.GetValue() == 1)
+	If (GV_useNodes.GetValue() == 1)
 		; --------
 		; BREAST SWELL ====================================================
 		If (bOral) 
@@ -612,8 +626,6 @@ function alterBodyAfterSex(Actor kActor, Bool bOral = False, Bool bVaginal = Fal
 			endif
 		EndIf
 
-	ElseIf !(fctUtil.isFemale(kActor)) && (GV_useNodes.GetValue() == 1)
-
 		; SCHLONG SWELL ======================================================
 		If  (bAnal) || (bVaginal) || (bOral) 
 
@@ -625,17 +637,12 @@ function alterBodyAfterSex(Actor kActor, Bool bOral = False, Bool bVaginal = Fal
 			endif
 		EndIf
 	EndIf
-
-	if (GV_useColors.GetValue() == 1)
-		debugTrace("[SLH]  Set skin color"  )
-
-		fctColor.alterColorsAfterSex(kActor, fSwellFactor)	
-
-	EndIf
+ 
 	
  	; _refreshBodyShape()
  	StorageUtil.SetFloatValue(kActor, "_SLH_fTempGrowthMod",  1.0) 
-
+	StorageUtil.SetFloatValue(kActor, "_SLH_fSwellFactor",  fSwellFactor) 
+ 
 
 EndFunction
 
@@ -700,7 +707,7 @@ function alterBodyByPercent(Actor kActor, String sBodyPart, Float modFactor)
 
 	EndIf
 
-	If (fctUtil.isFemale(kActor)) && (GV_useNodes.GetValue() == 1)
+	If (GV_useNodes.GetValue() == 1)
 		; --------
 		; BREAST SWELL ====================================================
 		If  (sBodyPart=="Breast") && (GV_useBreastNode.GetValue() == 1)
@@ -760,20 +767,24 @@ function alterBodyByPercent(Actor kActor, String sBodyPart, Float modFactor)
 				alterButtNode(kActor,  fButt )
 			endif
 		EndIf
+
+		If (sBodyPart=="Schlong") && (GV_useSchlongNode.GetValue() == 1)
+			; Debug.Notification("SexLab Hormones: Male: Schlong updates: " + fSchlong )
+			; SCHLONG SWELL ======================================================
+	 
+			if ( bEnableSchlong )  
+				Float fCurrentSchlong = NetImmerse.GetNodeScale(kActor, NINODE_SCHLONG, false)
+				fSchlong = fCurrentSchlong + ( modFactor * (fSchlongMax + fSchlongMin  - fCurrentSchlong) / 100.0 )  
+
+				alterSchlongNode(kActor,  fSchlong )
+			endif
+	 
+		EndIf
 	EndIf
 	
-	If (sBodyPart=="Schlong")  && (!(fctUtil.isFemale(kActor)) || ((fctUtil.isFemale(kActor) && (StorageUtil.GetIntValue(kActor, "_SLH_iTG") == 1))) ) && (GV_useNodes.GetValue() == 1)
-		; Debug.Notification("SexLab Hormones: Male: Schlong updates: " + fSchlong )
-		; SCHLONG SWELL ======================================================
- 
-		if ( bEnableSchlong )   && (GV_useSchlongNode.GetValue() == 1)
-			Float fCurrentSchlong = NetImmerse.GetNodeScale(kActor, NINODE_SCHLONG, false)
-			fSchlong = fCurrentSchlong + ( modFactor * (fSchlongMax + fSchlongMin  - fCurrentSchlong) / 100.0 )  
 
-			alterSchlongNode(kActor,  fSchlong )
-		endif
  
-	EndIf
+	StorageUtil.SetFloatValue(kActor, "_SLH_fSwellFactor",  modFactor) 
  
 EndFunction
 
@@ -955,19 +966,26 @@ function alterBreastNode(Actor kActor, float fNewBreast = 0.0)
 	fPregLeftBreast    = fBreast
 	fPregRightBreast   = fBreast
 
-	NetImmerse.SetNodeScale( kActor, NINODE_LEFT_BREAST, fPregLeftBreast * fApparelMod, false)
-	NetImmerse.SetNodeScale( kActor, NINODE_RIGHT_BREAST, fPregRightBreast * fApparelMod, false)
-	; if bTorpedoFixEnabled
-	;	NetImmerse.SetNodeScale( kActor, NINODE_LEFT_BREAST01, fPregLeftBreast01, false)
-	;	NetImmerse.SetNodeScale( kActor, NINODE_RIGHT_BREAST01, fPregRightBreast01, false)
-	; endIf
+	If (GV_enableNiNodeOverride.GetValue()==0)
+		NetImmerse.SetNodeScale( kActor, NINODE_LEFT_BREAST, fPregLeftBreast * fApparelMod, false)
+		NetImmerse.SetNodeScale( kActor, NINODE_RIGHT_BREAST, fPregRightBreast * fApparelMod, false)
+		; if bTorpedoFixEnabled
+		;	NetImmerse.SetNodeScale( kActor, NINODE_LEFT_BREAST01, fPregLeftBreast01, false)
+		;	NetImmerse.SetNodeScale( kActor, NINODE_RIGHT_BREAST01, fPregRightBreast01, false)
+		; endIf
 
-	NetImmerse.SetNodeScale( kActor, NINODE_RIGHT_BREAST, fPregRightBreast * fApparelMod, true)
-	NetImmerse.SetNodeScale( kActor, NINODE_LEFT_BREAST, fPregLeftBreast * fApparelMod, true)
-	; if bTorpedoFixEnabled
-	;	NetImmerse.SetNodeScale( kActor, NINODE_RIGHT_BREAST01, fPregRightBreast01, true)
-	;	NetImmerse.SetNodeScale( kActor, NINODE_LEFT_BREAST01, fPregLeftBreast01, true)
-	; endIf
+		NetImmerse.SetNodeScale( kActor, NINODE_LEFT_BREAST, fPregLeftBreast * fApparelMod, true)
+		NetImmerse.SetNodeScale( kActor, NINODE_RIGHT_BREAST, fPregRightBreast * fApparelMod, true)
+		; if bTorpedoFixEnabled
+		;	NetImmerse.SetNodeScale( kActor, NINODE_RIGHT_BREAST01, fPregRightBreast01, true)
+		;	NetImmerse.SetNodeScale( kActor, NINODE_LEFT_BREAST01, fPregLeftBreast01, true)
+		; endIf
+
+	elseIf (isNiOInstalled && (GV_enableNiNodeOverride.GetValue()==1) )
+		XPMSELib.SetNodeScale(kActor, true, NINODE_LEFT_BREAST, fPregLeftBreast * fApparelMod, SLH_KEY)
+		XPMSELib.SetNodeScale(kActor, true, NINODE_RIGHT_BREAST, fPregRightBreast * fApparelMod, SLH_KEY)
+
+	endIf
 EndFunction
 
 function alterBellyNode(Actor kActor, float fNewBelly = 0.0)				
@@ -1011,10 +1029,15 @@ function alterBellyNode(Actor kActor, float fNewBelly = 0.0)
 
 	fPregBelly     = fBelly
 
-	; kTarget.SetAnimationVariableFloat("ecBellySwell", fBellySwell)
-	NetImmerse.SetNodeScale( kActor, NINODE_BELLY, fPregBelly * fApparelMod, false)
-	NetImmerse.SetNodeScale( kActor, NINODE_BELLY, fPregBelly * fApparelMod, true)
+	If (GV_enableNiNodeOverride.GetValue()==0)
+		; kTarget.SetAnimationVariableFloat("ecBellySwell", fBellySwell)
+		NetImmerse.SetNodeScale( kActor, NINODE_BELLY, fPregBelly * fApparelMod, false)
+		NetImmerse.SetNodeScale( kActor, NINODE_BELLY, fPregBelly * fApparelMod, true)
 
+	elseIf (isNiOInstalled && (GV_enableNiNodeOverride.GetValue()==1) )
+		XPMSELib.SetNodeScale(kActor, true,  NINODE_BELLY, fPregBelly * fApparelMod, SLH_KEY) 
+
+	endIf
 	; Debug.Notification("SexLab Hormones: Set Belly scale: " + fPregBelly)
 EndFunction
 
@@ -1059,11 +1082,18 @@ function alterButtNode(Actor kActor, float fNewButt = 0.0)
 	fPregLeftButt = fButt
 	fPregRightButt = fButt
 
-	NetImmerse.SetNodeScale( kActor, NINODE_LEFT_BUTT, fPregLeftButt * fApparelMod, false)
-	NetImmerse.SetNodeScale( kActor, NINODE_RIGHT_BUTT, fPregRightButt * fApparelMod, false)
+	If (GV_enableNiNodeOverride.GetValue()==0)
+		NetImmerse.SetNodeScale( kActor, NINODE_LEFT_BUTT, fPregLeftButt * fApparelMod, false)
+		NetImmerse.SetNodeScale( kActor, NINODE_RIGHT_BUTT, fPregRightButt * fApparelMod, false)
 
-	NetImmerse.SetNodeScale( kActor, NINODE_LEFT_BUTT, fPregLeftButt * fApparelMod, true)
-	NetImmerse.SetNodeScale( kActor, NINODE_RIGHT_BUTT, fPregRightButt * fApparelMod, true)
+		NetImmerse.SetNodeScale( kActor, NINODE_LEFT_BUTT, fPregLeftButt * fApparelMod, true)
+		NetImmerse.SetNodeScale( kActor, NINODE_RIGHT_BUTT, fPregRightButt * fApparelMod, true)
+
+	elseIf (isNiOInstalled && (GV_enableNiNodeOverride.GetValue()==1) )
+		XPMSELib.SetNodeScale(kActor, true,  NINODE_LEFT_BUTT, fPregLeftButt * fApparelMod, SLH_KEY) 
+		XPMSELib.SetNodeScale(kActor, true,  NINODE_RIGHT_BUTT, fPregRightButt * fApparelMod, SLH_KEY) 
+
+	endIf
 EndFunction
 
 function alterSchlongNode(Actor kActor, float fNewSchlong = 0.0)				
@@ -1082,8 +1112,14 @@ function alterSchlongNode(Actor kActor, float fNewSchlong = 0.0)
 
  	debugTrace("[SLH]  Schlong New: " + fSchlong )
 
-	NetImmerse.SetNodeScale( kActor, NINODE_SCHLONG, fSchlong, false)
-	NetImmerse.SetNodeScale( kActor, NINODE_SCHLONG, fSchlong, true)
+	If (GV_enableNiNodeOverride.GetValue()==0)
+		NetImmerse.SetNodeScale( kActor, NINODE_SCHLONG, fSchlong, false)
+		NetImmerse.SetNodeScale( kActor, NINODE_SCHLONG, fSchlong, true)
+
+	elseIf (isNiOInstalled && (GV_enableNiNodeOverride.GetValue()==1) )
+		XPMSELib.SetNodeScale(kActor, false,  NINODE_SCHLONG, fSchlong, SLH_KEY)  
+
+	endIf
 EndFunction
 
 function shaveHair ( Actor kActor)
@@ -1110,7 +1146,8 @@ function shaveHair ( Actor kActor)
 	If (iPlayerGender==0) 
 		If (hpHairCurrent != hpHairBaldM)
 			kActor.ChangeHeadPart(hpHairBaldM)
-			Debug.Messagebox("Your rapid body changes force your hair to fall. " )
+			StorageUtil.SetIntValue(kActor, "_SLH_iShavedHead", 1)
+			; Debug.Messagebox("Your rapid body changes force your hair to fall. " )
 		Else
 			; Game.ShowLimitedRaceMenu()
 		EndIf
@@ -1118,7 +1155,8 @@ function shaveHair ( Actor kActor)
 	Else
 		If (hpHairCurrent != hpHairBaldF)
 			kActor.ChangeHeadPart(hpHairBaldF)
-			Debug.Messagebox("Your rapid body changes force your hair to fall. ")
+			StorageUtil.SetIntValue(kActor, "_SLH_iShavedHead", 1)
+			; Debug.Messagebox("Your rapid body changes force your hair to fall. ")
 		Else
 			; Game.ShowLimitedRaceMenu()
 		EndIf
@@ -1278,18 +1316,28 @@ function applyBodyShapeChanges(Actor kActor)
 		StorageUtil.SetFormValue(kActor, "_SLH_fOrigRace",thisRace) 
 	EndIf
 
-	fctColor.applyColorChanges(kActor)
+ 	If (GV_enableNiNodeUpdate.GetValue() == 1)
+		If ((GV_useNodes.GetValue() == 1) || (GV_useWeight.GetValue() == 1))
+			debugTrace("[SLH]  QueueNiNodeUpdate")
+			Utility.Wait(1.0)
+			string facegen = "bUseFaceGenPreprocessedHeads:General"
+			Utility.SetINIBool(facegen, false)
+			; Game.GetPlayer().QueueNiNodeUpdate()
+			kActor.QueueNiNodeUpdate()
+			Utility.SetINIBool(facegen, true)
+			Utility.Wait(1.0)
 
- 
-	If ((GV_useNodes.GetValue() == 1) || (GV_useWeight.GetValue() == 1)) && (GV_enableNiNodeUpdate.GetValue() == 1)
-		debugTrace("[SLH]  QueueNiNodeUpdate")
-		Utility.Wait(2.0)
-		kActor.QueueNiNodeUpdate()
-		Utility.Wait(2.0)
-	Else
-		debugTrace("[SLH]  QueueNiNodeUpdate aborted - " + GV_useNodes.GetValue() + " - " +GV_useWeight.GetValue() )
+		Else
+			debugTrace("[SLH]  QueueNiNodeUpdate aborted - " + GV_useNodes.GetValue() + " - " +GV_useWeight.GetValue() )
+		Endif	
 	EndIf
  
+	; If (GV_enableNiNodeOverride.GetValue()==1)
+		; If (GV_useWeight.GetValue() == 1)
+			; debugTrace("[SLH]  NiOverride.UpdateModelWeight")
+			; NiOverride.UpdateModelWeight(kActor)
+		; endif
+	; endif
 
 	Utility.Wait(1.0)
 endFunction
@@ -1340,6 +1388,10 @@ function initShapeConstants(Actor kActor)
 	bButtEnabled       = ( bEnableLeftButt && bEnableRightButt  as bool )
 	bBellyEnabled      = ( bEnableBelly  as bool )
 	bSchlongEnabled     = ( bEnableSchlong as bool )
+
+
+	isNiOInstalled =  CheckXPMSERequirements(kActor, fctUtil.isFemale(kActor))
+	debugTrace("[SLH]  NiOverride detection: " + isNiOInstalled)
 
 	; setShapeState(kActor)
 
@@ -1718,11 +1770,11 @@ function getShapeState(Actor kActor)
 	; fSchlongSwellMod = StorageUtil.GetFloatValue(kActor, "_SLH_fSchlongSwellMod") 
 	; fWeightSwellMod = StorageUtil.GetFloatValue(kActor, "_SLH_fWeightSwellMod") 
 
-	; GV_breastMin.SetValue(StorageUtil.GetFloatValue(kActor, "_SLH_fBreastMin"))
-	; GV_buttMin.SetValue(StorageUtil.GetFloatValue(kActor, "_SLH_fButtMin"))
-	; GV_bellyMin.SetValue(StorageUtil.GetFloatValue(kActor, "_SLH_fBellyMin"))
-	; GV_schlongMin.SetValue(StorageUtil.GetFloatValue(kActor, "_SLH_fSchlongMin"))
-	; GV_weightMin.SetValue(StorageUtil.GetFloatValue(kActor, "_SLH_fWeightMin"))
+	GV_breastMin.SetValue(StorageUtil.GetFloatValue(kActor, "_SLH_fBreastMin"))
+	GV_buttMin.SetValue(StorageUtil.GetFloatValue(kActor, "_SLH_fButtMin"))
+	GV_bellyMin.SetValue(StorageUtil.GetFloatValue(kActor, "_SLH_fBellyMin"))
+	GV_schlongMin.SetValue(StorageUtil.GetFloatValue(kActor, "_SLH_fSchlongMin"))
+	GV_weightMin.SetValue(StorageUtil.GetFloatValue(kActor, "_SLH_fWeightMin"))
 
 	GV_breastMax.SetValue(StorageUtil.GetFloatValue(kActor, "_SLH_fBreastMax"))
 	GV_buttMax.SetValue(StorageUtil.GetFloatValue(kActor, "_SLH_fButtMax"))
