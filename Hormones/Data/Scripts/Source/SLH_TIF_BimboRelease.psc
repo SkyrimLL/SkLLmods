@@ -15,9 +15,20 @@ If  (SexLab.ValidateActor( akActor) > 0) &&  (SexLab.ValidateActor(akSpeaker) > 
 
 		Debug.Messagebox( "As soon as her hands are free, the vixen crawls all over you with wet lips, hot tongue and a ravenous look on her face." )
 
-		SexLab.QuickStart(akActor, akSpeaker, victim=akActor, AnimationTags = "Sex")
+		ActorBase PlayerBase = akActor.GetBaseObject() as ActorBase
+		Int PlayerGender = PlayerBase.GetSex() ; 0 = Male ; 1 = Female
+		
+		sslThreadModel Thread = SexLab.NewThread()
+		Thread.AddActor(akSpeaker, IsVictim = false) ; // IsVictim = true
+		Thread.AddActor(akActor, IsVictim = true) ; // IsVictim = true
 
 
+		If (PlayerGender  == 1)
+			Thread.SetAnimations(SexLab.GetAnimationsByTags(2, "Sex,Lesbian"))
+		Else
+			Thread.SetAnimations(SexLab.GetAnimationsByTags(2, "MF"))
+		EndIf
+		Thread.StartThread()
 
 	EndIf
 ;END CODE
