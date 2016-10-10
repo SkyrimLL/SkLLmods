@@ -6,6 +6,7 @@ This personal compilation of Skyrim mods created for LL includes:
 * [SexLab Mind Control](http://www.loverslab.com/topic/21334-sexlab-mind-control-2014-06-04/)
 * [SexLab Stories and Stories Devious](http://www.loverslab.com/topic/31581-sexlab-stories-2014-09-07/)
 * [SexLab Dibella Sisterhood and Sisters customization add-on](http://www.loverslab.com/topic/21873-the-sisterhood-of-dibella-2015-03-14/)
+* [SexLab Parasites (Kyne's Blessing)](http://www.loverslab.com/topic/68035-sexlab-parasites-kynes-blessing-2016-10-10/?p=1702692)
 
 ## Why a single repo for multiple mods?
 
