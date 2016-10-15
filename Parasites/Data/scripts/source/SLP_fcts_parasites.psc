@@ -10,12 +10,18 @@ Keyword Property ArmorCuirass  Auto
 Keyword Property ClothingBody  Auto  
 
 Keyword Property _SLP_ParasiteSpiderEgg  Auto  
+Keyword Property _SLP_ParasiteSpiderPenis  Auto  
 Keyword Property _SLP_ParasiteChaurusWorm  Auto  
+Keyword Property _SLP_ParasiteTentacleMonster  Auto  
 
 Armor Property SLP_plugSpiderEggRendered Auto         ; Internal Device
 Armor Property SLP_plugSpiderEggInventory Auto        	       ; Inventory Device
-; Armor Property SLP_plugChaurusWormRendered Auto         ; Internal Device
-; Armor Property SLP_plugChaurusWormInventory Auto        	       ; Inventory Device
+Armor Property SLP_plugSpiderPenisRendered Auto         ; Internal Device
+Armor Property SLP_plugSpiderPenisInventory Auto        	       ; Inventory Device
+Armor Property SLP_plugChaurusWormRendered Auto         ; Internal Device
+Armor Property SLP_plugChaurusWormInventory Auto        	       ; Inventory Device
+Armor Property SLP_harnessTentacleMonsterRendered Auto         ; Internal Device
+Armor Property SLP_harnessTentacleMonsterInventory Auto        	       ; Inventory Device
 
 ;  http://wiki.tesnexus.com/index.php/Skyrim_bodyparts_number
 ;
@@ -286,6 +292,15 @@ Armor Function getParasiteByKeyword(Keyword thisKeyword  )
 
 	if (thisKeyword == _SLP_ParasiteSpiderEgg)
 		thisArmor = SLP_plugSpiderEggInventory
+
+	Elseif (thisKeyword == _SLP_ParasiteSpiderPenis)
+		thisArmor = SLP_plugSpiderPenisInventory
+
+	Elseif (thisKeyword == _SLP_ParasiteChaurusWorm)
+		thisArmor = SLP_plugChaurusWormInventory
+
+	Elseif (thisKeyword == _SLP_ParasiteTentacleMonster)
+		thisArmor = SLP_harnessTentacleMonsterInventory
 	EndIf
 
 	return thisArmor
@@ -297,8 +312,14 @@ Keyword Function getDeviousKeywordByString(String deviousKeyword = ""  )
 	if (deviousKeyword == "SpiderEgg" )  
 		thisKeyword = _SLP_ParasiteSpiderEgg
 
+	elseif (deviousKeyword == "SpiderPenis" )  
+		thisKeyword = _SLP_ParasiteSpiderPenis
+
 	elseif (deviousKeyword == "ChaurusWorm" )  
 		thisKeyword = _SLP_ParasiteChaurusWorm
+		
+	elseif (deviousKeyword == "TentacleMonster" )  
+		thisKeyword = _SLP_ParasiteTentacleMonster
 		
 	elseif (deviousKeyword == "zad_BlockGeneric")
 		thisKeyword = libs.zad_BlockGeneric

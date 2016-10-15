@@ -8,9 +8,25 @@ Scriptname SLP_QST_MCM extends SKI_ConfigBase
 
 ; State
 
+bool _resetToggle
 
-bool		_toggleSpiderEgg
-float		_chanceSpiderEgg
+bool		_toggleSpiderEgg = true
+float		_chanceSpiderEgg = -1.0
+float		_bellyMaxSpiderEgg = 2.0
+
+bool		_toggleSpiderPenis = true
+float		_chanceSpiderPenis = -1.0
+
+bool		_toggleChaurusWorm = true
+float		_chanceChaurusWorm = -1.0
+float		_buttMaxChaurusWorm = 1.0
+
+bool		_toggleEstrusTentacles = true
+float		_chanceEstrusTentacles = -1.0
+
+bool		_toggleTentacleMonster = true
+float		_chanceTentacleMonster = -1.0
+float		_breastMaxTentacleMonster = 2.0
 
 ; bool		_parasiteWorm
 ; bool		_parasiteLeech
@@ -79,13 +95,29 @@ event OnPageReset(string a_page)
 
 	If (StorageUtil.GetIntValue(none, "_SLP_initMCM" )!=1)
 		StorageUtil.SetIntValue(none, "_SLP_initMCM", 1 )
-		
-		StorageUtil.SetIntValue(kPlayer, "_SLP_toggleSpiderEgg", 1 )
-		StorageUtil.SetIntValue(kPlayer, "_SLP_chanceSpiderEgg", 100 )
 	EndIf
 
+ 	If (StorageUtil.GetIntValue(none, "_SLP_versionMCM" ) == 0) 
+ 		_resetParasiteSettings()
+ 	Endif
+
 	_toggleSpiderEgg = StorageUtil.GetIntValue(kPlayer, "_SLP_toggleSpiderEgg" )
-	_chanceSpiderEgg = StorageUtil.GetIntValue(kPlayer, "_SLP_chanceSpiderEgg" )
+	_chanceSpiderEgg = StorageUtil.GetFloatValue(kPlayer, "_SLP_chanceSpiderEgg" )
+	_bellyMaxSpiderEgg = StorageUtil.GetFloatValue(kPlayer, "_SLP_bellyMaxSpiderEgg" )
+
+	_toggleSpiderPenis = StorageUtil.GetIntValue(kPlayer, "_SLP_toggleSpiderPenis" )
+	_chanceSpiderPenis = StorageUtil.GetFloatValue(kPlayer, "_SLP_chanceSpiderPenis" )
+
+	_toggleChaurusWorm = StorageUtil.GetIntValue(kPlayer, "_SLP_toggleChaurusWorm" )
+	_chanceChaurusWorm = StorageUtil.GetFloatValue(kPlayer, "_SLP_chanceChaurusWorm" )
+	_buttMaxChaurusWorm = StorageUtil.GetFloatValue(kPlayer, "_SLP_buttMaxChaurusWorm" )
+
+	_toggleEstrusTentacles = StorageUtil.GetIntValue(kPlayer, "_SLP_toggleEstrusTentacles" )
+	_chanceEstrusTentacles = StorageUtil.GetFloatValue(kPlayer, "_SLP_chanceEstrusTentacles" )
+
+	_toggleTentacleMonster = StorageUtil.GetIntValue(kPlayer, "_SLP_toggleTentacleMonster" )
+	_chanceTentacleMonster = StorageUtil.GetFloatValue(kPlayer, "_SLP_chanceTentacleMonster" )
+	_breastMaxTentacleMonster = StorageUtil.GetFloatValue(kPlayer, "_SLP_breastMaxTentacleMonster" )
 
 	; _parasiteWorm
 	; _parasiteLeech
@@ -105,10 +137,35 @@ event OnPageReset(string a_page)
 
 		SetCursorFillMode(TOP_TO_BOTTOM)
 
-		AddHeaderOption(" Spider Eggs")
-		AddToggleOptionST("STATE_SPIDEREGG_TOGGLE","Spider Egg", _toggleSpiderEgg as Float)
+		AddHeaderOption(" Spider Eggs (Vaginal plug)")
 		AddSliderOptionST("STATE_SPIDEREGG_CHANCE","Chance of infection", _chanceSpiderEgg,"{0} %")
-		;   
+		AddToggleOptionST("STATE_SPIDEREGG_TOGGLE","Infect/Cure Spider Egg", _toggleSpiderEgg as Float)
+
+		AddHeaderOption(" Spider Penis (Vaginal plug)")
+		AddSliderOptionST("STATE_SPIDERPENIS_CHANCE","Chance of infection", _chanceSpiderPenis,"{0} %")
+		AddToggleOptionST("STATE_SPIDERPENIS_TOGGLE","Infect/Cure Spider Penis", _toggleSpiderPenis as Float)
+
+		AddHeaderOption(" Chaurus Worm (Anal plug)")
+		AddSliderOptionST("STATE_CHAURUSWORM_CHANCE","Chance of infection", _chanceChaurusWorm,"{0} %")
+		AddToggleOptionST("STATE_CHAURUSWORM_TOGGLE","Infect/Cure Chaurus Worm", _toggleChaurusWorm as Float)
+
+		AddHeaderOption(" Estrus Tentacles (EC+)")
+		AddSliderOptionST("STATE_ESTRUSTENTACLES_CHANCE","Chance of infection", _chanceEstrusTentacles,"{0} %")
+		AddToggleOptionST("STATE_ESTRUSTENTACLES_TOGGLE","Infect/Cure Estrus Tentacles", _toggleEstrusTentacles as Float)
+
+		AddHeaderOption(" Tentacle Monster (Harness)")
+		AddSliderOptionST("STATE_TENTACLEMONSTER_CHANCE","Chance of infection", _chanceEstrusTentacles,"{0} %")
+		AddToggleOptionST("STATE_TENTACLEMONSTER_TOGGLE","Infect/Cure Tentacle Monster", _toggleEstrusTentacles as Float)
+
+		SetCursorPosition(1)
+		AddHeaderOption(" NiOverride node scales")
+		AddSliderOptionST("STATE_SPIDEREGG_BELLY","Max belly size (Spider egg)", _bellyMaxSpiderEgg,"{1}")
+		AddSliderOptionST("STATE_CHAURUSWORM_BUTT","Max butt size (Chaurus worm)", _buttMaxChaurusWorm,"{1}")
+		AddSliderOptionST("STATE_TENTACLEMONSTER_BREAST","Max breast size (Tentacle monster)", _breastMaxTentacleMonster,"{1}")
+
+		AddHeaderOption(" ")
+		AddToggleOptionST("STATE_RESET","Reset changes", _resetToggle as Float)
+	;   
 		; AddToggleOptionST("STATE_PARASITE_WORM","Chaurus Worm", _parasiteWorm as Float, OPTION_FLAG_DISABLED)
 		;    
 		; AddToggleOptionST("STATE_PARASITE_LEECH","Chaurus Leech", _parasiteLeech as Float, OPTION_FLAG_DISABLED)
@@ -136,6 +193,7 @@ event OnPageReset(string a_page)
 
 		AddHeaderOption(" Placeholder - No option yet")
 
+
 	endIf
 endEvent
 
@@ -143,8 +201,14 @@ endEvent
 ; AddToggleOptionST("STATE_SPIDEREGG_TOGGLE","Spider Egg", _toggleSpiderEgg as Float, OPTION_FLAG_DISABLED)
 state STATE_SPIDEREGG_TOGGLE ; TOGGLE
 	event OnSelectST() 
-		toggle = Math.LogicalXor( 1, StorageUtil.GetIntValue(kPlayer, "_SLP_toggleSpiderEgg" )   )
-		StorageUtil.SetIntValue(kPlayer, "_SLP_toggleSpiderEgg", toggle as Int )
+		toggle = StorageUtil.GetIntValue(kPlayer, "_SLP_toggleSpiderEgg" )   
+ 
+		If (toggle ==1)
+			kPlayer.SendModEvent("SLPInfectSpiderEgg")
+		else
+			kPlayer.SendModEvent("SLPCureSpiderEgg")
+		Endif
+
 		SetToggleOptionValueST( toggle )
 		ForcePageReset()
 	endEvent
@@ -156,9 +220,34 @@ state STATE_SPIDEREGG_TOGGLE ; TOGGLE
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Enable/Disable Spider Eggs parasites.")
+		SetInfoText("Manually Infect/Cure Spider Eggs parasites for roleplay or testing purposes.")
 	endEvent
 
+endState
+; AddSliderOptionST("STATE_SPIDEREGG_BELLY","Node size", _bellyMaxSpiderEgg,"{0}")
+state STATE_SPIDEREGG_BELLY ; SLIDER
+	event OnSliderOpenST()
+		SetSliderDialogStartValue( StorageUtil.GetFloatValue(kPlayer, "_SLP_bellyMaxSpiderEgg" ) )
+		SetSliderDialogDefaultValue( 2.0 )
+		SetSliderDialogRange( 0.0, 6.0 )
+		SetSliderDialogInterval( 0.1 )
+	endEvent
+
+	event OnSliderAcceptST(float value)
+		float thisValue = value 
+		StorageUtil.SetFloatValue(kPlayer, "_SLP_bellyMaxSpiderEgg", thisValue )
+		SetSliderOptionValueST( thisValue,"{1}" )
+		kPlayer.SendModEvent("SLPRefreshBodyShape")
+	endEvent
+
+	event OnDefaultST()
+		StorageUtil.SetFloatValue(kPlayer, "_SLP_bellyMaxSpiderEgg", 2.0 )
+		SetSliderOptionValueST( 2.0,"{1}" )
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Max size of belly node (for NiOverride compatiblity)")
+	endEvent
 endState
 ; AddSliderOptionST("STATE_SPIDEREGG_CHANCE","Chance of infection", _chanceSpiderEgg,"{0} %")
 state STATE_SPIDEREGG_CHANCE ; SLIDER
@@ -186,6 +275,300 @@ state STATE_SPIDEREGG_CHANCE ; SLIDER
 endState
 
 
+; AddToggleOptionST("STATE_SPIDERPENIS_TOGGLE","Spider Penis", _toggleSpiderPenis as Float, OPTION_FLAG_DISABLED)
+state STATE_SPIDERPENIS_TOGGLE ; TOGGLE
+	event OnSelectST() 
+		toggle =  StorageUtil.GetIntValue(kPlayer, "_SLP_toggleSpiderPenis" )    
+
+		If (toggle ==1)
+			kPlayer.SendModEvent("SLPInfectSpiderPenis")
+		else
+			kPlayer.SendModEvent("SLPCureSpiderPenis")
+		Endif
+
+		SetToggleOptionValueST( toggle )
+		ForcePageReset()
+	endEvent
+
+	event OnDefaultST()
+		StorageUtil.SetIntValue(kPlayer, "_SLP_toggleSpiderPenis", 1 )
+		SetToggleOptionValueST( true )
+		ForcePageReset()
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Manually Infect/Cure detached Spider Penis for roleplay or testing purposes.")
+	endEvent
+
+endState
+; AddSliderOptionST("STATE_SPIDERPENIS_CHANCE","Chance of infection", _chanceSpiderEgg,"{0} %")
+state STATE_SPIDERPENIS_CHANCE ; SLIDER
+	event OnSliderOpenST()
+		SetSliderDialogStartValue( StorageUtil.GetFloatValue(kPlayer, "_SLP_chanceSpiderPenis" ) )
+		SetSliderDialogDefaultValue( 30.0 )
+		SetSliderDialogRange( 0.0, 100.0 )
+		SetSliderDialogInterval( 1.0 )
+	endEvent
+
+	event OnSliderAcceptST(float value)
+		float thisValue = value 
+		StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceSpiderPenis", thisValue )
+		SetSliderOptionValueST( thisValue,"{0} %" )
+	endEvent
+
+	event OnDefaultST()
+		StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceSpiderPenis", 30.0 )
+		SetSliderOptionValueST( 30.0,"{0} %" )
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Chance of a detached penis from sex with Spiders")
+	endEvent
+endState
+
+; AddToggleOptionST("STATE_CHAURUSWORM_TOGGLE","Chaurus Worm", _toggleChaurusWorm as Float, OPTION_FLAG_DISABLED)
+state STATE_CHAURUSWORM_TOGGLE ; TOGGLE
+	event OnSelectST() 
+		toggle = StorageUtil.GetIntValue(kPlayer, "_SLP_toggleChaurusWorm" )   
+		StorageUtil.SetIntValue(kPlayer, "_SLP_toggleChaurusWorm", toggle as Int )
+
+		If (toggle ==1)
+			kPlayer.SendModEvent("SLPInfectChaurusWorm")
+		else
+			kPlayer.SendModEvent("SLPCureChaurusWorm")
+		Endif
+
+		SetToggleOptionValueST( toggle )
+		ForcePageReset()
+	endEvent
+
+	event OnDefaultST()
+		StorageUtil.SetIntValue(kPlayer, "_SLP_toggleChaurusWorm", 1 )
+		SetToggleOptionValueST( true )
+		ForcePageReset()
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Manually Infect/Cure detached Chaurus Worm for roleplay or testing purposes.")
+	endEvent
+
+endState
+; AddSliderOptionST("STATE_CHAURUSWORM_BUTT","Node size", _buttMaxChaurusWorm,"{0}")
+state STATE_CHAURUSWORM_BUTT ; SLIDER
+	event OnSliderOpenST()
+		SetSliderDialogStartValue( StorageUtil.GetFloatValue(kPlayer, "_SLP_buttMaxChaurusWorm" ) )
+		SetSliderDialogDefaultValue( 1.0 )
+		SetSliderDialogRange( 0.0, 3.0 )
+		SetSliderDialogInterval( 0.1 )
+	endEvent
+
+	event OnSliderAcceptST(float value)
+		float thisValue = value 
+		StorageUtil.SetFloatValue(kPlayer, "_SLP_buttMaxChaurusWorm", thisValue )
+		SetSliderOptionValueST( thisValue,"{1}" )
+		kPlayer.SendModEvent("SLPRefreshBodyShape")
+	endEvent
+
+	event OnDefaultST()
+		StorageUtil.SetFloatValue(kPlayer, "_SLP_buttMaxChaurusWorm", 1.0 )
+		SetSliderOptionValueST( 1.0,"{1}" )
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Max size of butt node (for NiOverride compatiblity)")
+	endEvent
+endState
+; AddSliderOptionST("STATE_CHAURUSWORM_CHANCE","Chance of infection", _chanceSpiderEgg,"{0} %")
+state STATE_CHAURUSWORM_CHANCE ; SLIDER
+	event OnSliderOpenST()
+		SetSliderDialogStartValue( StorageUtil.GetFloatValue(kPlayer, "_SLP_chanceChaurusWorm" ) )
+		SetSliderDialogDefaultValue( 30.0 )
+		SetSliderDialogRange( 0.0, 100.0 )
+		SetSliderDialogInterval( 1.0 )
+	endEvent
+
+	event OnSliderAcceptST(float value)
+		float thisValue = value 
+		StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceChaurusWorm", thisValue )
+		SetSliderOptionValueST( thisValue,"{0} %" )
+	endEvent
+
+	event OnDefaultST()
+		StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceChaurusWorm", 30.0 )
+		SetSliderOptionValueST( 30.0,"{0} %" )
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Chance of a chaurus worm from sex with Chaurus")
+	endEvent
+endState
+
+
+; AddToggleOptionST("STATE_ESTRUSTENTACLES_TOGGLE","Estrus Tentacles", _toggleEstrusTentacles as Float, OPTION_FLAG_DISABLED)
+state STATE_ESTRUSTENTACLES_TOGGLE ; TOGGLE
+	event OnSelectST() 
+		toggle =  StorageUtil.GetIntValue(kPlayer, "_SLP_toggleEstrusTentacles" )    
+
+		If (toggle ==1)
+			kPlayer.SendModEvent("SLPInfectEstrusTentacle")
+		else
+			kPlayer.SendModEvent("SLPCureEstrusTentacle")
+		Endif
+
+		SetToggleOptionValueST( toggle )
+		ForcePageReset()
+	endEvent
+
+	event OnDefaultST()
+		StorageUtil.SetIntValue(kPlayer, "_SLP_toggleEstrusTentacles", 1 )
+		SetToggleOptionValueST( true )
+		ForcePageReset()
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Manually Infect/Cure Estrus Tentacles for roleplay or testing purposes (will work only if Estrus Chaurus+ is installed).")
+	endEvent
+
+endState
+; AddSliderOptionST("STATE_ESTRUSTENTACLES_CHANCE","Chance of infection", _chanceEstrusTentacles,"{0} %")
+state STATE_ESTRUSTENTACLES_CHANCE ; SLIDER
+	event OnSliderOpenST()
+		SetSliderDialogStartValue( StorageUtil.GetFloatValue(kPlayer, "_SLP_chanceEstrusTentacles" ) )
+		SetSliderDialogDefaultValue( 30.0 )
+		SetSliderDialogRange( 0.0, 100.0 )
+		SetSliderDialogInterval( 1.0 )
+	endEvent
+
+	event OnSliderAcceptST(float value)
+		float thisValue = value 
+		StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceEstrusTentacles", thisValue )
+		SetSliderOptionValueST( thisValue,"{0} %" )
+	endEvent
+
+	event OnDefaultST()
+		StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceEstrusTentacles", 30.0 )
+		SetSliderOptionValueST( 30.0,"{0} %" )
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Chance of attacks by Estrus Tentacles")
+	endEvent
+endState
+
+; AddToggleOptionST("STATE_TENTACLEMONSTER_TOGGLE","Tentacle Monster", _toggleTentacleMonster as Float, OPTION_FLAG_DISABLED)
+state STATE_TENTACLEMONSTER_TOGGLE ; TOGGLE
+	event OnSelectST() 
+		toggle =  StorageUtil.GetIntValue(kPlayer, "_SLP_toggleTentacleMonster" )    
+
+		If (toggle ==1)
+			kPlayer.SendModEvent("SLPInfectTentacleMonster")
+		else
+			kPlayer.SendModEvent("SLPCureTentacleMonster")
+		Endif
+
+		SetToggleOptionValueST( toggle )
+		ForcePageReset()
+	endEvent
+
+	event OnDefaultST()
+		StorageUtil.SetIntValue(kPlayer, "_SLP_toggleTentacleMonster", 1 )
+		SetToggleOptionValueST( true )
+		ForcePageReset()
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Manually Infect/Cure Tentacle Monster for roleplay or testing purposes.")
+	endEvent
+
+endState
+; AddSliderOptionST("STATE_TENTACLEMONSTER_BREAST","Node size", _breastMaxTentacleMonster,"{0}")
+state STATE_TENTACLEMONSTER_BREAST ; SLIDER
+	event OnSliderOpenST()
+		SetSliderDialogStartValue( StorageUtil.GetFloatValue(kPlayer, "_SLP_breastMaxTentacleMonster" ) )
+		SetSliderDialogDefaultValue( 1.0 )
+		SetSliderDialogRange( 0.0, 4.0 )
+		SetSliderDialogInterval( 0.1 )
+	endEvent
+
+	event OnSliderAcceptST(float value)
+		float thisValue = value 
+		StorageUtil.SetFloatValue(kPlayer, "_SLP_breastMaxTentacleMonster", thisValue )
+		SetSliderOptionValueST( thisValue,"{1}" )
+		kPlayer.SendModEvent("SLPRefreshBodyShape")
+	endEvent
+
+	event OnDefaultST()
+		StorageUtil.SetFloatValue(kPlayer, "_SLP_breastMaxTentacleMonster", 1.0 )
+		SetSliderOptionValueST( 1.0,"{1}" )
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Max size of breast node (for NiOverride compatiblity)")
+	endEvent
+endState
+; AddSliderOptionST("STATE_TENTACLEMONSTER_CHANCE","Chance of infection", _chanceTentacleMonster,"{0} %")
+state STATE_TENTACLEMONSTER_CHANCE ; SLIDER
+	event OnSliderOpenST()
+		SetSliderDialogStartValue( StorageUtil.GetFloatValue(kPlayer, "_SLP_chanceTentacleMonster" ) )
+		SetSliderDialogDefaultValue( 30.0 )
+		SetSliderDialogRange( 0.0, 100.0 )
+		SetSliderDialogInterval( 1.0 )
+	endEvent
+
+	event OnSliderAcceptST(float value)
+		float thisValue = value 
+		StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceTentacleMonster", thisValue )
+		SetSliderOptionValueST( thisValue,"{0} %" )
+	endEvent
+
+	event OnDefaultST()
+		StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceTentacleMonster", 30.0 )
+		SetSliderOptionValueST( 30.0,"{0} %" )
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Chance of attacks by Tentacle Monsters")
+	endEvent
+endState
+
+; AddToggleOptionST("STATE_RESET","Reset changes", _resetToggle)
+state STATE_RESET ; TOGGLE
+	event OnSelectST()
+		_resetParasiteSettings()
+		kPlayer.SendModEvent("SLPRefreshBodyShape")
+	endEvent
+
+	event OnDefaultST()
+
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Reset settings.")
+	endEvent
+
+endState
+
+Function _resetParasiteSettings()
+	StorageUtil.SetIntValue(none, "_SLP_versionMCM", 20161014 )
+
+	StorageUtil.SetIntValue(kPlayer, "_SLP_toggleSpiderEgg", 0 )
+	StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceSpiderEgg", 50.0 )
+	StorageUtil.SetFloatValue(kPlayer, "_SLP_bellyMaxSpiderEgg", 2.0 )
+
+	StorageUtil.SetIntValue(kPlayer, "_SLP_toggleSpiderPenis", 0 )
+	StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceSpiderPenis", 10.0 )
+
+	StorageUtil.SetIntValue(kPlayer, "_SLP_toggleChaurusWorm", 0 )
+	StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceChaurusWorm", 10.0 )
+	StorageUtil.SetFloatValue(kPlayer, "_SLP_buttMaxChaurusWorm", 2.0 )
+
+	StorageUtil.SetIntValue(kPlayer, "_SLP_toggleEstrusTentacles", 0 )
+	StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceEstrusTentacles", 10.0 )
+
+	StorageUtil.SetIntValue(kPlayer, "_SLP_toggleTentacleMonster", 0 )
+	StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceTentacleMonster", 30.0 )
+	StorageUtil.SetFloatValue(kPlayer, "_SLP_breastMaxTentacleMonster", 2.0 )
+EndFunction
 
 
 float function fMin(float  a, float b)
