@@ -16,16 +16,30 @@ Function OnEquippedPre(actor akActor, bool silent=false)
 EndFunction
 
 int Function OnEquippedFilter(actor akActor, bool silent=false)
+	ActorBase 	pActorBase  
+
 	if akActor == none
 		akActor == libs.PlayerRef
 	EndIf
-	if ! akActor.IsEquipped(deviceRendered)
+
+	pActorBase = akActor.GetActorBase()
+
+	if !akActor.IsEquipped(deviceRendered)
 		if akActor!=libs.PlayerRef && ShouldEquipSilently(akActor)
 			libs.Log("Avoiding FTM duplication bug (Harness + Collar).")
 			return 0
 		EndIf
 		if akActor.WornHasKeyword(libs.zad_DeviousCollar)
 			MultipleItemFailMessage("Collar")
+			return 2
+		Endif
+		if (pActorBase.GetSex()==0)
+			if akActor == libs.PlayerRef
+				libs.NotifyActor("The harness is designed for the female form and will not fit you.", akActor, true)
+			Else
+				libs.NotifyActor(GetMessageName(akActor) +" cannot fit in the harness as it is designed for the female shape.", akActor, true)
+				
+			EndIf
 			return 2
 		Endif
 	Endif
