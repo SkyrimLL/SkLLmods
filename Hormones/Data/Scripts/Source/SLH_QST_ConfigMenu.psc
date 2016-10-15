@@ -72,7 +72,7 @@ GlobalVariable      Property GV_allowBimboRace	 		Auto
 GlobalVariable      Property GV_allowSuccubus 			Auto
 GlobalVariable      Property GV_setshapeToggle 			Auto
 GlobalVariable      Property GV_resetToggle 			Auto
-GlobalVariable      Property GV_origWeight	 			Auto
+GlobalVariable      Property GV_origWeight	 			Auto 
 
 GlobalVariable      Property GV_forcedRefresh 			Auto
 
@@ -144,6 +144,7 @@ float 		_bimboClumsinessMod		= 1.0; 0.1
 
 bool 		_hornyBegON     		= true
 float 		_hornyBegArousal      	= 60.0
+float 		_hornyGrab      		= -1.0
 bool 		_bimboClumsinessDrop    = true
 
 float 		_breastMax      		= 4.0
@@ -183,9 +184,16 @@ bool		_allowBimbo				= false
 bool		_allowBimboRace			= false
 bool		_allowSuccubus			= false
 
+int			_setTG					= 0
+int			_setHRT					= 0
+int			_setBimbo				= 0
+int			_setSuccubus			= 0
+
 bool		_statusToggle			= false
 bool		_setshapeToggle			= false
 bool		_resetToggle			= false
+
+bool		_showDebug				= false
 
 bool		_showStatus 			= true
 float		_commentsFrequency 		= 80.0
@@ -197,6 +205,8 @@ float 		_buttSetValue 			= 1.0
 float 		_schlongSetValue		= 1.0
 
 bool 		_refreshToggle 			= false
+bool 		_applyNodeBalancing  
+
 
 ObjectReference PlayerREF
 Actor PlayerActor
@@ -273,8 +283,13 @@ event OnPageReset(string a_page)
 	_clothMod = GV_clothMod.GetValue()    as Float   
 	_bimboClumsinessMod = GV_bimboClumsinessMod.GetValue()    as Float   
 
+	If (_hornyGrab==-1.0)
+		StorageUtil.SetFloatValue(none, "_SLH_fHornyGrab", 30.0)
+	Endif
+
 	_hornyBegON  = GV_hornyBegON.GetValue()    as Int
 	_hornyBegArousal  = GV_hornyBegArousal.GetValue()    as Float
+	_hornyGrab  = StorageUtil.GetFloatValue(none, "_SLH_fHornyGrab")
 	_bimboClumsinessDrop  = GV_bimboClumsinessDrop.GetValue()    as Int
 
 	_breastMax = GV_breastMax.GetValue()  as Float
@@ -318,6 +333,11 @@ event OnPageReset(string a_page)
 	_allowBimboRace = GV_allowBimboRace.GetValue()  as Int
 	_allowSuccubus = GV_allowSuccubus.GetValue()  as Int
 
+	; _setTG = StorageUtil.GetIntValue(PlayerActor, "_SLH_iTG")
+	; _setHRT = StorageUtil.GetIntValue(PlayerActor, "_SLH_iHRT")
+	; _setBimbo = StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo")
+	; _setSuccubus = StorageUtil.GetIntValue(PlayerActor, "_SLH_iSuccubus")
+
 	_changeOverrideToggle = GV_changeOverrideToggle.GetValue()  as Int
 	_shapeUpdateOnCellChange = GV_shapeUpdateOnCellChange.GetValue()  as Int
 	_shapeUpdateAfterSex = GV_shapeUpdateAfterSex.GetValue()  as Int
@@ -327,6 +347,7 @@ event OnPageReset(string a_page)
 
 	_setshapeToggle = GV_setshapeToggle.GetValue()  as Int
 	_resetToggle = GV_resetToggle.GetValue()  as Int
+	_showDebug = StorageUtil.GetIntValue(none, "_SLH_debugTraceON")
 
 	PlayerREF= PlayerAlias.GetReference()
 	PlayerActor= PlayerAlias.GetReference() as Actor
@@ -427,15 +448,25 @@ event OnPageReset(string a_page)
 		SetCursorFillMode(TOP_TO_BOTTOM)
 
 		AddHeaderOption(" Optional modules")
-		AddToggleOptionST("STATE_SUCCUBUS","Succubus Curse", _allowSuccubus as Float)
+		AddHeaderOption(" Succubus ")
+		AddToggleOptionST("STATE_SUCCUBUS","Allow Succubus Curse", _allowSuccubus as Float)
+		AddToggleOptionST("STATE_SET_SUCCUBUS","Set Succubus Curse now", _setSuccubus as Float)
+
+		AddHeaderOption(" Sex Change ")
 		AddToggleOptionST("STATE_SEX_CHANGE","Sex Change Curse", _allowHRT as Float)
-		AddToggleOptionST("STATE_TG","Allow Transgender", _allowTG as Float)
+		AddToggleOptionST("STATE_SET_SEX_CHANGE","Set Sex Change Curse now", _setHRT as Float)
+		AddToggleOptionST("STATE_TG","Allow Transgender Curse", _allowTG as Float)
+		AddToggleOptionST("STATE_SET_TG","Set Transgender Curse now", _setTG as Float)
+
+		AddHeaderOption(" Bimbo ")
 		AddToggleOptionST("STATE_BIMBO","Bimbo Curse", _allowBimbo as Float)
 		AddToggleOptionST("STATE_BIMBO_RACE","Bimbo Race", _allowBimboRace as Float)
 		AddSliderOptionST("STATE_BIMBO_CLUMSINESS","Clumsiness factor", _bimboClumsinessMod as Float,"{1}")
 		AddToggleOptionST("STATE_HORNY_BEG","Beg for sex", _hornyBegON   as Bool)
 		AddSliderOptionST("STATE_BEG_TRIGGER","Beg arousal trigger", _hornyBegArousal  as Float,"{1}")
+		AddSliderOptionST("STATE_GRAG_TRIGGER","Public sex attack", _hornyGrab  as Float,"{1}")
 		AddToggleOptionST("STATE_BIMBO_DROP","Drop items when aroused", _bimboClumsinessDrop  as Bool)
+		AddToggleOptionST("STATE_SET_BIMBO","Set Bimbo Curse now", _setBimbo as Float)
 
 		AddHeaderOption(" Shape refresh controls")
 		AddToggleOptionST("STATE_CHANGE_OVERRIDE","Shape change override", _changeOverrideToggle as Float)
@@ -451,14 +482,14 @@ event OnPageReset(string a_page)
 		endif
 
 		AddEmptyOption()
+		SetCursorPosition(1)
+		AddHeaderOption(" Status")
+		AddToggleOptionST("STATE_STATUS","Display current status", _statusToggle as Float)
+
 		AddToggleOptionST("STATE_SHOW_STATUS","Show Status messages", _showStatus as Bool)
 		AddSliderOptionST("STATE_COMMENTS_FREQUENCY","NPC Comments Frequency ", _commentsFrequency as Float,"{1} %")
 		AddToggleOptionST("STATE_EXHIBITIONIST","Allow Exhibitionist", _allowExhibitionist as Float)
 		AddToggleOptionST("STATE_SELF_SPELLS","Allow Self Spells", _allowSelfSpells as Float)
-
-		SetCursorPosition(1)
-		AddHeaderOption(" Status")
-		AddToggleOptionST("STATE_STATUS","Display current status", _statusToggle as Float)
 
 		AddHeaderOption(" Change shape values")
 		AddSliderOptionST("STATE_WEIGHT_VALUE","Weight ", _weightSetValue as Float,"{1}")
@@ -471,8 +502,10 @@ event OnPageReset(string a_page)
 		AddToggleOptionST("STATE_REFRESH","Apply changes", _refreshToggle as Float)
 
 		AddEmptyOption()
+		AddToggleOptionST("STATE_BALANCE","NiO Node Balancing", _applyNodeBalancing  as Float)
 		AddToggleOptionST("STATE_SETSHAPE","Set default shape", _setshapeToggle as Float)
 		AddToggleOptionST("STATE_RESET","Reset changes", _resetToggle as Float)
+		AddToggleOptionST("STATE_DEBUG","Debug messages", _showDebug as Float)
 	endIf
 endEvent
 
@@ -1405,6 +1438,28 @@ state STATE_SUCCUBUS ; TOGGLE
 		SetInfoText("Succubus curse - Caused by exposure to Daedric influence.")
 	endEvent
 endState
+state STATE_SET_SUCCUBUS ; TOGGLE
+	event OnSelectST()
+		_setSuccubus = Math.LogicalXor( 1, _setSuccubus ) 
+		SetToggleOptionValueST( _setSuccubus as Bool )
+		If (StorageUtil.GetIntValue(PlayerActor, "_SLH_iSuccubus") == 0)
+			PlayerActor.SendModEvent("SLHCastSuccubusCurse")
+		else
+			; Debug.MessageBox("Unfortunately.. there is no cure for a Succubus")
+			PlayerActor.SendModEvent("SLHCureSuccubusCurse")
+		EndIf
+		ForcePageReset()
+	endEvent
+
+	event OnDefaultST() 
+		SetToggleOptionValueST( StorageUtil.GetIntValue(PlayerActor, "_SLH_iSuccubus") as Bool )
+		ForcePageReset()
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Toggle Succubus - Set or clear the succubus effect now (for player starts or rolepay)")
+	endEvent
+endState
 ; AddToggleOptionST("STATE_BIMBO","Sex Change Curse", _allowBimbo)
 state STATE_BIMBO ; TOGGLE
 	event OnSelectST()
@@ -1423,6 +1478,28 @@ state STATE_BIMBO ; TOGGLE
 
 	event OnHighlightST()
 		SetInfoText("Bimbo Curse - This curse could turn you into a mindless sex-starved blonde.")
+	endEvent
+endState
+state STATE_SET_BIMBO ; TOGGLE
+	event OnSelectST()
+		_setBimbo = Math.LogicalXor( 1, _setBimbo ) 
+		SetToggleOptionValueST( _setBimbo as Bool )
+		If (StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo") == 0)
+			PlayerActor.SendModEvent("SLHCastBimboCurse")
+		else
+			PlayerActor.SendModEvent("SLHCureBimboCurse")
+		endIf
+
+		ForcePageReset()
+	endEvent
+
+	event OnDefaultST() 
+		SetToggleOptionValueST( StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo") as Bool )
+		ForcePageReset()
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Toggle Bimbo - Set or clear the bimbo effect now (for player starts or rolepay)")
 	endEvent
 endState
 ; AddToggleOptionST("STATE_BIMBO","Sex Change Curse", _allowBimboRace)
@@ -1512,6 +1589,32 @@ state STATE_BEG_TRIGGER ; SLIDER
 		SetInfoText("Arousal threshold to trigger forced begging topic for a Bimbo.")
 	endEvent
 endState
+; AddSliderOptionST("STATE_GRAB_TRIGGER","Public sex attack", _hornyGrab  as Float,"{1}")
+state STATE_GRAB_TRIGGER ; SLIDER
+	event OnSliderOpenST()
+		SetSliderDialogStartValue( _hornyGrab )
+		SetSliderDialogDefaultValue( 30.0 )
+		SetSliderDialogRange( 0.0, 100.0 )
+		SetSliderDialogInterval( 1.0 )
+	endEvent
+
+	event OnSliderAcceptST(float value)
+		float thisValue = value 
+		_hornyGrab = thisValue 
+		StorageUtil.SetFloatValue(none, "_SLH_fHornyGrab", _hornyGrab)
+		SetSliderOptionValueST( thisValue ,"{1}") 
+	endEvent
+
+	event OnDefaultST()
+		_hornyGrab = 30.0 
+		StorageUtil.SetFloatValue(none, "_SLH_fHornyGrab", _hornyGrab)
+		SetSliderOptionValueST( _hornyGrab,"{1}" )
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Chance of attack by onlooker if player has sex in public.")
+	endEvent
+endState
 ; AddToggleOptionST("STATE_BIMBO_DROP","Drop items when aroused", _bimboClumsinessDrop  as Bool)
 state STATE_BIMBO_DROP ; TOGGLE
 	event OnSelectST()
@@ -1550,6 +1653,27 @@ state STATE_SEX_CHANGE ; TOGGLE
 		SetInfoText("Sex Change Curse - This curse could turn your gender upside down.")
 	endEvent
 endState
+state STATE_SET_SEXCHANGE ; TOGGLE
+	event OnSelectST()
+		_setHRT = Math.LogicalXor( 1, _setHRT ) 
+		SetToggleOptionValueST( _setHRT as Bool )
+		If (StorageUtil.GetIntValue(PlayerActor, "_SLH_iHRT") == 0)
+			PlayerActor.SendModEvent("SLHCastHRTCurse")
+		else
+			PlayerActor.SendModEvent("SLHCureHRTCurse")
+		endIf
+		ForcePageReset()
+	endEvent
+
+	event OnDefaultST() 
+		SetToggleOptionValueST( StorageUtil.GetIntValue(PlayerActor, "_SLH_iHRT") as Bool )
+		ForcePageReset()
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Toggle Sex Change - Set or clear the sex change effect now (for player starts or rolepay)")
+	endEvent
+endState
 ; AddToggleOptionST("STATE_TG","Allow Transgender", _isTG)
 state STATE_TG ; TOGGLE
 	event OnSelectST()
@@ -1570,6 +1694,28 @@ state STATE_TG ; TOGGLE
 		SetInfoText("Allow Transgender - This option enables smoother transitions from male to female, with an intermediate state (female with male genitals).")
 	endEvent
 endState
+state STATE_SET_TG ; TOGGLE
+	event OnSelectST()
+		_setTG = Math.LogicalXor( 1, _setTG ) 
+		SetToggleOptionValueST( _setTG as Bool )
+		If (StorageUtil.GetIntValue(PlayerActor, "_SLH_iTG") == 0)
+			PlayerActor.SendModEvent("SLHCastTGCurse")
+		else
+			PlayerActor.SendModEvent("SLHCureTGCurse")
+		endIf
+		ForcePageReset()
+	endEvent
+
+	event OnDefaultST() 
+		SetToggleOptionValueST( StorageUtil.GetIntValue(PlayerActor, "_SLH_iTG") as Bool )
+		ForcePageReset()
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Toggle Transgender - Set or clear the transgender effect now (for player starts or rolepay)")
+	endEvent
+endState
+
 ; AddToggleOptionST("STATE_EXHIBITIONIST","Allow Exhibitionist", _allowExhibitionist)
 state STATE_EXHIBITIONIST ; TOGGLE
 	event OnSelectST()
@@ -1794,7 +1940,8 @@ endState
 state STATE_SETSHAPE ; TOGGLE
 	event OnSelectST()
 		; SLH_Control._resetHormonesState()
-		refreshStorageFromGlobals()
+		; refreshStorageFromGlobals()
+		PlayerActor.SendModEvent("SLHSetShape")
 
 		Debug.MessageBox("Shape initialized - Exit the menu and wait a few seconds")
 	endEvent
@@ -1808,6 +1955,28 @@ state STATE_SETSHAPE ; TOGGLE
 	endEvent
 
 endState
+
+; AddToggleOptionST("STATE_DEBUG","Debug messages", _showDebug)
+state STATE_DEBUG ; TOGGLE
+	event OnSelectST()
+		Int _showDebugInt = ( Math.LogicalXor( 1, _showDebug as Int ) )
+		_showDebug = _showDebugInt as Bool
+		StorageUtil.SetIntValue(none, "_SLH_debugTraceON", _showDebugInt)
+		SetToggleOptionValueST( _showDebugInt )
+		refreshStorageFromGlobals()
+		ForcePageReset()
+	endEvent
+
+	event OnDefaultST()
+
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Enable or disable debug messages in the Papyrus Log")
+	endEvent
+
+endState
+
 
 ; AddToggleOptionST("STATE_RESET","Reset changes", _resetToggle)
 state STATE_RESET ; TOGGLE
@@ -1827,6 +1996,76 @@ state STATE_RESET ; TOGGLE
 	endEvent
 
 endState
+
+
+; AddToggleOptionST("STATE_BALANCE","Reset changes", _applyNodeBalancing  
+state STATE_BALANCE ; TOGGLE
+	event OnSelectST()
+		_nodeBalancing()
+	endEvent
+
+	event OnDefaultST()
+
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Adjust max size of NetImmerse Overrides used by several mods (NiO required).")
+	endEvent
+
+endState
+
+
+Function _nodeBalancing()
+	Float fNumModBreast
+	Float fNumModButt
+	Float fNumModBelly
+
+	if (StorageUtil.GetIntValue(PlayerActor, "_SLP_toggleSpiderEgg" )==1)
+		fNumModBelly += 1.0
+	endif
+
+	if (StorageUtil.GetIntValue(PlayerActor, "_SLP_toggleChaurusWorm" )==1)
+		fNumModButt += 1.0
+	endif
+
+	if (StorageUtil.GetIntValue(PlayerActor, "_SLP_toggleTentacleMonster" )==1)
+		fNumModBreast += 1.0
+	endif
+
+	if (StorageUtil.GetIntValue(none, "_SLH_iHormones")==1)
+		fNumModBreast += 1.0
+		fNumModBelly += 1.0
+		fNumModButt += 1.0
+	endif
+ 
+	If (StorageUtil.GetIntValue(PlayerActor, "_SLH_isPregnant")== 1)
+		fNumModBreast += 0.5
+		fNumModBelly += 0.5
+	endif
+
+	If (StorageUtil.GetIntValue(PlayerActor, "_SLH_iLactating") == 1)
+		fNumModBreast += 0.5
+	endif
+
+	; If (StorageUtil.GetIntValue(PlayerActor, "_SLH_isSuccubus") == 1)
+	;	fNumModBreast += 1.0
+	; endif
+
+	StorageUtil.SetFloatValue(PlayerActor, "_SLP_bellyMaxSpiderEgg", 3.0 / fNumModBelly )
+	StorageUtil.SetFloatValue(PlayerActor, "_SLP_buttMaxChaurusWorm", 2.0 / fNumModButt )
+	StorageUtil.SetFloatValue(PlayerActor, "_SLP_breastMaxTentacleMonster", 2.0 / fNumModBreast )
+	PlayerActor.SendModEvent("SLPRefreshBodyShape")
+
+	GV_breastMax.SetValue(2.0 / fNumModBreast )
+	GV_buttMax.SetValue(1.0 / fNumModButt )
+	GV_bellyMax.SetValue(2.0 / fNumModBelly ) 
+	refreshStorageFromGlobals()
+
+	StorageUtil.SetFloatValue(PlayerActor, "_SLS_breastMaxMilkFarm", 2.0 / fNumModBreast )
+	PlayerActor.SendModEvent("_SLSDDi_UpdateCow")
+
+EndFunction
+
 
 float function fMin(float  a, float b)
 	if (a<=b)

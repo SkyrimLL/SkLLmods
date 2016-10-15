@@ -150,7 +150,7 @@ Function Maintenance()
 
 	; Debug.Notification("SexLab Hormones: Init: " + bInit)
 	if !bInit
-		Debug.Trace("SexLab Hormones: Init: " + bInit)
+		debugTrace("SexLab Hormones: Init: " + bInit)
 		initHormones()
 	EndIf
 
@@ -244,12 +244,14 @@ Function maintenanceVersionEvents()
 	RegisterForModEvent("SLHResetShape",    "OnResetShapeEvent")
 	RegisterForModEvent("SLHSetSchlong",    "OnSetSchlongEvent")
 	RegisterForModEvent("SLHRemoveSchlong",    "OnRemoveSchlongEvent")
+	RegisterForModEvent("SLHCastSuccubusCurse",    "OnCastSuccubusCurseEvent")
+	RegisterForModEvent("SLHCureSuccubusCurse",    "OnCureSuccubusCurseEvent")
 	RegisterForModEvent("SLHCastBimboCurse",    "OnCastBimboCurseEvent")
 	RegisterForModEvent("SLHCureBimboCurse",    "OnCureBimboCurseEvent")
 	RegisterForModEvent("SLHCastHRTCurse",    "OnCastHRTCurseEvent")
 	RegisterForModEvent("SLHCureHRTCurse",    "OnCureHRTCurseEvent")
 	RegisterForModEvent("SLHCastTGCurse",    "OnCastTGCurseEvent")
-	RegisterForModEvent("SLHCureTGCurse",    "OnCureTGCurseEvent")
+	RegisterForModEvent("SLHCureTGCurse",    "OnCureTGCurseEvent") 
 
 	if (GV_allowSelfSpells.GetValue() == 1)
 		debugTrace("[SLH]  Add spells")
@@ -337,11 +339,11 @@ function initHormones()
 Endfunction
 
 Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
-	Debug.Trace("Player went to sleep at: " + Utility.GameTimeToString(afSleepStartTime))
-	Debug.Trace("Player wants to wake up at: " + Utility.GameTimeToString(afDesiredSleepEndTime))
+	debugTrace("Player went to sleep at: " + Utility.GameTimeToString(afSleepStartTime))
+	debugTrace("Player wants to wake up at: " + Utility.GameTimeToString(afDesiredSleepEndTime))
 
 	fRefreshAfterSleep = (afDesiredSleepEndTime - afSleepStartTime)
-	Debug.Trace("SexLab Hormones: fRefreshAfterSleep: " + fRefreshAfterSleep)
+	debugTrace("SexLab Hormones: fRefreshAfterSleep: " + fRefreshAfterSleep)
 endEvent
  
 
@@ -499,7 +501,15 @@ Event OnUpdate()
 					Debug.Notification("Saltiness still coats your lips.")
 				EndIf
 			EndIf
-
+			If (StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkLevel") > 5)
+				If (StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkLevel") > 8) 
+					Debug.Notification("Your tits are dripping with milk and ache for release.")
+				ElseIf (StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkLevel") > 6) 
+					Debug.Notification("Breasts are swollen with milk.")
+				Else
+					Debug.Notification("Your nipples are moist and tingling.")
+				EndIf
+			EndIf
 			
 			NextAllowed = 0.0 ;  GameDaysPassed.GetValue() + DaysUntilNextAllowed
 
@@ -584,6 +594,38 @@ Event OnUpdate()
 EndEvent
 
  
+Event OnCastSuccubusCurseEvent(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+ 	
+	debugTrace("[SLH] Cast succubus curse event" )	  
+	
+	If ( StorageUtil.GetIntValue(PlayerActor, "_SLH_iDaedricInfluence") <5) 
+		; Most likely event was sent at a player start or from mod trying to make player a succubus
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iDaedricInfluence", 50)
+	Endif
+
+	StorageUtil.SetIntValue(PlayerActor, "PSQ_SpellON", 1)
+	ModEvent.Send(ModEvent.Create("HoSLDD_GivePlayerPowers"))
+	_SLH_QST_Succubus.SetStage(50)
+	GV_isSuccubusFinal.SetValue(1)
+	setSuccubusState(PlayerActor, TRUE)
+
+endEvent
+
+Event OnCureSuccubusCurseEvent(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+ 	
+	debugTrace("[SLH] Cure succubus curse event" )	  
+	
+	StorageUtil.SetIntValue(PlayerActor, "_SLH_iDaedricInfluence", 0)
+	StorageUtil.SetIntValue(PlayerActor, "PSQ_SpellON", 0)
+	ModEvent.Send(ModEvent.Create("HoSLDD_TakeAwayPlayerPowers"))
+	; _SLH_QST_Succubus.SetStage(90)
+	GV_isSuccubusFinal.SetValue(0) 
+	setSuccubusState(PlayerActor, FALSE)
+
+endEvent
+
 Event OnCastBimboCurseEvent(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
  	
@@ -852,7 +894,7 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 			_SLH_DaedricInfluence.Cast(PlayerActor,PlayerActor)
 			StorageUtil.SetFloatValue(PlayerActor, "_SLH_fTempGrowthMod",  2.0) 
 
-			SendModEvent("SDSanguineBlessingMod", 1)  
+			SendModEvent("SDSanguineBlessingMod", "", 1)  
 
 			; modify succubus influence based on other daedric exposure
 			if (iDaedricInfluence >1) && (GV_allowSuccubus.GetValue()==1) && (GV_isSuccubus.GetValue()==0)
@@ -888,21 +930,18 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 
 				elseif (_SLH_QST_Succubus.GetStage()<=40) && (iDaedricInfluence >=40) && !fctUtil.isMale(PlayerActor)
 					_SLH_QST_Succubus.SetStage(50)
-					StorageUtil.SetIntValue(PlayerActor, "PSQ_SpellON", 1)
 					SendModEvent("SLHisSuccubus")
-					ModEvent.Send(ModEvent.Create("HoSLDD_GivePlayerPowers"))
+					SendModEvent("SLHCastSuccubusCurse")
 				    fctPolymorph.TGEffectOFF( PlayerActor)
-					GV_isSuccubusFinal.SetValue(1)
 					SuccubusPlayerAlias.ForceRefTo(PlayerActor as ObjectReference)
 
 				elseif (_SLH_QST_Succubus.GetStage()>=50) && (iDaedricInfluence >=40) && !fctUtil.isMale(PlayerActor)
 					; Maintenance... grant powers again if they are missing
-					StorageUtil.SetIntValue(PlayerActor, "PSQ_SpellON", 1)
-					ModEvent.Send(ModEvent.Create("HoSLDD_GivePlayerPowers"))
 
 					if (GV_isSuccubusFinal.GetValue()==0)
 						GV_isSuccubusFinal.SetValue(1)
 						SendModEvent("SLHisSuccubus")
+						SendModEvent("SLHCastSuccubusCurse")
 					endIf
 
 					SuccubusPlayerAlias.ForceRefTo(PlayerActor as ObjectReference)
@@ -972,7 +1011,7 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 						_SLH_QST_Bimbo.SetStage(10)
 					endIf
 				else
-					if (Utility.RandomInt(0,100)>60) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo") == 0) && (GV_allowBimbo.GetValue()==1)													
+					if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo") == 0) && (GV_allowBimbo.GetValue()==1)													
 						debugTrace("[SLH]	 Casting Bimbo curse")
 						PlayerActor.SendModEvent("SLHCastBimboCurse")
 						_SLH_QST_Bimbo.SetStage(10)
@@ -1018,7 +1057,7 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 						debugTrace("[SLH]	 Lucky you - sex with Dremora left you unchanged")
 					endIf
 				else
-					; Dremora is male - small chance of all 3 curses
+					; Dremora is male and player female - small chance of all 3 curses
 					if (Utility.RandomInt(0,100)>60) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo") == 0)	 && (GV_allowBimbo.GetValue()==1)					
 						debugTrace("[SLH]	 Casting Bimbo curse")
 						PlayerActor.SendModEvent("SLHCastBimboCurse")
@@ -1029,7 +1068,8 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 						PlayerActor.SendModEvent("SLHCastTGCurse")
 						_SLH_QST_Bimbo.SetStage(11)
 
-					elseif (Utility.RandomInt(0,100)>50) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iHRT") == 0) && (GV_allowHRT.GetValue()==1)													
+					elseif (Utility.RandomInt(0,100)>50) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iHRT") == 0) && (GV_allowHRT.GetValue()==1)	&& (StorageUtil.GetIntValue(PlayerActor, "_SLH_isPregnant")!= 1) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iLactating") != 1)							
+						; no sex change while lactating or pregnant
 						debugTrace("[SLH]	 Casting Sex change curse")
 						PlayerActor.SendModEvent("SLHCastHRTCurse")
 						_SLH_QST_Bimbo.SetStage(11)
@@ -1045,7 +1085,7 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 		If (kPervert) 
 			Bool isCurrentPartner = fctUtil.hasActor(actors, kPervert)
 
-			If (!kPervert.IsDead()) && (kPervert.GetAV("Morality")<=2) && (((Utility.RandomInt(0,100)>50) && !isCurrentPartner) || ( (Utility.RandomInt(0,100)>90) && isCurrentPartner))
+			If (!kPervert.IsDead()) && (kPervert.GetAV("Morality")<=2) && ((((Utility.RandomInt(1,100)>= (StorageUtil.GetFloatValue(none, "_SLH_fHornyGrab") as Int))) && !isCurrentPartner) || ( (Utility.RandomInt(1,100)>= ((StorageUtil.GetFloatValue(none, "_SLH_fHornyGrab") as Int) / 2.0) ) && isCurrentPartner))
 
 				If  (SexLab.ValidateActor( SexLab.PlayerRef) > 0) && (SexLab.ValidateActor( kPervert) > 0) 
 					Int IButton = _SLH_warning.Show()
@@ -1494,6 +1534,26 @@ function setHormonesSexualState(Actor kActor)
 		StorageUtil.SetIntValue(kActor, "_SLH_isSuccubus", 0)
 	EndIf	
 
+	; Lactation triggers - works better with SexLab Stories Devious
+	if (StorageUtil.GetIntValue(kActor, "_SLH_isSuccubus") == 1)
+		if (StorageUtil.GetFloatValue(kActor, "_SLH_fLibido") > 60)
+			StorageUtil.SetIntValue(kActor, "_SLH_iLactating", 1)
+		else
+			StorageUtil.SetIntValue(kActor, "_SLH_iLactating", 0)
+		endif
+	endif
+
+	if (StorageUtil.GetIntValue(kActor, "_SLH_iBimbo") == 1)
+		if (StorageUtil.GetFloatValue(kActor, "_SLH_fBreast") > 1.5)
+			StorageUtil.SetIntValue(kActor, "_SLH_iLactating", 1)
+		else
+			StorageUtil.SetIntValue(kActor, "_SLH_iLactating", 0)
+		endif
+	endif
+
+	if (StorageUtil.GetIntValue(kActor, "_SLH_isPregnant") == 1)
+		StorageUtil.SetIntValue(kActor, "_SLH_iLactating", 1)
+	endif
 endFunction
 
 function setHormonesState(Actor kActor)
@@ -1572,7 +1632,7 @@ function showStatus()
 
 	string shapeMessageStatus = fctBodyShape.getMessageStatus(PlayerActor)
 
-	Debug.MessageBox("SexLab Hormones \n Sex acts today: " + iSexCountToday + " - Total: " + iSexCountAll + " \n v: " + iVaginalCountToday  + " a: " + iAnalCountToday  + " o: " + iOralCountToday  + " \n Orgasms today: " + iOrgasmsCountToday + " - Total: " + iOrgasmsCountAll + " \n Libido: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fLibido")  + " \n Daedric: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_iDaedricInfluence") + " Succubus: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_iSuccubus") +" \n Bimbo: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo") +" \n Sex change: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_iHRT") +" TransGender: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_iTG") +" \n Pregnant: " + fctUtil.isPregnantByBeeingFemale(PlayerActor) +" Chaurus: " + fctUtil.isPregnantByEstrusChaurus(PlayerActor) + shapeMessageStatus )
+	Debug.MessageBox("SexLab Hormones \n Sex acts today: " + iSexCountToday + " - Total: " + iSexCountAll + " \n v: " + iVaginalCountToday  + " a: " + iAnalCountToday  + " o: " + iOralCountToday  + " \n Orgasms today: " + iOrgasmsCountToday + " - Total: " + iOrgasmsCountAll + " \n Libido: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fLibido")  + " \n Daedric: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_iDaedricInfluence") + " Succubus: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_iSuccubus") +" \n Bimbo: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo") +" \n Sex change: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_iHRT") +" TransGender: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_iTG") +" \n Pregnant: " + fctUtil.isPregnantByBeeingFemale(PlayerActor) +" Chaurus: " + fctUtil.isPregnantByEstrusChaurus(PlayerActor) + " \n Lactating: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_iLactating") + " Lvl: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkLevel")+ " Prl: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_iProlactinLevel")+ shapeMessageStatus )
 
 EndFunction
 
