@@ -7,6 +7,7 @@ Function Fragment_1(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
 Debug.Notification( "The cow moans with relief..." )
+akSpeaker.SendModEvent("_SLSDDi_UpdateCow")
 
 If  (SexLab.ValidateActor( Game.GetPlayer() ) > 0) &&  (SexLab.ValidateActor(akSpeaker) > 0) 
 	actor[] sexActors = new actor[2]

@@ -7,6 +7,7 @@ Function Fragment_1(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
 Debug.Notification( "The cow moans painfully..." )
+akSpeaker.SendModEvent("_SLSDDi_UpdateCow")
 ;END CODE
 EndFunction
 ;END FRAGMENT

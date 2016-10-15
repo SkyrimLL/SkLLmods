@@ -57,7 +57,7 @@ Function _Maintenance()
 	 	StorageUtil.SetIntValue(none, "_SLS_iStoriesPlayerRedWave", 0)
 	EndIf
 
-	; UnregisterForAllModEvents()
+	UnregisterForAllModEvents()
 	; Debug.Trace("SexLab Stories: Reset SexLab events")
 	; RegisterForModEvent("AnimationStart", "OnSexLabStart")
 	; RegisterForModEvent("AnimationEnd",   "OnSexLabEnd")
@@ -65,12 +65,10 @@ Function _Maintenance()
 
 	RegisterForModEvent("_SLS_PlayerRedWave", "OnPlayerRedWave")
 
-	If (!StorageUtil.HasIntValue(none, "_SLD_version")) && (!StorageUtil.HasIntValue(none, "_SD_version"))
-		RegisterForModEvent("PCSubSex",   "OnSDStorySex")
-		RegisterForModEvent("PCSubEntertain",   "OnSDStoryEntertain")
-		RegisterForModEvent("PCSubWhip",   "OnSDStoryWhip")
-		RegisterForModEvent("PCSubPunish",   "OnSDStoryPunish")
-	Endif
+	RegisterForModEvent("RedWaveSex",   "OnSDStorySex")
+	RegisterForModEvent("RedWaveEntertain",   "OnSDStoryEntertain")
+	RegisterForModEvent("RedWaveWhip",   "OnSDStoryWhip")
+	RegisterForModEvent("RedWavePunish",   "OnSDStoryPunish")
 	
 	_InitExternalPregancy()
 

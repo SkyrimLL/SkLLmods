@@ -33,18 +33,7 @@ bool		_fetishThief
 bool		_fetishTower
 bool		_fetishWarrior
 
-bool		_parasiteEgg
-bool		_parasiteWorm
-bool		_parasiteLeech
-bool		_parasiteSpine
-bool		_parasiteHip
-bool		_parasiteTentacle
-bool		_parasiteOoze
-bool		_parasiteSlime
-bool		_parasiteScaled
-bool		_parasiteFuro
-bool		_parasiteEstrus
-bool		_parasiteSpriggan
+Float 		_breastMaxMilkFarm
 
 Actor kPlayer
 bool toggle
@@ -101,11 +90,15 @@ event OnPageReset(string a_page)
 	; ActorBase pActorBase = PlayerActor.GetActorBase()
 
 	; Initialization
- 	If (!StorageUtil.HasIntValue(kPlayer, "_SLS_toggleNPCRumors" ))
+	If (StorageUtil.GetIntValue(none, "_SLS_initMCM" )!=1)
+		StorageUtil.SetIntValue(none, "_SLS_initMCM", 1 )
+
  		StorageUtil.SetIntValue(kPlayer, "_SLS_toggleNPCRumors", 1 )
 
 		StorageUtil.SetIntValue(kPlayer, "_SLS_toggleFetish", 1 )
 		StorageUtil.SetFloatValue(kPlayer, "_SLS_fetishMod", 30 )
+
+		StorageUtil.SetFloatValue(kPlayer, "_SLS_breastMaxMilkFarm", 1.0  )
  	EndIf
 
  	_toggleNPCRumors = StorageUtil.GetIntValue(kPlayer, "_SLS_toggleNPCRumors" )
@@ -132,20 +125,7 @@ event OnPageReset(string a_page)
 	; _fetishTower
 	; _fetishWarrior
 
-	; _parasiteEgg
-	; _parasiteWorm
-	; _parasiteLeech
-	; _parasiteSpine
-	; _parasiteHip
-	; _parasiteTentacle
-	; _parasiteOoze
-	; _parasiteSlime
-	; _parasiteScaled
-	; _parasiteFuro
-	; _parasiteEstrus
-	; _parasiteSpriggan
-
-
+	_breastMaxMilkFarm = StorageUtil.GetFloatValue(kPlayer, "_SLS_breastMaxMilkFarm" )
 
 	If (a_page == "Settings")
 		SetCursorFillMode(TOP_TO_BOTTOM)
@@ -218,66 +198,40 @@ event OnPageReset(string a_page)
 	ElseIf (a_page == "Stories")
 		SetCursorFillMode(TOP_TO_BOTTOM)
 	
-		AddHeaderOption(" The Red Wave")
-		; AddToggleOptionST("STATE_START_REDWAVE","Player starting quest", _startRedWave as Float, OPTION_FLAG_DISABLED)
+		AddHeaderOption(" Placeholder - No option yet")
+		; AddHeaderOption(" The Red Wave")
+		; AddToggleOptionST("STATE_REDWAVE_START","Player starting quest", _startRedWave as Float, OPTION_FLAG_DISABLED)
 
-		AddHeaderOption(" E.L.L.E SexBot")
-		; AddToggleOptionST("STATE_START_SEXBOT","Player starting quest", _startSexBot as Float, OPTION_FLAG_DISABLED)
+		; AddHeaderOption(" E.L.L.E SexBot")
+		; AddToggleOptionST("STATE_SEXBOT_START","Player starting quest", _startSexBot as Float, OPTION_FLAG_DISABLED)
 
-		AddHeaderOption(" The Living Wonder")
+		; AddHeaderOption(" The Living Wonder")
 
-		AddHeaderOption(" The Family")
+		; AddHeaderOption(" The Family")
 
 		SetCursorPosition(1)
-		AddHeaderOption(" The Twins")
+		; AddHeaderOption(" The Twins")
 
-		AddHeaderOption(" The Old Gods")
+		; AddHeaderOption(" The Old Gods")
 
+		; AddHeaderOption(" The Brood Maiden")
+		; AddToggleOptionST("STATE_START_CHAURUS","Player starting quest", _startChaurus as Float, OPTION_FLAG_DISABLED)
+
+		; AddHeaderOption(" The Chaurus Queen")
+		
 	ElseIf (a_page == "Devious Stories")
 		SetCursorFillMode(TOP_TO_BOTTOM)
 	
+		; AddHeaderOption(" Placeholder - No option yet")
+
 		AddHeaderOption(" The Milk Farm")
-		; AddToggleOptionST("STATE_START_MILKFARM","Player starting quest", _startMilkFarm as Float, OPTION_FLAG_DISABLED)
+		AddSliderOptionST("STATE_MILKFARM_BREAST","Max breast size", _breastMaxMilkFarm,"{1}")
+		; AddToggleOptionST("STATE_MILKFARM_START","Player starting quest", _startMilkFarm as Float, OPTION_FLAG_DISABLED)
 
-		AddHeaderOption(" The Pet")
-		; AddToggleOptionST("STATE_START_PET","Player starting quest", _startPet as Float, OPTION_FLAG_DISABLED)
+		; AddHeaderOption(" The Pet")
 
-		SetCursorPosition(1)
-		AddHeaderOption(" The Brood Maiden")
-		; AddToggleOptionST("STATE_START_CHAURUS","Player starting quest", _startChaurus as Float, OPTION_FLAG_DISABLED)
 
-		AddHeaderOption(" The Chaurus Queen")
-
-		AddHeaderOption(" Parasites")
-
-		;   
-		; AddToggleOptionST("STATE_PARASITE_EGG","Spider Egg", _parasiteEgg as Float, OPTION_FLAG_DISABLED)
-		;   
-		; AddToggleOptionST("STATE_PARASITE_WORM","Chaurus Worm", _parasiteWorm as Float, OPTION_FLAG_DISABLED)
-		;    
-		; AddToggleOptionST("STATE_PARASITE_LEECH","Chaurus Leech", _parasiteLeech as Float, OPTION_FLAG_DISABLED)
-		;   
-		; AddToggleOptionST("STATE_PARASITE_SPINE","Chaurus Spine", _parasiteSpine as Float, OPTION_FLAG_DISABLED)
-		;   
-		; AddToggleOptionST("STATE_PARASITE_HIP","Hip Hugger", _parasiteHip as Float, OPTION_FLAG_DISABLED)
-		;   
-		; AddToggleOptionST("STATE_PARASITE_TENTACLE","Tentacle Parasite", _parasiteTentacle as Float, OPTION_FLAG_DISABLED)
-		;   
-		; AddToggleOptionST("STATE_PARASITE_OOZE","Estrus Ooze", _parasiteOoze as Float, OPTION_FLAG_DISABLED)
-		;   
-		; AddToggleOptionST("STATE_PARASITE_SLIME","Slimy Living Armor", _parasiteSlime as Float, OPTION_FLAG_DISABLED)
-		;   
-		; AddToggleOptionST("STATE_PARASITE_SCALE","Scaled Living Armor", _parasiteScaled as Float, OPTION_FLAG_DISABLED)
-		;   
-		; AddToggleOptionST("STATE_PARASITE_FURO","Furo traps", _parasiteFuro as Float, OPTION_FLAG_DISABLED)
-		;   
-		; AddToggleOptionST("STATE_PARASITE_ESTRUS","Estrus Chaurus traps", _parasiteEstrus as Float, OPTION_FLAG_DISABLED)
-		;   
-		; AddToggleOptionST("STATE_PARASITE_SPRIGGAN","Spriggan Roots", _parasiteSpriggan as Float, OPTION_FLAG_DISABLED)
-
-		
  
-
 	endIf
 endEvent
 
@@ -346,7 +300,31 @@ state STATE_FETISH_MOD ; SLIDER
 	endEvent
 endState
 
+; AddToggleOptionST("STATE_MILKFARM_BREAST","Max breast size", _breastMaxMilkFarm  as Float, OPTION_FLAG_DISABLED)
+state STATE_MILKFARM_BREAST ; SLIDER
+	event OnSliderOpenST()
+		SetSliderDialogStartValue( StorageUtil.GetFloatValue(kPlayer, "_SLS_breastMaxMilkFarm"  ) )
+		SetSliderDialogDefaultValue( 2.0 )
+		SetSliderDialogRange( 0.0, 4.0 )
+		SetSliderDialogInterval(0.1)
+	endEvent
 
+	event OnSliderAcceptST(float value)
+		float thisValue = value 
+		StorageUtil.SetFloatValue(kPlayer, "_SLS_breastMaxMilkFarm", thisValue )
+		SetSliderOptionValueST( thisValue,"{1}" )
+		kPlayer.SendModEvent("_SLSDDi_UpdateCow")
+	endEvent
+
+	event OnDefaultST()
+		StorageUtil.SetFloatValue(kPlayer, "_SLS_breastMaxMilkFarm", 2.0 )
+		SetSliderOptionValueST( 2.0,"{1}" )
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Max size of breast node while lactation is ON (for NiOverride compatiblity).")
+	endEvent
+endState
 
 
 float function fMin(float  a, float b)

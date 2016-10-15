@@ -8,14 +8,8 @@ SexLabFramework     property SexLab Auto
 
 GlobalVariable Property _SLS_FetishID  Auto  
 slaUtilScr Property slaUtil  Auto  
- 
 
-
-; bool nateOnMount = Nate.IsOnMount()
-
-; if (Game.QueryStat("Houses Owned") == 5)
-;     Debug.Trace("Player owns 5 houses!")
-; endif
+ObjectReference Property LotteRef Auto
 
  
 Keyword Property ArmorOn  Auto  
@@ -72,6 +66,7 @@ Faction Property HagravenFaction  Auto
 Faction Property DwemerBotFaction  Auto  
 Faction Property DraugrFaction  Auto  
 Faction Property AtronachFlameFaction  Auto  
+Faction Property SprigganFaction  Auto  
 
 Spell Property NordicQueenPolymorph Auto
 Quest Property NordicQueenGauldurQuest Auto
@@ -94,11 +89,11 @@ Function _Maintenance()
 		StorageUtil.SetIntValue(none, "_SLS_iStories", 1)
 	EndIf
 
-	; UnregisterForAllModEvents()
-	Debug.Trace("SexLab Stories: Reset SexLab events")
-	RegisterForModEvent("AnimationStart", "OnSexLabStart")
-	RegisterForModEvent("AnimationEnd",   "OnSexLabEnd")
-	RegisterForModEvent("OrgasmStart",    "OnSexLabOrgasm")
+	UnregisterForAllModEvents()
+	; Debug.Trace("SexLab Stories: Reset SexLab events")
+	; RegisterForModEvent("AnimationStart", "OnSexLabStart")
+	; RegisterForModEvent("AnimationEnd",   "OnSexLabEnd")
+	; RegisterForModEvent("OrgasmStart",    "OnSexLabOrgasm")
 
 	; Player holder registration of player start story events - will be replaced by their own quest eventually
 	RegisterForModEvent("_SLS_PCStartRedWave", "OnPCStartRedWave")
@@ -120,6 +115,8 @@ Function _Maintenance()
 		StorageUtil.SetIntValue(PlayerActor, "_SLS_toggleNPCRumors",1 )
 		_SLS_NPCRumorsON.SetValue( 1 )
 	endif
+
+	StorageUtil.SetFormValue(none, "_SLS_UniqueActorLotte", LotteRef as Form)
 
 	_InitExternalPregancy()
 EndFunction
@@ -154,6 +151,8 @@ Event OnPCStartSexbot(String _eventName, String _args, Float _argc = -1.0, Form 
 	StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryLevel", 5)
 	StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryExposure", 500)
 
+	SendModEvent("_SLS_PlayerSexBot")
+
 	Debug.MessageBox(">Who am I?\nMemory banks corrupted.\n>Where am I?\nThe Forge.\n> Why am I here?\nMemory banks corrupted.")
 
 EndEvent
@@ -169,14 +168,16 @@ Event OnPCStartPet(String _eventName, String _args, Float _argc = -1.0, Form _se
 	PlayerActor.addtofaction(AtronachFlameFaction) 
 	StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryLevel", 5)
 	StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryExposure", 500)
-	PlayerActor.SendModEvent("SDEquipDevice",   "Gag", 1)
-	PlayerActor.SendModEvent("SDEquipDevice",   "PlugAnal", 1)
-	PlayerActor.SendModEvent("SDEquipDevice",   "Plugvaginal", 1)
-	PlayerActor.SendModEvent("SDEquipDevice",   "Belt", 1)
-	PlayerActor.SendModEvent("SDEquipDevice",   "Armbinder", 1)
-	PlayerActor.SendModEvent("SDEquipDevice",   "Collar", 1)
+	PlayerActor.SendModEvent("SDEquipDevice",   "Gag")
+	PlayerActor.SendModEvent("SDEquipDevice",   "PlugAnal")
+	PlayerActor.SendModEvent("SDEquipDevice",   "Plugvaginal")
+	PlayerActor.SendModEvent("SDEquipDevice",   "Belt")
+	PlayerActor.SendModEvent("SDEquipDevice",   "Armbinder")
+	PlayerActor.SendModEvent("SDEquipDevice",   "Collar")
 	; PlayerActor.SendModEvent("SDEquipDevice",   "Harness")
 	; PlayerActor.SendModEvent("SDEquipDevice",   "Yoke")
+
+	SendModEvent("_SLS_PlayerPet")
 
 	Debug.MessageBox("There is your master and the fire repressed inside you. Nothing else. Your master gave you a new life. Who you were before doesn't matter anymore. Only your master and the fire.")
 
@@ -191,11 +192,15 @@ Event OnPCStartMilkFarm(String _eventName, String _args, Float _argc = -1.0, For
 	PlayerActor.MoveTo(SLS_PlayerMilkFarmStartMarker)
 	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast", 2.0 ) 
 	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fWeight", 100.0 ) 
-	PlayerActor.SendModEvent("SLHRefresh")
+	PlayerActor.SendModEvent("SLHRefresh") 
 	PlayerActor.SendModEvent("_SLSDDi_EquipMilkingDevice")
 
 	StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryLevel", 2)
 	StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryExposure", 20)
+
+	PlayerActor.SendModEvent("_SLSDDi_UpdateCow")
+
+	SendModEvent("_SLS_PlayerMilkFarm")
 
 	Debug.MessageBox("You are so happy as one of Mistress Leonara's special flock. Each day, you can feel more milk flowing through your heavy breasts. If only you could find a way to produce more milk for her Divine Cheese...")
 
@@ -207,25 +212,37 @@ Event OnPCStartAlicia(String _eventName, String _args, Float _argc = -1.0, Form 
 
 	StorageUtil.SetIntValue(none, "_SLS_iPlayerStartAlicia", 1)
 
-	PlayerActor.SendModEvent("SDEquipDevice",   "Collar", 10)
-	PlayerActor.SendModEvent("SDEquipDevice",   "LegCuffs", 10)
+	; Equip with sanguine bindings only
+	; Rest of gear is normal
+	; 	- restrictive collar
+	; 	- harness or corset
+	; 	- boots
+
+	PlayerActor.SendModEvent("SDEquipDevice",   "Collar:restrictive")
+	PlayerActor.SendModEvent("SDEquipDevice",   "Corset:restrictive")
+	PlayerActor.SendModEvent("SDEquipDevice",   "Gloves:restrictive")
+	PlayerActor.SendModEvent("SDEquipDevice",   "Boots:restrictive")
+	PlayerActor.SendModEvent("SDEquipDevice",   "Gag:harness,ring")
+	; PlayerActor.SendModEvent("SDEquipDevice",   "Blindfold")
+	; PlayerActor.SendModEvent("SDEquipDevice",   "LegCuffs")
 
 	If (!StorageUtil.HasIntValue(none, "_SD_iSanguine")) && (!StorageUtil.HasIntValue(none, "_SD_version"))
 		PlayerActor.MoveTo(SLS_PlayerAliciaStartMarker)
 	Else
-		PlayerActor.SendModEvent("SDDreamworldStart")
+		PlayerActor.SendModEvent("SDDreamworldStart", "", 5)
 	EndIf
 
 	; a - r - g - b
 	Int iAliciaHairColor = Math.LeftShift(255, 24) + Math.LeftShift(60, 16) + Math.LeftShift(16, 8) + 13
 	StorageUtil.SetIntValue(PlayerActor, "_SLH_iHairColor", iAliciaHairColor ) 
-	PlayerActor.SendModEvent("SLHRefresh")
+	PlayerActor.SendModEvent("SLHRefreshColors")
 
 	PlayerActor.addtofaction(DremoraFaction) 
 
 	StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryLevel", 5)
 	StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryExposure", 500)
-	PlayerActor.SendModEvent("SDSanguineBlessingMod",  20)
+
+	SendModEvent("_SLS_PlayerAlicia")
 
 	Debug.MessageBox("Lord Sanguine has chosen you as a concubine. It is up to you to embrace his gift, revel in his debauchery and, if you survive, even earn his love.")
 
@@ -239,14 +256,20 @@ Event OnPCStartSpriggan(String _eventName, String _args, Float _argc = -1.0, For
 
 	PlayerActor.MoveTo(SLS_PlayerSprigganStartMarker)
 
+	PlayerActor.addtofaction(SprigganFaction) 
+
 	Int iSprigganSkinColor = Math.LeftShift(255, 24) + Math.LeftShift(196, 16) + Math.LeftShift(238, 8) + 218
 	StorageUtil.SetIntValue(PlayerActor, "_SLH_iSkinColor", iSprigganSkinColor ) 
 	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast", 0.8 ) 
 	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fWeight", 20.0 ) 
 	StorageUtil.SetIntValue(PlayerActor, "_SLH_iForcedHairLoss", 1)
+	PlayerActor.SendModEvent("SLHShaveHead")
 	PlayerActor.SendModEvent("SLHRefresh")
+	PlayerActor.SendModEvent("SLHRefreshColors")
 	StorageUtil.SetIntValue(PlayerActor, "_SD_iSprigganEnslavedCount",5)
 	SendModEvent("SDSprigganEnslave")
+
+	SendModEvent("_SLS_PlayerSpriggan")
 
 	Debug.MessageBox("You are finally free to serve Kyne and tend to her flock. Her sweet sap pumps through your veins and makes you one with her creation.")
 
@@ -273,7 +296,9 @@ Event OnPCStartKin(String _eventName, String _args, Float _argc = -1.0, Form _se
 		StorageUtil.FormListAdd(PlayerActor,"FW.ChildFather", none )
 	EndIf
 
-	Debug.MessageBox("Times have been tough since Mother passed. Fortunately, Ri'Kin was there to take care of me and my adoptive siblings. As his sister-wives, I am so happy to bear his children and continue the covenant he has made with the Hargavens. Soon, I will give birth and this child will be theirs to take. But no matter, there will be another child soon growing inside me.. another child to replace the void.")
+	SendModEvent("_SLS_PlayerKin")
+
+	Debug.MessageBox("Times have been tough since Mother passed. Fortunately, Ri'Kin was there to take care of me and my adoptive siblings. As his sister-wives, I have to bear his children and continue the covenant he has made with the Hargavens. Soon, I will give birth and this child will be theirs to take. But no matter, there will be another child soon growing inside me.. another child to replace the void.")
 
 EndEvent
 
@@ -331,7 +356,11 @@ Event OnPCStartChaurusQueen(String _eventName, String _args, Float _argc = -1.0,
 	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast", 3.0 ) 
 	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fWeight", 100.0 ) 
 	StorageUtil.SetIntValue(PlayerActor, "_SLH_iForcedHairLoss", 1)
+	PlayerActor.SendModEvent("SLHShaveHead")
 	PlayerActor.SendModEvent("SLHRefresh")
+	PlayerActor.SendModEvent("SLHRefreshColors")
+
+	SendModEvent("_SLS_PlayerChaurusQueen")
 
 	Debug.MessageBox("Repeated exposure to the Falmer's foul touch changed your body. Your growing breasts and pale blue skin make your purpose clear... you are theirs to breed.")
 EndEvent
@@ -346,6 +375,8 @@ Event OnPCStartBroodMaiden(String _eventName, String _args, Float _argc = -1.0, 
 	PlayerActor.addtofaction(ChaurusFaction) 
 	; StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryLevel", 1)
 	; StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryExposure", 10)
+
+	SendModEvent("_SLS_PlayerBroodMaiden")
 
 	Debug.MessageBox("Your childhood friend, Lotte, has convinced you to follow her in a more simple life, closer to the wildlife she loves so much. Especially the Chaurus for she now calls herself the Brood Maiden. Will you assist her in her new life?")
 
@@ -510,20 +541,21 @@ Event OnCombatStateChanged(Actor akTarget, int aeCombatState)
 	EndIf
 EndEvent
 
-Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile, bool abPowerAttack, bool abSneakAttack, bool abBashAttack, bool abHitBlocked)
-	ObjectReference akActorREF= Game.GetPlayer() as ObjectReference
-	Actor akActor= Game.GetPlayer()
+; Too costly using OnHit events - Replace by alternate method of combat detection
+; Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile, bool abPowerAttack, bool abSneakAttack, bool abBashAttack, bool abHitBlocked)
+; 	ObjectReference akActorREF= Game.GetPlayer() as ObjectReference
+; 	Actor akActor= Game.GetPlayer()
 
-	if (Utility.RandomInt(0, 100) > iArousalThrottle)
-		Return
-	Endif
+; 	if (Utility.RandomInt(0, 100) > iArousalThrottle)
+; 		Return
+; 	Endif
 
-	If (akAggressor != None) && (_SLS_FetishID.GetValue() == 12) 
+; 	If (akAggressor != None) && (_SLS_FetishID.GetValue() == 12) 
 		;  Debug.Trace("We were hit by " + akAggressor)
 
-		slaUtil.UpdateActorExposure(akRef = akActor, val = 1, debugMsg = "being hit.")
-	EndIf
-EndEvent
+; 		slaUtil.UpdateActorExposure(akRef = akActor, val = 1, debugMsg = "being hit.")
+; 	EndIf
+; EndEvent
 
 
 
@@ -619,7 +651,7 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
     Float fBreastScale 
 
 	if !Self || !SexLab 
-		Debug.Trace("SexLab Stories: Critical error on SexLab End")
+	;	Debug.Trace("SexLab Stories: Critical error on SexLab End")
 		Return
 	EndIf
 
@@ -645,7 +677,7 @@ Event OnSexLabOrgasm(String _eventName, String _args, Float _argc, Form _sender)
 	Float fBreastScale 
 
 	if !Self || !SexLab 
-		Debug.Trace("SexLab Stories: Critical error on SexLab Orgasm")
+	;	Debug.Trace("SexLab Stories: Critical error on SexLab Orgasm")
 		Return
 	EndIf
 
@@ -726,8 +758,8 @@ Bool Function _hasRace(Actor[] _actors, Race thisRace)
 	int idx = 0
 	while idx < _actors.Length
 		if (_actors[idx])
-			aBase = _actors[idx].GetBaseObject() as ActorBase
-			aRace = aBase.GetRace()
+			; aBase = _actors[idx].GetBaseObject() as ActorBase
+			aRace = _actors[idx].GetLeveledActorBase().GetRace()
 			if aRace == thisRace
 				return True
 			endif

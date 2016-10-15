@@ -19,9 +19,12 @@ SPELL Property ReanimateCorpse  Auto
 SPELL Property CharmDraugr  Auto  
 SPELL Property SummonGhost  Auto  
 
+Keyword Property SLS_NordQueenFX Auto
 
 Race Property DraugrRace Auto
 Race Property NordRace Auto
+
+Faction Property draugrFaction Auto
 
 GlobalVariable Property PlayerNordQueenStage Auto
 Quest Property SLS_PlayerNordQueenQuest  Auto  
@@ -59,9 +62,9 @@ Function _Maintenance()
 	 	StorageUtil.SetIntValue(none, "_SLS_iStoriesPlayerNordQueen", 0)
 	EndIf
 
-	; UnregisterForAllModEvents()
+	UnregisterForAllModEvents()
 	; Debug.Trace("SexLab Stories: Reset SexLab events")
-	RegisterForModEvent("AnimationStart", "OnSexLabStart")
+	; RegisterForModEvent("AnimationStart", "OnSexLabStart")
 	RegisterForModEvent("AnimationEnd",   "OnSexLabEnd")
 	RegisterForModEvent("OrgasmStart",    "OnSexLabOrgasm")
 
@@ -72,6 +75,7 @@ Function _Maintenance()
 EndFunction
 
 Event OnUpdate()
+ 	Actor PlayerActor= Game.GetPlayer() as Actor
 
  	daysPassed = Game.QueryStat("Days Passed")
 
@@ -84,6 +88,10 @@ Event OnUpdate()
 
 	If (iDaysSinceLastCheck > 0)
 		; iDebtLastCheck = PlayerRedWaveDebt.GetValue() as Int
+
+	elseIf (StorageUtil.GetIntValue(none, "_SLS_iStoriesPlayerNordQueen")==1) && (iSexEnergy < 20)
+		_RefreshQueenFX()
+
 	endIf
 
 	iGameDateLastCheck = daysPassed  
@@ -91,14 +99,17 @@ Event OnUpdate()
 	RegisterForSingleUpdate(10)
 EndEvent
 
+
 Event OnLocationChange(Location akOldLoc, Location akNewLoc)
 	ObjectReference akActorREF= Game.GetPlayer() as ObjectReference
 	Actor akActor= Game.GetPlayer()
 	Int daysSinceLastPass 
 	Int iGold 
 
- 	; Not used for now
+	If (StorageUtil.GetIntValue(none, "_SLS_iStoriesPlayerNordQueen")==1) && (iSexEnergy < 20)
+		_RefreshQueenFX()
 
+	endIf
 EndEvent
 
 Event OnPlayerNordQueen(String _eventName, String _args, Float _argc = -1.0, Form _sender)
@@ -127,6 +138,7 @@ Event OnPlayerNordQueen(String _eventName, String _args, Float _argc = -1.0, For
 	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast", 0.2 ) 
 	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fWeight", 0.0 ) 
 	StorageUtil.SetIntValue(PlayerActor, "_SLH_iForcedHairLoss", 1)
+	PlayerActor.SendModEvent("SLHShaveHead")
 	PlayerActor.SendModEvent("SLHRefresh")
 
 	ModEvent.Send(ModEvent.Create("HoSLDD_GivePlayerPowers"))
@@ -144,9 +156,13 @@ Event OnPlayerNordQueen(String _eventName, String _args, Float _argc = -1.0, For
 		SLS_PlayerNordQueenQuest.SetStage(10)
 	EndIf
 
+	PlayerActor.addtofaction(DraugrFaction) 
+
 	StorageUtil.GetIntValue(PlayerActor, "_SLSL_iNordQueenPolymorphStage", 0)
 	PlayerNordQueenStage.SetValue(0)
 	iSexEnergy = 0
+	; PlayerActor.SetGhost()
+	; PlayerActor.SetAlpha(0.5)
 	NordQueenStage0FX.Cast(PlayerActor,PlayerActor)
 
 EndEvent
@@ -159,10 +175,14 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 	Float fBreastScale 
 
  
-	if !Self || !SexLab || (StorageUtil.GetIntValue(none, "_SLS_iStoriesPlayerNordQueen")==0)
+	if !Self || !SexLab 
 		Debug.Trace("SexLab Stories: Critical error on SexLab Start")
 		Return
 	EndIf
+
+	If (StorageUtil.GetIntValue(none, "_SLS_iStoriesPlayerNordQueen")==0)
+		Return
+	endif
 	
 	; Debug.Notification("SexLab Hormones: Sex start")
 
@@ -199,7 +219,7 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
     Float fBreastScale 
 
 	if !Self || !SexLab  || (StorageUtil.GetIntValue(none, "_SLS_iStoriesPlayerNordQueen")==0)
-		Debug.Trace("SexLab Stories: Critical error on SexLab End")
+	;	Debug.Trace("SexLab Stories: Critical error on SexLab End")
 		Return
 	EndIf
 
@@ -224,15 +244,18 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 			iSexEnergy = 0
 		EndIf
 		
-		If (PlayerNordQueenStage.GetValue()==0) && (iSexEnergy >= 1)
+		If (PlayerNordQueenStage.GetValue()!=1) && (iSexEnergy >= 1) && (iSexEnergy < 5)
 			if (!PlayerActor.HasSpell(RaiseZombie))
 				PlayerActor.AddSpell(RaiseZombie)
 			endif
 
-		
+			PlayerActor.addtofaction(DraugrFaction) 		
 			StorageUtil.SetIntValue(PlayerActor, "_SLSL_iNordQueenPolymorphStage", 1)
 			PlayerNordQueenStage.SetValue(1)
+			; PlayerActor.SetGhost()
+			; PlayerActor.SetAlpha(0.8)
 			PlayerActor.DispelSpell(NordQueenStage0FX)
+			PlayerActor.DispelSpell(NordQueenStage2FX)
 			NordQueenStage1FX.Cast(PlayerActor,PlayerActor)
 
 			StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast", 0.5 ) 
@@ -242,14 +265,18 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 
 			Debug.MessageBox("The sweet taste of life force at last! You feel stronger as you skin regains some substance.")
 
-		ElseIf (PlayerNordQueenStage.GetValue()==1) && (iSexEnergy >= 10)
+		ElseIf (PlayerNordQueenStage.GetValue()!=2) && (iSexEnergy >= 5) && (iSexEnergy < 10)
 			if (!PlayerActor.HasSpell(ReanimateCorpse))
 				PlayerActor.AddSpell(ReanimateCorpse)
 			endif
 
+			PlayerActor.addtofaction(DraugrFaction) 			
 			StorageUtil.SetIntValue(PlayerActor, "_SLSL_iNordQueenPolymorphStage", 2)
 			PlayerNordQueenStage.SetValue(2)
+			; PlayerActor.SetGhost()
+			; PlayerActor.SetAlpha(0.9)
 			PlayerActor.DispelSpell(NordQueenStage1FX)
+			PlayerActor.DispelSpell(NordQueenStage3FX)
 			NordQueenStage2FX.Cast(PlayerActor,PlayerActor)
 
 			StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast", 1.0 ) 
@@ -259,14 +286,17 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 
 			Debug.MessageBox("Sensations are slowly reaching your soul again, like an owverwhelming swarm of pins and needles.")
 
-		ElseIf (PlayerNordQueenStage.GetValue()==2) && (iSexEnergy >= 20)
+		ElseIf (PlayerNordQueenStage.GetValue()!=3) && (iSexEnergy >= 10) && (iSexEnergy < 20)
 			if (!PlayerActor.HasSpell(CharmDraugr))
 				PlayerActor.AddSpell(CharmDraugr)
 			Endif
 
+			PlayerActor.addtofaction(DraugrFaction) 
 			StorageUtil.SetIntValue(PlayerActor, "_SLSL_iNordQueenPolymorphStage", 3)
 			PlayerNordQueenStage.SetValue(3)
-			PlayerActor.DispelSpell(NordQueenStage2FX)
+			; PlayerActor.SetGhost(false)
+			; PlayerActor.SetAlpha(1.0)
+			PlayerActor.DispelSpell(NordQueenStage2FX) 
 			NordQueenStage3FX.Cast(PlayerActor,PlayerActor)
 
 			StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast", 1.5 ) 
@@ -276,11 +306,12 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 
 			Debug.MessageBox("You can feel the cold caress of air on your skin and the wetness between your legs. Your transformation is almost complete.")
 
-		ElseIf (PlayerNordQueenStage.GetValue()==3) && (iSexEnergy >= 50)
+		ElseIf (PlayerNordQueenStage.GetValue()!=4) && (iSexEnergy >= 20)
 			if (!PlayerActor.HasSpell(SummonGhost))
 				PlayerActor.AddSpell(SummonGhost)
 			endif
 
+			PlayerActor.removefromfaction(DraugrFaction) 
 			StorageUtil.SetIntValue(PlayerActor, "_SLSL_iNordQueenPolymorphStage", 4)
 			PlayerNordQueenStage.SetValue(4)
 			PlayerActor.DispelSpell(NordQueenStage3FX)
@@ -293,7 +324,7 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 
 			Debug.MessageBox("Reborn at last... you have now regained your lost beauty.")
 
-			Game.ShowRaceMenu()
+			; Game.ShowRaceMenu()
 		EndIf
 
 
@@ -307,7 +338,7 @@ Event OnSexLabOrgasm(String _eventName, String _args, Float _argc, Form _sender)
 	Float fBreastScale 
 
 	if !Self || !SexLab  || (StorageUtil.GetIntValue(none, "_SLS_iStoriesPlayerNordQueen")==0)
-		Debug.Trace("SexLab Stories: Critical error on SexLab Orgasm")
+	;	Debug.Trace("SexLab Stories: Critical error on SexLab Orgasm")
 		Return
 	EndIf
 
@@ -321,18 +352,18 @@ Event OnSexLabOrgasm(String _eventName, String _args, Float _argc, Form _sender)
 		;	Debug.Trace("SexLab Stories: Orgasm!")
 			iSexEnergy = iSexEnergy + 1
 			Debug.Notification("You can drain some Nord essence from sex with a draugr")
-			Debug.Notification("Recovery stage " + iSexEnergy)
+			Debug.Notification("Recovery energy " + iSexEnergy)
 			bUpdateStage = true
 		ElseIf (_hasRace(actors, NordRace))
 		;	Debug.Trace("SexLab Stories: Orgasm!")
 			iSexEnergy = iSexEnergy + 5
 			Debug.Notification("You can drain pure Nord essence from sex with a Nord")
-			Debug.Notification("Recovery stage " + iSexEnergy)
+			Debug.Notification("Recovery energy " + iSexEnergy)
 			bUpdateStage = true
 		Else
 			iSexEnergy = iSexEnergy - 1
 			Debug.Notification("Sex with a non Nord drains you")
-			Debug.Notification("Recovery stage " + iSexEnergy)
+			Debug.Notification("Recovery energy " + iSexEnergy)
 			bUpdateStage = true
  
 		EndIf
@@ -340,6 +371,24 @@ Event OnSexLabOrgasm(String _eventName, String _args, Float _argc, Form _sender)
 	
 EndEvent
 
+
+Function _RefreshQueenFX()
+ 	Actor PlayerActor= Game.GetPlayer() as Actor
+	; Reapply magic effect if dispelled by cure disease or altar
+	if (!PlayerActor.HasMagicEffectWithKeyword(SLS_NordQueenFX)) && (PlayerNordQueenStage.GetValue()!=4)
+		Debug.Notification("[SLS] Skin refresh - Stage:" + PlayerNordQueenStage.GetValue() as Int)
+
+		if (PlayerNordQueenStage.GetValue()==0)
+			NordQueenStage0FX.Cast(PlayerActor,PlayerActor)
+		elseif (PlayerNordQueenStage.GetValue()==1)
+			NordQueenStage1FX.Cast(PlayerActor,PlayerActor)
+		elseif (PlayerNordQueenStage.GetValue()==2)
+			NordQueenStage2FX.Cast(PlayerActor,PlayerActor)
+		elseif (PlayerNordQueenStage.GetValue()==3)
+			NordQueenStage3FX.Cast(PlayerActor,PlayerActor)
+		endIf
+	endIf
+EndFunction
 
 Function _InitExternalPregancy()
 	bEstrusChaurus = false
@@ -436,8 +485,9 @@ Bool Function _hasRace(Actor[] _actors, Race thisRace)
 	int idx = 0
 	while idx < _actors.Length
 		if (_actors[idx]) && (_actors[idx] != kPlayer )
-			aBase = _actors[idx].GetBaseObject() as ActorBase
-			aRace = aBase.GetRace()
+			; aBase = _actors[idx].GetBaseObject() as ActorBase
+			; aRace = aBase.GetRace()
+			aRace = _actors[idx].GetLeveledActorBase().GetRace()
 			if (aRace == thisRace)
 				return True
 			endif

@@ -21,7 +21,7 @@ Function _Maintenance()
 	RegisterForModEvent("OrgasmStart",    "OnSexLabOrgasm")
 
 	; StorageUtil.SetIntValue(SexBotActor, "_SD_iCanBeEnslaved", 0)
-	StorageUtil.SetIntValue(SexBotActor, "_SD_iCanBeStripped", 0)
+	StorageUtil.SetIntValue(SexBotActor, "_SD_iCanBeStripped", -1)
 
 	StorageUtil.SetIntValue(SexBotActor, "_SD_iRelationshipType" , 5 )
 
@@ -180,8 +180,8 @@ Bool Function _hasRace(Actor[] _actors, Race thisRace)
 	int idx = 0
 	while idx < _actors.Length
 		if (_actors[idx])
-			aBase = _actors[idx].GetBaseObject() as ActorBase
-			aRace = aBase.GetRace()
+			; aBase = _actors[idx].GetBaseObject() as ActorBase
+			aRace = _actors[idx].GetLeveledActorBase().GetRace()
 			if aRace == thisRace
 				return True
 			endif
