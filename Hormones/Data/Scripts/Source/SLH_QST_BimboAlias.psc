@@ -294,13 +294,17 @@ Event OnUpdate()
 
     Endif
 
-    If (StorageUtil.GetIntValue(BimboActor, "_SD_iSlaveryLevel") != 6)
+    If (StorageUtil.GetIntValue(BimboActor, "_SD_iSlaveryExposure") <= 150)
         StorageUtil.SetIntValue(BimboActor, "_SD_iSlaveryExposure", 150)
-        StorageUtil.SetIntValue(BimboActor, "_SD_iSlaveryLevel", 6)
     EndIf
         
-    If (StorageUtil.GetIntValue(BimboActor, "_SD_iDom") != 0)
+    StorageUtil.SetIntValue(BimboActor, "_SD_iSlaveryLevel", 6)
+    If (StorageUtil.GetIntValue(BimboActor, "_SD_iDom") > 0)
+    	Debug.Messagebox("A wave of submissiveness washes over you. A bimbo doesn't need to think, she needs only to server her master as a perfect slave. Remember your place little slut.")
         StorageUtil.SetIntValue(BimboActor, "_SD_iDom", 0)
+    EndIf
+    If (StorageUtil.GetIntValue(BimboActor, "_SD_iSub") < 0)
+        StorageUtil.SetIntValue(BimboActor, "_SD_iSub", 0)
     EndIf
 
     updateClumsyBimbo() ;[mod] clumsy bimbo
@@ -394,7 +398,7 @@ Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile,
 		float bimboArousal = slaUtil.GetActorArousal(BimboActor) as float
 		float dropchance = 1.0 + (bimboArousal / 30.0 ) * (GV_bimboClumsinessMod.GetValue() as Float)
 		; Debug.Trace("[slh+] bimbo beeing hit, drop chance: " + dropchance)
-      	If Utility.RandomInt() <= dropchance ; && (!(akAggressor as Actor).IsInFaction(pCreatureFaction)))
+      	If (Utility.RandomInt(0,100) <= dropchance) &&  (GV_bimboClumsinessMod.GetValue()!=0); && (!(akAggressor as Actor).IsInFaction(pCreatureFaction)))
 				;
 
 			Debug.Notification("The enemy made you lose your grip!")
@@ -645,9 +649,9 @@ function clumsyBimboHands(int actionType, Actor bimbo, Form source, int slot)
 	endif
 
 	;TODO check long nails (equipped at the bad end), dropchance *= 2 
-	int roll = Utility.RandomInt()
+	int roll = Utility.RandomInt(0,100)
 	; debug.trace("[slh+] bimbo clumsy hands, drop chance/roll = " + dropchance + "/" + roll)
-	if roll <= (dropchance) as int
+	if (roll <= (dropchance) as int) && (GV_bimboClumsinessMod.GetValue() != 0)
 		handMessage = randomBimboHandsMessage(bimboArousal, actionType)
 		if actionType == 5
 			; bow fumble
@@ -725,7 +729,7 @@ function clumsyBimboLegs(Actor bimbo)
 
 			int roll = Utility.RandomInt()
 			; debug.trace("[slh+] ------- stumble [" + roll + " < " + tumbleChance + "]?")
-			if (roll <= tumbleChance)
+			if (roll <= tumbleChance) && (GV_bimboClumsinessMod.GetValue()!=0)
 				If (bimboClumsyBuffer < ( 7 - (GV_bimboClumsinessMod.GetValue() as Int) * 6) )
 					bimboClumsyBuffer = bimboClumsyBuffer + 1
 				else

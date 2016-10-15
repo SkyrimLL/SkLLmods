@@ -5,8 +5,8 @@ Import Math
 
 SLH_fctUtil Property fctUtil Auto
 
-Int iBlueSkinColor = 0
-Int iRedSkinColor = 0
+Int iBlueSkinColor = -1
+Int iRedSkinColor = -1
 Int iSuccubusBlueSkinColor = 0
 Int iSuccubusRedSkinColor = 0
 Int iOrigSkinColor = 0
@@ -72,7 +72,7 @@ function alterColorAfterRest(Actor kActor)
 		debugTrace("[SLH]  fColorOffset: " + fColorOffset )
 		debugTrace("[SLH]  rgbColorOffset: " + rgbColorOffset )
 		
-		debug.trace("[slh+] 	bimbo hair color before offset: " + StorageUtil.GetIntValue(kActor, "_SLH_iHairColor") )
+		debugTrace("[slh+] 	bimbo hair color before offset: " + StorageUtil.GetIntValue(kActor, "_SLH_iHairColor") )
 
 		; skin
 		; alterTintMask(type = 6, alpha = (255.0 * colorFactor) as Int, red = 236, green =194, blue = 184)
@@ -135,7 +135,7 @@ function alterColorAfterRest(Actor kActor)
 			; EndIf
 		EndIf
 
-		debug.trace("[slh+] 	bimbo hair color after offset: " + StorageUtil.GetIntValue(kActor, "_SLH_iHairColor") )
+		debugTrace("[slh+] 	bimbo hair color after offset: " + StorageUtil.GetIntValue(kActor, "_SLH_iHairColor") )
 
 	EndIf
 endfunction
@@ -172,7 +172,7 @@ function alterColorAfterSex(Actor kActor)
 		Int rgbColorOffset = ( (fSwellFactor as Int) * 20 / 100 ) ; max 10 increments
 		debugTrace("[SLH]  fColorOffset: " + fColorOffset )
 		debugTrace("[SLH]  rgbColorOffset: " + rgbColorOffset )
-		debug.trace("[slh+] 	bimbo hair color before offset: " + StorageUtil.GetIntValue(kActor, "_SLH_iHairColor") )
+		debugTrace("[slh+] 	bimbo hair color before offset: " + StorageUtil.GetIntValue(kActor, "_SLH_iHairColor") )
 
 		; skin
 		; alterTintMask(type = 6, alpha = (255.0 * colorFactor) as Int, red = 236, green =194, blue = 184)
@@ -208,7 +208,7 @@ function alterColorAfterSex(Actor kActor)
 			; iEyelinerColor = alterTintMaskRelativeRGB(colorBase = iEyelinerColor, maskType = 3, maskIndex = 0, aOffset = rgbColorOffset, rOffset = -5, gOffset = -5, bOffset = -5)
 		; EndIf
 
-		debug.trace("[slh+] 	bimbo hair color after offset: " + StorageUtil.GetIntValue(kActor, "_SLH_iHairColor") )
+		debugTrace("[slh+] 	bimbo hair color after offset: " + StorageUtil.GetIntValue(kActor, "_SLH_iHairColor") )
 	Endif
 endfunction
 
@@ -252,33 +252,36 @@ function setTintMask(int type = 6, int rgbacolor = 0, int setIndex = 0, Bool set
 	; Sets the tintMask color for the particular type and index
 	; r,g,b,a: 0-255 range
 
-	; Types
-	; 0 - Frekles
-	; 1 - Lips
-	; 2 - Cheeks
-	; 3 - Eyeliner
-	; 4 - Upper Eyesocket
-	; 5 - Lower Eyesocket
-	; 6 - SkinTone
-	; 7 - Warpaint
-	; 8 - Frownlines
-	; 9 - Lower Cheeks
-	; 10 - Nose
-	; 11 - Chin
-	; 12 - Neck
-	; 13 - Forehead
-	; 14 - Dirt
+
 
 	; int color = Math.LeftShift(alpha, 24) + Math.LeftShift(red, 16) + Math.LeftShift(green, 8) + blue
 	; int color = Math.LogicalOr(Math.LogicalAnd(rgb, 0xFFFFFF), Math.LeftShift((alpha * 255) as Int, 24))
 
 	if (type == 6) ; Skin
 		; Function AddSkinOverrideInt(ObjectReference ref, bool isFemale, bool firstPerson, int slotMask, int key, int index, int value, bool persist) native global
-		slotMask = 0
 
-		NiOverride.AddSkinOverrideInt(kPlayer as ObjectReference, fctUtil.isFemale(kPlayer), True, slotMask, 0, 7, rgbacolor, True)
+		NiOverride.AddSkinOverrideInt(kPlayer as ObjectReference, fctUtil.isFemale(kPlayer), True, 0, 0, 7, rgbacolor, True)
+		NiOverride.AddSkinOverrideInt(kPlayer as ObjectReference, fctUtil.isFemale(kPlayer), True, 0, 0, 8, rgbacolor, True)
+		NiOverride.AddSkinOverrideInt(kPlayer as ObjectReference, fctUtil.isFemale(kPlayer), True, 0, 0, 9, rgbacolor, True)
+		NiOverride.AddSkinOverrideInt(kPlayer as ObjectReference, fctUtil.isFemale(kPlayer), True, 0, 0, 10, rgbacolor, True)
 		; Game.SetTintMaskColor(rgbacolor, 6, 0)
 	else
+		; Types
+		; 0 - Frekles
+		; 1 - Lips
+		; 2 - Cheeks
+		; 3 - Eyeliner
+		; 4 - Upper Eyesocket
+		; 5 - Lower Eyesocket
+		; 6 - SkinTone
+		; 7 - Warpaint
+		; 8 - Frownlines
+		; 9 - Lower Cheeks
+		; 10 - Nose
+		; 11 - Chin
+		; 12 - Neck
+		; 13 - Forehead
+		; 14 - Dirt
 		setTintMaskColor(itype = type, irgbacolor = rgbacolor, isetIndex = setIndex, bsetAll = setAll)
 	endif
 
@@ -567,7 +570,7 @@ function sendSlaveTatModEvent(actor akActor, string sType, string sTatooName, in
 
         ModEvent.Send(STevent)
   	else
-  		Debug.Trace("[SLH] SLH_fctColor: Send slave tat event failed.")
+  		debugTrace("[SLH] SLH_fctColor: Send slave tat event failed.")
 	endIf
 endfunction
 
@@ -582,14 +585,16 @@ function initColorConstants(Actor kActor)
 	iRedSkinColor = Math.LeftShift(128, 24) + Math.LeftShift(200, 16) + Math.LeftShift(0, 8) + 0
 	iBlueSkinColor = Math.LeftShift(128, 24) + Math.LeftShift(50, 16) + Math.LeftShift(0, 8) + 255
 
-	if (GV_redShiftColor.GetValue() == 0)
+	if (iRedSkinColor == -1)
 		GV_redShiftColor.SetValue( Math.LeftShift(200, 16) + Math.LeftShift(0, 8) + 0 )
+		iRedSkinColor = Math.LeftShift(128, 24) + (GV_redShiftColor.GetValue() as Int)
 	Else
 		iRedSkinColor = Math.LeftShift(128, 24) + (GV_redShiftColor.GetValue() as Int)
 	EndIf
 
-	if (GV_blueShiftColor.GetValue() == 0)
+	if (iBlueSkinColor == -1)
 		GV_blueShiftColor.SetValue( Math.LeftShift(50, 16) + Math.LeftShift(0, 8) + 255 )
+		iBlueSkinColor =  Math.LeftShift(128, 24) + (GV_blueShiftColor.GetValue() as Int)
 	Else
 		iBlueSkinColor =  Math.LeftShift(128, 24) + (GV_blueShiftColor.GetValue() as Int)
 	EndIf
@@ -709,9 +714,9 @@ function refreshColors(Actor kActor)
  	ColorForm color
 
 
- 	Debug.Trace("[SLH] Hair Color in storage: " + 	StorageUtil.GetIntValue(kActor, "_SLH_iHairColor") )
- 	Debug.Trace("[SLH] - Original Hair Color in storage: " + 	StorageUtil.GetIntValue(kActor, "_SLH_iOrigHairColor") )
- 	Debug.Trace("[SLH] - Current Hair Color: " + 	colorFormtoRGBA (pLeveledActorBase.GetHairColor()))
+ 	debugTrace("[SLH] Hair Color in storage: " + 	StorageUtil.GetIntValue(kActor, "_SLH_iHairColor") )
+ 	debugTrace("[SLH] - Original Hair Color in storage: " + 	StorageUtil.GetIntValue(kActor, "_SLH_iOrigHairColor") )
+ 	debugTrace("[SLH] - Current Hair Color: " + 	colorFormtoRGBA (pLeveledActorBase.GetHairColor()))
 
 	if (GV_useColors.GetValue() == 1)
 		getColorState(kActor)

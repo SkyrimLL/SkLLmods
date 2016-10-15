@@ -139,6 +139,7 @@ function bimboTransformEffectON(actor kActor)
     debugTrace("[SLH] Bimbo Transform Init")
     debugTrace("[SLH] Bimbo Transform ON")
 
+    ActorOriginalRace = kActor.GetRace()
     StorageUtil.SetFormValue(none, "_SLH_bimboOriginalActor", kActor)           
     StorageUtil.SetFormValue(none, "_SLH_bimboOriginalRace", ActorOriginalRace)           
 
@@ -149,7 +150,7 @@ function bimboTransformEffectON(actor kActor)
         setSchlong = True
     endif
 
-    kActor.UnequipAll()
+    ; kActor.UnequipAll()
 
     ; kActor.RemoveAllItems(LycanStash)
 
@@ -198,6 +199,34 @@ function bimboTransformEffectON(actor kActor)
     endif
    
 
+    If (isActorMale) 
+        ; Do not switch sex for female -> bimbo
+        Utility.Wait(1.0)
+        HRTEffectON( kActor)
+
+        Utility.Wait(1.0)
+        TGEffectON( kActor)
+
+        StorageUtil.SetFloatValue(kActor, "_SLH_fWeight",  0.0)
+        StorageUtil.SetFloatValue(kActor, "_SLH_fBreast",  0.9)
+        StorageUtil.SetFloatValue(kActor, "_SLH_fButt",  0.9)
+
+    ElseIf (!isActorMale) && (GV_allowBimbo.GetValue()==0)
+        ; Allow sex change if bimbo effect is OFF
+        Utility.Wait(1.0)
+        HRTEffectON( kActor)
+
+        Utility.Wait(1.0)
+        TGEffectON( kActor)
+
+    ElseIf (!isActorMale) 
+        ; Allow sex change if bimbo effect is OFF
+
+        Utility.Wait(1.0)
+        TGEffectON( kActor)
+
+    EndIf
+
     If (GV_allowBimboRace.GetValue()==1)
         _actorPresets = new int[4]
         _actorMorphs = new float[19]
@@ -208,7 +237,7 @@ function bimboTransformEffectON(actor kActor)
         fctBodyShape.SaveFaceValues( Bimbo as Actor , _bimboPresets,  _bimboMorphs )
 
         ; get actor's race so we have it permanently for werewolf switch back
-        ActorOriginalRace = kActor.GetRace()
+        ; ActorOriginalRace = kActor.GetRace()
         ;   debugTrace("CSQ: Storing actor's race as " + ActorOriginalRace)
 
         if     (ActorOriginalRace == ArgonianRaceVampire)
@@ -381,34 +410,6 @@ function bimboTransformEffectON(actor kActor)
     Debug.Messagebox("A heatwave of pure lust suddenly rips through your body, molding your features and turning your skin into liquid fire. The shock leaves you breathless... light headed... panting even.")
     Debug.Messagebox("[Technical note - Once the transformation is complete, you should reset SexLab using the Clean Up option.]")
 
-    If (isActorMale) 
-        ; Do not switch sex for female -> bimbo
-        Utility.Wait(1.0)
-        HRTEffectON( kActor)
-
-        Utility.Wait(1.0)
-        TGEffectON( kActor)
-
-        StorageUtil.SetFloatValue(kActor, "_SLH_fWeight",  0.0)
-        StorageUtil.SetFloatValue(kActor, "_SLH_fBreast",  0.9)
-        StorageUtil.SetFloatValue(kActor, "_SLH_fButt",  0.9)
-
-    ElseIf (!isActorMale) && (GV_allowBimbo.GetValue()==0)
-        ; Allow sex change if bimbo effect is OFF
-        Utility.Wait(1.0)
-        HRTEffectON( kActor)
-
-        Utility.Wait(1.0)
-        TGEffectON( kActor)
-
-    ElseIf (!isActorMale) 
-        ; Allow sex change if bimbo effect is OFF
-
-        Utility.Wait(1.0)
-        TGEffectON( kActor)
-
-    EndIf
-
     SLH_Control.playMoan(kActor)
 
     StorageUtil.SetIntValue(kActor, "_SLH_bimboTransformDate", Game.QueryStat("Days Passed"))
@@ -419,6 +420,7 @@ function bimboTransformEffectON(actor kActor)
 
     SLH_Control.setBimboState(kActor, TRUE)
     kActor.SendModEvent("SLHRefresh")
+    fctColor.sendSlaveTatModEvent(kActor, "Bimbo","Feet Nails", bRefresh = True )
 
     SLH_BimboControl.initBimbo()
 
@@ -558,6 +560,7 @@ function bimboTransformEffectOFF(actor kActor)
     StorageUtil.SetIntValue(kActor, "_SLH_bimboTransformGameDays", 0)   
     GV_isPolymorphON.SetValue(0)
     StorageUtil.SetIntValue(kActor, "_SLH_isPolymorph", 0)   
+    fctColor.sendSlaveTatModEvent(kActor, "Bimbo","Feet Nails", bRefresh = True )
  
     SLH_Control.setBimboState(kActor, FALSE)
     debugTrace("[SLH] Bimbo OFF")
@@ -591,6 +594,7 @@ function HRTEffectON(actor kActor)
     ConsoleUtil.ExecuteCommand("player.sexchange")
 
     SLH_Control.playMoan(kActor)
+    fctColor.sendSlaveTatModEvent(kActor, "Bimbo","Feet Nails", bRefresh = True )
 
     SLH_Control.setHRTState(kActor, TRUE)
     debugTrace("[SLH] HRT ON")
@@ -615,6 +619,7 @@ function HRTEffectOFF(actor kActor)
     ConsoleUtil.ExecuteCommand("player.sexchange")
 
     SLH_Control.playMoan(kActor)
+    fctColor.sendSlaveTatModEvent(kActor, "Bimbo","Feet Nails", bRefresh = True )
 
     debugTrace("[SLH] HRT OFF")
     SLH_Control.setHRTState(kActor, FALSE)
