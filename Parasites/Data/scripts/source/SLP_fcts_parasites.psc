@@ -5,6 +5,33 @@ Import SKSE
 zadLibs Property libs Auto
 SexLabFrameWork Property SexLab Auto
 
+ReferenceAlias Property PlayerAlias  Auto  
+ReferenceAlias Property SpiderEggInfectedAlias  Auto  
+ReferenceAlias Property ChaurusWormInfectedAlias  Auto  
+ReferenceAlias Property BarnaclesInfectedAlias  Auto  
+ReferenceAlias Property TentacleMonsterInfectedAlias  Auto  
+ReferenceAlias Property LivingArmorInfectedAlias  Auto  
+ReferenceAlias Property FaceHuggerInfectedAlias  Auto  
+ReferenceAlias Property SpiderFollowerAlias  Auto  
+ 
+GlobalVariable Property _SLP_GV_numInfections  Auto 
+GlobalVariable Property _SLP_GV_numSpiderEggInfections  Auto 
+GlobalVariable Property _SLP_GV_numChaurusWormInfections  Auto 
+GlobalVariable Property _SLP_GV_numChaurusWormVagInfections  Auto 
+GlobalVariable Property _SLP_GV_numEstrusTentaclesInfections  Auto 
+GlobalVariable Property _SLP_GV_numTentacleMonsterInfections  Auto 
+GlobalVariable Property _SLP_GV_numEstrusSlimeInfections  Auto 
+GlobalVariable Property _SLP_GV_numLivingArmorInfections  Auto 
+GlobalVariable Property _SLP_GV_numFaceHuggerInfections  Auto 
+GlobalVariable Property _SLP_GV_numBarnaclesInfections  Auto 
+
+Faction Property PlayerFollowerFaction Auto
+
+SPELL Property StomachRot Auto
+
+Container Property EggSac  Auto  
+Ingredient  Property TrollFat Auto
+Ingredient  Property IngredientChaurusWorm Auto
 
 Keyword Property ArmorCuirass  Auto  
 Keyword Property ClothingBody  Auto  
@@ -12,7 +39,11 @@ Keyword Property ClothingBody  Auto
 Keyword Property _SLP_ParasiteSpiderEgg  Auto  
 Keyword Property _SLP_ParasiteSpiderPenis  Auto  
 Keyword Property _SLP_ParasiteChaurusWorm  Auto  
+Keyword Property _SLP_ParasiteChaurusWormVag Auto  
 Keyword Property _SLP_ParasiteTentacleMonster  Auto  
+Keyword Property _SLP_ParasiteLivingArmor  Auto  
+Keyword Property _SLP_ParasiteFaceHugger  Auto  
+Keyword Property _SLP_ParasiteBarnacles  Auto  
 
 Armor Property SLP_plugSpiderEggRendered Auto         ; Internal Device
 Armor Property SLP_plugSpiderEggInventory Auto        	       ; Inventory Device
@@ -20,8 +51,46 @@ Armor Property SLP_plugSpiderPenisRendered Auto         ; Internal Device
 Armor Property SLP_plugSpiderPenisInventory Auto        	       ; Inventory Device
 Armor Property SLP_plugChaurusWormRendered Auto         ; Internal Device
 Armor Property SLP_plugChaurusWormInventory Auto        	       ; Inventory Device
+Armor Property SLP_plugChaurusWormVagRendered Auto         ; Internal Device
+Armor Property SLP_plugChaurusWormVagInventory Auto        	       ; Inventory Device
 Armor Property SLP_harnessTentacleMonsterRendered Auto         ; Internal Device
 Armor Property SLP_harnessTentacleMonsterInventory Auto        	       ; Inventory Device
+Armor Property SLP_harnessLivingArmorRendered Auto         ; Internal Device
+Armor Property SLP_harnessLivingArmorInventory Auto        	       ; Inventory Device
+Armor Property SLP_harnessFaceHuggerRendered Auto         ; Internal Device
+Armor Property SLP_harnessFaceHuggerInventory Auto        	       ; Inventory Device
+Armor Property SLP_harnessBarnaclesRendered Auto         ; Internal Device
+Armor Property SLP_harnessBarnaclesInventory Auto        	       ; Inventory Device
+
+; String                   Property NINODE_SCHLONG	 	= "NPC Genitals01 [Gen01]" AutoReadOnly
+string                   Property SLH_KEY               = "SexLab_Hormones.esp" AutoReadOnly
+String                   Property NINODE_SCHLONG	 	= "NPC GenitalsBase [GenBase]" AutoReadOnly
+String                   Property NINODE_LEFT_BREAST    = "NPC L Breast" AutoReadOnly
+String                   Property NINODE_LEFT_BREAST01  = "NPC L Breast01" AutoReadOnly
+String                   Property NINODE_LEFT_BUTT      = "NPC L Butt" AutoReadOnly
+String                   Property NINODE_RIGHT_BREAST   = "NPC R Breast" AutoReadOnly
+String                   Property NINODE_RIGHT_BREAST01 = "NPC R Breast01" AutoReadOnly
+String                   Property NINODE_RIGHT_BUTT     = "NPC R Butt" AutoReadOnly
+String                   Property NINODE_SKIRT02        = "SkirtBBone02" AutoReadOnly
+String                   Property NINODE_SKIRT03        = "SkirtBBone03" AutoReadOnly
+String                   Property NINODE_BELLY          = "NPC Belly" AutoReadOnly
+Float                    Property NINODE_MAX_SCALE      = 4.0 AutoReadOnly
+Float                    Property NINODE_MIN_SCALE      = 0.1 AutoReadOnly
+
+; NiOverride version data
+int                      Property NIOVERRIDE_VERSION    = 4 AutoReadOnly
+int                      Property NIOVERRIDE_SCRIPT_VERSION = 4 AutoReadOnly
+
+; XPMSE version data
+float                    Property XPMSE_VERSION         = 3.0 AutoReadOnly
+float                    Property XPMSELIB_VERSION      = 3.0 AutoReadOnly
+
+
+int Property MAX_PRESETS = 4 AutoReadOnly
+int Property MAX_MORPHS = 19 AutoReadOnly
+
+Bool Property isNiOInstalled Auto
+
 
 ;  http://wiki.tesnexus.com/index.php/Skyrim_bodyparts_number
 ;
@@ -136,34 +205,15 @@ Function equipParasiteNPCByString ( Actor akActor, String sParasiteString = "", 
 			Debug.Trace("[SLP] equipParasiteByString: " + sParasiteString)  
 			Debug.Trace("[SLP] 		keyword: " + kwDeviceKeyword)  
 
-			; generic device
-			Debug.Trace("[SLP] 		equipParasiteByString - generic: ")
+			aWornDevice = getParasiteByKeyword(kwDeviceKeyword) ; libs.GetWornDevice(akActor, kwDeviceKeyword) as Armor
+			aRenderedDevice = getParasiteRenderedByKeyword(kwDeviceKeyword) ; libs.GetRenderedDevice(aWornDevice) as Armor
 
-			aWornDevice = getParasiteByKeyword(kwDeviceKeyword) ; libs.GetGenericDeviceByKeyword(kwDeviceKeyword)
-
-			Debug.Trace("[SLP] 		equipParasiteByString - Device inventory: "  + aWornDevice  )
-
-			If (aWornDevice!=None)
-				aRenderedDevice = libs.GetRenderedDevice(aWornDevice)
-			EndIf
-
-			Debug.Trace("[SLP] 		Device rendered: " + aRenderedDevice  )
-
-			If (aWornDevice!=None) && (aRenderedDevice!=None)
-
-				bDeviceEquipSuccess = equipParasiteNPC ( akActor, aWornDevice,  aRenderedDevice,  kwDeviceKeyword)
+			If (aRenderedDevice!=None)
+				equipParasiteNPC ( akActor, aWornDevice,  aRenderedDevice,  kwDeviceKeyword)
 			Else
-				Debug.Trace("[SLP] 		equipParasiteByString - tags - no device found"  )
-			EndIf
+				Debug.Trace("[SLP]    Can't get worn device")
+			endif
 
-			if (sOutfitString!="")
-				Debug.Messagebox("[SLP] equipParasiteByString called with message: " + sOutfitString)  
-			Endif
-
-			If (!bDeviceEquipSuccess)
-				Debug.Trace("[SLP] 		equipParasiteByString - device equip FAILED for " + sParasiteString)
-				Debug.Notification("[SLP] equipParasiteByString FAILED: " + sParasiteString)
-			endIf
  
 		else
 			Debug.Trace("[SLP] player is already wearing: " + sParasiteString)  
@@ -200,18 +250,12 @@ Function clearParasiteNPCByString ( Actor akActor, String sParasiteString = "", 
 			Debug.Trace("[SLP] clearing device string: " + sParasiteString)  
 			Debug.Trace("[SLP] clearing device keyword: " + kwDeviceKeyword)  
   
-			aWornDevice = libs.GetWornDevice(akActor, kwDeviceKeyword) as Armor
-			if (aWornDevice != None)
-				aRenderedDevice = libs.GetRenderedDevice(aWornDevice) as Armor
-				kForm = aWornDevice as Form
+			aWornDevice = getParasiteByKeyword(kwDeviceKeyword) ; libs.GetWornDevice(akActor, kwDeviceKeyword) as Armor
+			aRenderedDevice = getParasiteRenderedByKeyword(kwDeviceKeyword) ; libs.GetRenderedDevice(aWornDevice) as Armor
 
-				if (kForm.HasKeywordString(libs.zad_BlockGeneric) )
-					Debug.Notification("[SLP] removing zad_BlockGeneric device!")  
-					Debug.Trace("[SLP]    zad_BlockGeneric keyword detected - Can't clear device")  
-				else
-					clearParasiteNPC ( akActor, aWornDevice,  aRenderedDevice,  kwDeviceKeyword)
-				endif
-			else
+			If (aRenderedDevice!=None)
+				clearParasiteNPC ( akActor, aWornDevice,  aRenderedDevice,  kwDeviceKeyword)
+			Else
 				Debug.Trace("[SLP]    Can't get worn device")
 			endif
 			
@@ -288,7 +332,7 @@ Bool Function clearParasiteNPC ( Actor akActor, Armor ddArmorInventory, Armor dd
 EndFunction
 
 Armor Function getParasiteByKeyword(Keyword thisKeyword  )
-	Armor thisArmor
+	Armor thisArmor = None
 
 	if (thisKeyword == _SLP_ParasiteSpiderEgg)
 		thisArmor = SLP_plugSpiderEggInventory
@@ -299,12 +343,56 @@ Armor Function getParasiteByKeyword(Keyword thisKeyword  )
 	Elseif (thisKeyword == _SLP_ParasiteChaurusWorm)
 		thisArmor = SLP_plugChaurusWormInventory
 
+	Elseif (thisKeyword == _SLP_ParasiteChaurusWormVag)
+		thisArmor = SLP_plugChaurusWormVagInventory
+
 	Elseif (thisKeyword == _SLP_ParasiteTentacleMonster)
 		thisArmor = SLP_harnessTentacleMonsterInventory
+
+	Elseif (thisKeyword == _SLP_ParasiteLivingArmor)
+		thisArmor = SLP_harnessLivingArmorInventory
+
+	Elseif (thisKeyword == _SLP_ParasiteFaceHugger)
+		thisArmor = SLP_harnessFaceHuggerInventory
+
+	Elseif (thisKeyword == _SLP_ParasiteBarnacles)
+		thisArmor = SLP_harnessBarnaclesInventory
 	EndIf
 
 	return thisArmor
 EndFunction
+
+Armor Function getParasiteRenderedByKeyword(Keyword thisKeyword  )
+	Armor thisArmor = None
+
+	if (thisKeyword == _SLP_ParasiteSpiderEgg)
+		thisArmor = SLP_plugSpiderEggRendered
+
+	Elseif (thisKeyword == _SLP_ParasiteSpiderPenis)
+		thisArmor = SLP_plugSpiderPenisRendered
+
+	Elseif (thisKeyword == _SLP_ParasiteChaurusWorm)
+		thisArmor = SLP_plugChaurusWormRendered
+
+	Elseif (thisKeyword == _SLP_ParasiteChaurusWormVag)
+		thisArmor = SLP_plugChaurusWormVagRendered
+
+	Elseif (thisKeyword == _SLP_ParasiteTentacleMonster)
+		thisArmor = SLP_harnessTentacleMonsterRendered
+
+	Elseif (thisKeyword == _SLP_ParasiteLivingArmor)
+		thisArmor = SLP_harnessLivingArmorRendered
+
+	Elseif (thisKeyword == _SLP_ParasiteFaceHugger)
+		thisArmor = SLP_harnessFaceHuggerRendered
+
+	Elseif (thisKeyword == _SLP_ParasiteBarnacles)
+		thisArmor = SLP_harnessBarnaclesRendered
+	EndIf
+
+	return thisArmor
+EndFunction
+
 
 Keyword Function getDeviousKeywordByString(String deviousKeyword = ""  )
 	Keyword thisKeyword = None
@@ -318,8 +406,20 @@ Keyword Function getDeviousKeywordByString(String deviousKeyword = ""  )
 	elseif (deviousKeyword == "ChaurusWorm" )  
 		thisKeyword = _SLP_ParasiteChaurusWorm
 		
+	elseif (deviousKeyword == "ChaurusWormVag" )  
+		thisKeyword = _SLP_ParasiteChaurusWormVag
+		
 	elseif (deviousKeyword == "TentacleMonster" )  
 		thisKeyword = _SLP_ParasiteTentacleMonster
+		
+	elseif (deviousKeyword == "LivingArmor" )  
+		thisKeyword = _SLP_ParasiteLivingArmor
+		
+	elseif (deviousKeyword == "FaceHugger" )  
+		thisKeyword = _SLP_ParasiteFaceHugger
+		
+	elseif (deviousKeyword == "Barnacles" )  
+		thisKeyword = _SLP_ParasiteBarnacles
 		
 	elseif (deviousKeyword == "zad_BlockGeneric")
 		thisKeyword = libs.zad_BlockGeneric
@@ -432,3 +532,588 @@ Bool Function isDeviceEquippedKeyword( Actor akActor,  String sKeyword, String s
 EndFunction
 
 
+;------------------------------------------------------------------------------
+Function infectSpiderEgg( Actor kActor   )
+ 	Actor PlayerActor = Game.GetPlayer()
+  	Int iNumSpiderEggs
+ 
+ 	If (StorageUtil.GetFloatValue(kActor, "_SLP_chanceSpiderEgg" )==0.0)
+		Debug.Trace("		Parasite disabled - Aborting")
+		Return
+	Endif
+
+	If (isInfectedByString( kActor,  "SpiderEgg" ))
+		Debug.Trace("		Already infected - Aborting")
+		Return
+	Endif
+
+	iNumSpiderEggs = Utility.RandomInt(5,10)
+	If (StorageUtil.GetIntValue(kActor, "_SLP_iSpiderEggCount")!=0)
+		iNumSpiderEggs = StorageUtil.GetIntValue(kActor, "_SLP_iSpiderEggCount")
+	Endif
+
+	If (kActor == PlayerActor)
+		SpiderEggInfectedAlias.ForceRefTo(PlayerActor)
+	endIf
+	if (iNumSpiderEggs>=8)
+		StomachRot.RemoteCast(kActor as ObjectReference, kActor,kActor as ObjectReference)
+	endIf
+
+	equipParasiteNPCByString (kActor, "SpiderEgg")
+
+	ApplyBodyChange( kActor, "SpiderEgg", "Belly", (2.0 + 4.0 * (iNumSpiderEggs as Float) / 10.0), StorageUtil.GetFloatValue(kActor, "_SLP_bellyMaxSpiderEgg" ))
+
+	If !StorageUtil.HasIntValue(kActor, "_SLP_iSpiderEggInfections")
+			StorageUtil.SetIntValue(kActor, "_SLP_iSpiderEggInfections",  0)
+	EndIf
+
+	StorageUtil.SetIntValue(kActor, "_SLP_toggleSpiderEgg", 1 )
+	StorageUtil.SetIntValue(kActor, "_SLP_iSpiderEggDate", Game.QueryStat("Days Passed"))
+	StorageUtil.SetIntValue(kActor, "_SLP_iInfections",  StorageUtil.GetIntValue(kActor, "_SLP_iInfections") + 1)
+	StorageUtil.SetIntValue(kActor, "_SLP_iSpiderEggInfections",  StorageUtil.GetIntValue(kActor, "_SLP_iSpiderEggInfections") + 1)
+	StorageUtil.SetIntValue(kActor, "_SLP_iSpiderEggCount", iNumSpiderEggs )
+
+	_SLP_GV_numInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iInfections"))
+	_SLP_GV_numSpiderEggInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iSpiderEggInfections"))
+
+	Debug.MessageBox("You gasp as the spider fills your womb with a string if slimy eggs.")
+
+	SendModEvent("SLPSpiderEggInfection")
+
+
+EndFunction
+
+Function cureSpiderEgg( Actor kActor, String _args   )
+  	Actor PlayerActor = Game.GetPlayer()
+ 	Int iNumSpiderEggs
+
+	If (isInfectedByString( kActor,  "SpiderEgg" ))
+		iNumSpiderEggs = StorageUtil.GetIntValue(kActor, "_SLP_iSpiderEggCount") - Utility.RandomInt(2,8)
+
+		if (iNumSpiderEggs < 0) || (_args == "All")
+			If (kActor == PlayerActor)
+				SpiderEggInfectedAlias.ForceRefTo(None)
+			endIf
+			iNumSpiderEggs = 0
+			StorageUtil.SetIntValue(kActor, "_SLP_iSpiderEggCount", 0 )
+
+			kActor.DispelSpell(StomachRot)
+
+			StorageUtil.SetIntValue(kActor, "_SLP_toggleSpiderEgg", 0)
+			clearParasiteNPCByString (kActor, "SpiderEgg")
+		Endif
+
+		ApplyBodyChange( kActor, "SpiderEgg", "Belly", (2.0 + 4.0 * (iNumSpiderEggs as Float) / 10.0), StorageUtil.GetFloatValue(kActor, "_SLP_bellyMaxSpiderEgg" ) )
+ 
+		StorageUtil.SetIntValue(kActor, "_SLP_iSpiderEggCount", iNumSpiderEggs )
+		SendModEvent("SLPSpiderEggInfection")
+
+	EndIf
+EndFunction
+
+
+;------------------------------------------------------------------------------
+Function infectSpiderPenis( Actor kActor   )
+ 	Actor PlayerActor = Game.GetPlayer()
+  	Int iNumSpiderEggs
+
+	If (StorageUtil.GetFloatValue(kActor, "_SLP_chanceSpiderPenis" )==0.0)
+		Debug.Trace("		Parasite disabled - Aborting")
+		Return
+	Endif
+
+	If (isInfectedByString( kActor,  "SpiderPenis" ))
+		Debug.Trace("		Already infected - Aborting")
+		Return
+	Endif
+
+	iNumSpiderEggs = Utility.RandomInt(5,10)
+
+	If (kActor == PlayerActor)
+		SpiderEggInfectedAlias.ForceRefTo(PlayerActor)
+	endIf
+	if (iNumSpiderEggs>=4)
+		StomachRot.RemoteCast(kActor as ObjectReference, kActor,kActor as ObjectReference)
+	endIf
+
+	equipParasiteNPCByString (kActor, "SpiderPenis")
+
+	ApplyBodyChange( kActor, "SpiderEgg", "Belly", (2.0 + 4.0 * (iNumSpiderEggs as Float) / 10.0), StorageUtil.GetFloatValue(kActor, "_SLP_bellyMaxSpiderEgg" ) )
+
+	If !StorageUtil.HasIntValue(kActor, "_SLP_iSpiderEggInfections")
+			StorageUtil.SetIntValue(kActor, "_SLP_iSpiderEggInfections",  0)
+	EndIf
+
+	StorageUtil.SetIntValue(kActor, "_SLP_toggleSpiderPenis", 1 )
+	StorageUtil.SetIntValue(kActor, "_SLP_iSpiderEggDate", Game.QueryStat("Days Passed"))
+	StorageUtil.SetIntValue(kActor, "_SLP_iSpiderPenisDate", Game.QueryStat("Days Passed"))
+	StorageUtil.SetIntValue(kActor, "_SLP_iInfections",  StorageUtil.GetIntValue(kActor, "_SLP_iInfections") + 1)
+	StorageUtil.SetIntValue(kActor, "_SLP_iSpiderEggInfections",  StorageUtil.GetIntValue(kActor, "_SLP_iSpiderEggInfections") + 1)
+	StorageUtil.SetIntValue(kActor, "_SLP_iSpiderEggCount", iNumSpiderEggs )
+
+	_SLP_GV_numInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iInfections"))
+	_SLP_GV_numSpiderEggInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iSpiderEggInfections"))
+
+	Debug.MessageBox("You gasp as the spider fills your womb with a string if slimy eggs. Unfortunately, the penis of the spider remains firmly lodged inside you after the act.")
+
+	SendModEvent("SLPSpiderEggInfection")
+
+EndFunction
+
+Function cureSpiderPenis( Actor kActor   )
+ 	Actor PlayerActor = Game.GetPlayer()
+
+
+	If (isInfectedByString( kActor,  "SpiderPenis" ))
+		StorageUtil.SetIntValue(kActor, "_SLP_toggleSpiderPenis", 0 )
+		clearParasiteNPCByString (kActor, "SpiderPenis", true, true)
+
+		StorageUtil.SetIntValue(kActor, "_SLP_toggleSpiderEgg", 1 )
+		equipParasiteNPCByString (kActor, "SpiderEgg")
+	EndIf
+EndFunction
+
+
+;------------------------------------------------------------------------------
+Function infectChaurusWorm( Actor kActor   )
+ 	Actor PlayerActor = Game.GetPlayer()
+
+	If (StorageUtil.GetFloatValue(kActor, "_SLP_chanceChaurusWorm" )==0.0)
+		Debug.Trace("		Parasite disabled - Aborting")
+		Return
+	Endif
+
+	If (isInfectedByString( kActor,  "ChaurusWorm" ))
+		Debug.Trace("		Already infected - Aborting")
+		Return
+	Endif
+
+	equipParasiteNPCByString (kActor, "ChaurusWorm")
+
+	If (kActor == PlayerActor)
+		ChaurusWormInfectedAlias.ForceRefTo(PlayerActor)
+	endIf
+
+	ApplyBodyChange( kActor, "ChaurusWorm", "Butt", 1.0, StorageUtil.GetFloatValue(kActor, "_SLP_buttMaxChaurusWorm" ))
+
+	If !StorageUtil.HasIntValue(kActor, "_SLP_iChaurusWormInfections")
+			StorageUtil.SetIntValue(kActor, "_SLP_iChaurusWormInfections",  0)
+	EndIf
+
+	StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusWorm", 1 )
+	StorageUtil.SetIntValue(kActor, "_SLP_iChaurusWormDate", Game.QueryStat("Days Passed"))
+	StorageUtil.SetIntValue(kActor, "_SLP_iInfections",  StorageUtil.GetIntValue(kActor, "_SLP_iInfections") + 1)
+	StorageUtil.SetIntValue(kActor, "_SLP_iChaurusWormInfections",  StorageUtil.GetIntValue(kActor, "_SLP_iChaurusWormInfections") + 1)
+
+	_SLP_GV_numInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iInfections"))
+	_SLP_GV_numChaurusWormInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iChaurusWormInfections"))
+
+	SendModEvent("SLPChaurusWormInfection")
+EndFunction
+
+Function cureChaurusWorm( Actor kActor   )
+ 	Actor PlayerActor = Game.GetPlayer()
+
+	If (isInfectedByString( kActor,  "ChaurusWorm" ))
+		StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusWorm", 0)
+		clearParasiteNPCByString (kActor, "ChaurusWorm")
+
+		If (kActor == PlayerActor)
+			ChaurusWormInfectedAlias.ForceRefTo(None)
+		endIf
+
+	EndIf
+EndFunction
+
+;------------------------------------------------------------------------------
+Function infectChaurusWormVag( Actor kActor   )
+ 	Actor PlayerActor = Game.GetPlayer()
+
+	If (StorageUtil.GetFloatValue(kActor, "_SLP_chanceChaurusWormVag" )==0.0)
+		Debug.Trace("		Parasite disabled - Aborting")
+		Return
+	Endif
+
+	If (isInfectedByString( kActor,  "ChaurusWormVag" ))
+		Debug.Trace("		Already infected - Aborting")
+		Return
+	Endif
+
+	equipParasiteNPCByString (kActor, "ChaurusWormVag")
+
+	If (kActor == PlayerActor)
+		ChaurusWormInfectedAlias.ForceRefTo(PlayerActor)
+	endIf
+
+	ApplyBodyChange( kActor, "ChaurusWormVag", "Belly", 1.0, StorageUtil.GetFloatValue(kActor, "_SLP_buttMaxChaurusWorm" ))
+
+	If !StorageUtil.HasIntValue(kActor, "_SLP_iChaurusWormVagInfections")
+			StorageUtil.SetIntValue(kActor, "_SLP_iChaurusWormVagInfections",  0)
+	EndIf
+
+	StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusWormVag", 1 )
+	StorageUtil.SetIntValue(kActor, "_SLP_iChaurusWormVagDate", Game.QueryStat("Days Passed"))
+	StorageUtil.SetIntValue(kActor, "_SLP_iInfections",  StorageUtil.GetIntValue(kActor, "_SLP_iInfections") + 1)
+	StorageUtil.SetIntValue(kActor, "_SLP_iChaurusWormVagInfections",  StorageUtil.GetIntValue(kActor, "_SLP_iChaurusWormVagInfections") + 1)
+
+	_SLP_GV_numInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iInfections"))
+	_SLP_GV_numChaurusWormVagInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iChaurusWormVagInfections"))
+
+	SendModEvent("SLPChaurusWormVagInfection")
+EndFunction
+
+Function cureChaurusWormVag( Actor kActor   )
+ 	Actor PlayerActor = Game.GetPlayer()
+
+	If (isInfectedByString( kActor,  "ChaurusWormVag" ))
+		StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusWormVag", 0)
+		clearParasiteNPCByString (kActor, "ChaurusWormVag")
+
+		If (kActor == PlayerActor)
+			ChaurusWormInfectedAlias.ForceRefTo(None)
+		endIf
+
+	EndIf
+EndFunction
+
+;------------------------------------------------------------------------------
+Function infectEstrusTentacles( Actor kActor   )
+  	Actor PlayerActor = Game.GetPlayer()
+
+	If (StorageUtil.GetFloatValue(kActor, "_SLP_chanceEstrusTentacles" )==0.0)
+		Debug.Trace("		Parasite disabled - Aborting")
+		Return
+	Endif
+
+	If (!ActorHasKeywordByString(PlayerActor,  "PlugVaginal")) && (!isInfectedByString( PlayerActor,  "TentacleMonster" )) && (Utility.RandomInt(1,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceTentacleMonster" )))
+			PlayerActor.SendModEvent("SLPInfectTentacleMonster")
+	Else
+		Debug.Trace("[SLP] Tentacle Monster infection failed")
+		Debug.Trace("[SLP]   Vaginal Plug: " + ActorHasKeywordByString(PlayerActor,  "PlugVaginal"))
+		Debug.Trace("[SLP]   TentacleMonster: " + isInfectedByString( PlayerActor,  "TentacleMonster" ))
+		Debug.Trace("[SLP]   Chance infection: " + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceTentacleMonster" ))
+	EndIf
+
+	int ECTrap = ModEvent.Create("ECStartAnimation")  ; Int  Does not have to be named "ECTrap" any name would do
+
+	if (ECTrap) 
+	    ModEvent.PushForm(ECTrap, Game.GetPlayer())             ; Form (Some SendModEvent scripting "black magic" - required)
+	    ModEvent.PushForm(ECTrap, PlayerActor)  ; Form The animation target
+	    ModEvent.PushInt(ECTrap, 0)    			; Int The animation required -1 = Impregnation only with No Animation,
+                                                ; 0 = Tentacles, 1 = Machines 2 = Slime 3 = Ooze
+	    ModEvent.PushBool(ECTrap, true)         ; Bool Apply the linked EC effect (Ovipostion for Tentacles, Exhaustion for Machine) 
+	    ModEvent.Pushint(ECTrap, 500)           ; Int  Alarm radius in units (0 to disable) 
+	    ModEvent.PushBool(ECTrap, true)         ; Bool Use EC (basic) crowd control on hostiles 
+	    ModEvent.Send(ECtrap)
+	endif
+
+	If !StorageUtil.HasIntValue(kActor, "_SLP_iEstrusTentaclesInfections")
+			StorageUtil.SetIntValue(kActor, "_SLP_iEstrusTentaclesInfections",  0)
+	EndIf
+
+	; StorageUtil.SetIntValue(kActor, "_SLP_toggleEstrusTentacle", 1 )
+	StorageUtil.SetIntValue(kActor, "_SLP_iEstrusTentaclseDate", Game.QueryStat("Days Passed"))
+	StorageUtil.SetIntValue(kActor, "_SLP_iInfections",  StorageUtil.GetIntValue(kActor, "_SLP_iInfections") + 1)
+	StorageUtil.SetIntValue(kActor, "_SLP_iEstrusTentaclesInfections",  StorageUtil.GetIntValue(kActor, "_SLP_iEstrusTentaclesInfections") + 1)
+
+	_SLP_GV_numInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iInfections"))
+	_SLP_GV_numEstrusTentaclesInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iEstrusTentaclesInfections"))
+
+	SendModEvent("SLPEstrusTentaclesInfection")
+
+EndFunction
+
+;------------------------------------------------------------------------------
+Function infectTentacleMonster( Actor kActor   )
+ 	Actor PlayerActor = Game.GetPlayer()
+
+	If (StorageUtil.GetFloatValue(kActor, "_SLP_chanceTentacleMonster" )==0.0)
+		Debug.Trace("		Parasite disabled - Aborting")
+		Return
+	Endif
+
+	If (isInfectedByString( kActor,  "TentacleMonster" ))
+		Debug.Trace("		Already infected - Aborting")
+		Return
+	Endif
+
+	equipParasiteNPCByString (kActor, "TentacleMonster")
+
+	If (kActor == PlayerActor)
+		TentacleMonsterInfectedAlias.ForceRefTo(PlayerActor)
+	endIf
+
+	If !StorageUtil.HasIntValue(kActor, "_SLP_iTentacleMonsterInfections")
+			StorageUtil.SetIntValue(kActor, "_SLP_iTentacleMonsterInfections",  0)
+	EndIf
+
+	StorageUtil.SetIntValue(kActor, "_SLP_toggleTentacleMonster", 1 )
+	StorageUtil.SetIntValue(kActor, "_SLP_iTentacleMonsterDate", Game.QueryStat("Days Passed"))
+	StorageUtil.SetIntValue(kActor, "_SLP_iInfections",  StorageUtil.GetIntValue(kActor, "_SLP_iInfections") + 1)
+	StorageUtil.SetIntValue(kActor, "_SLP_iTentacleMonsterInfections",  StorageUtil.GetIntValue(kActor, "_SLP_iTentacleMonsterInfections") + 1)
+
+	_SLP_GV_numInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iInfections"))
+	_SLP_GV_numTentacleMonsterInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iTentacleMonsterInfections"))
+
+	SendModEvent("SLPTentacleMonsterInfection")
+EndFunction
+
+Function cureTentacleMonster( Actor kActor   )
+ 	Actor PlayerActor = Game.GetPlayer()
+
+	If (isInfectedByString( kActor,  "TentacleMonster" ))
+		StorageUtil.SetIntValue(kActor, "_SLP_toggleTentacleMonster", 0 )
+		clearParasiteNPCByString (kActor, "TentacleMonster")
+
+		If (kActor == PlayerActor)
+			TentacleMonsterInfectedAlias.ForceRefTo(None)
+		endIf
+
+	EndIf
+EndFunction
+
+;------------------------------------------------------------------------------
+Function infectEstrusSlime( Actor kActor   )
+  	Actor PlayerActor = Game.GetPlayer()
+
+	If (StorageUtil.GetFloatValue(kActor, "_SLP_chanceEstrusSlime" )==0.0)
+		Debug.Trace("		Parasite disabled - Aborting")
+		Return
+	Endif
+
+	If (!ActorHasKeywordByString(PlayerActor,  "Harness")) && (!isInfectedByString( PlayerActor,  "LivingArmor" )) && (Utility.RandomInt(1,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceLivingArmor" )))
+			PlayerActor.SendModEvent("SLPInfectLivingArmor")
+	Else
+		Debug.Trace("[SLP] Living Armor infection failed")
+		Debug.Trace("[SLP]   Harness: " + ActorHasKeywordByString(PlayerActor,  "Harness"))
+		Debug.Trace("[SLP]   LivingArmor: " + isInfectedByString( PlayerActor,  "LivingArmor" ))
+		Debug.Trace("[SLP]   Chance infection: " + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceLivingArmor" ))
+	EndIf
+
+	int ECTrap = ModEvent.Create("ECStartAnimation")  ; Int  Does not have to be named "ECTrap" any name would do
+
+	if (ECTrap) 
+	    ModEvent.PushForm(ECTrap, Game.GetPlayer())             ; Form (Some SendModEvent scripting "black magic" - required)
+	    ModEvent.PushForm(ECTrap, PlayerActor)  ; Form The animation target
+	    ModEvent.PushInt(ECTrap, Utility.randomInt(3,4))    	; Int The animation required -1 = Impregnation only with No Animation,
+                                                ; 0 = Tentacles, 1 = Machines 2 = Slime 3 = Ooze
+	    ModEvent.PushBool(ECTrap, true)         ; Bool Apply the linked EC effect (Ovipostion for Tentacles, Exhaustion for Machine) 
+	    ModEvent.Pushint(ECTrap, 500)           ; Int  Alarm radius in units (0 to disable) 
+	    ModEvent.PushBool(ECTrap, true)         ; Bool Use EC (basic) crowd control on hostiles 
+	    ModEvent.Send(ECtrap)
+	endif
+
+	If !StorageUtil.HasIntValue(kActor, "_SLP_iEstrusSlimeInfections")
+			StorageUtil.SetIntValue(kActor, "_SLP_iEstrusSlimeInfections",  0)
+	EndIf
+
+	; StorageUtil.SetIntValue(kActor, "_SLP_toggleEstrusTentacle", 1 )
+	StorageUtil.SetIntValue(kActor, "_SLP_iEstrusSlimeDate", Game.QueryStat("Days Passed"))
+	StorageUtil.SetIntValue(kActor, "_SLP_iInfections",  StorageUtil.GetIntValue(kActor, "_SLP_iInfections") + 1)
+	StorageUtil.SetIntValue(kActor, "_SLP_iEstrusSlimeInfections",  StorageUtil.GetIntValue(kActor, "_SLP_iEstrusSlimeInfections") + 1)
+
+	_SLP_GV_numInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iInfections"))
+	_SLP_GV_numEstrusSlimeInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iEstrusSlimeInfections"))
+
+	SendModEvent("SLPEstrusSlimeInfection")
+
+EndFunction
+
+;------------------------------------------------------------------------------
+Function infectLivingArmor( Actor kActor   )
+ 	Actor PlayerActor = Game.GetPlayer()
+
+	If (StorageUtil.GetFloatValue(kActor, "_SLP_chanceLivingArmor" )==0.0)
+		Debug.Trace("		Parasite disabled - Aborting")
+		Return
+	Endif
+
+	If (isInfectedByString( kActor,  "LivingArmor" ))
+		Debug.Trace("		Already infected - Aborting")
+		Return
+	Endif
+
+	equipParasiteNPCByString (kActor, "LivingArmor")
+
+	If (kActor == PlayerActor)
+		LivingArmorInfectedAlias.ForceRefTo(PlayerActor)
+	endIf
+
+	If !StorageUtil.HasIntValue(kActor, "_SLP_iLivingArmorInfections")
+			StorageUtil.SetIntValue(kActor, "_SLP_iLivingArmorInfections",  0)
+	EndIf
+
+	StorageUtil.SetIntValue(kActor, "_SLP_toggleLivingArmor", 1 )
+	StorageUtil.SetIntValue(kActor, "_SLP_iLivingArmorDate", Game.QueryStat("Days Passed"))
+	StorageUtil.SetIntValue(kActor, "_SLP_iInfections",  StorageUtil.GetIntValue(kActor, "_SLP_iInfections") + 1)
+	StorageUtil.SetIntValue(kActor, "_SLP_iLivingArmorInfections",  StorageUtil.GetIntValue(kActor, "_SLP_iLivingArmorInfections") + 1)
+
+	_SLP_GV_numInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iInfections"))
+	_SLP_GV_numLivingArmorInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iLivingArmorInfections"))
+
+	SendModEvent("SLPLivingArmorInfection")
+EndFunction
+
+Function cureLivingArmor( Actor kActor   )
+ 	Actor PlayerActor = Game.GetPlayer()
+
+	If (isInfectedByString( kActor,  "LivingArmor" ))
+		StorageUtil.SetIntValue(kActor, "_SLP_toggleLivingArmor", 0 )
+		clearParasiteNPCByString (kActor, "LivingArmor")
+
+		If (kActor == PlayerActor)
+			LivingArmorInfectedAlias.ForceRefTo(None)
+		endIf
+
+	EndIf
+EndFunction
+
+;------------------------------------------------------------------------------
+Function infectFaceHugger( Actor kActor   )
+ 	Actor PlayerActor = Game.GetPlayer()
+
+	If (StorageUtil.GetFloatValue(kActor, "_SLP_chanceFaceHugger" )==0.0)
+		Debug.Trace("		Parasite disabled - Aborting")
+		Return
+	Endif
+
+	If (isInfectedByString( kActor,  "FaceHugger" ))
+		Debug.Trace("		Already infected - Aborting")
+		Return
+	Endif
+
+	equipParasiteNPCByString (kActor, "FaceHugger")
+
+	If (kActor == PlayerActor)
+		FaceHuggerInfectedAlias.ForceRefTo(PlayerActor)
+	endIf
+
+	If !StorageUtil.HasIntValue(kActor, "_SLP_iFaceHuggerInfections")
+			StorageUtil.SetIntValue(kActor, "_SLP_iFaceHuggerInfections",  0)
+	EndIf
+
+	StorageUtil.SetIntValue(kActor, "_SLP_toggleFaceHugger", 1 )
+	StorageUtil.SetIntValue(kActor, "_SLP_iFaceHuggerDate", Game.QueryStat("Days Passed"))
+	StorageUtil.SetIntValue(kActor, "_SLP_iInfections",  StorageUtil.GetIntValue(kActor, "_SLP_iInfections") + 1)
+	StorageUtil.SetIntValue(kActor, "_SLP_iFaceHuggerInfections",  StorageUtil.GetIntValue(kActor, "_SLP_iFaceHuggerInfections") + 1)
+
+	_SLP_GV_numInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iInfections"))
+	_SLP_GV_numFaceHuggerInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iFaceHuggerInfections"))
+
+	SendModEvent("SLPFaceHuggerInfection")
+EndFunction
+
+Function cureFaceHugger( Actor kActor   )
+ 	Actor PlayerActor = Game.GetPlayer()
+
+	If (isInfectedByString( kActor,  "FaceHugger" ))
+		StorageUtil.SetIntValue(kActor, "_SLP_toggleFaceHugger", 0 )
+		clearParasiteNPCByString (kActor, "FaceHugger")
+
+		If (kActor == PlayerActor)
+			FaceHuggerInfectedAlias.ForceRefTo(None)
+		endIf
+
+	EndIf
+EndFunction
+
+;------------------------------------------------------------------------------
+Function infectBarnacles( Actor kActor   )
+ 	Actor PlayerActor = Game.GetPlayer()
+
+	If (StorageUtil.GetFloatValue(kActor, "_SLP_chanceBarnacles" )==0.0)
+		Debug.Trace("		Parasite disabled - Aborting")
+		Return
+	Endif
+
+	If (isInfectedByString( kActor,  "Barnacles" ))
+		Debug.Trace("		Already infected - Aborting")
+		Return
+	Endif
+
+	equipParasiteNPCByString (kActor, "Barnacles")
+
+	If (kActor == PlayerActor)
+		BarnaclesInfectedAlias.ForceRefTo(PlayerActor)
+	endIf
+
+	If !StorageUtil.HasIntValue(kActor, "_SLP_iBarnaclesInfections")
+			StorageUtil.SetIntValue(kActor, "_SLP_iBarnaclesInfections",  0)
+	EndIf
+
+	StorageUtil.SetIntValue(kActor, "_SLP_toggleBarnacles", 1 )
+	StorageUtil.SetIntValue(kActor, "_SLP_iBarnaclesDate", Game.QueryStat("Days Passed"))
+	StorageUtil.SetIntValue(kActor, "_SLP_iInfections",  StorageUtil.GetIntValue(kActor, "_SLP_iInfections") + 1)
+	StorageUtil.SetIntValue(kActor, "_SLP_iBarnaclesInfections",  StorageUtil.GetIntValue(kActor, "_SLP_iBarnaclesInfections") + 1)
+
+	_SLP_GV_numInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iInfections"))
+	_SLP_GV_numBarnaclesInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iBarnaclesInfections"))
+
+	SendModEvent("SLPBarnaclesInfection")
+EndFunction
+
+Function cureBarnacles( Actor kActor   )
+ 	Actor PlayerActor = Game.GetPlayer()
+
+	If (isInfectedByString( kActor,  "Barnacles" ))
+		StorageUtil.SetIntValue(kActor, "_SLP_toggleBarnacles", 0 )
+		clearParasiteNPCByString (kActor, "Barnacles")
+
+		If (kActor == PlayerActor)
+			BarnaclesInfectedAlias.ForceRefTo(None)
+		endIf
+
+	EndIf
+EndFunction
+
+;------------------------------------------------------------------------------
+Function ApplyBodyChange(Actor kActor, String sParasite, String sBodyPart, Float fValue=1.0, Float fValueMax=1.0)
+  	ActorBase pActorBase = kActor.GetActorBase()
+ 	Actor PlayerActor = Game.GetPlayer()
+  	String NiOString = "SLP_" + sParasite
+
+	if ( isNiOInstalled  )  
+
+		Debug.Trace("[SLP] Receiving body change: " + sBodyPart)
+ 		if (fValue > fValueMax)
+			fValue = fValueMax
+		Endif
+
+		if (( sBodyPart == "Breast"  ) && (pActorBase.GetSex()==1)) ; Female change
+			Debug.Trace("[SLP]     Applying breast change: " + NiOString)
+			Debug.Trace("[SLP]     Value: " + fValue)
+
+			XPMSELib.SetNodeScale(kActor, true, NINODE_LEFT_BREAST, fValue, NiOString)
+			XPMSELib.SetNodeScale(kActor, true, NINODE_RIGHT_BREAST, fValue, NiOString)
+
+		Elseif (( sBodyPart == "Belly"  ) && (pActorBase.GetSex()==1)) ; Female change
+			Debug.Trace("[SLP]     Applying belly change: " + NiOString)
+			Debug.Trace("[SLP]     Value: " + fValue)
+
+			XPMSELib.SetNodeScale(kActor, true, NINODE_BELLY, fValue, NiOString)
+
+		Elseif (( sBodyPart == "Butt"  )) 
+			Debug.Trace("[SLP]     Applying butt change: " + NiOString)
+			Debug.Trace("[SLP]     Value: " + fValue)
+
+			XPMSELib.SetNodeScale(kActor, pActorBase.GetSex(), NINODE_LEFT_BUTT, fValue, NiOString)
+			XPMSELib.SetNodeScale(kActor, pActorBase.GetSex(), NINODE_RIGHT_BUTT, fValue, NiOString)
+
+		Elseif (( sBodyPart == "Schlong"  ) ) 
+			Debug.Trace("[SLP]     Applying schlong change: " + NiOString)
+			Debug.Trace("[SLP]     Value: " + fValue)
+
+			XPMSELib.SetNodeScale(kActor, pActorBase.GetSex(), NINODE_SCHLONG, fValue, NiOString)
+
+		Endif
+	Else
+		; Debug.Notification("[SLP] Receiving body change: NiO not installed")
+
+	EndIf
+
+EndFunction
+
+
+bool Function CheckXPMSERequirements(Actor akActor, bool isFemale)
+	return XPMSELib.CheckXPMSEVersion(akActor, isFemale, XPMSE_VERSION, true) && XPMSELib.CheckXPMSELibVersion(XPMSELIB_VERSION) && SKSE.GetPluginVersion("NiOverride") >= NIOVERRIDE_VERSION && NiOverride.GetScriptVersion() >= NIOVERRIDE_SCRIPT_VERSION
+EndFunction
