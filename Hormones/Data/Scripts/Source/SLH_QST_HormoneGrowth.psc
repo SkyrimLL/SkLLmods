@@ -433,7 +433,10 @@ Event OnUpdate()
 
 		debugTrace("[SLH]  Days since Sex acts : " + iDaysSinceLastSex)
 		; Check if body modifications are applicable
-			
+		if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iNodeBalancing")==1)
+			_nodeBalancing()
+		endIf
+
 		fctBodyShape.getShapeState(PlayerActor)
 		fctColor.getColorState(PlayerActor)
 
@@ -505,7 +508,7 @@ Event OnUpdate()
 				If (StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkLevel") > 8) 
 					Debug.Notification("Your tits are dripping with milk and ache for release.")
 				ElseIf (StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkLevel") > 6) 
-					Debug.Notification("Breasts are swollen with milk.")
+					Debug.Notification("Your breasts are swollen with milk.")
 				Else
 					Debug.Notification("Your nipples are moist and tingling.")
 				EndIf
@@ -1434,18 +1437,12 @@ function setHormonesStateDefault(Actor kActor)
 	SLH_Libido.SetValue( fLibido )
 	StorageUtil.SetFloatValue(kActor, "_SLH_fLibido",  fLibido) 
 
+	setHormonesState(kActor)	
+
 	fctBodyShape.alterBodyAfterRest(kActor)
 	fctColor.alterColorAfterRest(kActor)
 
-	setHormonesState(kActor)	
-
 	traceStatus()
-
-	iOrgasmsCountToday   = 0
-	iSexCountToday   = 0
-	iOralCountToday   = 0
-	iAnalCountToday   = 0
-	iVaginalCountToday   = 0
 
 	If !( fctUtil.isExternalChangeModActive(PlayerActor) ) && (NextAllowed!= -1)
 		fctColor.applyColorChanges(kActor)
@@ -1624,6 +1621,79 @@ function getHormonesState(Actor kActor)
 
 endFunction
 
+Function _nodeBalancing()
+	PlayerREF= PlayerAlias.GetReference() 
+	PlayerActor = PlayerREF as Actor
+	pActorBase = PlayerActor.GetActorBase()
+	Float fNumModBreast = 1.0
+	Float fNumModButt = 1.0
+	Float fNumModBelly = 1.0
+
+
+	if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iNodeBalancing")==1)
+		; Contributions includes in init values by default (to prevent div by 0)
+		; if (StorageUtil.GetIntValue(none, "_SLH_iHormones")==1)
+		;	fNumModBreast += 1.0
+		;	fNumModBelly += 1.0
+		;	fNumModButt += 1.0
+		;endif
+
+		if (StorageUtil.GetIntValue(PlayerActor, "_SLP_toggleSpiderEgg" )==1)
+			fNumModBelly += 1.0
+		endif
+
+		if (StorageUtil.GetIntValue(PlayerActor, "_SLP_toggleChaurusWorm" )==1)
+			fNumModButt += 1.0
+		endif
+
+		if (StorageUtil.GetIntValue(PlayerActor, "_SLP_toggleChaurusWormVag" )==1)
+			fNumModBelly += 1.0
+		endif
+
+		if (StorageUtil.GetIntValue(PlayerActor, "_SLP_toggleFaceHugger" )==1)
+			fNumModBelly += 1.0
+		endif
+
+		if (StorageUtil.GetIntValue(PlayerActor, "_SLP_toggleTentacleMonster" )==1)
+			fNumModBreast += 1.0
+		endif
+
+		if (StorageUtil.GetIntValue(PlayerActor, "_SLP_toggleLivingArmor" )==1)
+			fNumModBreast += 1.0
+		endif
+
+	 
+		If (StorageUtil.GetIntValue(PlayerActor, "_SLH_isPregnant")== 1)
+			fNumModBreast += 1.0
+			fNumModBelly += 1.0
+		endif
+
+		If (StorageUtil.GetIntValue(PlayerActor, "_SLH_iLactating") == 1)
+			fNumModBreast += 1.0
+		endif
+
+		StorageUtil.SetFloatValue(PlayerActor, "_SLP_bellyMaxSpiderEgg", 2.0 / fNumModBelly )
+		StorageUtil.SetFloatValue(PlayerActor, "_SLP_bellyMaxChaurusWormVag", 2.0 / fNumModBelly )
+		StorageUtil.SetFloatValue(PlayerActor, "_SLP_bellyMaxFaceHugger", 2.0 / fNumModBelly )
+		StorageUtil.SetFloatValue(PlayerActor, "_SLP_breastMaxTentacleMonster", 2.0 / fNumModBreast )
+		StorageUtil.SetFloatValue(PlayerActor, "_SLP_breastMaxLivingArmor", 2.0 / fNumModBreast )
+		StorageUtil.SetFloatValue(PlayerActor, "_SLP_buttMaxChaurusWorm", 1.5 / fNumModButt )
+		PlayerActor.SendModEvent("SLPRefreshBodyShape")
+
+		If (StorageUtil.GetIntValue(PlayerActor, "_SLH_isSuccubus") == 1)
+			StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreastMax",  3.0   / fNumModBreast )
+		else
+			StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreastMax",  2.0   / fNumModBreast )
+		endif
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBellyMax",  2.0  / fNumModBelly ) 
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fButtMax",  1.5  / fNumModButt )
+
+		StorageUtil.SetFloatValue(PlayerActor, "_SLS_breastMaxMilkFarm", 2.0 / fNumModBreast )
+		PlayerActor.SendModEvent("_SLSDDi_UpdateCow")
+
+		fctBodyShape.setShapeState(PlayerActor)
+	Endif
+EndFunction
 
 function showStatus()
 	PlayerREF= PlayerAlias.GetReference() 
