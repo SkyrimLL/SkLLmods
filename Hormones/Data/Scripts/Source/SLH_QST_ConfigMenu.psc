@@ -205,7 +205,7 @@ float 		_buttSetValue 			= 1.0
 float 		_schlongSetValue		= 1.0
 
 bool 		_refreshToggle 			= false
-bool 		_applyNodeBalancing  
+int 		_applyNodeBalancing     = 0
 
 
 ObjectReference PlayerREF
@@ -464,7 +464,7 @@ event OnPageReset(string a_page)
 		AddSliderOptionST("STATE_BIMBO_CLUMSINESS","Clumsiness factor", _bimboClumsinessMod as Float,"{1}")
 		AddToggleOptionST("STATE_HORNY_BEG","Beg for sex", _hornyBegON   as Bool)
 		AddSliderOptionST("STATE_BEG_TRIGGER","Beg arousal trigger", _hornyBegArousal  as Float,"{1}")
-		AddSliderOptionST("STATE_GRAG_TRIGGER","Public sex attack", _hornyGrab  as Float,"{1}")
+		AddSliderOptionST("STATE_GRAB_TRIGGER","Public sex attack", _hornyGrab  as Float,"{1}")
 		AddToggleOptionST("STATE_BIMBO_DROP","Drop items when aroused", _bimboClumsinessDrop  as Bool)
 		AddToggleOptionST("STATE_SET_BIMBO","Set Bimbo Curse now", _setBimbo as Float)
 
@@ -1998,10 +1998,13 @@ state STATE_RESET ; TOGGLE
 endState
 
 
-; AddToggleOptionST("STATE_BALANCE","Reset changes", _applyNodeBalancing  
+; AddToggleOptionST("STATE_BALANCE","Reset changes", _applyNodeBalancing  )
 state STATE_BALANCE ; TOGGLE
 	event OnSelectST()
-		_nodeBalancing()
+		_applyNodeBalancing = Math.LogicalXor( 1, _applyNodeBalancing )
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iNodeBalancing", _applyNodeBalancing)
+		SLH_Control._nodeBalancing()
+		ForcePageReset()
 	endEvent
 
 	event OnDefaultST()
@@ -2009,62 +2012,10 @@ state STATE_BALANCE ; TOGGLE
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Adjust max size of NetImmerse Overrides used by several mods (NiO required).")
+		SetInfoText("Automatically adjusts max size of NetImmerse Overrides used by several mods (NiO required).")
 	endEvent
 
 endState
-
-
-Function _nodeBalancing()
-	Float fNumModBreast
-	Float fNumModButt
-	Float fNumModBelly
-
-	if (StorageUtil.GetIntValue(PlayerActor, "_SLP_toggleSpiderEgg" )==1)
-		fNumModBelly += 1.0
-	endif
-
-	if (StorageUtil.GetIntValue(PlayerActor, "_SLP_toggleChaurusWorm" )==1)
-		fNumModButt += 1.0
-	endif
-
-	if (StorageUtil.GetIntValue(PlayerActor, "_SLP_toggleTentacleMonster" )==1)
-		fNumModBreast += 1.0
-	endif
-
-	if (StorageUtil.GetIntValue(none, "_SLH_iHormones")==1)
-		fNumModBreast += 1.0
-		fNumModBelly += 1.0
-		fNumModButt += 1.0
-	endif
- 
-	If (StorageUtil.GetIntValue(PlayerActor, "_SLH_isPregnant")== 1)
-		fNumModBreast += 0.5
-		fNumModBelly += 0.5
-	endif
-
-	If (StorageUtil.GetIntValue(PlayerActor, "_SLH_iLactating") == 1)
-		fNumModBreast += 0.5
-	endif
-
-	; If (StorageUtil.GetIntValue(PlayerActor, "_SLH_isSuccubus") == 1)
-	;	fNumModBreast += 1.0
-	; endif
-
-	StorageUtil.SetFloatValue(PlayerActor, "_SLP_bellyMaxSpiderEgg", 3.0 / fNumModBelly )
-	StorageUtil.SetFloatValue(PlayerActor, "_SLP_buttMaxChaurusWorm", 2.0 / fNumModButt )
-	StorageUtil.SetFloatValue(PlayerActor, "_SLP_breastMaxTentacleMonster", 2.0 / fNumModBreast )
-	PlayerActor.SendModEvent("SLPRefreshBodyShape")
-
-	GV_breastMax.SetValue(2.0 / fNumModBreast )
-	GV_buttMax.SetValue(1.0 / fNumModButt )
-	GV_bellyMax.SetValue(2.0 / fNumModBelly ) 
-	refreshStorageFromGlobals()
-
-	StorageUtil.SetFloatValue(PlayerActor, "_SLS_breastMaxMilkFarm", 2.0 / fNumModBreast )
-	PlayerActor.SendModEvent("_SLSDDi_UpdateCow")
-
-EndFunction
 
 
 float function fMin(float  a, float b)
