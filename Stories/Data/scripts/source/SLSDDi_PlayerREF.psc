@@ -214,7 +214,7 @@ Function updateAllCows()
 	int i = 0
 	Form thisCow
  
- 	Debug.Notification("[SLSDDi] Updating registred cows: " + valueCount)
+ 	Debug.Trace("[SLSDDi] Updating registered cows: " + valueCount)
 
 	while(i < valueCount)
 		thisCow = StorageUtil.FormListGet(none, "_SLH_lMilkCowList", i)
@@ -224,7 +224,7 @@ Function updateAllCows()
 
 EndFunction
 
-Function updateCowStatus(Actor kActor, String bCreateMilk)
+Function updateCowStatus(Actor kActor, String bCreateMilk = "")
  	Actor PlayerActor= Game.GetPlayer() as Actor
  	ActorBase pActorBase
  	Int iProlactinLevel 
@@ -277,8 +277,8 @@ Function updateCowStatus(Actor kActor, String bCreateMilk)
 	; Debug.Notification("[SLSDDi] Check for NiOverride: " + isNiOInstalled)
 	; Debug.Notification("[SLSDDi] Check for Female actor: " + pActorBase.GetSex())
 	; Debug.Notification("[SLSDDi] Check for Lactating actor: " + StorageUtil.GetIntValue(kActor, "_SLH_iLactating"))
-	Debug.Notification("[SLSDDi] Milk level: " + StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel"))
-	Debug.Notification("[SLSDDi] Prolactin level: " + StorageUtil.GetIntValue(kActor, "_SLH_iProlactinLevel"))
+	Debug.Trace("[SLSDDi] Milk level: " + StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel"))
+	Debug.Trace("[SLSDDi] Prolactin level: " + StorageUtil.GetIntValue(kActor, "_SLH_iProlactinLevel"))
 
 	if (( isNiOInstalled  ) && (pActorBase.GetSex()==1))
 
@@ -443,7 +443,8 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 
 			EndIf
 
-			PlayerActor.SendModEvent("_SLSDDi_UpdateCow")
+			; PlayerActor.SendModEvent("_SLSDDi_UpdateCow")
+			updateCowStatus(PlayerActor)
 
 			Debug.Trace("[SLSDDi] Player Milk level: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkLevel"))
 			Debug.Trace("[SLSDDi] Player Milk produced: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkProduced"))
@@ -486,7 +487,7 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 					StorageUtil.SetIntValue(actors[idx], "_SLH_iMilkLevel", StorageUtil.GetIntValue(actors[idx], "_SLH_iMilkLevel") + 2)
 					StorageUtil.SetIntValue(actors[idx], "_SLH_iProlactinLevel", StorageUtil.GetIntValue(actors[idx], "_SLH_iProlactinLevel") + 3)
 				endIf
-				Debug.Notification("[SLSDDi] NPC Milk level: " + StorageUtil.GetIntValue(actors[idx], "_SLH_iMilkLevel"))
+				Debug.Trace("[SLSDDi] NPC Milk level: " + StorageUtil.GetIntValue(actors[idx], "_SLH_iMilkLevel"))
 
 			elseif ( !actors[idx].WornHasKeyword(SLSD_CowHarness)  && !actors[idx].WornHasKeyword(SLSD_CowMilker)  && ( Utility.RandomInt(0,100) > (100 - iProlactinLevel - slaUtil.GetActorExposure(akRef = actors[idx]))  ) )  || (StorageUtil.GetIntValue(actors[idx], "_SLH_isPregnant") == 1) 
 
@@ -516,7 +517,8 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 				EndIf
 			endif
 
-			actors[idx].SendModEvent("_SLSDDi_UpdateCow")
+			; actors[idx].SendModEvent("_SLSDDi_UpdateCow")
+			updateCowStatus(actors[idx])
 
 			Debug.Trace("[SLSDDi] NPC Milk level: " + StorageUtil.GetIntValue(actors[idx], "_SLH_iMilkLevel"))
 			Debug.Trace("[SLSDDi] NPC Milk produced: " + StorageUtil.GetIntValue(actors[idx], "_SLH_iMilkProduced"))
@@ -597,6 +599,7 @@ Event OnSexLabOrgasm(String _eventName, String _args, Float _argc, Form _sender)
 				libs.SexlabMoan(PlayerActor)	
 			else
 				libs.Pant(PlayerActor)
+				StorageUtil.SetIntValue(PlayerActor, "_SLH_iMilkLevel",  StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkLevel") / 2)	
 				ApplySweatFX.RemoteCast(PlayerActor as ObjectReference, PlayerActor,PlayerActor as ObjectReference)
 				Debug.Notification("Milk spills all over your chest.")
 			Endif
@@ -616,7 +619,8 @@ Event OnSexLabOrgasm(String _eventName, String _args, Float _argc, Form _sender)
 			Debug.Trace("[SLSDDi] NPC Milk Produced: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkProduced"))
 			Debug.Trace("[SLSDDi] NPC Milk Total: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkProducedTotal"))
 
-			PlayerActor.SendModEvent("_SLSDDi_UpdateCow","Milk")
+			; PlayerActor.SendModEvent("_SLSDDi_UpdateCow","Milk")
+			updateCowStatus(PlayerActor,"Milk")
 
 		EndIf
 	Endif
@@ -638,6 +642,7 @@ Event OnSexLabOrgasm(String _eventName, String _args, Float _argc, Form _sender)
 					GetMilk(actors[idx],1)	
 				else
 					Debug.Notification("Milk spills all over her chest.")
+					StorageUtil.SetIntValue(actors[idx], "_SLH_iMilkLevel", StorageUtil.GetIntValue(actors[idx], "_SLH_iMilkLevel") / 2)	
 					ApplySweatFX.RemoteCast(actors[idx] as ObjectReference, actors[idx],actors[idx] as ObjectReference)
 				Endif
 
@@ -651,7 +656,9 @@ Event OnSexLabOrgasm(String _eventName, String _args, Float _argc, Form _sender)
 				Debug.Trace("[SLSDDi] NPC Milk Produced: " + StorageUtil.GetIntValue(actors[idx], "_SLH_iMilkProduced"))
 				Debug.Trace("[SLSDDi] NPC Milk Total: " + StorageUtil.GetIntValue(actors[idx], "_SLH_iMilkProducedTotal"))
 
-				actors[idx].SendModEvent("_SLSDDi_UpdateCow","Milk")
+				; actors[idx].SendModEvent("_SLSDDi_UpdateCow","Milk")
+				updateCowStatus(actors[idx],"Milk")
+
 				libs.SexlabMoan(actors[idx])
 			endif
 		EndIf
@@ -702,8 +709,8 @@ Event OnSit(ObjectReference akFurniture)
 
 		StorageUtil.SetIntValue(PlayerActor, "_SLH_iProlactinLevel", StorageUtil.GetIntValue(PlayerActor, "_SLH_iProlactinLevel") + 4)	
 
-		Debug.Notification("[SLSDDi] NPC Milk Produced: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkProduced"))
-		Debug.Notification("[SLSDDi] NPC Milk Total: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkProducedTotal"))
+		Debug.Trace("[SLSDDi] NPC Milk Produced: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkProduced"))
+		Debug.Trace("[SLSDDi] NPC Milk Total: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkProducedTotal"))
 
 		GetMilk(PlayerActor, 1)		
 
@@ -713,7 +720,8 @@ Event OnSit(ObjectReference akFurniture)
 			slaUtil.UpdateActorExposure(akRef = PlayerActor, val = -20, debugMsg = "producing breast milk as a cow.")
 		EndIf
 
-		PlayerActor.SendModEvent("_SLSDDi_UpdateCow","Milk")
+		; PlayerActor.SendModEvent("_SLSDDi_UpdateCow","Milk")
+		updateCowStatus(PlayerActor,"Milk")
 
 
 	Elseif (sFurnitureName == "Dwarven Milking Machine II") && (akFurniture.GetActorOwner() == LeonaraActor.GetActorBase() )
@@ -753,8 +761,8 @@ Event OnSit(ObjectReference akFurniture)
 
 		StorageUtil.SetIntValue(PlayerActor, "_SLH_iProlactinLevel", StorageUtil.GetIntValue(PlayerActor, "_SLH_iProlactinLevel") + 7)	
 
-		Debug.Notification("[SLSDDi] NPC Milk Produced: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkProduced"))
-		Debug.Notification("[SLSDDi] NPC Milk Total: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkProducedTotal"))
+		Debug.Trace("[SLSDDi] NPC Milk Produced: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkProduced"))
+		Debug.Trace("[SLSDDi] NPC Milk Total: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkProducedTotal"))
 
 
 		; SLSD_MilkOMaticSpell2.Remotecast(PlayerREF,PlayerActor,PlayerREF)
@@ -767,7 +775,8 @@ Event OnSit(ObjectReference akFurniture)
 			slaUtil.UpdateActorExposure(akRef = PlayerActor, val = -20, debugMsg = "producing breast milk as a cow.")
 		EndIf
 
-		PlayerActor.SendModEvent("_SLSDDi_UpdateCow","Milk")
+		; PlayerActor.SendModEvent("_SLSDDi_UpdateCow","Milk")
+		updateCowStatus(PlayerActor,"Milk")
 	EndIf
 endEvent
 
