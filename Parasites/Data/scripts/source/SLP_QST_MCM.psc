@@ -41,6 +41,8 @@ float		_breastMaxLivingArmor = 2.0
 
 bool		_toggleFaceHugger = true
 float		_chanceFaceHugger = -1.0 
+bool		_toggleFaceHuggerGag = true
+float		_chanceFaceHuggerGag = -1.0 
 float		_bellyMaxFaceHugger = 1.0
 
 bool		_toggleBarnacles = true
@@ -144,6 +146,8 @@ event OnPageReset(string a_page)
 
 	_toggleFaceHugger = StorageUtil.GetIntValue(kPlayer, "_SLP_toggleFaceHugger" )
 	_chanceFaceHugger = StorageUtil.GetFloatValue(kPlayer, "_SLP_chanceFaceHugger" )
+	_toggleFaceHuggerGag = StorageUtil.GetIntValue(kPlayer, "_SLP_toggleFaceHuggerGag" )
+	_chanceFaceHuggerGag = StorageUtil.GetFloatValue(kPlayer, "_SLP_chanceFaceHuggerGag" )
 	_bellyMaxFaceHugger = StorageUtil.GetFloatValue(kPlayer, "_SLP_bellyMaxFaceHugger" )
 
 	_toggleBarnacles = StorageUtil.GetIntValue(kPlayer, "_SLP_toggleBarnacles" )
@@ -189,9 +193,13 @@ event OnPageReset(string a_page)
 		AddSliderOptionST("STATE_LIVINGARMOR_CHANCE","Chance of infection", _chanceLivingArmor,"{0} %")
 		AddToggleOptionST("STATE_LIVINGARMOR_TOGGLE","Infect/Cure Living Armor", _toggleLivingArmor as Float)
 
-		AddHeaderOption(" Face Hugger (Belt)")
-		AddSliderOptionST("STATE_FACEHUGGER_CHANCE","Chance of infection", _chanceFaceHugger,"{0} %")
-		AddToggleOptionST("STATE_FACEHUGGER_TOGGLE","Infect/Cure Face Hugger", _toggleFaceHugger as Float)
+		AddHeaderOption(" Creepy Crawler (Belt)")
+		AddSliderOptionST("STATE_FACEHUGGER_CHANCE","Chance of infection (hips)", _chanceFaceHugger,"{0} %")
+		AddToggleOptionST("STATE_FACEHUGGER_TOGGLE","Infect/Cure Creepy Crawler", _toggleFaceHugger as Float)
+
+		AddHeaderOption(" Creepy Crawler (Face)")
+		AddSliderOptionST("STATE_FACEHUGGERGAG_CHANCE","Chance of infection (face)", _chanceFaceHuggerGag,"{0} %")
+		AddToggleOptionST("STATE_FACEHUGGERGAG_TOGGLE","Infect/Cure Creepy Crawler (face)", _toggleFaceHuggerGag as Float)
 
 		AddHeaderOption(" Barnacles (Harness)")
 		AddSliderOptionST("STATE_BARNACLES_CHANCE","Chance of infection", _chanceBarnacles,"{0} %")
@@ -743,9 +751,63 @@ state STATE_FACEHUGGER_CHANCE ; SLIDER
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Chance of attacks by Face Hugger")
+		SetInfoText("Chance of attacks by Creepy crawlers (Hips)")
 	endEvent
 endState
+; AddToggleOptionST("STATE_FACEHUGGERGAG_TOGGLE","Face Hugger", _toggleFaceHugger as Float, OPTION_FLAG_DISABLED)
+state STATE_FACEHUGGERGAG_TOGGLE ; TOGGLE
+	event OnSelectST() 
+		Int toggle = Math.LogicalXor( 1,  StorageUtil.GetIntValue(kPlayer, "_SLP_toggleFaceHuggerGag" )  )  
+
+		If (toggle ==1)
+			Debug.MessageBox("Infecting player with Creepy Crawler (face)")
+			kPlayer.SendModEvent("SLPInfectFaceHuggerGag")
+		else
+			Debug.MessageBox("Curing player from Creepy Crawler (face)")
+			kPlayer.SendModEvent("SLPCureFaceHuggerGag")
+		Endif
+
+		SetToggleOptionValueST( toggle as Bool )
+		ForcePageReset()
+	endEvent
+
+	event OnDefaultST()
+		StorageUtil.SetIntValue(kPlayer, "_SLP_toggleFaceHuggerGag", 1 )
+		SetToggleOptionValueST( true )
+		ForcePageReset()
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Manually Infect/Cure Creepy Crawler (face) for roleplay or testing purposes.")
+	endEvent
+
+endState
+
+; AddSliderOptionST("STATE_FACEHUGGERGAG_CHANCE","Chance of infection", _chanceFaceHuggerGag,"{0} %")
+state STATE_FACEHUGGERGAG_CHANCE ; SLIDER
+	event OnSliderOpenST()
+		SetSliderDialogStartValue( StorageUtil.GetFloatValue(kPlayer, "_SLP_chanceFaceHuggerGag" ) )
+		SetSliderDialogDefaultValue( 30.0 )
+		SetSliderDialogRange( 0.0, 100.0 )
+		SetSliderDialogInterval( 1.0 )
+	endEvent
+
+	event OnSliderAcceptST(float value)
+		float thisValue = value 
+		StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceFaceHuggerGag", thisValue )
+		SetSliderOptionValueST( thisValue,"{0} %" )
+	endEvent
+
+	event OnDefaultST()
+		StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceFaceHuggerGag", 30.0 )
+		SetSliderOptionValueST( 30.0,"{0} %" )
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Chance of attacks by Creepy crawlers (face)")
+	endEvent
+endState
+
 
 
 ; AddSliderOptionST("STATE_FACEHUGGER_BELLY","Node size", _bellyMaxFaceHugger,"{0}")
@@ -897,6 +959,7 @@ Function _resetParasiteSettings()
 
 	StorageUtil.SetIntValue(kPlayer, "_SLP_toggleFaceHugger", 0 )
 	StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceFaceHugger", 30.0 )
+	StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceFaceHuggerGag", 30.0 )
 	StorageUtil.SetFloatValue(kPlayer, "_SLP_bellyMaxFaceHugger", 2.0 )
 
 	StorageUtil.SetIntValue(kPlayer, "_SLP_toggleBarnacles", 0 )
@@ -945,6 +1008,7 @@ Function _setParasiteSettings()
 	if (_chanceFaceHugger==-1.0)
 		StorageUtil.SetIntValue(kPlayer, "_SLP_toggleFaceHugger", 0 )
 		StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceFaceHugger", 30.0 )
+		StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceFaceHuggerGag", 30.0 )
 		StorageUtil.SetFloatValue(kPlayer, "_SLP_bellyMaxFaceHugger", 2.0 )
 	Endif
 	if (_chanceBarnacles==-1.0)

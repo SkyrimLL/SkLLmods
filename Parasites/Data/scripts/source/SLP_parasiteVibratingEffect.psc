@@ -1,12 +1,14 @@
 Scriptname SLP_parasiteVibratingEffect extends zadBaseLinkedEvent  
 
 Keyword Property _SLPKP_OrganicVibrate Auto
+Keyword Property _SLPKP_Parasite Auto
 Keyword Property _SLPKP_SpiderEgg Auto
 Keyword Property _SLPKP_ChaurusWorm Auto
 Keyword Property _SLPKP_ChaurusWormVag Auto
 Keyword Property _SLPKP_TentacleMonster Auto
 Keyword Property _SLPKP_LivingArmor Auto
 Keyword Property _SLPKP_FaceHugger Auto
+Keyword Property _SLPKP_FaceHuggerGag Auto
 
 Int Function GetChanceModified(actor akActor, int chanceMod)
 	; include both tags for truely active effects
@@ -29,7 +31,7 @@ Bool Function Filter(actor akActor, int chanceMod=0)
 		libs.Log("Player is in a sexlab scene. Not starting new vibration effect.")
 		return false
 	EndIf
-	return (HasKeywords(akActor) && (akActor.WornHasKeyword(libs.zad_DeviousPlug) || akActor.WornHasKeyword(_SLPKP_LivingArmor)) && Parent.Filter(akActor, GetChanceModified(akActor, chanceMod)))
+	return (HasKeywords(akActor) && (akActor.WornHasKeyword(_SLPKP_Parasite)) && Parent.Filter(akActor, GetChanceModified(akActor, chanceMod)))
 EndFunction
 
 bool Function HasKeywords(actor akActor)
@@ -41,29 +43,33 @@ Function Execute(actor akActor)
 	int vibStrength = 0
 	int duration = utility.RandomInt(1,5)
 
-	if akActor.HasMagicEffectWithKeyword ( _SLPKP_SpiderEgg )
+	if akActor.WornHasKeyword ( _SLPKP_SpiderEgg )
 		libs.NotifyPlayer("The eggs roll against each other inside your womb.")
 		libs.Moan(akActor)	
 
-	Elseif akActor.HasMagicEffectWithKeyword ( _SLPKP_ChaurusWorm  )
+	Elseif akActor.WornHasKeyword ( _SLPKP_ChaurusWorm  )
 		libs.NotifyPlayer("The worm twitches and squirms deep inside your ass.")
 		libs.Moan(akActor)	
 
-	Elseif akActor.HasMagicEffectWithKeyword ( _SLPKP_ChaurusWormVag  )
+	Elseif akActor.WornHasKeyword ( _SLPKP_ChaurusWormVag  )
 		libs.NotifyPlayer("The worm twitches and squirms deep inside your womb.")
 		libs.Moan(akActor)	
 
-	Elseif akActor.HasMagicEffectWithKeyword ( _SLPKP_TentacleMonster  )
+	Elseif akActor.WornHasKeyword ( _SLPKP_TentacleMonster  )
 		libs.NotifyPlayer("The slimy tentacles rub slowly against your swollen lips.")
 		libs.SexlabMoan(akActor)	
 
-	Elseif akActor.HasMagicEffectWithKeyword ( _SLPKP_LivingArmor  )
+	Elseif akActor.WornHasKeyword ( _SLPKP_LivingArmor  )
 		libs.NotifyPlayer("The oozing tendrils squeeze your skin relentlessly.")
 		libs.SexlabMoan(akActor)	
 
-	Elseif akActor.HasMagicEffectWithKeyword ( _SLPKP_FaceHugger  )
-		libs.NotifyPlayer("The tail of the critter pump in and out of your pussy.")
+	Elseif akActor.WornHasKeyword ( _SLPKP_FaceHugger  )
+		libs.NotifyPlayer("The tail of the critter pumps semen deep inside your womb.")
 		libs.Pant(akActor)	
+
+	Elseif akActor.WornHasKeyword ( _SLPKP_FaceHuggerGag  )
+		libs.NotifyPlayer("The tail of the critter pumps semen deep down your throat.")
+		libs.SexlabMoan(akActor)	
 
 	EndIf
 
