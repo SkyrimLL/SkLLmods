@@ -2,8 +2,11 @@ Scriptname SLP_fcts_outfits extends Quest
 
 ObjectReference Property DanicaPureSpringRef Auto
 ObjectReference Property AcolyteJenssenRef Auto
+ObjectReference Property DinyaBaluRef Auto
+ObjectReference Property MaramalRef Auto
 
 Outfit Property PriestWhiterunOutfit Auto
+Outfit Property PriestRiftenOutfit Auto
 
 Keyword Property ArmorCuirass  Auto  
 Keyword Property ClothingBody  Auto  
@@ -16,6 +19,8 @@ Function SetPriestOutfits()
 	If (StorageUtil.GetIntValue(none, "_SLP_togglePriestOutfits" ))
 		(DanicaPureSpringRef as Actor).SetOutfit(PriestWhiterunOutfit)
 		(AcolyteJenssenRef as Actor).SetOutfit(PriestWhiterunOutfit)
+		(DinyaBaluRef as Actor).SetOutfit(PriestRiftenOutfit)
+		(MaramalRef as Actor).SetOutfit(PriestRiftenOutfit)
 	Endif
 	
 EndFunction

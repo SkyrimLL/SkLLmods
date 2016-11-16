@@ -13,6 +13,8 @@ ReferenceAlias Property TentacleMonsterInfectedAlias  Auto
 ReferenceAlias Property LivingArmorInfectedAlias  Auto  
 ReferenceAlias Property FaceHuggerInfectedAlias  Auto  
 ReferenceAlias Property SpiderFollowerAlias  Auto  
+
+ObjectReference Property DummyAlias  Auto  
  
 GlobalVariable Property _SLP_GV_numInfections  Auto 
 GlobalVariable Property _SLP_GV_numSpiderEggInfections  Auto 
@@ -43,6 +45,7 @@ Keyword Property _SLP_ParasiteChaurusWormVag Auto
 Keyword Property _SLP_ParasiteTentacleMonster  Auto  
 Keyword Property _SLP_ParasiteLivingArmor  Auto  
 Keyword Property _SLP_ParasiteFaceHugger  Auto  
+Keyword Property _SLP_ParasiteFaceHuggerGag  Auto  
 Keyword Property _SLP_ParasiteBarnacles  Auto  
 
 Armor Property SLP_plugSpiderEggRendered Auto         ; Internal Device
@@ -59,6 +62,8 @@ Armor Property SLP_harnessLivingArmorRendered Auto         ; Internal Device
 Armor Property SLP_harnessLivingArmorInventory Auto        	       ; Inventory Device
 Armor Property SLP_harnessFaceHuggerRendered Auto         ; Internal Device
 Armor Property SLP_harnessFaceHuggerInventory Auto        	       ; Inventory Device
+Armor Property SLP_harnessFaceHuggerGagRendered Auto         ; Internal Device
+Armor Property SLP_harnessFaceHuggerGagInventory Auto        	       ; Inventory Device
 Armor Property SLP_harnessBarnaclesRendered Auto         ; Internal Device
 Armor Property SLP_harnessBarnaclesInventory Auto        	       ; Inventory Device
 
@@ -355,6 +360,9 @@ Armor Function getParasiteByKeyword(Keyword thisKeyword  )
 	Elseif (thisKeyword == _SLP_ParasiteFaceHugger)
 		thisArmor = SLP_harnessFaceHuggerInventory
 
+	Elseif (thisKeyword == _SLP_ParasiteFaceHuggerGag)
+		thisArmor = SLP_harnessFaceHuggerGagInventory
+
 	Elseif (thisKeyword == _SLP_ParasiteBarnacles)
 		thisArmor = SLP_harnessBarnaclesInventory
 	EndIf
@@ -385,6 +393,9 @@ Armor Function getParasiteRenderedByKeyword(Keyword thisKeyword  )
 
 	Elseif (thisKeyword == _SLP_ParasiteFaceHugger)
 		thisArmor = SLP_harnessFaceHuggerRendered
+
+	Elseif (thisKeyword == _SLP_ParasiteFaceHuggerGag)
+		thisArmor = SLP_harnessFaceHuggerGagRendered
 
 	Elseif (thisKeyword == _SLP_ParasiteBarnacles)
 		thisArmor = SLP_harnessBarnaclesRendered
@@ -417,6 +428,9 @@ Keyword Function getDeviousKeywordByString(String deviousKeyword = ""  )
 		
 	elseif (deviousKeyword == "FaceHugger" )  
 		thisKeyword = _SLP_ParasiteFaceHugger
+		
+	elseif (deviousKeyword == "FaceHuggerGag" )  
+		thisKeyword = _SLP_ParasiteFaceHuggerGag
 		
 	elseif (deviousKeyword == "Barnacles" )  
 		thisKeyword = _SLP_ParasiteBarnacles
@@ -576,8 +590,6 @@ Function infectSpiderEgg( Actor kActor   )
 	_SLP_GV_numInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iInfections"))
 	_SLP_GV_numSpiderEggInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iSpiderEggInfections"))
 
-	Debug.MessageBox("You gasp as the spider fills your womb with a string if slimy eggs.")
-
 	SendModEvent("SLPSpiderEggInfection")
 
 
@@ -592,7 +604,7 @@ Function cureSpiderEgg( Actor kActor, String _args   )
 
 		if (iNumSpiderEggs < 0) || (_args == "All")
 			If (kActor == PlayerActor)
-				SpiderEggInfectedAlias.ForceRefTo(None)
+				SpiderEggInfectedAlias.ForceRefTo(DummyAlias)
 			endIf
 			iNumSpiderEggs = 0
 			StorageUtil.SetIntValue(kActor, "_SLP_iSpiderEggCount", 0 )
@@ -653,8 +665,6 @@ Function infectSpiderPenis( Actor kActor   )
 
 	_SLP_GV_numInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iInfections"))
 	_SLP_GV_numSpiderEggInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iSpiderEggInfections"))
-
-	Debug.MessageBox("You gasp as the spider fills your womb with a string if slimy eggs. Unfortunately, the penis of the spider remains firmly lodged inside you after the act.")
 
 	SendModEvent("SLPSpiderEggInfection")
 
@@ -719,7 +729,7 @@ Function cureChaurusWorm( Actor kActor   )
 		clearParasiteNPCByString (kActor, "ChaurusWorm")
 
 		If (kActor == PlayerActor)
-			ChaurusWormInfectedAlias.ForceRefTo(None)
+			ChaurusWormInfectedAlias.ForceRefTo(DummyAlias)
 		endIf
 
 	EndIf
@@ -770,7 +780,7 @@ Function cureChaurusWormVag( Actor kActor   )
 		clearParasiteNPCByString (kActor, "ChaurusWormVag")
 
 		If (kActor == PlayerActor)
-			ChaurusWormInfectedAlias.ForceRefTo(None)
+			ChaurusWormInfectedAlias.ForceRefTo(DummyAlias)
 		endIf
 
 	EndIf
@@ -786,7 +796,9 @@ Function infectEstrusTentacles( Actor kActor   )
 	Endif
 
 	If (!ActorHasKeywordByString(PlayerActor,  "PlugVaginal")) && (!isInfectedByString( PlayerActor,  "TentacleMonster" )) && (Utility.RandomInt(1,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceTentacleMonster" )))
-			PlayerActor.SendModEvent("SLPInfectTentacleMonster")
+			; PlayerActor.SendModEvent("SLPInfectTentacleMonster")
+			infectTentacleMonster(PlayerActor)
+			Debug.MessageBox("The ground shakes around you as tentacles shoot around your body and a slimiy, sticky creature attaches itself around your back.")
 	Else
 		Debug.Trace("[SLP] Tentacle Monster infection failed")
 		Debug.Trace("[SLP]   Vaginal Plug: " + ActorHasKeywordByString(PlayerActor,  "PlugVaginal"))
@@ -866,7 +878,7 @@ Function cureTentacleMonster( Actor kActor   )
 		clearParasiteNPCByString (kActor, "TentacleMonster")
 
 		If (kActor == PlayerActor)
-			TentacleMonsterInfectedAlias.ForceRefTo(None)
+			TentacleMonsterInfectedAlias.ForceRefTo(DummyAlias)
 		endIf
 
 	EndIf
@@ -882,7 +894,9 @@ Function infectEstrusSlime( Actor kActor   )
 	Endif
 
 	If (!ActorHasKeywordByString(PlayerActor,  "Harness")) && (!isInfectedByString( PlayerActor,  "LivingArmor" )) && (Utility.RandomInt(1,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceLivingArmor" )))
-			PlayerActor.SendModEvent("SLPInfectLivingArmor")
+			; PlayerActor.SendModEvent("SLPInfectLivingArmor")
+			infectLivingArmor(PlayerActor)
+			Debug.MessageBox("What looked like creepy clusters suddenly extends tentacles around your skin and strips you of your clothes. A deep shudder ripples down your spine as sharp hooks burry deep into the back of your neck.")
 	Else
 		Debug.Trace("[SLP] Living Armor infection failed")
 		Debug.Trace("[SLP]   Harness: " + ActorHasKeywordByString(PlayerActor,  "Harness"))
@@ -962,7 +976,7 @@ Function cureLivingArmor( Actor kActor   )
 		clearParasiteNPCByString (kActor, "LivingArmor")
 
 		If (kActor == PlayerActor)
-			LivingArmorInfectedAlias.ForceRefTo(None)
+			LivingArmorInfectedAlias.ForceRefTo(DummyAlias)
 		endIf
 
 	EndIf
@@ -1010,8 +1024,56 @@ Function cureFaceHugger( Actor kActor   )
 		StorageUtil.SetIntValue(kActor, "_SLP_toggleFaceHugger", 0 )
 		clearParasiteNPCByString (kActor, "FaceHugger")
 
-		If (kActor == PlayerActor)
-			FaceHuggerInfectedAlias.ForceRefTo(None)
+		If (kActor == PlayerActor) && !(isInfectedByString( kActor,  "FaceHugger" ))
+			FaceHuggerInfectedAlias.ForceRefTo(DummyAlias)
+		endIf
+
+	EndIf
+EndFunction
+
+Function infectFaceHuggerGag( Actor kActor   )
+ 	Actor PlayerActor = Game.GetPlayer()
+
+	If (StorageUtil.GetFloatValue(kActor, "_SLP_chanceFaceHugger" )==0.0)
+		Debug.Trace("		Parasite disabled - Aborting")
+		Return
+	Endif
+
+	If (isInfectedByString( kActor,  "FaceHuggerGag" ))
+		Debug.Trace("		Already infected - Aborting")
+		Return
+	Endif
+
+	equipParasiteNPCByString (kActor, "FaceHuggerGag")
+
+	If (kActor == PlayerActor)
+		FaceHuggerInfectedAlias.ForceRefTo(PlayerActor)
+	endIf
+
+	If !StorageUtil.HasIntValue(kActor, "_SLP_iFaceHuggerInfections")
+			StorageUtil.SetIntValue(kActor, "_SLP_iFaceHuggerInfections",  0)
+	EndIf
+
+	StorageUtil.SetIntValue(kActor, "_SLP_toggleFaceHuggerGag", 1 )
+	StorageUtil.SetIntValue(kActor, "_SLP_iFaceHuggerDate", Game.QueryStat("Days Passed"))
+	StorageUtil.SetIntValue(kActor, "_SLP_iInfections",  StorageUtil.GetIntValue(kActor, "_SLP_iInfections") + 1)
+	StorageUtil.SetIntValue(kActor, "_SLP_iFaceHuggerInfections",  StorageUtil.GetIntValue(kActor, "_SLP_iFaceHuggerInfections") + 1)
+
+	_SLP_GV_numInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iInfections"))
+	_SLP_GV_numFaceHuggerInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iFaceHuggerInfections"))
+
+	SendModEvent("SLPFaceHuggerInfection")
+EndFunction
+
+Function cureFaceHuggerGag( Actor kActor   )
+ 	Actor PlayerActor = Game.GetPlayer()
+
+	If (isInfectedByString( kActor,  "FaceHuggerGag" ))
+		StorageUtil.SetIntValue(kActor, "_SLP_toggleFaceHuggerGag", 0 )
+		clearParasiteNPCByString (kActor, "FaceHuggerGag")
+
+		If (kActor == PlayerActor) && !(isInfectedByString( kActor,  "FaceHugger" ))
+			FaceHuggerInfectedAlias.ForceRefTo(DummyAlias)
 		endIf
 
 	EndIf
@@ -1060,7 +1122,7 @@ Function cureBarnacles( Actor kActor   )
 		clearParasiteNPCByString (kActor, "Barnacles")
 
 		If (kActor == PlayerActor)
-			BarnaclesInfectedAlias.ForceRefTo(None)
+			BarnaclesInfectedAlias.ForceRefTo(DummyAlias)
 		endIf
 
 	EndIf
