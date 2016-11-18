@@ -4,8 +4,11 @@ ObjectReference Property DanicaPureSpringRef Auto
 ObjectReference Property AcolyteJenssenRef Auto
 ObjectReference Property DinyaBaluRef Auto
 ObjectReference Property MaramalRef Auto
+ObjectReference Property LortheimRef Auto
+ObjectReference Property JoraRef Auto
 
 Outfit Property PriestWhiterunOutfit Auto
+Outfit Property PriestWindhelmOutfit Auto
 Outfit Property PriestRiftenOutfit Auto
 
 Keyword Property ArmorCuirass  Auto  
@@ -21,6 +24,8 @@ Function SetPriestOutfits()
 		(AcolyteJenssenRef as Actor).SetOutfit(PriestWhiterunOutfit)
 		(DinyaBaluRef as Actor).SetOutfit(PriestRiftenOutfit)
 		(MaramalRef as Actor).SetOutfit(PriestRiftenOutfit)
+		(JoraRef as Actor).SetOutfit(PriestWindhelmOutfit)
+		(LortheimRef as Actor).SetOutfit(PriestWindhelmOutfit)
 	Endif
 	
 EndFunction

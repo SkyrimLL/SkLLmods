@@ -161,51 +161,31 @@ event OnPageReset(string a_page)
 
 		SetCursorFillMode(TOP_TO_BOTTOM)
 
-		AddHeaderOption(" Spider Eggs (Vaginal plug)")
-		AddSliderOptionST("STATE_SPIDEREGG_CHANCE","Chance of infection", _chanceSpiderEgg,"{0} %")
-		AddToggleOptionST("STATE_SPIDEREGG_TOGGLE","Infect/Cure Spider Egg", _toggleSpiderEgg as Float)
-
-		AddHeaderOption(" Spider Penis (Vaginal plug)")
-		AddSliderOptionST("STATE_SPIDERPENIS_CHANCE","Chance of infection", _chanceSpiderPenis,"{0} %")
-		AddToggleOptionST("STATE_SPIDERPENIS_TOGGLE","Infect/Cure Spider Penis", _toggleSpiderPenis as Float)
-
-		AddHeaderOption(" Chaurus Worm (Anal plug)")
-		AddSliderOptionST("STATE_CHAURUSWORM_CHANCE","Chance of infection", _chanceChaurusWorm,"{0} %")
-		AddToggleOptionST("STATE_CHAURUSWORM_TOGGLE","Infect/Cure Chaurus Worm", _toggleChaurusWorm as Float)
-
-		AddHeaderOption(" Chaurus Worm (Vaginal plug)")
-		AddSliderOptionST("STATE_CHAURUSWORMVAG_CHANCE","Chance of infection", _chanceChaurusWormVag,"{0} %")
-		AddToggleOptionST("STATE_CHAURUSWORMVAG_TOGGLE","Infect/Cure Vaginal Chaurus Worm", _toggleChaurusWormVag as Float)
-
-		AddHeaderOption(" Estrus Tentacles (EC+)")
-		AddSliderOptionST("STATE_ESTRUSTENTACLES_CHANCE","Chance of infection", _chanceEstrusTentacles,"{0} %")
-		; AddToggleOptionST("STATE_ESTRUSTENTACLES_TOGGLE","Infect/Cure Estrus Tentacles", _toggleEstrusTentacles as Float)
-
-		AddHeaderOption(" Tentacle Monster (Harness)")
-		AddSliderOptionST("STATE_TENTACLEMONSTER_CHANCE","Chance of infection", _chanceTentacleMonster,"{0} %")
-		AddToggleOptionST("STATE_TENTACLEMONSTER_TOGGLE","Infect/Cure Tentacle Monster", _toggleTentacleMonster as Float)
-
-		AddHeaderOption(" Estrus Slime (EC+)")
-		AddSliderOptionST("STATE_ESTRUSSLIME_CHANCE","Chance of infection", _chanceEstrusSlime,"{0} %")
-		; AddToggleOptionST("STATE_ESTRUSSLIME_TOGGLE","Infect/Cure Estrus Slime", _toggleEstrusSlime as Float)
-
-		AddHeaderOption(" Living Armor (Harness)")
-		AddSliderOptionST("STATE_LIVINGARMOR_CHANCE","Chance of infection", _chanceLivingArmor,"{0} %")
-		AddToggleOptionST("STATE_LIVINGARMOR_TOGGLE","Infect/Cure Living Armor", _toggleLivingArmor as Float)
-
-		AddHeaderOption(" Creepy Crawler (Belt)")
-		AddSliderOptionST("STATE_FACEHUGGER_CHANCE","Chance of infection (hips)", _chanceFaceHugger,"{0} %")
-		AddToggleOptionST("STATE_FACEHUGGER_TOGGLE","Infect/Cure Creepy Crawler", _toggleFaceHugger as Float)
-
-		AddHeaderOption(" Creepy Crawler (Face)")
-		AddSliderOptionST("STATE_FACEHUGGERGAG_CHANCE","Chance of infection (face)", _chanceFaceHuggerGag,"{0} %")
-		AddToggleOptionST("STATE_FACEHUGGERGAG_TOGGLE","Infect/Cure Creepy Crawler (face)", _toggleFaceHuggerGag as Float)
-
-		AddHeaderOption(" Barnacles (Harness)")
-		AddSliderOptionST("STATE_BARNACLES_CHANCE","Chance of infection", _chanceBarnacles,"{0} %")
-		AddToggleOptionST("STATE_BARNACLES_TOGGLE","Infect/Cure Barnacles", _toggleBarnacles as Float)
+		AddHeaderOption(" Chance of infection")
+		AddSliderOptionST("STATE_SPIDEREGG_CHANCE","Spider Eggs (Vaginal plug)", _chanceSpiderEgg,"{0} %")
+		AddSliderOptionST("STATE_SPIDERPENIS_CHANCE","Spider Penis (Vaginal plug)", _chanceSpiderPenis,"{0} %")
+		AddSliderOptionST("STATE_CHAURUSWORM_CHANCE","Chaurus Worm (Anal plug)", _chanceChaurusWorm,"{0} %")
+		AddSliderOptionST("STATE_CHAURUSWORMVAG_CHANCE","Chaurus Worm (Vaginal plug)", _chanceChaurusWormVag,"{0} %")
+		AddSliderOptionST("STATE_ESTRUSTENTACLES_CHANCE","Estrus Tentacles (EC+)", _chanceEstrusTentacles,"{0} %") 
+		AddSliderOptionST("STATE_TENTACLEMONSTER_CHANCE","Tentacle Monster (Harness)", _chanceTentacleMonster,"{0} %") 
+		AddSliderOptionST("STATE_ESTRUSSLIME_CHANCE","Estrus Slime (EC+)", _chanceEstrusSlime,"{0} %")
+		AddSliderOptionST("STATE_LIVINGARMOR_CHANCE","Living Armor (Harness)", _chanceLivingArmor,"{0} %")
+		AddSliderOptionST("STATE_FACEHUGGER_CHANCE","Creepy Crawler (Belt)", _chanceFaceHugger,"{0} %")
+		AddSliderOptionST("STATE_FACEHUGGERGAG_CHANCE","Creepy Crawler (Gag)", _chanceFaceHuggerGag,"{0} %")
+		AddSliderOptionST("STATE_BARNACLES_CHANCE","Barnacles (Harness)", _chanceBarnacles,"{0} %")
 
 		SetCursorPosition(1)
+		AddHeaderOption(" Infect/Cure")
+		AddToggleOptionST("STATE_SPIDEREGG_TOGGLE","Infect/Cure Spider Egg", _toggleSpiderEgg as Float)
+		AddToggleOptionST("STATE_SPIDERPENIS_TOGGLE","Infect/Cure Spider Penis", _toggleSpiderPenis as Float)
+		AddToggleOptionST("STATE_CHAURUSWORM_TOGGLE","Infect/Cure Chaurus Worm", _toggleChaurusWorm as Float)
+		AddToggleOptionST("STATE_CHAURUSWORMVAG_TOGGLE","Infect/Cure Vaginal Chaurus Worm", _toggleChaurusWormVag as Float)
+		AddToggleOptionST("STATE_TENTACLEMONSTER_TOGGLE","Infect/Cure Tentacle Monster", _toggleTentacleMonster as Float)
+		AddToggleOptionST("STATE_LIVINGARMOR_TOGGLE","Infect/Cure Living Armor", _toggleLivingArmor as Float)
+		AddToggleOptionST("STATE_FACEHUGGER_TOGGLE","Infect/Cure Creepy Crawler", _toggleFaceHugger as Float)
+		AddToggleOptionST("STATE_FACEHUGGERGAG_TOGGLE","Infect/Cure Creepy Crawler (face)", _toggleFaceHuggerGag as Float)
+		AddToggleOptionST("STATE_BARNACLES_TOGGLE","Infect/Cure Barnacles", _toggleBarnacles as Float)
+
 		AddHeaderOption(" NiOverride node scales")
 		AddSliderOptionST("STATE_SPIDEREGG_BELLY","Max belly size (Spider egg)", _bellyMaxSpiderEgg,"{1}")
 		AddSliderOptionST("STATE_CHAURUSWORMVAG_BELLY","Max belly size (Vaginal chaurus worm)", _bellyMaxChaurusWormVag,"{1}")
@@ -394,7 +374,7 @@ state STATE_CHAURUSWORM_BUTT ; SLIDER
 	event OnSliderOpenST()
 		SetSliderDialogStartValue( StorageUtil.GetFloatValue(kPlayer, "_SLP_buttMaxChaurusWorm" ) )
 		SetSliderDialogDefaultValue( 1.0 )
-		SetSliderDialogRange( 0.0, 3.0 )
+		SetSliderDialogRange( 0.0, 6.0 )
 		SetSliderDialogInterval( 0.1 )
 	endEvent
 
@@ -499,7 +479,7 @@ state STATE_CHAURUSWORMVAG_BELLY ; SLIDER
 	event OnSliderOpenST()
 		SetSliderDialogStartValue( StorageUtil.GetFloatValue(kPlayer, "_SLP_bellyMaxChaurusWormVag" ) )
 		SetSliderDialogDefaultValue( 1.0 )
-		SetSliderDialogRange( 0.0, 3.0 )
+		SetSliderDialogRange( 0.0, 6.0 )
 		SetSliderDialogInterval( 0.1 )
 	endEvent
 
@@ -603,7 +583,7 @@ state STATE_TENTACLEMONSTER_BREAST ; SLIDER
 	event OnSliderOpenST()
 		SetSliderDialogStartValue( StorageUtil.GetFloatValue(kPlayer, "_SLP_breastMaxTentacleMonster" ) )
 		SetSliderDialogDefaultValue( 1.0 )
-		SetSliderDialogRange( 0.0, 4.0 )
+		SetSliderDialogRange( 0.0, 6.0 )
 		SetSliderDialogInterval( 0.1 )
 	endEvent
 
@@ -699,6 +679,31 @@ state STATE_LIVINGARMOR_CHANCE ; SLIDER
 
 	event OnHighlightST()
 		SetInfoText("Chance of attacks by Living Armor")
+	endEvent
+endState
+; AddSliderOptionST("STATE_TENTACLEMONSTER_BREAST","Node size", _breastMaxLivingArmor,"{0}")
+state STATE_LIVINGARMOR_BREAST ; SLIDER
+	event OnSliderOpenST()
+		SetSliderDialogStartValue( StorageUtil.GetFloatValue(kPlayer, "_SLP_breastMaxLivingArmor" ) )
+		SetSliderDialogDefaultValue( 1.0 )
+		SetSliderDialogRange( 0.0, 6.0 )
+		SetSliderDialogInterval( 0.1 )
+	endEvent
+
+	event OnSliderAcceptST(float value)
+		float thisValue = value 
+		StorageUtil.SetFloatValue(kPlayer, "_SLP_breastMaxLivingArmor", thisValue )
+		SetSliderOptionValueST( thisValue,"{1}" )
+		kPlayer.SendModEvent("SLPRefreshBodyShape")
+	endEvent
+
+	event OnDefaultST()
+		StorageUtil.SetFloatValue(kPlayer, "_SLP_breastMaxLivingArmor", 1.0 )
+		SetSliderOptionValueST( 1.0,"{1}" )
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Max size of breast node (for NiOverride compatiblity)")
 	endEvent
 endState
 
@@ -815,7 +820,7 @@ state STATE_FACEHUGGER_BELLY ; SLIDER
 	event OnSliderOpenST()
 		SetSliderDialogStartValue( StorageUtil.GetFloatValue(kPlayer, "_SLP_bellyMaxFaceHugger" ) )
 		SetSliderDialogDefaultValue( 1.0 )
-		SetSliderDialogRange( 0.0, 3.0 )
+		SetSliderDialogRange( 0.0, 6.0 )
 		SetSliderDialogInterval( 0.1 )
 	endEvent
 
@@ -864,26 +869,7 @@ state STATE_BARNACLES_TOGGLE ; TOGGLE
 	endEvent
 endState
 
-; AddToggleOptionST("STATE_OUTFITS_TOGGLE","Priest outfits", _togglePriestOutfits as Float, OPTION_FLAG_DISABLED)
-state STATE_OUTFITS_TOGGLE ; TOGGLE
-	event OnSelectST() 
-		Int toggle = Math.LogicalXor( 1,  StorageUtil.GetIntValue(none, "_SLP_togglePriestOutfits" )  )  
-		_togglePriestOutfits = toggle
-		StorageUtil.SetIntValue(none, "_SLP_togglePriestOutfits", toggle )
-		SetToggleOptionValueST( toggle as Bool )
-		ForcePageReset()
-	endEvent
 
-	event OnDefaultST()
-		StorageUtil.SetIntValue(none, "_SLP_togglePriestOutfits", 0 )
-		SetToggleOptionValueST( false )
-		ForcePageReset()
-	endEvent
-
-	event OnHighlightST()
-		SetInfoText("Customize outfits of priests in Whiterun, Windhelm, Riften and Solitude with mesh from TERA (no Undo implemented yet).")
-	endEvent
-endState
 ; AddSliderOptionST("STATE_BARNACLES_CHANCE","Chance of infection", _chanceBarnacles,"{0} %")
 state STATE_BARNACLES_CHANCE ; SLIDER
 	event OnSliderOpenST()
@@ -906,6 +892,27 @@ state STATE_BARNACLES_CHANCE ; SLIDER
 
 	event OnHighlightST()
 		SetInfoText("Chance of attacks by Barnacles")
+	endEvent
+endState
+
+; AddToggleOptionST("STATE_OUTFITS_TOGGLE","Priest outfits", _togglePriestOutfits as Float, OPTION_FLAG_DISABLED)
+state STATE_OUTFITS_TOGGLE ; TOGGLE
+	event OnSelectST() 
+		Int toggle = Math.LogicalXor( 1,  StorageUtil.GetIntValue(none, "_SLP_togglePriestOutfits" )  )  
+		_togglePriestOutfits = toggle
+		StorageUtil.SetIntValue(none, "_SLP_togglePriestOutfits", toggle )
+		SetToggleOptionValueST( toggle as Bool )
+		ForcePageReset()
+	endEvent
+
+	event OnDefaultST()
+		StorageUtil.SetIntValue(none, "_SLP_togglePriestOutfits", 0 )
+		SetToggleOptionValueST( false )
+		ForcePageReset()
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Customize outfits of priests in Whiterun, Windhelm, Riften and Solitude with mesh from TERA (no Undo implemented yet).")
 	endEvent
 endState
 

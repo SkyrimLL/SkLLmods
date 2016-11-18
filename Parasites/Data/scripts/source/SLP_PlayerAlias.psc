@@ -103,6 +103,7 @@ Function _maintenance()
 	RegisterForModEvent("SLPCureFaceHuggerGag",   "OnSLPCureFaceHuggerGag")
 	RegisterForModEvent("SLPInfectBarnacles",   "OnSLPInfectBarnacles")
 	RegisterForModEvent("SLPCureBarnacles",   "OnSLPCureBarnacles")
+	RegisterForModEvent("SLPInfectEstrusChaurusEgg",   "OnSLPInfectChaurusEgg")
 
 	RegisterForModEvent("ArachnophobiaPlayerCaptured",   "OnArachnophobiaPlayerCaptured")
 
@@ -542,7 +543,7 @@ EndEvent
 ;------------------------------------------------------------------------------
 Event OnSLPInfectEstrusTentacles(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
-  	Actor PlayerActor = Game.GetPlayer()
+  	; Actor PlayerActor = Game.GetPlayer()
 
 	Debug.Trace("[SLP] Receiving 'infect estrus tentacle' event - Actor: " + kActor)
 
@@ -571,7 +572,7 @@ EndEvent
 ;------------------------------------------------------------------------------
 Event OnSLPInfectEstrusSlime(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
-  	Actor PlayerActor = Game.GetPlayer()
+  	; Actor PlayerActor = Game.GetPlayer()
 
 	Debug.Trace("[SLP] Receiving 'infect estrus slime' event - Actor: " + kActor)
 
@@ -653,7 +654,16 @@ Event OnSLPCureBarnacles(String _eventName, String _args, Float _argc = 1.0, For
 
 EndEvent
 
+;------------------------------------------------------------------------------
+Event OnSLPInfectEstrusChaurusEgg(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+  	; Actor PlayerActor = Game.GetPlayer()
 
+	Debug.Trace("[SLP] Receiving 'infect estrus chaurus egg' event - Actor: " + kActor)
+
+	fctParasites.infectEstrusChaurusEgg( kActor   )
+	
+EndEvent
 ;------------------------------------------------------------------------------
 Event OnSLPSexCure(String _eventName, String _args, Float _argc = 0.0, Form _sender)
  	Actor kActor = _sender as Actor
@@ -716,7 +726,7 @@ Event OnSLPRefreshBodyShape(String _eventName, String _args, Float _argc = 1.0, 
 	If (fctParasites.isInfectedByString( kActor,  "SpiderEgg" )) || (fctParasites.isInfectedByString( kActor,  "SpiderPenis" ))
 		Debug.Trace("[SLP] Refreshing belly shape (spider egg)")
 		Int iNumSpiderEggs = StorageUtil.GetIntValue(kActor, "_SLP_iSpiderEggCount" )
-		fctParasites.ApplyBodyChange( kActor, "SpiderEgg", "Belly", (2.0 + 4.0 * (iNumSpiderEggs as Float) / 10.0), StorageUtil.GetFloatValue(kActor, "_SLP_bellyMaxSpiderEgg" ))
+		fctParasites.ApplyBodyChange( kActor, "SpiderEgg", "Belly", (4.0 * (iNumSpiderEggs as Float) / StorageUtil.GetFloatValue(kActor, "_SLP_bellyMaxSpiderEgg" )), StorageUtil.GetFloatValue(kActor, "_SLP_bellyMaxSpiderEgg" ))
 	EndIf
 
 	If (fctParasites.isInfectedByString( kActor,  "ChaurusWorm" ))
@@ -726,27 +736,27 @@ Event OnSLPRefreshBodyShape(String _eventName, String _args, Float _argc = 1.0, 
 
 	If (fctParasites.isInfectedByString( kActor,  "ChaurusWormVag" ))
 		Debug.Trace("[SLP] Refreshing butt shape (vaginal chaurus worm)")
-		fctParasites.ApplyBodyChange( kActor, "ChaurusWormVag", "BElly", 1.0, StorageUtil.GetFloatValue(kActor, "_SLP_bellyMaxChaurusWormVag" ))
+		fctParasites.ApplyBodyChange( kActor, "ChaurusWormVag", "Belly", 1.0, StorageUtil.GetFloatValue(kActor, "_SLP_bellyMaxChaurusWormVag" ))
 	EndIf
 
 	If (fctParasites.isInfectedByString( kActor,  "TentacleMonster" ))
 		Debug.Trace("[SLP] Refreshing breast shape (tentacle monster)")
 		Int iParasiteDuration = Game.QueryStat("Days Passed") - StorageUtil.GetIntValue(kActor, "_SLP_iTentacleMonsterDate")
-		Float fValue = (iParasiteDuration as Float) / 10.0
+		Float fValue = (iParasiteDuration as Float) / StorageUtil.GetFloatValue(kActor, "_SLP_breastMaxTentacleMonster" )
 		fctParasites.ApplyBodyChange( kActor, "TentacleMonster", "Breast", fValue, StorageUtil.GetFloatValue(kActor, "_SLP_breastMaxTentacleMonster" ) )
 	EndIf
 
 	If (fctParasites.isInfectedByString( kActor,  "LivingArmor" ))
 		Debug.Trace("[SLP] Refreshing breast shape (living armor)")
 		Int iParasiteDuration = Game.QueryStat("Days Passed") - StorageUtil.GetIntValue(kActor, "_SLP_iLivingArmorDate")
-		Float fValue = (iParasiteDuration as Float) / 10.0
+		Float fValue = (iParasiteDuration as Float) / StorageUtil.GetFloatValue(kActor, "_SLP_breastMaxLivingArmor" )
 		fctParasites.ApplyBodyChange( kActor, "LivingArmor", "Breast", fValue, StorageUtil.GetFloatValue(kActor, "_SLP_breastMaxLivingArmor" ) )
 	EndIf
 
 	If (fctParasites.isInfectedByString( kActor,  "FaceHugger" )) || (fctParasites.isInfectedByString( kActor,  "FaceHuggerGag" ))
 		Debug.Trace("[SLP] Refreshing belly shape (creepy critter)")
 		Int iParasiteDuration = Game.QueryStat("Days Passed") - StorageUtil.GetIntValue(kActor, "_SLP_iFaceHuggerDate")
-		Float fValue = (iParasiteDuration as Float) / 10.0
+		Float fValue = (iParasiteDuration as Float) / StorageUtil.GetFloatValue(kActor, "_SLP_bellyMaxFaceHugger" )
 		fctParasites.ApplyBodyChange( kActor, "FaceHugger", "Belly", fValue, StorageUtil.GetFloatValue(kActor, "_SLP_bellyMaxFaceHugger" ) )
 	EndIf
 
