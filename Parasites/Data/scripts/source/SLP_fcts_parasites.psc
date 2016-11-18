@@ -575,7 +575,7 @@ Function infectSpiderEgg( Actor kActor   )
 
 	equipParasiteNPCByString (kActor, "SpiderEgg")
 
-	ApplyBodyChange( kActor, "SpiderEgg", "Belly", (2.0 + 4.0 * (iNumSpiderEggs as Float) / 10.0), StorageUtil.GetFloatValue(kActor, "_SLP_bellyMaxSpiderEgg" ))
+	ApplyBodyChange( kActor, "SpiderEgg", "Belly", (4.0 * (iNumSpiderEggs as Float) / StorageUtil.GetFloatValue(kActor, "_SLP_bellyMaxSpiderEgg" )), StorageUtil.GetFloatValue(kActor, "_SLP_bellyMaxSpiderEgg" ))
 
 	If !StorageUtil.HasIntValue(kActor, "_SLP_iSpiderEggInfections")
 			StorageUtil.SetIntValue(kActor, "_SLP_iSpiderEggInfections",  0)
@@ -615,7 +615,7 @@ Function cureSpiderEgg( Actor kActor, String _args   )
 			clearParasiteNPCByString (kActor, "SpiderEgg")
 		Endif
 
-		ApplyBodyChange( kActor, "SpiderEgg", "Belly", (2.0 + 4.0 * (iNumSpiderEggs as Float) / 10.0), StorageUtil.GetFloatValue(kActor, "_SLP_bellyMaxSpiderEgg" ) )
+		ApplyBodyChange( kActor, "SpiderEgg", "Belly", (4.0 * (iNumSpiderEggs as Float) / StorageUtil.GetFloatValue(kActor, "_SLP_bellyMaxSpiderEgg" )), StorageUtil.GetFloatValue(kActor, "_SLP_bellyMaxSpiderEgg" ) )
  
 		StorageUtil.SetIntValue(kActor, "_SLP_iSpiderEggCount", iNumSpiderEggs )
 		SendModEvent("SLPSpiderEggInfection")
@@ -650,7 +650,7 @@ Function infectSpiderPenis( Actor kActor   )
 
 	equipParasiteNPCByString (kActor, "SpiderPenis")
 
-	ApplyBodyChange( kActor, "SpiderEgg", "Belly", (2.0 + 4.0 * (iNumSpiderEggs as Float) / 10.0), StorageUtil.GetFloatValue(kActor, "_SLP_bellyMaxSpiderEgg" ) )
+	ApplyBodyChange( kActor, "SpiderEgg", "Belly", (4.0 * (iNumSpiderEggs as Float) / StorageUtil.GetFloatValue(kActor, "_SLP_bellyMaxSpiderEgg" )), StorageUtil.GetFloatValue(kActor, "_SLP_bellyMaxSpiderEgg" ) )
 
 	If !StorageUtil.HasIntValue(kActor, "_SLP_iSpiderEggInfections")
 			StorageUtil.SetIntValue(kActor, "_SLP_iSpiderEggInfections",  0)
@@ -795,22 +795,22 @@ Function infectEstrusTentacles( Actor kActor   )
 		Return
 	Endif
 
-	If (!ActorHasKeywordByString(PlayerActor,  "PlugVaginal")) && (!isInfectedByString( PlayerActor,  "TentacleMonster" )) && (Utility.RandomInt(1,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceTentacleMonster" )))
+	If (!ActorHasKeywordByString(kActor,  "PlugVaginal")) && (!isInfectedByString( kActor,  "TentacleMonster" )) && (Utility.RandomInt(1,100)<= (1 + StorageUtil.GetFloatValue(kActor, "_SLP_chanceTentacleMonster" )))
 			; PlayerActor.SendModEvent("SLPInfectTentacleMonster")
-			infectTentacleMonster(PlayerActor)
+			infectTentacleMonster(kActor)
 			Debug.MessageBox("The ground shakes around you as tentacles shoot around your body and a slimiy, sticky creature attaches itself around your back.")
 	Else
 		Debug.Trace("[SLP] Tentacle Monster infection failed")
-		Debug.Trace("[SLP]   Vaginal Plug: " + ActorHasKeywordByString(PlayerActor,  "PlugVaginal"))
-		Debug.Trace("[SLP]   TentacleMonster: " + isInfectedByString( PlayerActor,  "TentacleMonster" ))
-		Debug.Trace("[SLP]   Chance infection: " + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceTentacleMonster" ))
+		Debug.Trace("[SLP]   Vaginal Plug: " + ActorHasKeywordByString(kActor,  "PlugVaginal"))
+		Debug.Trace("[SLP]   TentacleMonster: " + isInfectedByString( kActor,  "TentacleMonster" ))
+		Debug.Trace("[SLP]   Chance infection: " + StorageUtil.GetFloatValue(kActor, "_SLP_chanceTentacleMonster" ))
 	EndIf
 
 	int ECTrap = ModEvent.Create("ECStartAnimation")  ; Int  Does not have to be named "ECTrap" any name would do
 
 	if (ECTrap) 
 	    ModEvent.PushForm(ECTrap, Game.GetPlayer())             ; Form (Some SendModEvent scripting "black magic" - required)
-	    ModEvent.PushForm(ECTrap, PlayerActor)  ; Form The animation target
+	    ModEvent.PushForm(ECTrap, kActor)  ; Form The animation target
 	    ModEvent.PushInt(ECTrap, 0)    			; Int The animation required -1 = Impregnation only with No Animation,
                                                 ; 0 = Tentacles, 1 = Machines 2 = Slime 3 = Ooze
 	    ModEvent.PushBool(ECTrap, true)         ; Bool Apply the linked EC effect (Ovipostion for Tentacles, Exhaustion for Machine) 
@@ -893,22 +893,22 @@ Function infectEstrusSlime( Actor kActor   )
 		Return
 	Endif
 
-	If (!ActorHasKeywordByString(PlayerActor,  "Harness")) && (!isInfectedByString( PlayerActor,  "LivingArmor" )) && (Utility.RandomInt(1,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceLivingArmor" )))
+	If (!ActorHasKeywordByString(kActor,  "Harness")) && (!isInfectedByString( kActor,  "LivingArmor" )) && (Utility.RandomInt(1,100)<= (1 + StorageUtil.GetFloatValue(kActor, "_SLP_chanceLivingArmor" )))
 			; PlayerActor.SendModEvent("SLPInfectLivingArmor")
-			infectLivingArmor(PlayerActor)
+			infectLivingArmor(kActor)
 			Debug.MessageBox("What looked like creepy clusters suddenly extends tentacles around your skin and strips you of your clothes. A deep shudder ripples down your spine as sharp hooks burry deep into the back of your neck.")
 	Else
 		Debug.Trace("[SLP] Living Armor infection failed")
-		Debug.Trace("[SLP]   Harness: " + ActorHasKeywordByString(PlayerActor,  "Harness"))
-		Debug.Trace("[SLP]   LivingArmor: " + isInfectedByString( PlayerActor,  "LivingArmor" ))
-		Debug.Trace("[SLP]   Chance infection: " + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceLivingArmor" ))
+		Debug.Trace("[SLP]   Harness: " + ActorHasKeywordByString(kActor,  "Harness"))
+		Debug.Trace("[SLP]   LivingArmor: " + isInfectedByString( kActor,  "LivingArmor" ))
+		Debug.Trace("[SLP]   Chance infection: " + StorageUtil.GetFloatValue(kActor, "_SLP_chanceLivingArmor" ))
 	EndIf
 
 	int ECTrap = ModEvent.Create("ECStartAnimation")  ; Int  Does not have to be named "ECTrap" any name would do
 
 	if (ECTrap) 
 	    ModEvent.PushForm(ECTrap, Game.GetPlayer())             ; Form (Some SendModEvent scripting "black magic" - required)
-	    ModEvent.PushForm(ECTrap, PlayerActor)  ; Form The animation target
+	    ModEvent.PushForm(ECTrap, kActor)  ; Form The animation target
 	    ModEvent.PushInt(ECTrap, Utility.randomInt(3,4))    	; Int The animation required -1 = Impregnation only with No Animation,
                                                 ; 0 = Tentacles, 1 = Machines 2 = Slime 3 = Ooze
 	    ModEvent.PushBool(ECTrap, true)         ; Bool Apply the linked EC effect (Ovipostion for Tentacles, Exhaustion for Machine) 
@@ -1126,6 +1126,43 @@ Function cureBarnacles( Actor kActor   )
 		endIf
 
 	EndIf
+EndFunction
+
+;------------------------------------------------------------------------------
+Function infectEstrusChaurusEgg( Actor kActor   )
+  	Actor PlayerActor = Game.GetPlayer()
+
+	; If (StorageUtil.GetFloatValue(kActor, "_SLP_chanceEstrusChaurusEgg" )==0.0)
+	;	Debug.Trace("		Parasite disabled - Aborting")
+	;	Return
+	; Endif
+
+	int ECTrap = ModEvent.Create("ECStartAnimation")  ; Int  Does not have to be named "ECTrap" any name would do
+
+	if (ECTrap) 
+	    ModEvent.PushForm(ECTrap, Game.GetPlayer())             ; Form (Some SendModEvent scripting "black magic" - required)
+	    ModEvent.PushForm(ECTrap, kActor)  ; Form The animation target
+	    ModEvent.PushInt(ECTrap, -1)    	; Int The animation required -1 = Impregnation only with No Animation,
+                                                ; 0 = Tentacles, 1 = Machines 2 = Slime 3 = Ooze
+	    ModEvent.PushBool(ECTrap, true)         ; Bool Apply the linked EC effect (Ovipostion for Tentacles, Exhaustion for Machine) 
+	    ModEvent.Pushint(ECTrap, 500)           ; Int  Alarm radius in units (0 to disable) 
+	    ModEvent.PushBool(ECTrap, true)         ; Bool Use EC (basic) crowd control on hostiles 
+	    ModEvent.Send(ECtrap)
+	endif
+
+	If !StorageUtil.HasIntValue(kActor, "_SLP_iEstrusChaurusEggInfections")
+			StorageUtil.SetIntValue(kActor, "_SLP_iEstrusChaurusEggInfections",  0)
+	EndIf
+ 
+	StorageUtil.SetIntValue(kActor, "_SLP_iEstrusChaurusEggDate", Game.QueryStat("Days Passed"))
+	StorageUtil.SetIntValue(kActor, "_SLP_iInfections",  StorageUtil.GetIntValue(kActor, "_SLP_iInfections") + 1)
+	StorageUtil.SetIntValue(kActor, "_SLP_iEstrusChaurusEggInfections",  StorageUtil.GetIntValue(kActor, "_SLP_iEstrusChaurusEggInfections") + 1)
+
+	_SLP_GV_numInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iInfections"))
+	; _SLP_GV_numEstrusChaurusEggInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iEstrusChaurusEggInfections"))
+
+	SendModEvent("SLPEstrusChaurusEggInfection")
+
 EndFunction
 
 ;------------------------------------------------------------------------------
