@@ -8,8 +8,11 @@ Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
 Actor kPlayer = Game.GetPlayer()
 kPlayer.SendModEvent("SLPSexCure","FaceHuggerGag")
+KynesBlessingQuest.SetStage(70)
+KynesBlessingQuest.SetStage(21)
 ;END CODE
 EndFunction
 ;END FRAGMENT
 
 ;END FRAGMENT CODE - Do not edit anything between this and the begin comment
+Quest Property KynesBlessingQuest  Auto 
