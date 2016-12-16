@@ -242,7 +242,7 @@ state STATE_SPIDEREGG_BELLY ; SLIDER
 	event OnSliderOpenST()
 		SetSliderDialogStartValue( StorageUtil.GetFloatValue(kPlayer, "_SLP_bellyMaxSpiderEgg" ) )
 		SetSliderDialogDefaultValue( 2.0 )
-		SetSliderDialogRange( 0.0, 6.0 )
+		SetSliderDialogRange( 1.0, 6.0 )
 		SetSliderDialogInterval( 0.1 )
 	endEvent
 
@@ -374,7 +374,7 @@ state STATE_CHAURUSWORM_BUTT ; SLIDER
 	event OnSliderOpenST()
 		SetSliderDialogStartValue( StorageUtil.GetFloatValue(kPlayer, "_SLP_buttMaxChaurusWorm" ) )
 		SetSliderDialogDefaultValue( 1.0 )
-		SetSliderDialogRange( 0.0, 6.0 )
+		SetSliderDialogRange( 1.0, 6.0 )
 		SetSliderDialogInterval( 0.1 )
 	endEvent
 
@@ -479,7 +479,7 @@ state STATE_CHAURUSWORMVAG_BELLY ; SLIDER
 	event OnSliderOpenST()
 		SetSliderDialogStartValue( StorageUtil.GetFloatValue(kPlayer, "_SLP_bellyMaxChaurusWormVag" ) )
 		SetSliderDialogDefaultValue( 1.0 )
-		SetSliderDialogRange( 0.0, 6.0 )
+		SetSliderDialogRange( 1.0, 6.0 )
 		SetSliderDialogInterval( 0.1 )
 	endEvent
 
@@ -583,7 +583,7 @@ state STATE_TENTACLEMONSTER_BREAST ; SLIDER
 	event OnSliderOpenST()
 		SetSliderDialogStartValue( StorageUtil.GetFloatValue(kPlayer, "_SLP_breastMaxTentacleMonster" ) )
 		SetSliderDialogDefaultValue( 1.0 )
-		SetSliderDialogRange( 0.0, 6.0 )
+		SetSliderDialogRange( 1.0, 6.0 )
 		SetSliderDialogInterval( 0.1 )
 	endEvent
 
@@ -686,7 +686,7 @@ state STATE_LIVINGARMOR_BREAST ; SLIDER
 	event OnSliderOpenST()
 		SetSliderDialogStartValue( StorageUtil.GetFloatValue(kPlayer, "_SLP_breastMaxLivingArmor" ) )
 		SetSliderDialogDefaultValue( 1.0 )
-		SetSliderDialogRange( 0.0, 6.0 )
+		SetSliderDialogRange( 1.0, 6.0 )
 		SetSliderDialogInterval( 0.1 )
 	endEvent
 
@@ -820,7 +820,7 @@ state STATE_FACEHUGGER_BELLY ; SLIDER
 	event OnSliderOpenST()
 		SetSliderDialogStartValue( StorageUtil.GetFloatValue(kPlayer, "_SLP_bellyMaxFaceHugger" ) )
 		SetSliderDialogDefaultValue( 1.0 )
-		SetSliderDialogRange( 0.0, 6.0 )
+		SetSliderDialogRange( 1.0, 6.0 )
 		SetSliderDialogInterval( 0.1 )
 	endEvent
 

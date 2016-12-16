@@ -14,6 +14,8 @@ ReferenceAlias Property LivingArmorInfectedAlias  Auto
 ReferenceAlias Property FaceHuggerInfectedAlias  Auto  
 ReferenceAlias Property SpiderFollowerAlias  Auto  
 
+Quest Property KynesBlessingQuest  Auto 
+
 ObjectReference Property DummyAlias  Auto  
  
 GlobalVariable Property _SLP_GV_numInfections  Auto 
@@ -256,7 +258,7 @@ Function clearParasiteNPCByString ( Actor akActor, String sParasiteString = "", 
 			Debug.Trace("[SLP] clearing device keyword: " + kwDeviceKeyword)  
   
 			aWornDevice = getParasiteByKeyword(kwDeviceKeyword) ; libs.GetWornDevice(akActor, kwDeviceKeyword) as Armor
-			aRenderedDevice = getParasiteRenderedByKeyword(kwDeviceKeyword) ; libs.GetRenderedDevice(aWornDevice) as Armor
+			aRenderedDevice = libs.GetRenderedDevice(aWornDevice) as Armor ; getParasiteRenderedByKeyword(kwDeviceKeyword) 
 
 			If (aRenderedDevice!=None)
 				clearParasiteNPC ( akActor, aWornDevice,  aRenderedDevice,  kwDeviceKeyword)
@@ -278,11 +280,11 @@ Function clearParasiteNPCByString ( Actor akActor, String sParasiteString = "", 
 EndFunction
 
 Bool Function equipParasite ( Armor ddArmorInventory, Armor ddArmorRendered, Keyword ddArmorKeyword)
-	Actor kSlave = Game.GetPlayer() as Actor
+	Actor kPlayer = Game.GetPlayer() as Actor
 	Keyword kwWornKeyword
 	Bool bDeviceEquipSuccess = False
 
-	bDeviceEquipSuccess = equipParasiteNPC ( Game.GetPlayer(), ddArmorInventory, ddArmorRendered, ddArmorKeyword)
+	bDeviceEquipSuccess = equipParasiteNPC ( kPlayer, ddArmorInventory, ddArmorRendered, ddArmorKeyword)
 
 	return bDeviceEquipSuccess
 EndFunction
@@ -309,11 +311,11 @@ Bool Function equipParasiteNPC ( Actor akActor, Armor ddArmorInventory, Armor dd
 EndFunction
 
 Bool Function clearParasite ( Armor ddArmorInventory, Armor ddArmorRendered, Keyword ddArmorKeyword, Bool bDestroy = False)
-	Actor kSlave = Game.GetPlayer() as Actor
+	Actor kPlayer = Game.GetPlayer() as Actor
 	Keyword kwWornKeyword
 	Bool bDeviceRemoveSuccess = False
  
-	bDeviceRemoveSuccess = clearParasiteNPC ( Game.GetPlayer(), ddArmorInventory, ddArmorRendered, ddArmorKeyword,  bDestroy)
+	bDeviceRemoveSuccess = clearParasiteNPC ( kPlayer, ddArmorInventory, ddArmorRendered, ddArmorKeyword,  bDestroy)
  
 	return bDeviceRemoveSuccess
 EndFunction
@@ -530,7 +532,7 @@ Bool Function isDeviceEquippedKeyword( Actor akActor,  String sKeyword, String s
 	Keyword kKeyword = getDeviousKeywordByString(sParasiteString)
  
  	If (kKeyword != None)
-		kForm = libs.GetWornDevice(PlayerActor, kKeyword) as Form
+		kForm = libs.GetWornDevice(akActor, kKeyword) as Form
 		If (kForm != None)
 			; Debug.Trace("[SD] SetOutfit: test part " + iOutfitPart + " for keyword " +  deviousKeyword   )
 			return (kForm.HasKeywordString(sKeyword) ) 
@@ -551,7 +553,7 @@ Function infectSpiderEgg( Actor kActor   )
  	Actor PlayerActor = Game.GetPlayer()
   	Int iNumSpiderEggs
  
- 	If (StorageUtil.GetFloatValue(kActor, "_SLP_chanceSpiderEgg" )==0.0)
+ 	If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceSpiderEgg" )==0.0)
 		Debug.Trace("		Parasite disabled - Aborting")
 		Return
 	Endif
@@ -575,7 +577,7 @@ Function infectSpiderEgg( Actor kActor   )
 
 	equipParasiteNPCByString (kActor, "SpiderEgg")
 
-	ApplyBodyChange( kActor, "SpiderEgg", "Belly", (4.0 * (iNumSpiderEggs as Float) / StorageUtil.GetFloatValue(kActor, "_SLP_bellyMaxSpiderEgg" )), StorageUtil.GetFloatValue(kActor, "_SLP_bellyMaxSpiderEgg" ))
+	ApplyBodyChange( kActor, "SpiderEgg", "Belly", 1.0 + (4.0 * (iNumSpiderEggs as Float) / StorageUtil.GetFloatValue(PlayerActor, "_SLP_bellyMaxSpiderEgg" )), StorageUtil.GetFloatValue(PlayerActor, "_SLP_bellyMaxSpiderEgg" ))
 
 	If !StorageUtil.HasIntValue(kActor, "_SLP_iSpiderEggInfections")
 			StorageUtil.SetIntValue(kActor, "_SLP_iSpiderEggInfections",  0)
@@ -592,10 +594,12 @@ Function infectSpiderEgg( Actor kActor   )
 
 	SendModEvent("SLPSpiderEggInfection")
 
-
+	if (!KynesBlessingQuest.GetStageDone(20))
+		KynesBlessingQuest.SetStage(20)
+	endif
 EndFunction
 
-Function cureSpiderEgg( Actor kActor, String _args   )
+Function cureSpiderEgg( Actor kActor, String _args, Bool bHarvestParasite = False   )
   	Actor PlayerActor = Game.GetPlayer()
  	Int iNumSpiderEggs
 
@@ -613,9 +617,13 @@ Function cureSpiderEgg( Actor kActor, String _args   )
 
 			StorageUtil.SetIntValue(kActor, "_SLP_toggleSpiderEgg", 0)
 			clearParasiteNPCByString (kActor, "SpiderEgg")
+
+			If (bHarvestParasite)
+				PlayerActor.AddItem(SLP_plugSpiderEggInventory,1)
+			Endif
 		Endif
 
-		ApplyBodyChange( kActor, "SpiderEgg", "Belly", (4.0 * (iNumSpiderEggs as Float) / StorageUtil.GetFloatValue(kActor, "_SLP_bellyMaxSpiderEgg" )), StorageUtil.GetFloatValue(kActor, "_SLP_bellyMaxSpiderEgg" ) )
+		ApplyBodyChange( kActor, "SpiderEgg", "Belly", 1.0 + (4.0 * (iNumSpiderEggs as Float) / StorageUtil.GetFloatValue(PlayerActor, "_SLP_bellyMaxSpiderEgg" )), StorageUtil.GetFloatValue(PlayerActor, "_SLP_bellyMaxSpiderEgg" ) )
  
 		StorageUtil.SetIntValue(kActor, "_SLP_iSpiderEggCount", iNumSpiderEggs )
 		SendModEvent("SLPSpiderEggInfection")
@@ -629,7 +637,7 @@ Function infectSpiderPenis( Actor kActor   )
  	Actor PlayerActor = Game.GetPlayer()
   	Int iNumSpiderEggs
 
-	If (StorageUtil.GetFloatValue(kActor, "_SLP_chanceSpiderPenis" )==0.0)
+	If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceSpiderPenis" )==0.0)
 		Debug.Trace("		Parasite disabled - Aborting")
 		Return
 	Endif
@@ -650,7 +658,7 @@ Function infectSpiderPenis( Actor kActor   )
 
 	equipParasiteNPCByString (kActor, "SpiderPenis")
 
-	ApplyBodyChange( kActor, "SpiderEgg", "Belly", (4.0 * (iNumSpiderEggs as Float) / StorageUtil.GetFloatValue(kActor, "_SLP_bellyMaxSpiderEgg" )), StorageUtil.GetFloatValue(kActor, "_SLP_bellyMaxSpiderEgg" ) )
+	ApplyBodyChange( kActor, "SpiderEgg", "Belly", 1.0 + (4.0 * (iNumSpiderEggs as Float) / StorageUtil.GetFloatValue(PlayerActor, "_SLP_bellyMaxSpiderEgg" )), StorageUtil.GetFloatValue(PlayerActor, "_SLP_bellyMaxSpiderEgg" ) )
 
 	If !StorageUtil.HasIntValue(kActor, "_SLP_iSpiderEggInfections")
 			StorageUtil.SetIntValue(kActor, "_SLP_iSpiderEggInfections",  0)
@@ -668,15 +676,23 @@ Function infectSpiderPenis( Actor kActor   )
 
 	SendModEvent("SLPSpiderEggInfection")
 
+	if (!KynesBlessingQuest.GetStageDone(20))
+		KynesBlessingQuest.SetStage(20)
+	endif
+
 EndFunction
 
-Function cureSpiderPenis( Actor kActor   )
+Function cureSpiderPenis( Actor kActor, Bool bHarvestParasite = False   )
  	Actor PlayerActor = Game.GetPlayer()
 
 
 	If (isInfectedByString( kActor,  "SpiderPenis" ))
 		StorageUtil.SetIntValue(kActor, "_SLP_toggleSpiderPenis", 0 )
 		clearParasiteNPCByString (kActor, "SpiderPenis", true, true)
+
+		If (bHarvestParasite)
+			PlayerActor.AddItem(SLP_plugSpiderPenisInventory,1)
+		Endif
 
 		StorageUtil.SetIntValue(kActor, "_SLP_toggleSpiderEgg", 1 )
 		equipParasiteNPCByString (kActor, "SpiderEgg")
@@ -688,7 +704,7 @@ EndFunction
 Function infectChaurusWorm( Actor kActor   )
  	Actor PlayerActor = Game.GetPlayer()
 
-	If (StorageUtil.GetFloatValue(kActor, "_SLP_chanceChaurusWorm" )==0.0)
+	If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceChaurusWorm" )==0.0)
 		Debug.Trace("		Parasite disabled - Aborting")
 		Return
 	Endif
@@ -704,7 +720,7 @@ Function infectChaurusWorm( Actor kActor   )
 		ChaurusWormInfectedAlias.ForceRefTo(PlayerActor)
 	endIf
 
-	ApplyBodyChange( kActor, "ChaurusWorm", "Butt", 1.0, StorageUtil.GetFloatValue(kActor, "_SLP_buttMaxChaurusWorm" ))
+	ApplyBodyChange( kActor, "ChaurusWorm", "Butt", 1.5, StorageUtil.GetFloatValue(PlayerActor, "_SLP_buttMaxChaurusWorm" ))
 
 	If !StorageUtil.HasIntValue(kActor, "_SLP_iChaurusWormInfections")
 			StorageUtil.SetIntValue(kActor, "_SLP_iChaurusWormInfections",  0)
@@ -719,14 +735,23 @@ Function infectChaurusWorm( Actor kActor   )
 	_SLP_GV_numChaurusWormInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iChaurusWormInfections"))
 
 	SendModEvent("SLPChaurusWormInfection")
+
+	if (!KynesBlessingQuest.GetStageDone(20))
+		KynesBlessingQuest.SetStage(20)
+	endif
 EndFunction
 
-Function cureChaurusWorm( Actor kActor   )
+Function cureChaurusWorm( Actor kActor, Bool bHarvestParasite = False   )
  	Actor PlayerActor = Game.GetPlayer()
 
 	If (isInfectedByString( kActor,  "ChaurusWorm" ))
 		StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusWorm", 0)
 		clearParasiteNPCByString (kActor, "ChaurusWorm")
+		ApplyBodyChange( kActor, "ChaurusWorm", "Butt", 1.0, StorageUtil.GetFloatValue(PlayerActor, "_SLP_buttMaxChaurusWorm" ))
+
+		If (bHarvestParasite)
+			PlayerActor.AddItem(SLP_plugChaurusWormInventory,1)
+		Endif
 
 		If (kActor == PlayerActor)
 			ChaurusWormInfectedAlias.ForceRefTo(DummyAlias)
@@ -739,7 +764,7 @@ EndFunction
 Function infectChaurusWormVag( Actor kActor   )
  	Actor PlayerActor = Game.GetPlayer()
 
-	If (StorageUtil.GetFloatValue(kActor, "_SLP_chanceChaurusWormVag" )==0.0)
+	If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceChaurusWormVag" )==0.0)
 		Debug.Trace("		Parasite disabled - Aborting")
 		Return
 	Endif
@@ -755,7 +780,7 @@ Function infectChaurusWormVag( Actor kActor   )
 		ChaurusWormInfectedAlias.ForceRefTo(PlayerActor)
 	endIf
 
-	ApplyBodyChange( kActor, "ChaurusWormVag", "Belly", 1.0, StorageUtil.GetFloatValue(kActor, "_SLP_buttMaxChaurusWorm" ))
+	ApplyBodyChange( kActor, "ChaurusWormVag", "Belly", 1.5, StorageUtil.GetFloatValue(PlayerActor, "_SLP_buttMaxChaurusWorm" ))
 
 	If !StorageUtil.HasIntValue(kActor, "_SLP_iChaurusWormVagInfections")
 			StorageUtil.SetIntValue(kActor, "_SLP_iChaurusWormVagInfections",  0)
@@ -770,14 +795,23 @@ Function infectChaurusWormVag( Actor kActor   )
 	_SLP_GV_numChaurusWormVagInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iChaurusWormVagInfections"))
 
 	SendModEvent("SLPChaurusWormVagInfection")
+
+	if (!KynesBlessingQuest.GetStageDone(20))
+		KynesBlessingQuest.SetStage(20)
+	endif
 EndFunction
 
-Function cureChaurusWormVag( Actor kActor   )
+Function cureChaurusWormVag( Actor kActor, Bool bHarvestParasite = False   )
  	Actor PlayerActor = Game.GetPlayer()
 
 	If (isInfectedByString( kActor,  "ChaurusWormVag" ))
 		StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusWormVag", 0)
 		clearParasiteNPCByString (kActor, "ChaurusWormVag")
+		ApplyBodyChange( kActor, "ChaurusWormVag", "Belly", 1.0, StorageUtil.GetFloatValue(PlayerActor, "_SLP_buttMaxChaurusWorm" ))
+
+		If (bHarvestParasite)
+			PlayerActor.AddItem(SLP_plugChaurusWormVagInventory,1)
+		Endif
 
 		If (kActor == PlayerActor)
 			ChaurusWormInfectedAlias.ForceRefTo(DummyAlias)
@@ -790,12 +824,12 @@ EndFunction
 Function infectEstrusTentacles( Actor kActor   )
   	Actor PlayerActor = Game.GetPlayer()
 
-	If (StorageUtil.GetFloatValue(kActor, "_SLP_chanceEstrusTentacles" )==0.0)
+	If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceEstrusTentacles" )==0.0)
 		Debug.Trace("		Parasite disabled - Aborting")
 		Return
 	Endif
 
-	If (!ActorHasKeywordByString(kActor,  "PlugVaginal")) && (!isInfectedByString( kActor,  "TentacleMonster" )) && (Utility.RandomInt(1,100)<= (1 + StorageUtil.GetFloatValue(kActor, "_SLP_chanceTentacleMonster" )))
+	If (!ActorHasKeywordByString(kActor,  "PlugVaginal")) && (!isInfectedByString( kActor,  "TentacleMonster" )) && (Utility.RandomInt(1,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceTentacleMonster" )))
 			; PlayerActor.SendModEvent("SLPInfectTentacleMonster")
 			infectTentacleMonster(kActor)
 			Debug.MessageBox("The ground shakes around you as tentacles shoot around your body and a slimiy, sticky creature attaches itself around your back.")
@@ -803,7 +837,7 @@ Function infectEstrusTentacles( Actor kActor   )
 		Debug.Trace("[SLP] Tentacle Monster infection failed")
 		Debug.Trace("[SLP]   Vaginal Plug: " + ActorHasKeywordByString(kActor,  "PlugVaginal"))
 		Debug.Trace("[SLP]   TentacleMonster: " + isInfectedByString( kActor,  "TentacleMonster" ))
-		Debug.Trace("[SLP]   Chance infection: " + StorageUtil.GetFloatValue(kActor, "_SLP_chanceTentacleMonster" ))
+		Debug.Trace("[SLP]   Chance infection: " + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceTentacleMonster" ))
 	EndIf
 
 	int ECTrap = ModEvent.Create("ECStartAnimation")  ; Int  Does not have to be named "ECTrap" any name would do
@@ -833,13 +867,17 @@ Function infectEstrusTentacles( Actor kActor   )
 
 	SendModEvent("SLPEstrusTentaclesInfection")
 
+
+	if (!KynesBlessingQuest.GetStageDone(20))
+		KynesBlessingQuest.SetStage(20)
+	endif
 EndFunction
 
 ;------------------------------------------------------------------------------
 Function infectTentacleMonster( Actor kActor   )
  	Actor PlayerActor = Game.GetPlayer()
 
-	If (StorageUtil.GetFloatValue(kActor, "_SLP_chanceTentacleMonster" )==0.0)
+	If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceTentacleMonster" )==0.0)
 		Debug.Trace("		Parasite disabled - Aborting")
 		Return
 	Endif
@@ -868,14 +906,23 @@ Function infectTentacleMonster( Actor kActor   )
 	_SLP_GV_numTentacleMonsterInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iTentacleMonsterInfections"))
 
 	SendModEvent("SLPTentacleMonsterInfection")
+
+	if (!KynesBlessingQuest.GetStageDone(20))
+		KynesBlessingQuest.SetStage(20)
+	endif
 EndFunction
 
-Function cureTentacleMonster( Actor kActor   )
+Function cureTentacleMonster( Actor kActor, Bool bHarvestParasite = False   )
  	Actor PlayerActor = Game.GetPlayer()
 
 	If (isInfectedByString( kActor,  "TentacleMonster" ))
 		StorageUtil.SetIntValue(kActor, "_SLP_toggleTentacleMonster", 0 )
 		clearParasiteNPCByString (kActor, "TentacleMonster")
+		ApplyBodyChange( kActor, "TentacleMonster", "Breast", 1.0, StorageUtil.GetFloatValue(PlayerActor, "_SLP_breastMaxTentacleMonster" ))
+
+		If (bHarvestParasite)
+			PlayerActor.AddItem(SLP_harnessTentacleMonsterInventory,1)
+		Endif
 
 		If (kActor == PlayerActor)
 			TentacleMonsterInfectedAlias.ForceRefTo(DummyAlias)
@@ -888,12 +935,12 @@ EndFunction
 Function infectEstrusSlime( Actor kActor   )
   	Actor PlayerActor = Game.GetPlayer()
 
-	If (StorageUtil.GetFloatValue(kActor, "_SLP_chanceEstrusSlime" )==0.0)
+	If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceEstrusSlime" )==0.0)
 		Debug.Trace("		Parasite disabled - Aborting")
 		Return
 	Endif
 
-	If (!ActorHasKeywordByString(kActor,  "Harness")) && (!isInfectedByString( kActor,  "LivingArmor" )) && (Utility.RandomInt(1,100)<= (1 + StorageUtil.GetFloatValue(kActor, "_SLP_chanceLivingArmor" )))
+	If (!ActorHasKeywordByString(kActor,  "Harness")) && (!isInfectedByString( kActor,  "LivingArmor" )) && (Utility.RandomInt(1,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceLivingArmor" )))
 			; PlayerActor.SendModEvent("SLPInfectLivingArmor")
 			infectLivingArmor(kActor)
 			Debug.MessageBox("What looked like creepy clusters suddenly extends tentacles around your skin and strips you of your clothes. A deep shudder ripples down your spine as sharp hooks burry deep into the back of your neck.")
@@ -901,7 +948,7 @@ Function infectEstrusSlime( Actor kActor   )
 		Debug.Trace("[SLP] Living Armor infection failed")
 		Debug.Trace("[SLP]   Harness: " + ActorHasKeywordByString(kActor,  "Harness"))
 		Debug.Trace("[SLP]   LivingArmor: " + isInfectedByString( kActor,  "LivingArmor" ))
-		Debug.Trace("[SLP]   Chance infection: " + StorageUtil.GetFloatValue(kActor, "_SLP_chanceLivingArmor" ))
+		Debug.Trace("[SLP]   Chance infection: " + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceLivingArmor" ))
 	EndIf
 
 	int ECTrap = ModEvent.Create("ECStartAnimation")  ; Int  Does not have to be named "ECTrap" any name would do
@@ -931,13 +978,17 @@ Function infectEstrusSlime( Actor kActor   )
 
 	SendModEvent("SLPEstrusSlimeInfection")
 
+	if (!KynesBlessingQuest.GetStageDone(20))
+		KynesBlessingQuest.SetStage(20)
+	endif
+
 EndFunction
 
 ;------------------------------------------------------------------------------
 Function infectLivingArmor( Actor kActor   )
  	Actor PlayerActor = Game.GetPlayer()
 
-	If (StorageUtil.GetFloatValue(kActor, "_SLP_chanceLivingArmor" )==0.0)
+	If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceLivingArmor" )==0.0)
 		Debug.Trace("		Parasite disabled - Aborting")
 		Return
 	Endif
@@ -966,14 +1017,23 @@ Function infectLivingArmor( Actor kActor   )
 	_SLP_GV_numLivingArmorInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iLivingArmorInfections"))
 
 	SendModEvent("SLPLivingArmorInfection")
+
+	if (!KynesBlessingQuest.GetStageDone(20))
+		KynesBlessingQuest.SetStage(20)
+	endif
 EndFunction
 
-Function cureLivingArmor( Actor kActor   )
+Function cureLivingArmor( Actor kActor, Bool bHarvestParasite = False   )
  	Actor PlayerActor = Game.GetPlayer()
 
 	If (isInfectedByString( kActor,  "LivingArmor" ))
 		StorageUtil.SetIntValue(kActor, "_SLP_toggleLivingArmor", 0 )
 		clearParasiteNPCByString (kActor, "LivingArmor")
+		ApplyBodyChange( kActor, "LivingArmor", "Breast", 1.0, StorageUtil.GetFloatValue(PlayerActor, "_SLP_breastMaxLivingArmor" ))
+
+		If (bHarvestParasite)
+			PlayerActor.AddItem(SLP_harnessLivingArmorInventory,1)
+		Endif
 
 		If (kActor == PlayerActor)
 			LivingArmorInfectedAlias.ForceRefTo(DummyAlias)
@@ -986,7 +1046,7 @@ EndFunction
 Function infectFaceHugger( Actor kActor   )
  	Actor PlayerActor = Game.GetPlayer()
 
-	If (StorageUtil.GetFloatValue(kActor, "_SLP_chanceFaceHugger" )==0.0)
+	If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceFaceHugger" )==0.0)
 		Debug.Trace("		Parasite disabled - Aborting")
 		Return
 	Endif
@@ -1015,14 +1075,23 @@ Function infectFaceHugger( Actor kActor   )
 	_SLP_GV_numFaceHuggerInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iFaceHuggerInfections"))
 
 	SendModEvent("SLPFaceHuggerInfection")
+
+	if (!KynesBlessingQuest.GetStageDone(20))
+		KynesBlessingQuest.SetStage(20)
+	endif
 EndFunction
 
-Function cureFaceHugger( Actor kActor   )
+Function cureFaceHugger( Actor kActor, Bool bHarvestParasite = False   )
  	Actor PlayerActor = Game.GetPlayer()
 
 	If (isInfectedByString( kActor,  "FaceHugger" ))
 		StorageUtil.SetIntValue(kActor, "_SLP_toggleFaceHugger", 0 )
 		clearParasiteNPCByString (kActor, "FaceHugger")
+		ApplyBodyChange( kActor, "FaceHugger", "Belly", 1.0, StorageUtil.GetFloatValue(PlayerActor, "_SLP_bellyMaxFaceHugger" ))
+
+		If (bHarvestParasite)
+			PlayerActor.AddItem(SLP_harnessFaceHuggerInventory,1)
+		Endif
 
 		If (kActor == PlayerActor) && !(isInfectedByString( kActor,  "FaceHugger" ))
 			FaceHuggerInfectedAlias.ForceRefTo(DummyAlias)
@@ -1034,7 +1103,7 @@ EndFunction
 Function infectFaceHuggerGag( Actor kActor   )
  	Actor PlayerActor = Game.GetPlayer()
 
-	If (StorageUtil.GetFloatValue(kActor, "_SLP_chanceFaceHugger" )==0.0)
+	If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceFaceHugger" )==0.0)
 		Debug.Trace("		Parasite disabled - Aborting")
 		Return
 	Endif
@@ -1063,14 +1132,23 @@ Function infectFaceHuggerGag( Actor kActor   )
 	_SLP_GV_numFaceHuggerInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iFaceHuggerInfections"))
 
 	SendModEvent("SLPFaceHuggerInfection")
+
+	if (!KynesBlessingQuest.GetStageDone(20))
+		KynesBlessingQuest.SetStage(20)
+	endif
 EndFunction
 
-Function cureFaceHuggerGag( Actor kActor   )
+Function cureFaceHuggerGag( Actor kActor, Bool bHarvestParasite = False   )
  	Actor PlayerActor = Game.GetPlayer()
 
 	If (isInfectedByString( kActor,  "FaceHuggerGag" ))
 		StorageUtil.SetIntValue(kActor, "_SLP_toggleFaceHuggerGag", 0 )
 		clearParasiteNPCByString (kActor, "FaceHuggerGag")
+		ApplyBodyChange( kActor, "FaceHugger", "Belly", 1.0, StorageUtil.GetFloatValue(PlayerActor, "_SLP_bellyMaxFaceHugger" ))
+
+		If (bHarvestParasite)
+			PlayerActor.AddItem(SLP_harnessFaceHuggerGagInventory,1)
+		Endif
 
 		If (kActor == PlayerActor) && !(isInfectedByString( kActor,  "FaceHugger" ))
 			FaceHuggerInfectedAlias.ForceRefTo(DummyAlias)
@@ -1083,7 +1161,7 @@ EndFunction
 Function infectBarnacles( Actor kActor   )
  	Actor PlayerActor = Game.GetPlayer()
 
-	If (StorageUtil.GetFloatValue(kActor, "_SLP_chanceBarnacles" )==0.0)
+	If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceBarnacles" )==0.0)
 		Debug.Trace("		Parasite disabled - Aborting")
 		Return
 	Endif
@@ -1112,14 +1190,22 @@ Function infectBarnacles( Actor kActor   )
 	_SLP_GV_numBarnaclesInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iBarnaclesInfections"))
 
 	SendModEvent("SLPBarnaclesInfection")
+
+	if (!KynesBlessingQuest.GetStageDone(20))
+		KynesBlessingQuest.SetStage(20)
+	endif
 EndFunction
 
-Function cureBarnacles( Actor kActor   )
+Function cureBarnacles( Actor kActor, Bool bHarvestParasite = False   )
  	Actor PlayerActor = Game.GetPlayer()
 
 	If (isInfectedByString( kActor,  "Barnacles" ))
 		StorageUtil.SetIntValue(kActor, "_SLP_toggleBarnacles", 0 )
 		clearParasiteNPCByString (kActor, "Barnacles")
+
+		If (bHarvestParasite)
+			PlayerActor.AddItem(SLP_harnessBarnaclesInventory,1)
+		Endif
 
 		If (kActor == PlayerActor)
 			BarnaclesInfectedAlias.ForceRefTo(DummyAlias)
@@ -1132,7 +1218,7 @@ EndFunction
 Function infectEstrusChaurusEgg( Actor kActor   )
   	Actor PlayerActor = Game.GetPlayer()
 
-	; If (StorageUtil.GetFloatValue(kActor, "_SLP_chanceEstrusChaurusEgg" )==0.0)
+	; If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceEstrusChaurusEgg" )==0.0)
 	;	Debug.Trace("		Parasite disabled - Aborting")
 	;	Return
 	; Endif
@@ -1163,6 +1249,10 @@ Function infectEstrusChaurusEgg( Actor kActor   )
 
 	SendModEvent("SLPEstrusChaurusEggInfection")
 
+	if (!KynesBlessingQuest.GetStageDone(20))
+		KynesBlessingQuest.SetStage(20)
+	endif
+
 EndFunction
 
 ;------------------------------------------------------------------------------
@@ -1174,9 +1264,17 @@ Function ApplyBodyChange(Actor kActor, String sParasite, String sBodyPart, Float
 	if ( isNiOInstalled  )  
 
 		Debug.Trace("[SLP] Receiving body change: " + sBodyPart)
+		Debug.Trace("[SLP]  	Node string: " + sParasite)
+		Debug.Trace("[SLP]  	Max node: " + fValueMax)
+
+ 		if (fValue < 1.0)
+			fValue = 1.0     ; NiO node is reset with value of 1.0 - not 0.0!
+		Endif		
+
  		if (fValue > fValueMax)
 			fValue = fValueMax
 		Endif
+
 
 		if (( sBodyPart == "Breast"  ) && (pActorBase.GetSex()==1)) ; Female change
 			Debug.Trace("[SLP]     Applying breast change: " + NiOString)
