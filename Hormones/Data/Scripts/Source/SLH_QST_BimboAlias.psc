@@ -834,13 +834,13 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 		;eyelids shadow: pink too
 		Debug.Notification("You feel a little tingling on your face.")
 		; SlaveTats.simple_add_tattoo(bimbo, "Bimbo", "Lipstick", color = 0x66FF0984, last = false, silent = true)
-		fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Lipstick", iColor = 0x66FF0984)
+		fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Lipstick", iColor = 0x66FF0984, bGloss = True)
 		fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Eye Shadow", iColor = 0x99000000, bRefresh = True)
 
 	;level 2, nails, weak body (can drop weapons when hit)
 	elseif transformationLevel == 2
 		Debug.Notification("Your body feels weak and your boobs are sizzling.")
-		fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Feet Nails", iColor = 0x00FF0984 )
+		fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Feet Nails", iColor = 0x00FF0984)
 		fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Hand Nails", iColor = 0x00FF0984, bRefresh = True )
 		fctBodyshape.alterBodyByPercent(bimbo, "Breast", 20.0)
 		isBimboFrailBody = true

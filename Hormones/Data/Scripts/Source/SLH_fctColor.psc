@@ -556,19 +556,22 @@ EndFunction
 
 ; STAddTattoo(Form _form, String _section, String _name, int _color, bool _last, bool _silent, int _glowColor, bool _gloss, bool _lock): add a tattoo with more parameters, including glow, gloss (use it to apply makeup, looks much better) and locked tattoos.
 
-function sendSlaveTatModEvent(actor akActor, string sType, string sTatooName, int iColor = 0x99000000, bool bRefresh = False)
+function sendSlaveTatModEvent(actor akActor, string sType, string sTatooName, int iColor = 0x99000000, bool bRefresh = False, bool bGloss = False)
 	; SlaveTats.simple_add_tattoo(bimbo, "Bimbo", "Tramp Stamp", last = false, silent = true)
-  	int STevent = ModEvent.Create("STSimpleAddTattoo")  
+  	int eventCall = ModEvent.Create("STAddTattoo")  
 
-  	if (STevent) 
-        ModEvent.PushForm(STevent, akActor)      	; Form - actor
-        ModEvent.PushString(STevent, sType)    	; String - type of tattoo?
-        ModEvent.PushString(STevent, sTatooName)  	; String - name of tattoo
-        ModEvent.PushInt(STevent, iColor)  			; Int - color
-        ModEvent.PushBool(STevent, bRefresh)        	; Bool - last = false
-        ModEvent.PushBool(STevent, true)         	; Bool - silent = true
-
-        ModEvent.Send(STevent)
+  	if eventCall
+		ModEvent.PushForm(eventCall, akActor)
+		ModEvent.PushString(eventCall, sType)
+		ModEvent.PushString(eventCall, sTatooName)
+		ModEvent.PushInt(eventCall, icolor)
+		ModEvent.PushBool(eventCall, bRefresh)
+		ModEvent.PushBool(eventCall, true)
+		ModEvent.PushInt(eventCall, 0x00000000)
+		ModEvent.PushBool(eventCall, bGloss)
+		ModEvent.PushBool(eventCall, false)
+		
+		ModEvent.Send(eventCall)
   	else
   		debugTrace("[SLH] SLH_fctColor: Send slave tat event failed.")
 	endIf
