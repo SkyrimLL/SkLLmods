@@ -420,7 +420,6 @@ function bimboTransformEffectON(actor kActor)
 
     SLH_Control.setBimboState(kActor, TRUE)
     kActor.SendModEvent("SLHRefresh")
-    fctColor.sendSlaveTatModEvent(kActor, "Bimbo","Feet Nails", bRefresh = True )
 
     SLH_BimboControl.initBimbo()
 
@@ -560,7 +559,6 @@ function bimboTransformEffectOFF(actor kActor)
     StorageUtil.SetIntValue(kActor, "_SLH_bimboTransformGameDays", 0)   
     GV_isPolymorphON.SetValue(0)
     StorageUtil.SetIntValue(kActor, "_SLH_isPolymorph", 0)   
-    fctColor.sendSlaveTatModEvent(kActor, "Bimbo","Feet Nails", bRefresh = True )
  
     SLH_Control.setBimboState(kActor, FALSE)
     debugTrace("[SLH] Bimbo OFF")
@@ -594,7 +592,6 @@ function HRTEffectON(actor kActor)
     ConsoleUtil.ExecuteCommand("player.sexchange")
 
     SLH_Control.playMoan(kActor)
-    fctColor.sendSlaveTatModEvent(kActor, "Bimbo","Feet Nails", bRefresh = True )
 
     SLH_Control.setHRTState(kActor, TRUE)
     debugTrace("[SLH] HRT ON")
@@ -619,7 +616,6 @@ function HRTEffectOFF(actor kActor)
     ConsoleUtil.ExecuteCommand("player.sexchange")
 
     SLH_Control.playMoan(kActor)
-    fctColor.sendSlaveTatModEvent(kActor, "Bimbo","Feet Nails", bRefresh = True )
 
     debugTrace("[SLH] HRT OFF")
     SLH_Control.setHRTState(kActor, FALSE)
