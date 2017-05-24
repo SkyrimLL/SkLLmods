@@ -1,6 +1,6 @@
 Scriptname SLP_QST_MCM extends SKI_ConfigBase  
 
-
+SLP_fcts_parasites Property fctParasites  Auto
 
 ; PRIVATE VARIABLES -------------------------------------------------------------------------------
 
@@ -919,7 +919,7 @@ endState
 ; AddToggleOptionST("STATE_RESET","Reset changes", _resetToggle)
 state STATE_RESET ; TOGGLE
 	event OnSelectST()
-		_resetParasiteSettings()
+		fctParasites._resetParasiteSettings()
 		kPlayer.SendModEvent("SLPRefreshBodyShape")
 	endEvent
 
@@ -933,45 +933,7 @@ state STATE_RESET ; TOGGLE
 
 endState
 
-Function _resetParasiteSettings()
 
-	StorageUtil.SetIntValue(kPlayer, "_SLP_toggleSpiderEgg", 0 )
-	StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceSpiderEgg", 50.0 )
-	StorageUtil.SetFloatValue(kPlayer, "_SLP_bellyMaxSpiderEgg", 2.0 )
-
-	StorageUtil.SetIntValue(kPlayer, "_SLP_toggleSpiderPenis", 0 )
-	StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceSpiderPenis", 10.0 )
-
-	StorageUtil.SetIntValue(kPlayer, "_SLP_toggleChaurusWorm", 0 )
-	StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceChaurusWorm", 10.0 )
-	StorageUtil.SetFloatValue(kPlayer, "_SLP_buttMaxChaurusWorm", 2.0 )
-
-	StorageUtil.SetIntValue(kPlayer, "_SLP_toggleChaurusWormVag", 0 )
-	StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceChaurusWormVag", 10.0 )
-	StorageUtil.SetFloatValue(kPlayer, "_SLP_bellyMaxChaurusWormVag", 2.0 )
-
-	StorageUtil.SetIntValue(kPlayer, "_SLP_toggleEstrusTentacles", 0 )
-	StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceEstrusTentacles", 10.0 )
-
-	StorageUtil.SetIntValue(kPlayer, "_SLP_toggleTentacleMonster", 0 )
-	StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceTentacleMonster", 30.0 )
-	StorageUtil.SetFloatValue(kPlayer, "_SLP_breastMaxTentacleMonster", 2.0 )
-
-	StorageUtil.SetIntValue(kPlayer, "_SLP_toggleEstrusSlime", 0 )
-	StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceEstrusSlime", 10.0 )
-
-	StorageUtil.SetIntValue(kPlayer, "_SLP_toggleLivingArmor", 0 )
-	StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceLivingArmor", 30.0 )
-	StorageUtil.SetFloatValue(kPlayer, "_SLP_breastMaxLivingArmor", 2.0 )
-
-	StorageUtil.SetIntValue(kPlayer, "_SLP_toggleFaceHugger", 0 )
-	StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceFaceHugger", 30.0 )
-	StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceFaceHuggerGag", 30.0 )
-	StorageUtil.SetFloatValue(kPlayer, "_SLP_bellyMaxFaceHugger", 2.0 )
-
-	StorageUtil.SetIntValue(kPlayer, "_SLP_toggleBarnacles", 0 )
-	StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceBarnacles", 30.0 )
-EndFunction
 
 Function _setParasiteSettings()
 

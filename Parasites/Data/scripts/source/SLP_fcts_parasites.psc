@@ -594,7 +594,7 @@ Function infectSpiderEgg( Actor kActor   )
 
 	SendModEvent("SLPSpiderEggInfection")
 
-	if (!KynesBlessingQuest.GetStageDone(20))
+	if (!KynesBlessingQuest.GetStageDone(20)) && (kActor == PlayerActor)
 		KynesBlessingQuest.SetStage(20)
 	endif
 EndFunction
@@ -676,7 +676,7 @@ Function infectSpiderPenis( Actor kActor   )
 
 	SendModEvent("SLPSpiderEggInfection")
 
-	if (!KynesBlessingQuest.GetStageDone(20))
+	if (!KynesBlessingQuest.GetStageDone(20)) && (kActor == PlayerActor)
 		KynesBlessingQuest.SetStage(20)
 	endif
 
@@ -736,7 +736,7 @@ Function infectChaurusWorm( Actor kActor   )
 
 	SendModEvent("SLPChaurusWormInfection")
 
-	if (!KynesBlessingQuest.GetStageDone(20))
+	if (!KynesBlessingQuest.GetStageDone(20)) && (kActor == PlayerActor)
 		KynesBlessingQuest.SetStage(20)
 	endif
 EndFunction
@@ -796,7 +796,7 @@ Function infectChaurusWormVag( Actor kActor   )
 
 	SendModEvent("SLPChaurusWormVagInfection")
 
-	if (!KynesBlessingQuest.GetStageDone(20))
+	if (!KynesBlessingQuest.GetStageDone(20)) && (kActor == PlayerActor)
 		KynesBlessingQuest.SetStage(20)
 	endif
 EndFunction
@@ -868,7 +868,7 @@ Function infectEstrusTentacles( Actor kActor   )
 	SendModEvent("SLPEstrusTentaclesInfection")
 
 
-	if (!KynesBlessingQuest.GetStageDone(20))
+	if (!KynesBlessingQuest.GetStageDone(20)) && (kActor == PlayerActor)
 		KynesBlessingQuest.SetStage(20)
 	endif
 EndFunction
@@ -907,7 +907,7 @@ Function infectTentacleMonster( Actor kActor   )
 
 	SendModEvent("SLPTentacleMonsterInfection")
 
-	if (!KynesBlessingQuest.GetStageDone(20))
+	if (!KynesBlessingQuest.GetStageDone(20)) && (kActor == PlayerActor)
 		KynesBlessingQuest.SetStage(20)
 	endif
 EndFunction
@@ -978,7 +978,7 @@ Function infectEstrusSlime( Actor kActor   )
 
 	SendModEvent("SLPEstrusSlimeInfection")
 
-	if (!KynesBlessingQuest.GetStageDone(20))
+	if (!KynesBlessingQuest.GetStageDone(20)) && (kActor == PlayerActor)
 		KynesBlessingQuest.SetStage(20)
 	endif
 
@@ -1018,7 +1018,7 @@ Function infectLivingArmor( Actor kActor   )
 
 	SendModEvent("SLPLivingArmorInfection")
 
-	if (!KynesBlessingQuest.GetStageDone(20))
+	if (!KynesBlessingQuest.GetStageDone(20)) && (kActor == PlayerActor)
 		KynesBlessingQuest.SetStage(20)
 	endif
 EndFunction
@@ -1076,7 +1076,7 @@ Function infectFaceHugger( Actor kActor   )
 
 	SendModEvent("SLPFaceHuggerInfection")
 
-	if (!KynesBlessingQuest.GetStageDone(20))
+	if (!KynesBlessingQuest.GetStageDone(20)) && (kActor == PlayerActor)
 		KynesBlessingQuest.SetStage(20)
 	endif
 EndFunction
@@ -1133,7 +1133,7 @@ Function infectFaceHuggerGag( Actor kActor   )
 
 	SendModEvent("SLPFaceHuggerInfection")
 
-	if (!KynesBlessingQuest.GetStageDone(20))
+	if (!KynesBlessingQuest.GetStageDone(20)) && (kActor == PlayerActor)
 		KynesBlessingQuest.SetStage(20)
 	endif
 EndFunction
@@ -1191,7 +1191,7 @@ Function infectBarnacles( Actor kActor   )
 
 	SendModEvent("SLPBarnaclesInfection")
 
-	if (!KynesBlessingQuest.GetStageDone(20))
+	if (!KynesBlessingQuest.GetStageDone(20)) && (kActor == PlayerActor)
 		KynesBlessingQuest.SetStage(20)
 	endif
 EndFunction
@@ -1249,7 +1249,7 @@ Function infectEstrusChaurusEgg( Actor kActor   )
 
 	SendModEvent("SLPEstrusChaurusEggInfection")
 
-	if (!KynesBlessingQuest.GetStageDone(20))
+	if (!KynesBlessingQuest.GetStageDone(20)) && (kActor == PlayerActor)
 		KynesBlessingQuest.SetStage(20)
 	endif
 
@@ -1313,4 +1313,45 @@ EndFunction
 
 bool Function CheckXPMSERequirements(Actor akActor, bool isFemale)
 	return XPMSELib.CheckXPMSEVersion(akActor, isFemale, XPMSE_VERSION, true) && XPMSELib.CheckXPMSELibVersion(XPMSELIB_VERSION) && SKSE.GetPluginVersion("NiOverride") >= NIOVERRIDE_VERSION && NiOverride.GetScriptVersion() >= NIOVERRIDE_SCRIPT_VERSION
+EndFunction
+
+Function _resetParasiteSettings()
+	Actor kPlayer = Game.GetPlayer()
+
+	StorageUtil.SetIntValue(kPlayer, "_SLP_toggleSpiderEgg", 0 )
+	StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceSpiderEgg", 50.0 )
+	StorageUtil.SetFloatValue(kPlayer, "_SLP_bellyMaxSpiderEgg", 2.0 )
+
+	StorageUtil.SetIntValue(kPlayer, "_SLP_toggleSpiderPenis", 0 )
+	StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceSpiderPenis", 10.0 )
+
+	StorageUtil.SetIntValue(kPlayer, "_SLP_toggleChaurusWorm", 0 )
+	StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceChaurusWorm", 10.0 )
+	StorageUtil.SetFloatValue(kPlayer, "_SLP_buttMaxChaurusWorm", 2.0 )
+
+	StorageUtil.SetIntValue(kPlayer, "_SLP_toggleChaurusWormVag", 0 )
+	StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceChaurusWormVag", 10.0 )
+	StorageUtil.SetFloatValue(kPlayer, "_SLP_bellyMaxChaurusWormVag", 2.0 )
+
+	StorageUtil.SetIntValue(kPlayer, "_SLP_toggleEstrusTentacles", 0 )
+	StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceEstrusTentacles", 10.0 )
+
+	StorageUtil.SetIntValue(kPlayer, "_SLP_toggleTentacleMonster", 0 )
+	StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceTentacleMonster", 30.0 )
+	StorageUtil.SetFloatValue(kPlayer, "_SLP_breastMaxTentacleMonster", 2.0 )
+
+	StorageUtil.SetIntValue(kPlayer, "_SLP_toggleEstrusSlime", 0 )
+	StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceEstrusSlime", 10.0 )
+
+	StorageUtil.SetIntValue(kPlayer, "_SLP_toggleLivingArmor", 0 )
+	StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceLivingArmor", 30.0 )
+	StorageUtil.SetFloatValue(kPlayer, "_SLP_breastMaxLivingArmor", 2.0 )
+
+	StorageUtil.SetIntValue(kPlayer, "_SLP_toggleFaceHugger", 0 )
+	StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceFaceHugger", 30.0 )
+	StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceFaceHuggerGag", 30.0 )
+	StorageUtil.SetFloatValue(kPlayer, "_SLP_bellyMaxFaceHugger", 2.0 )
+
+	StorageUtil.SetIntValue(kPlayer, "_SLP_toggleBarnacles", 0 )
+	StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceBarnacles", 30.0 )
 EndFunction

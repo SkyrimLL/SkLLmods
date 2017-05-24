@@ -77,6 +77,7 @@ Function _maintenance()
 
 	If (!StorageUtil.HasIntValue(none, "_SLP_iSexLabParasites"))
 		StorageUtil.SetIntValue(none, "_SLP_iSexLabParasites", 1)
+		fctParasites._resetParasiteSettings()
 	EndIf
 
 	UnregisterForAllModEvents()
@@ -471,6 +472,10 @@ Event OnSLPInfectSpiderEgg(String _eventName, String _args, Float _argc = 1.0, F
  	Actor kActor = _sender as Actor
  	Actor PlayerActor = Game.GetPlayer()
 
+ 	If (kActor == None)
+ 		kActor = PlayerActor
+ 	Endif
+
 	Debug.Trace("[SLP] Receiving 'infect spider egg' event - Actor: " + kActor)
 
 	fctParasites.infectSpiderEgg( kActor   )
@@ -480,6 +485,10 @@ EndEvent
 Event OnSLPCureSpiderEgg(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
  	Actor PlayerActor = Game.GetPlayer()
+
+ 	If (kActor == None)
+ 		kActor = PlayerActor
+ 	Endif
  
 	Debug.Trace("[SLP] Receiving 'cure spider egg' event - Actor: " + kActor)
 
@@ -491,6 +500,11 @@ EndEvent
 ;------------------------------------------------------------------------------
 Event OnSLPInfectSpiderPenis(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
+  	Actor PlayerActor = Game.GetPlayer()
+
+ 	If (kActor == None)
+ 		kActor = PlayerActor
+ 	Endif
 
 	Debug.Trace("[SLP] Receiving 'infect spider penis' event - Actor: " + kActor)
 
@@ -501,6 +515,11 @@ EndEvent
 
 Event OnSLPCureSpiderPenis(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
+  	Actor PlayerActor = Game.GetPlayer()
+
+ 	If (kActor == None)
+ 		kActor = PlayerActor
+ 	Endif
 
 	Debug.Trace("[SLP] Receiving 'cure spider penis' event - Actor: " + kActor)
 
@@ -511,7 +530,12 @@ EndEvent
 ;------------------------------------------------------------------------------
 Event OnSLPInfectChaurusWorm(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
+  	Actor PlayerActor = Game.GetPlayer()
  
+ 	If (kActor == None)
+ 		kActor = PlayerActor
+ 	Endif
+
 	Debug.Trace("[SLP] Receiving 'infect chaurus worm' event - Actor: " + kActor)
 
 	fctParasites.infectChaurusWorm( kActor   )
@@ -520,6 +544,11 @@ EndEvent
 
 Event OnSLPCureChaurusWorm(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
+  	Actor PlayerActor = Game.GetPlayer()
+
+ 	If (kActor == None)
+ 		kActor = PlayerActor
+ 	Endif
  
 	Debug.Trace("[SLP] Receiving 'cure chaurus worm' event - Actor: " + kActor)
 
@@ -530,6 +559,11 @@ EndEvent
 ;------------------------------------------------------------------------------
 Event OnSLPInfectChaurusWormVag(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
+  	Actor PlayerActor = Game.GetPlayer()
+
+ 	If (kActor == None)
+ 		kActor = PlayerActor
+ 	Endif
  
 	Debug.Trace("[SLP] Receiving 'infect chaurus worm vaginal' event - Actor: " + kActor)
 
@@ -539,6 +573,11 @@ EndEvent
 
 Event OnSLPCureChaurusWormVag(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
+  	Actor PlayerActor = Game.GetPlayer()
+
+ 	If (kActor == None)
+ 		kActor = PlayerActor
+ 	Endif
  
 	Debug.Trace("[SLP] Receiving 'cure chaurus worm vaginal' event - Actor: " + kActor)
 
@@ -549,7 +588,11 @@ EndEvent
 ;------------------------------------------------------------------------------
 Event OnSLPInfectEstrusTentacles(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
-  	; Actor PlayerActor = Game.GetPlayer()
+  	Actor PlayerActor = Game.GetPlayer()
+
+ 	If (kActor == None)
+ 		kActor = PlayerActor
+ 	Endif
 
 	Debug.Trace("[SLP] Receiving 'infect estrus tentacle' event - Actor: " + kActor)
 
@@ -559,6 +602,11 @@ EndEvent
 
 Event OnSLPInfectTentacleMonster(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
+  	Actor PlayerActor = Game.GetPlayer()
+
+ 	If (kActor == None)
+ 		kActor = PlayerActor
+ 	Endif
  
 	Debug.Trace("[SLP] Receiving 'infect tentacle monster' event - Actor: " + kActor)
 
@@ -568,6 +616,11 @@ EndEvent
 
 Event OnSLPCureTentacleMonster(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
+  	Actor PlayerActor = Game.GetPlayer()
+
+ 	If (kActor == None)
+ 		kActor = PlayerActor
+ 	Endif
 
 	Debug.Trace("[SLP] Receiving 'cure tentacle monster' event - Actor: " + kActor)
 
@@ -578,7 +631,11 @@ EndEvent
 ;------------------------------------------------------------------------------
 Event OnSLPInfectEstrusSlime(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
-  	; Actor PlayerActor = Game.GetPlayer()
+  	Actor PlayerActor = Game.GetPlayer()
+
+ 	If (kActor == None)
+ 		kActor = PlayerActor
+ 	Endif
 
 	Debug.Trace("[SLP] Receiving 'infect estrus slime' event - Actor: " + kActor)
 
@@ -588,6 +645,11 @@ EndEvent
 
 Event OnSLPInfectLivingArmor(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
+  	Actor PlayerActor = Game.GetPlayer()
+
+ 	If (kActor == None)
+ 		kActor = PlayerActor
+ 	Endif
  
 	Debug.Trace("[SLP] Receiving 'infect living armor' event - Actor: " + kActor)
 
@@ -597,6 +659,11 @@ EndEvent
 
 Event OnSLPCureLivingArmor(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
+  	Actor PlayerActor = Game.GetPlayer()
+
+ 	If (kActor == None)
+ 		kActor = PlayerActor
+ 	Endif
 
 	Debug.Trace("[SLP] Receiving 'cure living armor' event - Actor: " + kActor)
 
@@ -607,6 +674,11 @@ EndEvent
 ;------------------------------------------------------------------------------
 Event OnSLPInfectFaceHugger(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
+  	Actor PlayerActor = Game.GetPlayer()
+
+ 	If (kActor == None)
+ 		kActor = PlayerActor
+ 	Endif
  
 	Debug.Trace("[SLP] Receiving 'infect face hugger' event - Actor: " + kActor)
 
@@ -616,6 +688,11 @@ EndEvent
 
 Event OnSLPCureFaceHugger(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
+  	Actor PlayerActor = Game.GetPlayer()
+
+ 	If (kActor == None)
+ 		kActor = PlayerActor
+ 	Endif
 
 	Debug.Trace("[SLP] Receiving 'cure face hugger' event - Actor: " + kActor)
 
@@ -625,6 +702,12 @@ EndEvent
 
 Event OnSLPInfectFaceHuggerGag(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
+  	Actor PlayerActor = Game.GetPlayer()
+
+ 	If (kActor == None)
+ 		kActor = PlayerActor
+ 	Endif
+ 	
  
 	Debug.Trace("[SLP] Receiving 'infect face hugger (gag)' event - Actor: " + kActor)
 
@@ -634,6 +717,12 @@ EndEvent
 
 Event OnSLPCureFaceHuggerGag(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
+  	Actor PlayerActor = Game.GetPlayer()
+
+ 	If (kActor == None)
+ 		kActor = PlayerActor
+ 	Endif
+ 	
 
 	Debug.Trace("[SLP] Receiving 'cure face hugger (gag)' event - Actor: " + kActor)
 
@@ -644,7 +733,13 @@ EndEvent
 ;------------------------------------------------------------------------------
 Event OnSLPInfectBarnacles(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
- 
+   	Actor PlayerActor = Game.GetPlayer()
+
+ 	If (kActor == None)
+ 		kActor = PlayerActor
+ 	Endif
+ 	
+
 	Debug.Trace("[SLP] Receiving 'infect barnacles' event - Actor: " + kActor)
 
 	fctParasites.infectBarnacles( kActor   )
@@ -653,6 +748,12 @@ EndEvent
 
 Event OnSLPCureBarnacles(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
+  	Actor PlayerActor = Game.GetPlayer()
+
+ 	If (kActor == None)
+ 		kActor = PlayerActor
+ 	Endif
+ 	
 
 	Debug.Trace("[SLP] Receiving 'cure barnacles' event - Actor: " + kActor)
 
@@ -663,7 +764,12 @@ EndEvent
 ;------------------------------------------------------------------------------
 Event OnSLPInfectEstrusChaurusEgg(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
-  	; Actor PlayerActor = Game.GetPlayer()
+  	Actor PlayerActor = Game.GetPlayer()
+
+ 	If (kActor == None)
+ 		kActor = PlayerActor
+ 	Endif
+ 	
 
 	Debug.Trace("[SLP] Receiving 'infect estrus chaurus egg' event - Actor: " + kActor)
 
