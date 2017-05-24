@@ -52,34 +52,15 @@ Bool isClumsyHandsRegistered = False
 Bool isClumsyLegsRegistered = False
 ;===========================================================================
 
-;how much gold hypnosis victim earns each day
-Event OnLocationChange(Location akOldLoc, Location akNewLoc)
-	; Safeguard - Exit if alias not set
-	if (StorageUtil.GetIntValue(Game.GetPlayer(), "_SLH_iBimbo")==0) ; (Game.GetPlayer().GetActorBase().GetRace() != _SLH_BimboRace)
-		Return
-	Endif
-
-	BimboActor= BimboAliasRef.GetReference() as Actor
-
-	; Safeguard - Evaluate the rest only when transformation happened
-	if (StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") == -1)
-		Return
-	Endif
-
-	; debug.Notification("[SLH] Bimbo changing location")
-	; if (!isUpdating)
-    ;	RegisterForSingleUpdate( fRFSU )
-    ; endif
-endEvent
-
 ;===========================================================================
 ;Hack! Recover lost saves where the tf was done on day zero
 ;===========================================================================
 Event OnPlayerLoadGame()
+	Actor kPlayer = Game.GetPlayer()
 	; if (!isUpdating)
 		debug.trace("[slh+] game loaded, registering for update")
-		if (StorageUtil.GetIntValue(Game.GetPlayer(), "_SLH_iBimbo")==0) && StorageUtil.GetIntValue(Game.GetPlayer(), "_SLH_bimboTransformDate") == 0
-			StorageUtil.SetIntValue(Game.GetPlayer(), "_SLH_bimboTransformDate", -1)
+		if (StorageUtil.GetIntValue(kPlayer, "_SLH_iBimbo")==0) && StorageUtil.GetIntValue(kPlayer, "_SLH_bimboTransformDate") == 0
+			StorageUtil.SetIntValue(kPlayer, "_SLH_bimboTransformDate", -1)
 			debug.trace("[slh+] poor bimbo, are you lost?")
 		endif
 
@@ -88,7 +69,7 @@ Event OnPlayerLoadGame()
 		BimboActor= BimboAliasRef.GetReference() as Actor
 		debug.trace("[slh+] BimboActor: " + BimboActor)
 		debug.trace("[slh+] Bimbo Transform date: " + StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") )
-		debug.trace("[slh+] Player is bimbo: " + StorageUtil.GetIntValue(Game.GetPlayer(), "_SLH_iBimbo"))
+		debug.trace("[slh+] Player is bimbo: " + StorageUtil.GetIntValue(kPlayer, "_SLH_iBimbo"))
 
     	RegisterForSingleUpdate( 10 )
     ; else
@@ -97,12 +78,13 @@ Event OnPlayerLoadGame()
 EndEvent
 
 Function initBimbo()
+	Actor kPlayer = Game.GetPlayer()
 	isMaleToBimbo =  StorageUtil.GetIntValue(none, "_SLH_bimboIsOriginalActorMale") as Bool
 
 	BimboActor= BimboAliasRef.GetReference() as Actor
 	debug.trace("[slh+] Init BimboActor: " + BimboActor)
 	debug.trace("[slh+] Bimbo Transform date: " + StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") )
-	debug.trace("[slh+] Player is bimbo: " + StorageUtil.GetIntValue(Game.GetPlayer(), "_SLH_iBimbo"))
+	debug.trace("[slh+] Player is bimbo: " + StorageUtil.GetIntValue(kPlayer, "_SLH_iBimbo"))
 
 	debug.notification("(Giggle)")
 	
@@ -113,8 +95,9 @@ EndFunction
 ;[mod] stumbling happens here
 ;===========================================================================
 Event OnUpdateGameTime()
+	Actor kPlayer = Game.GetPlayer()
 	; Safeguard - Exit if alias not set
-	if (StorageUtil.GetIntValue(Game.GetPlayer(), "_SLH_iBimbo")==0)
+	if (StorageUtil.GetIntValue(kPlayer, "_SLH_iBimbo")==0)
 		; try again later
     	RegisterForSingleUpdate( 10 )
 		Return
@@ -314,62 +297,6 @@ Event OnUpdate()
 	;debug.trace("[slh+] bimbo OnUpdate, Done")
 EndEvent
 
-Event OnCombatStateChanged(Actor akTarget, int aeCombatState)
-	; Safeguard - Exit if alias not set
-	if (StorageUtil.GetIntValue(Game.GetPlayer(), "_SLH_iBimbo")==0)
-		Return
-	Endif
-
-	BimboActor= BimboAliasRef.GetReference() as Actor
-
-	; Safeguard - Evaluate the rest only when transformation happened
-	if (StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") == -1)
-		Return
-	Endif
-	
-	; debug.Notification("[SLH] Bimbo in combat")
-
-	If (akTarget == BimboActor)
-
-	    if (aeCombatState == 0)
-	      	; Debug.Trace("We have left combat with the player!")
-
-	    elseif (aeCombatState == 1)
-	      	; Debug.Trace("We have entered combat with the player!")
-
-	    elseif (aeCombatState == 2)
-	      	; Debug.Trace("We are searching for the player...")
-
-	    endIf
-	Else
-	    if (aeCombatState == 0)
-	      	; Debug.Trace("We have left combat with the NPC!")
-			;
-			If (BimboActor.IsUnconscious())
-			;	BimboActor.SetUnconscious(false)
-			EndIf	
-	    elseif (aeCombatState == 1)
-	      	; Debug.Trace("We have entered combat with the NPC!")
-
-			; BimboActor.SetActorValue("Aggression", 1.0)
-			; BimboActor.SetActorValue("Confidence", 3.0)
-			; BimboActor.SetActorValue("Assistance", 2.0)
-
-			; If (BimboActor.GetActorValue("Confidence") <= 1) ; NPC still a coward
-			; 	CourageSpell.Cast(Game.GetPlayer(),akActorREF)
-			; EndIf
-
-			; Debug.Notification("Actor: " + BimboActor)
-			; Debug.Notification("Aggression: " + BimboActor.GetActorValue("Aggression"))
-			; Debug.Notification("Confidence: " + BimboActor.GetActorValue("Confidence"))
-			; Debug.Notification("Assistance: " + BimboActor.GetActorValue("Assistance"))
-
-	    EndIf
-	EndIf
-
-
-EndEvent
-
 Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile, bool abPowerAttack, bool abSneakAttack, bool abBashAttack, bool abHitBlocked)
 	; Safeguard - Exit if alias not set
 	if (StorageUtil.GetIntValue(Game.GetPlayer(), "_SLH_iBimbo")==0)
@@ -427,37 +354,6 @@ Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile,
 
 EndEvent
 
-
-Event OnItemAdded(Form akBaseItem, int aiItemCount, ObjectReference akItemReference, ObjectReference akSourceContainer)
-	; Safeguard - Exit if alias not set
-	if (StorageUtil.GetIntValue(Game.GetPlayer(), "_SLH_iBimbo")==0)
-		Return
-	Endif
-
-	BimboActor= BimboAliasRef.GetReference() as Actor
-    
- 	; Safeguard - Evaluate the rest only when transformation happened
-	if (StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") == -1)
-		Return
-	Endif
-	
-    ; Debug.Trace("[SLH] Bimbo received something - " + aiItemCount + "x " + akBaseItem.GetName() + " from the world")
-
-	; debug.Notification("[SLH] Bimbo received something")
-
-      ; If ( (akBaseItem as Armor) == HypnosisCircletArmor  )
-      ;  BimboActor.Equipitem(HypnosisCirclet)
-      ; EndIf
-
-    ; Obsolete - cure token replaced by spell.
-    ; if (akBaseItem == (ReturnItem)) 
-        
-    ; 	fctPolymorph.bimboTransformEffectOFF(BimboActor)
- 
-    ;   BimboActor.RemoveItem(ReturnItem, 1, True)
-
-    ; EndIf
-endEvent
 
 ;===========================================================================
 ;should really drop the weapons or just unequip it?
@@ -688,6 +584,7 @@ endfunction
 ; - the stumbling chances should be tweaked
 ;===========================================================================
 function clumsyBimboLegs(Actor bimbo)
+	Actor kPlayer = Game.GetPlayer()
 	string bimboTripMessage = ""
 
 	;not clumsy anymore?
@@ -700,7 +597,8 @@ function clumsyBimboLegs(Actor bimbo)
 	if Input.IsKeyPressed(Input.GetMappedKey("Forward")) || Input.IsKeyPressed(Input.GetMappedKey("Back")) || Input.IsKeyPressed(Input.GetMappedKey("Strafe Left")) || Input.IsKeyPressed(Input.GetMappedKey("Strafe Right"))
 		;isn't on the menu?
 		bool IsMenuOpen = Utility.IsInMenuMode() || UI.IsMenuOpen("Dialogue Menu")
-		if !IsMenuOpen && !bimbo.IsOnMount() && !bimbo.IsSwimming()
+		if !IsMenuOpen && !bimbo.IsOnMount() && !bimbo.IsSwimming() && (StorageUtil.GetIntValue(kPlayer,"DCUR_SceneRunning") == 0)
+			SendModEvent("dhlp-Suspend")
 		    float tumbleForce = 0.1
 			float bimboArousal = 0.0
 			if bimbo != None
@@ -785,6 +683,9 @@ function clumsyBimboLegs(Actor bimbo)
 				SLH_Control.playMoan(bimbo)
 				bimbo.CreateDetectionEvent(bimbo, 10)
 			endif
+
+			SendModEvent("dhlp-Resume")
+
 		endif
 	endif
 endfunction
@@ -823,10 +724,13 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 		showSchlongMessage = false
 	endif
 
-	Int iBimboHairColor = Math.LeftShift(255, 24) + Math.LeftShift(92, 16) + Math.LeftShift(80, 8) + 80
+	; Int iBimboHairColor = Math.LeftShift(255, 24) + Math.LeftShift(92, 16) + Math.LeftShift(80, 8) + 80
+	Int iBimboHairColor = Math.LeftShift(92, 16) + Math.LeftShift(80, 8) + 80
 	StorageUtil.SetIntValue(BimboActor, "_SLH_iHairColor", iBimboHairColor ) 
+	StorageUtil.SetIntValue(BimboActor, "_SLH_iHairColorDye", 1 ) 
+	StorageUtil.SetStringValue(BimboActor, "_SLH_sHairColorName", "Platinum blonde" ) 
 	debug.trace("[slh+] 	bimbo hair color: " + iBimboHairColor)
-	BimboActor.SendModEvent("SLHRefreshColor")
+	BimboActor.SendModEvent("SLHRefreshColor","Dye")
 
 	;level 1: permanent makeup
 	if (transformationLevel == 1) 

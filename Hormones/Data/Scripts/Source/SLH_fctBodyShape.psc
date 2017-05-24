@@ -1198,42 +1198,51 @@ function shaveHair ( Actor kActor)
  	ObjectReference kActorREF= kActor as ObjectReference
 	ActorBase pActorBase = kActor.GetActorBase()
 	ActorBase pLeveledActorBase = kActor.GetLeveledActorBase()
-
 	Int   iPlayerGender = pLeveledActorBase.GetSex() as Int
 
-	Int Hair = pLeveledActorBase.GetNumHeadParts()
-	Int i = 0
-	While i < Hair
-		If pLeveledActorBase.GetNthHeadPart(i).GetType() == 3
-			hpHairCurrent = pLeveledActorBase.GetNthHeadPart(i)
-			i = Hair
-		EndIf
-		i += 1
-	EndWhile
+	If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
+		; YPS Fashion override if detected
+		; See - http://www.loverslab.com/topic/56627-immersive-hair-growth-and-styling-yps-devious-immersive-fashion-v5/
+		SendModEvent("yps-OnHaircutEvent", "", 1) ; shaved - bald
+		StorageUtil.SetIntValue(kActor, "_SLH_iShavedHead", 1)
+	else
+		Int Hair = pLeveledActorBase.GetNumHeadParts()
+		Int i = 0
+		While i < Hair
+			If pLeveledActorBase.GetNthHeadPart(i).GetType() == 3
+				hpHairCurrent = pLeveledActorBase.GetNthHeadPart(i)
+				i = Hair
+			EndIf
+			i += 1
+		EndWhile
 
-	If (hpHairOrig == None)
-		hpHairOrig = hpHairCurrent
+		If (hpHairOrig == None)
+			hpHairOrig = hpHairCurrent
+		EndIf
+
+		If (iPlayerGender==0) 
+			If (hpHairCurrent != hpHairBaldM)
+				kActor.ChangeHeadPart(hpHairBaldM)
+				StorageUtil.SetIntValue(kActor, "_SLH_iShavedHead", 1)
+				; Debug.Messagebox("Your rapid body changes force your hair to fall. " )
+			Else
+				; Game.ShowLimitedRaceMenu()
+			EndIf
+
+		Else
+			If (hpHairCurrent != hpHairBaldF)
+				kActor.ChangeHeadPart(hpHairBaldF)
+				StorageUtil.SetIntValue(kActor, "_SLH_iShavedHead", 1)
+				; Debug.Messagebox("Your rapid body changes force your hair to fall. ")
+			Else
+				; Game.ShowLimitedRaceMenu()
+			EndIf
+
+		EndIf
+
 	EndIf
 
-	If (iPlayerGender==0) 
-		If (hpHairCurrent != hpHairBaldM)
-			kActor.ChangeHeadPart(hpHairBaldM)
-			StorageUtil.SetIntValue(kActor, "_SLH_iShavedHead", 1)
-			; Debug.Messagebox("Your rapid body changes force your hair to fall. " )
-		Else
-			; Game.ShowLimitedRaceMenu()
-		EndIf
-
-	Else
-		If (hpHairCurrent != hpHairBaldF)
-			kActor.ChangeHeadPart(hpHairBaldF)
-			StorageUtil.SetIntValue(kActor, "_SLH_iShavedHead", 1)
-			; Debug.Messagebox("Your rapid body changes force your hair to fall. ")
-		Else
-			; Game.ShowLimitedRaceMenu()
-		EndIf
-
-	EndIf
+	StorageUtil.SetIntValue(kActor, "_SLH_iForcedHairLoss", 0) 
 
 	debugTrace("[SLH]       -> Forced hair change applied")
  
@@ -1430,7 +1439,36 @@ function initShapeConstants(Actor kActor)
 	; fButtSwellMod = GV_buttSwellMod.GetValue()   ; 0.2 
 	; fSchlongSwellMod = GV_schlongSwellMod.GetValue()   ; 0.2 
 	; fWeightSwellMod = GV_weightSwellMod.GetValue()   ; 0.2 
- 
+
+	; Repair min-max constants if erased by accident
+	If (GV_breastMin.GetValue() == GV_breastMax.GetValue())
+		GV_breastMin.SetValue(0.8)
+		GV_breastMax.SetValue(4.0)
+		GV_breastSwellMod.SetValue(1.5)
+	Endif
+	If (GV_bellyMin.GetValue() == GV_bellyMax.GetValue())
+		GV_bellyMin.SetValue(0.9)
+		GV_bellyMax.SetValue(1.5)
+		GV_bellySwellMod.SetValue(1.5)
+	Endif
+	If (GV_buttMin.GetValue() == GV_buttMax.GetValue())
+		GV_buttMin.SetValue(0.9)
+		GV_buttMax.SetValue(1.5)
+		GV_buttSwellMod.SetValue(1.2)
+	Endif
+	If (GV_schlongMax.GetValue() == GV_schlongMax.GetValue())
+		GV_schlongMin.SetValue(0.5)
+		GV_schlongMax.SetValue(3.0)
+		GV_schlongSwellMod.SetValue(1.2)
+	Endif
+	If (GV_weightMin.GetValue() == GV_weightMax.GetValue())
+		GV_weightMin.SetValue(0.0)
+		GV_weightMax.SetValue(100.0)
+		GV_weightSwellMod.SetValue(-1.5)
+	Endif
+
+
+
 	StorageUtil.SetFloatValue(kActor, "_SLH_fBreastSwellMod",  GV_breastSwellMod.GetValue() as Float) 
 	StorageUtil.SetFloatValue(kActor, "_SLH_fButtSwellMod",  GV_buttSwellMod.GetValue()  as Float) 
 	StorageUtil.SetFloatValue(kActor, "_SLH_fBellySwellMod",  GV_bellySwellMod.GetValue()   as Float) 

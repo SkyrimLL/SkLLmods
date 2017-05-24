@@ -161,6 +161,8 @@ Function Maintenance()
 
 	StorageUtil.SetIntValue(none, "_SLH_debugTraceON", 1)
 
+	fctUtil.checkGender(PlayerActor)
+
 	; If (!StorageUtil.HasIntValue(none, "_SLH_iHormones"))
 		; StorageUtil.SetIntValue(none, "_SLH_iHormones", 1)
 	;	Return
@@ -430,6 +432,7 @@ Event OnUpdate()
 		Endif
 
 		fRefreshAfterSleep = 0.0
+		fctUtil.checkGender(PlayerActor)
 
 		debugTrace("[SLH]  Days since Sex acts : " + iDaysSinceLastSex)
 		; Check if body modifications are applicable
@@ -708,9 +711,9 @@ Event OnShaveHead(String _eventName, String _args, Float _argc = 1.0, Form _send
  	Actor kActor = _sender as Actor
 		
 	debugTrace("[SLH] Detected forced hair change")
-	fctBodyShape.shaveHair(kActor)		
-	StorageUtil.SetIntValue(kActor, "_SLH_iForcedHairLoss", 0) 
 
+	fctBodyShape.shaveHair(kActor)		
+	
 EndEvent
 
 
@@ -1088,7 +1091,7 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 		If (kPervert) 
 			Bool isCurrentPartner = fctUtil.hasActor(actors, kPervert)
 
-			If (!kPervert.IsDead()) && (kPervert.GetAV("Morality")<=2) && ((((Utility.RandomInt(1,100)>= (StorageUtil.GetFloatValue(none, "_SLH_fHornyGrab") as Int))) && !isCurrentPartner) || ( (Utility.RandomInt(1,100)>= ((StorageUtil.GetFloatValue(none, "_SLH_fHornyGrab") as Int) / 2.0) ) && isCurrentPartner))
+			If (!kPervert.IsDead()) && (kPervert.GetAV("Morality")<=2) && ((((Utility.RandomInt(1,100)< (StorageUtil.GetFloatValue(none, "_SLH_fHornyGrab") as Int))) && !isCurrentPartner) || ( (Utility.RandomInt(1,100)< ((StorageUtil.GetFloatValue(none, "_SLH_fHornyGrab") as Int) / 2.0) ) && isCurrentPartner))
 
 				If  (SexLab.ValidateActor( SexLab.PlayerRef) > 0) && (SexLab.ValidateActor( kPervert) > 0) 
 					Int IButton = _SLH_warning.Show()
@@ -1532,7 +1535,7 @@ function setHormonesSexualState(Actor kActor)
 	EndIf	
 
 	; Lactation triggers - works better with SexLab Stories Devious
-	if (StorageUtil.GetIntValue(kActor, "_SLH_isSuccubus") == 1)
+	if (StorageUtil.GetIntValue(kActor, "_SLH_isSuccubus") == 1) && (_SLH_QST_Succubus.GetStage()>=50)
 		if (StorageUtil.GetFloatValue(kActor, "_SLH_fLibido") > 60)
 			StorageUtil.SetIntValue(kActor, "_SLH_iLactating", 1)
 		else
@@ -1672,23 +1675,23 @@ Function _nodeBalancing()
 			fNumModBreast += 1.0
 		endif
 
-		StorageUtil.SetFloatValue(PlayerActor, "_SLP_bellyMaxSpiderEgg", 2.0 / fNumModBelly )
-		StorageUtil.SetFloatValue(PlayerActor, "_SLP_bellyMaxChaurusWormVag", 2.0 / fNumModBelly )
-		StorageUtil.SetFloatValue(PlayerActor, "_SLP_bellyMaxFaceHugger", 2.0 / fNumModBelly )
-		StorageUtil.SetFloatValue(PlayerActor, "_SLP_breastMaxTentacleMonster", 2.0 / fNumModBreast )
-		StorageUtil.SetFloatValue(PlayerActor, "_SLP_breastMaxLivingArmor", 2.0 / fNumModBreast )
-		StorageUtil.SetFloatValue(PlayerActor, "_SLP_buttMaxChaurusWorm", 1.5 / fNumModButt )
+		StorageUtil.SetFloatValue(PlayerActor, "_SLP_bellyMaxSpiderEgg", 1.0 + 2.0 / fNumModBelly )
+		StorageUtil.SetFloatValue(PlayerActor, "_SLP_bellyMaxChaurusWormVag", 1.0 + 2.0 / fNumModBelly )
+		StorageUtil.SetFloatValue(PlayerActor, "_SLP_bellyMaxFaceHugger", 1.0 + 2.0 / fNumModBelly )
+		StorageUtil.SetFloatValue(PlayerActor, "_SLP_breastMaxTentacleMonster", 1.0 + 2.0 / fNumModBreast )
+		StorageUtil.SetFloatValue(PlayerActor, "_SLP_breastMaxLivingArmor", 1.0 + 2.0 / fNumModBreast )
+		StorageUtil.SetFloatValue(PlayerActor, "_SLP_buttMaxChaurusWorm", 1.0 + 1.5 / fNumModButt )
 		PlayerActor.SendModEvent("SLPRefreshBodyShape")
 
 		If (StorageUtil.GetIntValue(PlayerActor, "_SLH_isSuccubus") == 1)
-			StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreastMax",  3.0   / fNumModBreast )
+			StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreastMax",  1.0 + 3.0   / fNumModBreast )
 		else
-			StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreastMax",  2.0   / fNumModBreast )
+			StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreastMax",  1.0 + 2.0   / fNumModBreast )
 		endif
-		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBellyMax",  2.0  / fNumModBelly ) 
-		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fButtMax",  1.5  / fNumModButt )
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBellyMax",  1.0 + 2.0  / fNumModBelly ) 
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fButtMax",  1.0 + 1.5  / fNumModButt )
 
-		StorageUtil.SetFloatValue(PlayerActor, "_SLS_breastMaxMilkFarm", 2.0 / fNumModBreast )
+		StorageUtil.SetFloatValue(PlayerActor, "_SLS_breastMaxMilkFarm", 1.0 + 2.0 / fNumModBreast )
 		PlayerActor.SendModEvent("_SLSDDi_UpdateCow")
 
 		fctBodyShape.setShapeState(PlayerActor)

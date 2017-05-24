@@ -32,6 +32,7 @@ Int iHairColorBimbo = 0
 ColorForm Property thisHairColor Auto
 
 GlobalVariable      Property GV_useColors 				Auto
+GlobalVariable      Property GV_useHairColors 			Auto
 GlobalVariable      Property GV_redShiftColor  			Auto
 GlobalVariable      Property GV_redShiftColorMod 		Auto
 GlobalVariable      Property GV_blueShiftColor 			Auto
@@ -308,10 +309,12 @@ Int function alterHairColor(Actor kActor, int rgbacolor, HeadPart thisHair)
 	ActorBase pActorBase = kActor.GetActorBase()
 	ActorBase pLeveledActorBase = kActor.GetLeveledActorBase()
 
-	kActor.ChangeHeadPart(thisHair)
+	if (GV_useHairColors.GetValue() == 1)
+		kActor.ChangeHeadPart(thisHair)
 
-	thisHairColor.SetColor(rgbacolor)
-	pLeveledActorBase.SetHairColor(thisHairColor)
+		thisHairColor.SetColor(rgbacolor)
+		pLeveledActorBase.SetHairColor(thisHairColor)
+	Endif
 
 EndFunction
 
@@ -671,19 +674,23 @@ endFunction
 function setColorState(Actor kActor)
 	debugTrace("[SLH]  Writing color state to storage")
 
-	StorageUtil.SetIntValue(kActor, "_SLH_iOrigSkinColor", iOrigSkinColor) 
-	StorageUtil.SetIntValue(kActor, "_SLH_iOrigCheeksColor", iOrigCheeksColor) 
-	StorageUtil.SetIntValue(kActor, "_SLH_iOrigLipsColor", iOrigLipsColor) 
-	StorageUtil.SetIntValue(kActor, "_SLH_iOrigEyelinerColor", iOrigEyelinerColor) 
-	StorageUtil.SetIntValue(kActor, "_SLH_iOrigEyesColor", iOrigEyesColor) 
-	StorageUtil.SetIntValue(kActor, "_SLH_iOrigHairColor", iOrigHairColor) 
+	if (GV_useColors.GetValue() == 1)
+		StorageUtil.SetIntValue(kActor, "_SLH_iOrigSkinColor", iOrigSkinColor) 
+		StorageUtil.SetIntValue(kActor, "_SLH_iOrigCheeksColor", iOrigCheeksColor) 
+		StorageUtil.SetIntValue(kActor, "_SLH_iOrigLipsColor", iOrigLipsColor) 
+		StorageUtil.SetIntValue(kActor, "_SLH_iOrigEyelinerColor", iOrigEyelinerColor) 
+		StorageUtil.SetIntValue(kActor, "_SLH_iOrigEyesColor", iOrigEyesColor) 
+		StorageUtil.SetIntValue(kActor, "_SLH_iSkinColor", iSkinColor) 
+		StorageUtil.SetIntValue(kActor, "_SLH_iCheeksColor", iCheeksColor) 
+		StorageUtil.SetIntValue(kActor, "_SLH_iLipsColor", iLipsColor) 
+		StorageUtil.SetIntValue(kActor, "_SLH_iEyelinerColor", iEyelinerColor) 
+		StorageUtil.SetIntValue(kActor, "_SLH_iEyesColor", iEyesColor) 
+	endIf
 
-	StorageUtil.SetIntValue(kActor, "_SLH_iSkinColor", iSkinColor) 
-	StorageUtil.SetIntValue(kActor, "_SLH_iCheeksColor", iCheeksColor) 
-	StorageUtil.SetIntValue(kActor, "_SLH_iLipsColor", iLipsColor) 
-	StorageUtil.SetIntValue(kActor, "_SLH_iEyelinerColor", iEyelinerColor) 
-	StorageUtil.SetIntValue(kActor, "_SLH_iEyesColor", iEyesColor) 
-	StorageUtil.SetIntValue(kActor, "_SLH_iHairColor", iHairColor) 
+	if (GV_useHairColors.GetValue() == 1)
+		StorageUtil.SetIntValue(kActor, "_SLH_iOrigHairColor", iOrigHairColor) 
+		StorageUtil.SetIntValue(kActor, "_SLH_iHairColor", iHairColor) 
+	EndIf
 
 endFunction
 
@@ -691,19 +698,24 @@ endFunction
 function getColorState(Actor kActor)
 	debugTrace("[SLH]  Reading color state from storage")
 
-	iOrigSkinColor = StorageUtil.GetIntValue(kActor, "_SLH_iOrigSkinColor") 
-	iOrigCheeksColor = StorageUtil.GetIntValue(kActor, "_SLH_iOrigCheeksColor") 
-	iOrigLipsColor = StorageUtil.GetIntValue(kActor, "_SLH_iOrigLipsColor") 
-	iOrigEyelinerColor = StorageUtil.GetIntValue(kActor, "_SLH_iOrigEyelinerColor") 
-	iOrigEyesColor = StorageUtil.GetIntValue(kActor, "_SLH_iOrigEyesColor") 
-	iOrigHairColor = StorageUtil.GetIntValue(kActor, "_SLH_iOrigHairColor") 
-	
-	iSkinColor = StorageUtil.GetIntValue(kActor, "_SLH_iSkinColor") 
-	iCheeksColor = StorageUtil.GetIntValue(kActor, "_SLH_iCheeksColor") 
-	iLipsColor = StorageUtil.GetIntValue(kActor, "_SLH_iLipsColor") 
-	iEyelinerColor = StorageUtil.GetIntValue(kActor, "_SLH_iEyelinerColor") 
-	iEyesColor = StorageUtil.GetIntValue(kActor, "_SLH_iEyesColor") 
-	iHairColor = StorageUtil.GetIntValue(kActor, "_SLH_iHairColor") 
+	if (GV_useColors.GetValue() == 1)
+		iOrigSkinColor = StorageUtil.GetIntValue(kActor, "_SLH_iOrigSkinColor") 
+		iOrigCheeksColor = StorageUtil.GetIntValue(kActor, "_SLH_iOrigCheeksColor") 
+		iOrigLipsColor = StorageUtil.GetIntValue(kActor, "_SLH_iOrigLipsColor") 
+		iOrigEyelinerColor = StorageUtil.GetIntValue(kActor, "_SLH_iOrigEyelinerColor") 
+		iOrigEyesColor = StorageUtil.GetIntValue(kActor, "_SLH_iOrigEyesColor") 
+		
+		iSkinColor = StorageUtil.GetIntValue(kActor, "_SLH_iSkinColor") 
+		iCheeksColor = StorageUtil.GetIntValue(kActor, "_SLH_iCheeksColor") 
+		iLipsColor = StorageUtil.GetIntValue(kActor, "_SLH_iLipsColor") 
+		iEyelinerColor = StorageUtil.GetIntValue(kActor, "_SLH_iEyelinerColor") 
+		iEyesColor = StorageUtil.GetIntValue(kActor, "_SLH_iEyesColor") 
+	Endif
+
+	if (GV_useHairColors.GetValue() == 1)
+		iOrigHairColor = StorageUtil.GetIntValue(kActor, "_SLH_iOrigHairColor") 
+		iHairColor = StorageUtil.GetIntValue(kActor, "_SLH_iHairColor") 
+	Endif
 
 
 endFunction
@@ -740,18 +752,35 @@ function refreshColors(Actor kActor)
 			iEyelinerColor = iOrigEyelinerColor ; Game.GetTintMaskColor(3,0)
 		EndIf
 		;	setTintMask(3,iEyelinerColor)
- 
+	Endif
+
+
+	if (GV_useColors.GetValue() == 1)
 		if (iHairColor == 0)
 			; thisHairColor =  pLeveledActorBase.GetHairColor()
 			iHairColor = iOrigHairColor ; colorFormtoRGBA (thisHairColor)
 		endIf
-		
-		thisHairColor.SetColor(iHairColor)
-		pLeveledActorBase.SetHairColor(thisHairColor)
-		iHairColor = colorFormtoRGBA (thisHairColor)
 
-		setColorState( kActor)
-	EndIf
+		If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
+			; YPS Fashion override if detected
+			; See - http://www.loverslab.com/topic/56627-immersive-hair-growth-and-styling-yps-devious-immersive-fashion-v5/
+
+ 			If 	(StorageUtil.GetIntValue(kActor, "_SLH_iHairColorDye") ==  1 ) 
+	 			debugTrace("[SLH] - Sending dye YPS hair color event: " + 	iHairColor)
+				SendModEvent("yps-HairColorDyeEvent", StorageUtil.GetStringValue(kActor, "_SLH_sHairColorName"), iHairColor)  
+			else
+	 			debugTrace("[SLH] - Sending base YPS hair color event: " + 	iHairColor)
+				SendModEvent("yps-HairColorBaseEvent", StorageUtil.GetStringValue(kActor, "_SLH_sHairColorName"), iHairColor)  
+			endIf
+		else 			
+			thisHairColor.SetColor(iHairColor)
+			pLeveledActorBase.SetHairColor(thisHairColor)
+			iHairColor = colorFormtoRGBA (thisHairColor)
+		EndIf
+	endif
+
+	setColorState( kActor)
+
 
 endFunction
 
@@ -771,13 +800,15 @@ function getColorFromSkin(Actor kActor)
 
 		iEyelinerColor = Game.GetTintMaskColor(3,0)
 		; setTintMask(3,iEyelinerColor)
+	endIf
 
+	if (GV_useHairColors.GetValue() == 1)
 		color = pLeveledActorBase.GetHairColor()
 		iHairColor = colorFormtoRGBA (color)
 
-		setColorState( kActor)
 	EndIf
 	
+	setColorState( kActor)
 
 endFunction
 
@@ -791,10 +822,19 @@ function applyColorChanges(Actor kActor)
 
 	 	; Deprecated? Trying NiO functions as alternative for Tint Masks
 	 	;	- Issues with tint Mask colors 'bleeding' into other areas (skin color -> hair)
+	endIf
 
+	if (GV_useHairColors.GetValue() == 1)
 		Game.UpdateHairColor()
 		; debugTrace("[SLH]  Updating TintMaskColors")
 		; Game.UpdateTintMaskColors()
+
+		iHairColor = StorageUtil.GetIntValue(kActor, "_SLH_iHairColor") 
+		If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
+			; YPS Fashion override if detected
+			; See - http://www.loverslab.com/topic/56627-immersive-hair-growth-and-styling-yps-devious-immersive-fashion-v5/
+			; SendModEvent("yps-OnHaircutEvent", "", 1) ; change hair color not yet implemented 
+		Endif
 	EndIf
 endFunction
 

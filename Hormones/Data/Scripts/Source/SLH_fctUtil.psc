@@ -6,6 +6,7 @@ GlobalVariable      Property GV_changeOverrideToggle	Auto
 Int iOrigSLAExposureRank = -3
 Faction  Property kfSLAExposure Auto
 slaUtilScr Property slaUtil  Auto  
+SexlabFramework Property SexLab Auto
 
 GlobalVariable      Property GV_allowExhibitionist		Auto 
 
@@ -169,30 +170,28 @@ Actor function getRaceActor(Actor[] _actors, Race thisRace)
 	Return None
 EndFunction
 
-Bool function isFemale(actor kActor)
-	Bool bIsFemale
+function checkGender(actor kActor) 
 	ActorBase kActorBase = kActor.GetActorBase()
 
-	if (kActorBase.GetSex() == 1) ; female
-		bIsFemale = True
-	Else
-		bIsFemale = False
-	EndIf
+	; Debug.Trace("[SLH] Sex from Actorbase:" + kActorBase.GetSex())
+	; Debug.Trace("[SLH] Sex from Sexlab:" + Sexlab.GetGender(kActor))
 
-	return bIsFemale
+	if (kActorBase.GetSex() == 1) ; female
+		StorageUtil.SetIntValue(kActor, "_SLH_isFemale",  1) 
+		StorageUtil.SetIntValue(kActor, "_SLH_isMale",  0) 
+	Else
+		StorageUtil.SetIntValue(kActor, "_SLH_isFemale",  0) 
+		StorageUtil.SetIntValue(kActor, "_SLH_isMale",  1) 
+	EndIf
+ 
+EndFunction
+
+Bool function isFemale(actor kActor)
+	return (StorageUtil.GetIntValue(kActor, "_SLH_isFemale") as Bool)
 EndFunction
 
 Bool function isMale(actor kActor)
-	Bool bIsMale
-	ActorBase kActorBase = kActor.GetActorBase()
-
-	if (kActorBase.GetSex() == 0) ; male
-		bIsMale = True
-	Else
-		bIsMale = False
-	EndIf
-
-	return bIsMale
+	return (StorageUtil.GetIntValue(kActor, "_SLH_isMale") as Bool)
 EndFunction
 
 Bool function isSameSex(actor kActor1, actor kActor2)

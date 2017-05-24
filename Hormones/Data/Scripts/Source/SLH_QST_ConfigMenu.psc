@@ -60,6 +60,7 @@ GlobalVariable      Property GV_useSchlongNode 			Auto
 
 GlobalVariable      Property GV_useWeight 				Auto
 GlobalVariable      Property GV_useColors 				Auto
+GlobalVariable      Property GV_useHairColors 			Auto
 GlobalVariable      Property GV_redShiftColor  			Auto
 GlobalVariable      Property GV_redShiftColorMod 		Auto
 GlobalVariable      Property GV_blueShiftColor 			Auto
@@ -164,11 +165,12 @@ bool		_useBellyNode			= true
 bool		_useSchlongNode			= true
 bool		_useWeight				= true
 bool		_useColors				= true
+bool		_useHairColors			= true
 bool		_changeOverrideToggle	= true
 bool		_shapeUpdateOnCellChange = true
 bool		_shapeUpdateAfterSex 	= true
 bool		_shapeUpdateOnTimer 	= true
-bool		_enableNiNodeUpdate 	= true
+bool		_enableNiNodeUpdate 	= false
 bool		_enableNiNodeOverride	= true
 int			_redShiftColor 			= 0
 float		_redShiftColorMod 		= 1.0
@@ -315,6 +317,7 @@ event OnPageReset(string a_page)
 	_useSchlongNode = GV_useSchlongNode.GetValue()  as Int
 	_useWeight = GV_useWeight.GetValue()  as Int
 	_useColors = GV_useColors.GetValue()  as Int
+	_useHairColors = GV_useHairColors.GetValue()  as Int
 
 	_showStatus = GV_showStatus.GetValue() as Bool
 	_commentsFrequency = GV_commentsFrequency.GetValue() as Float
@@ -380,7 +383,8 @@ event OnPageReset(string a_page)
 		AddSliderOptionST("STATE_WEIGHT_SWELL","Weight swell mod", _weightSwellMod as Float,"{1}")
 
 		AddHeaderOption(" Color")
-		AddToggleOptionST("STATE_CHANGE_COLOR","Change colors", _useColors as Float)
+		AddToggleOptionST("STATE_CHANGE_COLOR","Change skin color", _useColors as Float)
+		AddToggleOptionST("STATE_CHANGE_HAIRCOLOR","Change hair color", _useHairColors as Float)
 
 		AddColorOptionST("STATE_RED_COLOR_SHIFT","Red color shift", _redShiftColor as Int)
 		AddSliderOptionST("STATE_RED_COLOR_SHIFT_MOD","Red color shift mod", _redShiftColorMod as Float,"{1}")
@@ -447,7 +451,7 @@ event OnPageReset(string a_page)
 	elseIf (a_page == "Add-ons")
 		SetCursorFillMode(TOP_TO_BOTTOM)
 
-		AddHeaderOption(" Optional modules")
+		AddHeaderOption(" Optional curses")
 		AddHeaderOption(" Succubus ")
 		AddToggleOptionST("STATE_SUCCUBUS","Allow Succubus Curse", _allowSuccubus as Float)
 		AddToggleOptionST("STATE_SET_SUCCUBUS","Set Succubus Curse now", _setSuccubus as Float)
@@ -462,11 +466,13 @@ event OnPageReset(string a_page)
 		AddToggleOptionST("STATE_BIMBO","Bimbo Curse", _allowBimbo as Float)
 		AddToggleOptionST("STATE_BIMBO_RACE","Bimbo Race", _allowBimboRace as Float)
 		AddSliderOptionST("STATE_BIMBO_CLUMSINESS","Clumsiness factor", _bimboClumsinessMod as Float,"{1}")
+		AddToggleOptionST("STATE_BIMBO_DROP","Drop items when aroused", _bimboClumsinessDrop  as Bool)
+		AddToggleOptionST("STATE_SET_BIMBO","Set Bimbo Curse now", _setBimbo as Float)
+
+		AddHeaderOption(" General behaviors ")
 		AddToggleOptionST("STATE_HORNY_BEG","Beg for sex", _hornyBegON   as Bool)
 		AddSliderOptionST("STATE_BEG_TRIGGER","Beg arousal trigger", _hornyBegArousal  as Float,"{1}")
 		AddSliderOptionST("STATE_GRAB_TRIGGER","Public sex attack", _hornyGrab  as Float,"{1}")
-		AddToggleOptionST("STATE_BIMBO_DROP","Drop items when aroused", _bimboClumsinessDrop  as Bool)
-		AddToggleOptionST("STATE_SET_BIMBO","Set Bimbo Curse now", _setBimbo as Float)
 
 		AddHeaderOption(" Shape refresh controls")
 		AddToggleOptionST("STATE_CHANGE_OVERRIDE","Shape change override", _changeOverrideToggle as Float)
@@ -1161,7 +1167,26 @@ state STATE_CHANGE_COLOR ; TOGGLE
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Allow change to colors (skin, lips and eyeliner)")
+		SetInfoText("Allow change to skin color")
+	endEvent
+endState
+
+; AddToggleOptionST("STATE_CHANGE_HairCOLOR","Change colors", _useHairColors)
+state STATE_CHANGE_HAIRCOLOR ; TOGGLE
+	event OnSelectST()
+		GV_useHairColors.SetValueInt( Math.LogicalXor( 1, GV_useHairColors.GetValueInt() ) )
+		SetToggleOptionValueST( GV_useHairColors.GetValueInt() as Bool )
+		ForcePageReset()
+	endEvent
+
+	event OnDefaultST()
+		GV_useHairColors.SetValueInt( 0 )
+		SetToggleOptionValueST( false )
+		ForcePageReset()
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Allow change to hair color")
 	endEvent
 endState
 
@@ -1903,8 +1928,8 @@ state STATE_ENABLE_NODE_UPDATE ; TOGGLE
 	endEvent
 
 	event OnDefaultST()
-		GV_enableNiNodeUpdate.SetValueInt( 1 )
-		SetToggleOptionValueST( true )
+		GV_enableNiNodeUpdate.SetValueInt( 0 )
+		SetToggleOptionValueST( false )
 		ForcePageReset()
 	endEvent
 
