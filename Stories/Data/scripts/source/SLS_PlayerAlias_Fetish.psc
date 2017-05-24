@@ -115,6 +115,11 @@ Function _Maintenance()
 		StorageUtil.SetIntValue(PlayerActor, "_SLS_toggleNPCRumors",1 )
 		_SLS_NPCRumorsON.SetValue( 1 )
 	endif
+	
+	If ( (_SLS_NPCRumorsON.GetValue() as Int) != StorageUtil.GetIntValue(PlayerActor, "_SLS_toggleNPCRumors" ))
+	; 	Debug.Notification("[SLS] Updating Rumors valueiPad  ")
+		_SLS_NPCRumorsON.SetValue( StorageUtil.GetIntValue(PlayerActor, "_SLS_toggleNPCRumors" ) )
+	endIf
 
 	StorageUtil.SetFormValue(none, "_SLS_UniqueActorLotte", LotteRef as Form)
 
@@ -134,7 +139,7 @@ Event OnPCStartRedWave(String _eventName, String _args, Float _argc = -1.0, Form
 	StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryLevel", 3)
 	StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryExposure", 30)
 
-	SendModEvent("_SLS_PlayerRedWave")
+	SendModEvent("_SLS_PlayerRedWave", "Pregnancy")
 
 	Debug.MessageBox("Ohhh my head. Another night of drunken stupor. Maybe today I will make enough for the crew to earn a pass and get some air. The stench of sex is everywhere.")
 
@@ -233,14 +238,17 @@ Event OnPCStartAlicia(String _eventName, String _args, Float _argc = -1.0, Form 
 	EndIf
 
 	; a - r - g - b
-	Int iAliciaHairColor = Math.LeftShift(255, 24) + Math.LeftShift(60, 16) + Math.LeftShift(16, 8) + 13
+	; Int iAliciaHairColor = Math.LeftShift(255, 24) + Math.LeftShift(60, 16) + Math.LeftShift(16, 8) + 13
+	Int iAliciaHairColor = Math.LeftShift(60, 16) + Math.LeftShift(16, 8) + 13
 	StorageUtil.SetIntValue(PlayerActor, "_SLH_iHairColor", iAliciaHairColor ) 
+	StorageUtil.SetIntValue(PlayerActor, "_SLH_iHairColorDye", 1 ) 
+	StorageUtil.SetStringValue(PlayerActor, "_SLH_sHairColorName", "Alicia red" ) 
 	PlayerActor.SendModEvent("SLHRefreshColors")
 
 	PlayerActor.addtofaction(DremoraFaction) 
 
-	StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryLevel", 5)
-	StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryExposure", 500)
+	StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryLevel", 1)
+	StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryExposure", 50)
 
 	SendModEvent("_SLS_PlayerAlicia")
 
@@ -360,7 +368,7 @@ Event OnPCStartChaurusQueen(String _eventName, String _args, Float _argc = -1.0,
 	PlayerActor.SendModEvent("SLHRefresh")
 	PlayerActor.SendModEvent("SLHRefreshColors")
 
-	SendModEvent("_SLS_PlayerChaurusQueen")
+	SendModEvent("_SLP_PlayerChaurusQueen")
 
 	Debug.MessageBox("Repeated exposure to the Falmer's foul touch changed your body. Your growing breasts and pale blue skin make your purpose clear... you are theirs to breed.")
 EndEvent
@@ -371,14 +379,14 @@ Event OnPCStartBroodMaiden(String _eventName, String _args, Float _argc = -1.0, 
 
 	StorageUtil.SetIntValue(none, "_SLS_iPlayerStartBroodMaiden", 1)
 
-	PlayerActor.MoveTo(SLS_PlayerBroodMaidenStartMarker)
+	; PlayerActor.MoveTo(SLS_PlayerBroodMaidenStartMarker)
 	PlayerActor.addtofaction(ChaurusFaction) 
 	; StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryLevel", 1)
 	; StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryExposure", 10)
 
-	SendModEvent("_SLS_PlayerBroodMaiden")
+	SendModEvent("_SLP_PlayerBroodMaiden")
 
-	Debug.MessageBox("Your childhood friend, Lotte, has convinced you to follow her in a more simple life, closer to the wildlife she loves so much. Especially the Chaurus for she now calls herself the Brood Maiden. Will you assist her in her new life?")
+	Debug.MessageBox("Your childhood friend, Lastelle, has convinced you to follow her in a more simple life, closer to the wildlife she loves so much. Especially the Chaurus for she now calls herself the Brood Maiden. Will you assist her in her new life?")
 
 EndEvent
 
@@ -396,11 +404,6 @@ Event OnLocationChange(Location akOldLoc, Location akNewLoc)
 
 	; Debug.Notification("[SLS] Rumors global value: " + _SLS_NPCRumorsON.GetValue() as Int)
 	; Debug.Notification("[SLS] Rumors storageUtil: " + StorageUtil.GetIntValue(akActor, "_SLS_toggleNPCRumors" ))
-
-	If ( (_SLS_NPCRumorsON.GetValue() as Int) != StorageUtil.GetIntValue(akActor, "_SLS_toggleNPCRumors" ))
-	; 	Debug.Notification("[SLS] Updating Rumors valueiPad  ")
-		_SLS_NPCRumorsON.SetValue( StorageUtil.GetIntValue(akActor, "_SLS_toggleNPCRumors" ) )
-	endIf
 
 	iArousalThrottle = StorageUtil.GetFloatValue(akActor, "_SLS_fetishMod" ) as Int
 

@@ -101,6 +101,10 @@ EndEvent
 
 
 Event OnLocationChange(Location akOldLoc, Location akNewLoc)
+	If  !Self || !SexLab || (StorageUtil.GetIntValue(none, "_SLS_iStoriesPlayerNordQueen")==0)
+		Return
+	EndIf
+	
 	ObjectReference akActorREF= Game.GetPlayer() as ObjectReference
 	Actor akActor= Game.GetPlayer()
 	Int daysSinceLastPass 

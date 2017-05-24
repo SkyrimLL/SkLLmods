@@ -89,6 +89,9 @@ EndEvent
 Event OnSexLabOrgasm(String _eventName, String _args, Float _argc, Form _sender)
 	ObjectReference SexBotREF= SexBotAlias.GetReference()
 	Actor SexBotActor= SexBotAlias.GetReference() as Actor
+    sslBaseAnimation animation = SexLab.HookAnimation(_args)
+
+	
 
 	if !Self || !SexLab 
 		Debug.Trace("SexLab Stories: Critical error on SexLab Orgasm")
@@ -100,7 +103,7 @@ Event OnSexLabOrgasm(String _eventName, String _args, Float _argc, Form _sender)
 	Actor[] victims = new Actor[1]
 	victims[0] = victim
 
-	If (_hasActor(actors, SexBotActor))
+	If ((_hasActor(actors, SexBotActor)) || ((_hasPlayer(actors)) && animation.HasTag("Dwemer")) )
 		; Debug.Trace("SexLab Stories: Orgasm!")
  
 		If (SLS_SexBotOnOff.GetValue() == 0)

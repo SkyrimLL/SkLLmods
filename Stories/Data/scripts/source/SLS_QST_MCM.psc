@@ -271,7 +271,7 @@ state STATE_FETISH ; TOGGLE
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Enable/Disable the fetish system (arousal based on certain actions.. takes effect after changing location).")
+		SetInfoText("Enable/Disable the fetish system (arousal based on certain actions.. takes effect after reloading).")
 	endEvent
 
 endState

@@ -41,18 +41,20 @@ Function _Maintenance()
 
 	If (!StorageUtil.HasIntValue(none, "_SLS_iStoriesPlayerChaurusQueen"))
 	 	StorageUtil.SetIntValue(none, "_SLS_iStoriesPlayerChaurusQueen", 0)
+	Else
+		SLS_PlayerChaurusQueenQuest.SetStage(100) ; disable  - moving quest to Parasites
 	EndIf
 
 	UnregisterForAllModEvents()
 	; Debug.Trace("SexLab Stories: Reset SexLab events")
 	; RegisterForModEvent("AnimationStart", "OnSexLabStart")
-	RegisterForModEvent("AnimationEnd",   "OnSexLabEnd")
-	RegisterForModEvent("OrgasmStart",    "OnSexLabOrgasm")
+	; RegisterForModEvent("AnimationEnd",   "OnSexLabEnd")
+	; RegisterForModEvent("OrgasmStart",    "OnSexLabOrgasm")
 
-	RegisterForModEvent("_SLS_PlayerChaurusQueen", "OnPlayerChaurusQueen")
-	RegisterForModEvent("_SLS_PlayerBroodMaiden", "OnPlayerBroodMaiden")
+	; RegisterForModEvent("_SLS_PlayerChaurusQueen", "OnPlayerChaurusQueen")
+	; RegisterForModEvent("_SLS_PlayerBroodMaiden", "OnPlayerBroodMaiden")
 
-	_InitExternalPregancy()
+	; _InitExternalPregancy()
 
 EndFunction
 

@@ -100,6 +100,10 @@ Event OnUpdate()
 EndEvent
 
 Event OnLocationChange(Location akOldLoc, Location akNewLoc)
+	If  !Self || !SexLab || (StorageUtil.GetIntValue(none, "_SLS_iStoriesPlayerRedWave")==0)
+		Return
+	EndIf
+
 	ObjectReference akActorREF= Game.GetPlayer() as ObjectReference
 	Actor akActor= Game.GetPlayer()
 	Int daysSinceLastPass 
@@ -108,9 +112,6 @@ Event OnLocationChange(Location akOldLoc, Location akNewLoc)
  	daysPassed = Game.QueryStat("Days Passed")
 	daysSinceLastPass = daysPassed - (PlayerDayPass.GetValue() as Int )
 	
-	If  !Self || !SexLab || (StorageUtil.GetIntValue(none, "_SLS_iStoriesPlayerRedWave")==0)
-		Return
-	EndIf
 
 	If (daysSinceLastPass < 1) &&  (PlayerRedWaveDebt.GetValue()>0) && (akOldLoc == RedWaveLocation) && (akNewLoc != RedWaveLocation)
 		; Day pass is in effect - no penalty
@@ -165,7 +166,7 @@ Event OnPlayerRedWave(String _eventName, String _args, Float _argc = -1.0, Form 
 	StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryExposure", 30)
 
 
-	If (bBeeingFemale) && isFemale(PlayerActor) && (StorageUtil.GetIntValue(none, "_SLS_iPlayerStartRedWave") == 1)
+	If (bBeeingFemale) && isFemale(PlayerActor) && (StorageUtil.GetIntValue(none, "_SLS_iPlayerStartRedWave") == 1) && (_args == "Pregnancy")
 		PlayerActor.SendModEvent("BeeingFemale", "ChangeState", 5)  ;5, 6, 7 for 2nd, 3rd, labor
 		StorageUtil.SetFloatValue(PlayerActor,"FW.UnbornHealth",100.0)
 		StorageUtil.UnsetIntValue(PlayerActor,"FW.Abortus")
