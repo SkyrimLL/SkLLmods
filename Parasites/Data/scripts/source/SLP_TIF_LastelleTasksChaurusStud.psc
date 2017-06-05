@@ -1,18 +1,21 @@
 ;BEGIN FRAGMENT CODE - Do not edit anything between this and the end comment
 ;NEXT FRAGMENT INDEX 1
-Scriptname SLP_TIF_LastelleTasks40 Extends TopicInfo Hidden
+Scriptname SLP_TIF_LastelleTasksChaurusStud Extends TopicInfo Hidden
 
 ;BEGIN FRAGMENT Fragment_0
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
-self.GetOwningQuest().setstage(40)
+Actor kChaurus =  ChaurusFollowerAlias.GetRef() as Actor
+
+SLP_ChaurusStudWithLastelle.SetValue(0)
 ;END CODE
 EndFunction
 ;END FRAGMENT
 
 ;END FRAGMENT CODE - Do not edit anything between this and the begin comment
 
-Ingredient Property ChaurusEgg  Auto  
+SLP_fcts_parasites Property fctParasites  Auto
+ReferenceAlias Property ChaurusFollowerAlias  Auto 
 
-ObjectReference Property EggSackOutsideMarker  Auto  
+GlobalVariable Property SLP_ChaurusStudWithLastelle  Auto  

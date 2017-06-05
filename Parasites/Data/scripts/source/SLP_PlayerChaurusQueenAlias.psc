@@ -7,12 +7,21 @@ SLP_fcts_outfits Property fctOutfits  Auto
 
 Quest Property SLP_PlayerChaurusQueenQuest  Auto  
 ReferenceAlias Property _SLP_LastelleRef  Auto  
+ReferenceAlias Property _SLP_ChaurusStudRef  Auto  
+ReferenceAlias Property _SLP_ChaurusStudLastelleRef  Auto  
+
+GlobalVariable Property _SLP_ChaurusStudWithLastelle Auto
+GlobalVariable Property _SLP_isPlayerStartQueenOfChaurus Auto
+GlobalVariable Property _SLP_isPlayerStartBroodMaiden Auto
+GlobalVariable Property _SLP_GV_numInfections Auto
 
 objectreference property SLP_PlayerChaurusQueenStorage auto
 objectreference property SLP_PlayerBroodMaidenStorage auto
 
 objectreference property SLP_PlayerChaurusQueenStartMarker auto
 objectreference property SLP_PlayerBroodMaidenStartMarker auto
+
+objectreference property SLP_PlayerChaurusQueenSlaver auto
 
 Race Property ChaurusRace Auto
 Race Property FalmerRace Auto
@@ -61,6 +70,14 @@ Function _Maintenance()
 		_SLP_GV_isPlayerStartBroodMaiden.SetValue(1)
 	Endif
 
+
+	If (isPregnantByEstrusChaurus(PlayerActor)) && (StorageUtil.GetIntValue(PlayerActor, "_SLP_iInfections") ==0 )
+
+		StorageUtil.SetIntValue(PlayerActor, "_SLP_iInfections",  StorageUtil.GetIntValue(PlayerActor, "_SLP_iInfections") + 1)
+
+		_SLP_GV_numInfections.SetValue(StorageUtil.GetIntValue(PlayerActor, "_SLP_iInfections"))
+	Endif
+
 	UnregisterForAllModEvents()
 	; Debug.Trace("SexLab Stories: Reset SexLab events")
 	; RegisterForModEvent("AnimationStart", "OnSexLabStart")
@@ -76,6 +93,7 @@ EndFunction
 
 Event OnUpdate()
  	Actor PlayerActor= Game.GetPlayer() as Actor
+ 	Actor kChaurusStud = _SLP_ChaurusStudRef.GetReference() as Actor
 
  	daysPassed = Game.QueryStat("Days Passed")
 
@@ -91,6 +109,10 @@ Event OnUpdate()
 
 	elseIf (StorageUtil.GetIntValue(none, "_SLS_iStoriesPlayerChaurusQueen")==1)
 		; _RefreshQueenFX()
+		if (kChaurusStud==None) || (kChaurusStud.IsDead())
+			_SLP_ChaurusStudWithLastelle.SetValue(0)
+			_SLP_ChaurusStudRef.clear()
+		Endif
 
 	endIf
 
@@ -104,18 +126,32 @@ EndEvent
 Event OnPlayerChaurusQueen(String _eventName, String _args, Float _argc = -1.0, Form _sender)
  	Actor kActor = _sender as Actor
  	Actor PlayerActor= Game.GetPlayer() as Actor
+	Int iFalmerSkinColor = Math.LeftShift(255, 24) + Math.LeftShift(100, 16) + Math.LeftShift(200, 8) + 255
+	Float	breastMod = 0.25
+	Float	weightMod = 2.0
 
 	StorageUtil.SetIntValue(none, "_SLS_iStoriesPlayerChaurusQueen", 1)
 
-	If (!(StorageUtil.HasIntValue(none, "_SLS_iPlayerStartChaurusQueen")))
+	; If (!(StorageUtil.HasIntValue(none, "_SLS_iPlayerStartChaurusQueen")))
 		StorageUtil.SetIntValue(none, "_SLS_iPlayerStartChaurusQueen", 1)
-	EndIf
+		_SLP_isPlayerStartQueenOfChaurus.SetValue(1)
+	; EndIf
 
 	; FalmerSlaver.sendModEvent("PCSubEnslave")
 	PlayerActor.MoveTo(SLP_PlayerChaurusQueenStartMarker)
 	PlayerActor.RemoveAllItems(akTransferTo = SLP_PlayerChaurusQueenStorage, abKeepOwnership = True)
 
 	PlayerActor.SendModEvent("SLPInfectChaurusWorm")
+
+	Debug.Notification("The tingling in your nipples is driving you mad.")
+
+	StorageUtil.SetIntValue(PlayerActor, "_SLH_iSkinColor", iFalmerSkinColor ) 
+	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast", StorageUtil.GetFloatValue(PlayerActor, "_SLH_fBreast" ) + breastMod ) 
+	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fWeight", StorageUtil.GetFloatValue(PlayerActor, "_SLH_fWeight" ) + weightMod ) 
+	PlayerActor.SendModEvent("SLHRefresh")
+	PlayerActor.SendModEvent("SLHRefreshColors")
+
+	SLP_PlayerChaurusQueenSlaver.SendModEvent("PCSubEnslave")
 
 	SLP_PlayerChaurusQueenQuest.SetStage(10)
 
@@ -125,20 +161,24 @@ Event OnPlayerBroodMaiden(String _eventName, String _args, Float _argc = -1.0, F
  	Actor kActor = _sender as Actor
  	Actor PlayerActor= Game.GetPlayer() as Actor
 	Actor LastelleActor= _SLP_LastelleRef.GetReference() as Actor
+	ActorBase pActorBase = LastelleActor.GetActorBase()
 
 	StorageUtil.SetIntValue(none, "_SLS_iStoriesPlayerBroodMaiden", 1)
 
-	If (!(StorageUtil.HasIntValue(none, "_SLS_iPlayerStartBroodMaiden")))
+	; If (!(StorageUtil.HasIntValue(none, "_SLS_iPlayerStartBroodMaiden")))
 		StorageUtil.SetIntValue(none, "_SLS_iPlayerStartBroodMaiden", 1)
-	EndIf
+		_SLP_isPlayerStartBroodMaiden.SetValue(1)
+	; EndIf
 
 	; FalmerSlaver.sendModEvent("PCSubEnslave")
 
 	PlayerActor.MoveTo(SLP_PlayerBroodMaidenStartMarker)
 	PlayerActor.RemoveAllItems(akTransferTo = SLP_PlayerBroodMaidenStorage, abKeepOwnership = True)
 
+	pActorBase.SetWeight(0.0) 
 	fctParasites.infectEstrusTentacles( LastelleActor   )
-	fctParasites.infectChaurusWormVag( LastelleActor   )
+	fctParasites.infectEstrusChaurusEgg( LastelleActor )
+	; fctParasites.infectChaurusWormVag( LastelleActor   )
 
 	SLP_PlayerChaurusQueenQuest.SetStage(20)
 

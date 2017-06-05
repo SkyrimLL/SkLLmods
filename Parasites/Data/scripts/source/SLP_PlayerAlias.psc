@@ -921,6 +921,11 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 	Actor PlayerActor = Game.GetPlayer() as Actor
 	Location kLocation = PlayerActor.GetCurrentLocation()
 
+	If (StorageUtil.GetIntValue(PlayerActor, "_SLP_iDisableParasitesOnSleep") == 1)
+		Debug.Trace("[SLP] Parasites on Sleep disabled: " + StorageUtil.GetIntValue(PlayerActor, "_SLP_iDisableParasitesOnSleep"))
+		Return
+	Endif
+
 	if (kLocation)  
 
 		If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceBarnacles" )>0.0)
