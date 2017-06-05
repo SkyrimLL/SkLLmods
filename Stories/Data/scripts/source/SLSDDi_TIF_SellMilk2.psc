@@ -23,7 +23,7 @@ StorageUtil.SetFloatValue(none, "_SLH_fBreast",  fBreastScale * 0.8)
 StorageUtil.SetIntValue(none, "_SLH_iForcedRefresh", 1) 
 
 
-If  (SexLab.ValidateActor( SexLab.PlayerRef ) > 0) &&  (SexLab.ValidateActor(akSpeaker) > 0) 
+If  (SexLab.ValidateActor( Game.GetPlayer()) > 0) &&  (SexLab.ValidateActor(akSpeaker) > 0) 
 	actor[] sexActors = new actor[2]
 	sexActors[0] = Game.GetPlayer()
 	sexActors[1] = akSpeaker

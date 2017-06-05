@@ -7,21 +7,21 @@ Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
 Int NPCSexCount = _SLS_NPCSexCount.GetValue(  ) as Int
+Actor kPlayer = Game.GetPlayer()
 
 _SLS_NPCSexCount.SetValue(  -1 )
 
-	If  (SexLab.ValidateActor( SexLab.PlayerREF) > 0) &&  (SexLab.ValidateActor(akSpeaker) > 0) 
+	If  (SexLab.ValidateActor( kPlayer ) > 0) &&  (SexLab.ValidateActor(akSpeaker) > 0) 
 		; Debug.Notification( "[Resists weakly]" )
-		Actor akActor = SexLab.PlayerRef
 
 		If (NPCSexCount <=2 )
-			SexLab.QuickStart(SexLab.PlayerRef,  akSpeaker, AnimationTags = "Foreplay")
+			SexLab.QuickStart(kPlayer,  akSpeaker, AnimationTags = "Foreplay")
 		ElseIf (NPCSexCount <= 5 )
-			SexLab.QuickStart(SexLab.PlayerRef,  akSpeaker, AnimationTags = "Loving")
+			SexLab.QuickStart(kPlayer,  akSpeaker, AnimationTags = "Loving")
 		ElseIf (NPCSexCount <= 10 )
-			SexLab.QuickStart(SexLab.PlayerRef,  akSpeaker, AnimationTags = "Rough")
+			SexLab.QuickStart(kPlayer,  akSpeaker, AnimationTags = "Rough")
 		Else
-			SexLab.QuickStart(SexLab.PlayerRef,  akSpeaker, AnimationTags = "Sex")
+			SexLab.QuickStart(kPlayer,  akSpeaker, AnimationTags = "Sex")
 		EndIf
 
 
