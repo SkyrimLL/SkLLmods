@@ -20,6 +20,8 @@ self.GetOwningQuest().setstage(59)
 SLP_ChaurusStudWithLastelle.SetValue(1)
 kChaurus .EvaluatePackage()
 
+fctParasites.infectChaurusWorm( akSpeaker )
+
 fctParasites.ParasiteSex(akSpeaker,kChaurus )
 ;END CODE
 EndFunction

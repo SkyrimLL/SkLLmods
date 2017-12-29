@@ -8,7 +8,8 @@ SLP_fcts_parasites Property fctParasites  Auto
 
 ; State
 
-bool _resetToggle
+bool 		_resetToggle
+bool 		_registerEventsToggle
 
 bool		_toggleSpiderEgg = true
 float		_chanceSpiderEgg = -1.0
@@ -49,7 +50,7 @@ bool		_toggleBarnacles = true
 float		_chanceBarnacles = -1.0 
 
 bool		_togglePriestOutfits = false
-float  _resetTrigger = 1.0
+float  		_resetTrigger = 1.0
 
 Actor kPlayer
 
@@ -102,6 +103,7 @@ event OnPageReset(string a_page)
 	; ObjectReference PlayerREF= PlayerAlias.GetReference()
 	; Actor PlayerActor= PlayerAlias.GetReference() as Actor
 	; ActorBase pActorBase = PlayerActor.GetActorBase()
+
 
 	_resetTrigger = (0.1 + _chanceSpiderEgg) * (0.1 + _chanceSpiderPenis) * (0.1 + _chanceChaurusWorm) * (0.1 + _chanceChaurusWormVag) * (0.1 + _chanceEstrusTentacles) * (0.1 + _chanceTentacleMonster) * (0.1 + _chanceEstrusSlime) * (0.1 + _chanceLivingArmor) * (0.1 + _chanceFaceHugger) * (0.1 + _chanceBarnacles) 
 
@@ -196,6 +198,7 @@ event OnPageReset(string a_page)
 
 		AddHeaderOption(" ")
 		AddToggleOptionST("STATE_OUTFITS_TOGGLE","Custom Priest Outfits", _togglePriestOutfits as Float)
+		AddToggleOptionST("STATE_REGISTER_EVENTS","Register custom device events", _registerEventsToggle as Float)
 		AddToggleOptionST("STATE_RESET","Reset changes", _resetToggle as Float)
 	
 
@@ -916,6 +919,23 @@ state STATE_OUTFITS_TOGGLE ; TOGGLE
 	endEvent
 endState
 
+; AddToggleOptionST("STATE_REGISTER_EVENTS","Reset events", _registerEventsToggle)
+state STATE_REGISTER_EVENTS ; TOGGLE
+	event OnSelectST()
+		SendModEvent("zadRegisterEvents")
+		Debug.MessageBox("[Devious Devices events registration started. Wait a minute before checking DD menu.]")
+	endEvent
+
+	event OnDefaultST()
+
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Trigger registration of new devious devices custom events.")
+	endEvent
+
+endState
+
 ; AddToggleOptionST("STATE_RESET","Reset changes", _resetToggle)
 state STATE_RESET ; TOGGLE
 	event OnSelectST()
@@ -932,7 +952,6 @@ state STATE_RESET ; TOGGLE
 	endEvent
 
 endState
-
 
 
 Function _setParasiteSettings()

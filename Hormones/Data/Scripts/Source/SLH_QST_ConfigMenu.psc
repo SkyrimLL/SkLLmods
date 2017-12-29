@@ -143,7 +143,7 @@ float 		_armorMod 				= 0.5; 0.1
 float 		_clothMod 				= 0.8; 0.1  
 float 		_bimboClumsinessMod		= 1.0; 0.1  
 
-bool 		_hornyBegON     		= true
+bool 		_hornyBegON     		= false
 float 		_hornyBegArousal      	= 60.0
 float 		_hornyGrab      		= -1.0
 bool 		_bimboClumsinessDrop    = true
@@ -454,20 +454,17 @@ event OnPageReset(string a_page)
 		AddHeaderOption(" Optional curses")
 		AddHeaderOption(" Succubus ")
 		AddToggleOptionST("STATE_SUCCUBUS","Allow Succubus Curse", _allowSuccubus as Float)
-		AddToggleOptionST("STATE_SET_SUCCUBUS","Set Succubus Curse now", _setSuccubus as Float)
 
 		AddHeaderOption(" Sex Change ")
-		AddToggleOptionST("STATE_SEX_CHANGE","Sex Change Curse", _allowHRT as Float)
+		AddToggleOptionST("STATE_SEX_CHANGE","Allow Sex Change Curse", _allowHRT as Float)
 		AddToggleOptionST("STATE_SET_SEX_CHANGE","Set Sex Change Curse now", _setHRT as Float)
 		AddToggleOptionST("STATE_TG","Allow Transgender Curse", _allowTG as Float)
-		AddToggleOptionST("STATE_SET_TG","Set Transgender Curse now", _setTG as Float)
 
 		AddHeaderOption(" Bimbo ")
-		AddToggleOptionST("STATE_BIMBO","Bimbo Curse", _allowBimbo as Float)
+		AddToggleOptionST("STATE_BIMBO","Allow Bimbo Curse", _allowBimbo as Float)
 		AddToggleOptionST("STATE_BIMBO_RACE","Bimbo Race", _allowBimboRace as Float)
 		AddSliderOptionST("STATE_BIMBO_CLUMSINESS","Clumsiness factor", _bimboClumsinessMod as Float,"{1}")
 		AddToggleOptionST("STATE_BIMBO_DROP","Drop items when aroused", _bimboClumsinessDrop  as Bool)
-		AddToggleOptionST("STATE_SET_BIMBO","Set Bimbo Curse now", _setBimbo as Float)
 
 		AddHeaderOption(" General behaviors ")
 		AddToggleOptionST("STATE_HORNY_BEG","Beg for sex", _hornyBegON   as Bool)
@@ -489,6 +486,11 @@ event OnPageReset(string a_page)
 
 		AddEmptyOption()
 		SetCursorPosition(1)
+		AddHeaderOption(" Curses manual triggers ")
+		AddToggleOptionST("STATE_SET_SUCCUBUS","Set Succubus Curse now", _setSuccubus as Float)
+		AddToggleOptionST("STATE_SET_TG","Set Transgender Curse now", _setTG as Float)
+		AddToggleOptionST("STATE_SET_BIMBO","Set Bimbo Curse now", _setBimbo as Float)
+
 		AddHeaderOption(" Status")
 		AddToggleOptionST("STATE_STATUS","Display current status", _statusToggle as Float)
 

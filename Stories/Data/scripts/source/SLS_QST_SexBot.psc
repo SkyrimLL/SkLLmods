@@ -103,7 +103,7 @@ Event OnSexLabOrgasm(String _eventName, String _args, Float _argc, Form _sender)
 	Actor[] victims = new Actor[1]
 	victims[0] = victim
 
-	If ((_hasActor(actors, SexBotActor)) || ((_hasPlayer(actors)) && animation.HasTag("Dwemer")) )
+	If (_hasActor(actors, SexBotActor)) ; || ((_hasPlayer(actors)) && animation.HasTag("Dwemer")) )
 		; Debug.Trace("SexLab Stories: Orgasm!")
  
 		If (SLS_SexBotOnOff.GetValue() == 0)

@@ -8,6 +8,9 @@ slaUtilScr Property slaUtil  Auto
 Potion Property Milk Auto
 Potion Property DivineMilk Auto
 
+GlobalVariable Property GV_MilkLevel  Auto  
+GlobalVariable Property GV_ProlactinLevel  Auto  
+
 GlobalVariable Property MilkProduced  Auto  
 
 GlobalVariable Property MilkProducedTotal  Auto  
@@ -314,6 +317,11 @@ Function updateCowStatus(Actor kActor, String bCreateMilk = "")
 			Debug.Notification("Her breasts are full and ready to be milked - Level " + fLactationLevel as Int)
 		Endif
 
+	Endif
+
+	If (kActor == PlayerActor)
+		GV_MilkLevel.SetValue(StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") as Int)
+		GV_ProlactinLevel.SetValue(StorageUtil.GetIntValue(kActor, "_SLH_iProlactinLevel") as Int)
 	Endif
 EndFunction
 

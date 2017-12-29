@@ -60,6 +60,10 @@ EndFunction
 Event OnUpdate()
  	Actor PlayerActor= Game.GetPlayer() as Actor
 
+	If (StorageUtil.GetIntValue(none, "_SLS_iStoriesPlayerPet")==0)
+		Return
+	endif
+
  	daysPassed = Game.QueryStat("Days Passed")
 
  	; Initial values
@@ -97,6 +101,8 @@ Event OnPlayerPet(String _eventName, String _args, Float _argc = -1.0, Form _sen
 	NecromancerSlaver.sendModEvent("PCSubEnslave")
 
 	SLS_PlayerPetQuest.SetStage(10)
+
+	RegisterForSingleUpdate(10)
 
 EndEvent
 

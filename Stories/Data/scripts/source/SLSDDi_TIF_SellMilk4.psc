@@ -6,23 +6,21 @@ Scriptname SLSDDi_TIF_SellMilk4 Extends TopicInfo Hidden
 Function Fragment_1(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
-Actor pActor =  SexLab.PlayerRef
-ActorBase pActorBase = pActor.GetActorBase()
-; Game.GetPlayer().RemoveItem(Milk, 1)
+Actor pActor =  Game.GetPlayer()
 
-; Debug.Notification( "Leonara unhooks your suction cups roughly..." )
+; Debug.Notification( "Leonara unhooks your suction cups eagerly..." )
 ; Game.GetPlayer().AddItem(Gold,  pActorBase.GetWeight() as Int)
 
-	Float fBreastScale = StorageUtil.GetFloatValue(none, "_SLH_fBreast") 
-	StorageUtil.SetFloatValue(none, "_SLH_fBreast",  fBreastScale * 0.4) 
-	StorageUtil.SetIntValue(none, "_SLH_iForcedRefresh", 1) 
+; If (Utility.RandomInt(0,100) <  ( (pActorBase.GetWeight() as Int) / 10 + 5 ) ) 
+;	Game.AddPerkPoints(1)
+;	RedeemFX.Cast(Game.GetPlayer(),Game.GetPlayer())
+; EndIf
 
-MilkProduced.SetValue( MilkProduced.GetValue() + 1 )
-MilkProducedTotal.SetValue( MilkProducedTotal.GetValue() + 1 )
+pActor.SendModEvent("_SLSDDi_UpdateCow")
 
-If  (SexLab.ValidateActor( Game.GetPlayer() ) > 0) &&  (SexLab.ValidateActor(akSpeaker) > 0) 
+If  (SexLab.ValidateActor( pActor  ) > 0) &&  (SexLab.ValidateActor(akSpeaker) > 0) 
 	actor[] sexActors = new actor[2]
-	sexActors[0] = Game.GetPlayer()
+	sexActors[0] = pActor 
 	sexActors[1] = akSpeaker
 
 	sslBaseAnimation[] anims

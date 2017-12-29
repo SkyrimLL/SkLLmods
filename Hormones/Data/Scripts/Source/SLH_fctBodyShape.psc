@@ -1203,7 +1203,8 @@ function shaveHair ( Actor kActor)
 	If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
 		; YPS Fashion override if detected
 		; See - http://www.loverslab.com/topic/56627-immersive-hair-growth-and-styling-yps-devious-immersive-fashion-v5/
-		SendModEvent("yps-OnHaircutEvent", "", 1) ; shaved - bald
+		debugTrace("[SLH]       -> YPS Fashion override")
+		SendModEvent("yps-HaircutEvent", "", 1) ; shaved - bald
 		StorageUtil.SetIntValue(kActor, "_SLH_iShavedHead", 1)
 	else
 		Int Hair = pLeveledActorBase.GetNumHeadParts()
@@ -1751,7 +1752,7 @@ function getShapeFromNodes(Actor kActor)
 	endIf
 
 	; Debug.Notification("SexLab Hormones: Reading state from storage")
-	debugTrace("[SLH] <--- Reading state from player actor")
+	debugTrace("[SLH]    :: Reading state from player actor")
 
 	StorageUtil.SetFloatValue(kActor, "_SLH_fBreast", NetImmerse.GetNodeScale(kActor, NINODE_RIGHT_BREAST, false) / fApparelMod)
 	StorageUtil.SetFloatValue(kActor, "_SLH_fButt", NetImmerse.GetNodeScale(kActor, NINODE_RIGHT_BUTT, false) / fApparelMod)
@@ -1768,7 +1769,7 @@ EndFunction
 
 function setShapeState(Actor kActor)
 	; Debug.Notification("SexLab Hormones: Writing state to storage")
-	debugTrace("[SLH] ---> Writing shape state to storage")
+	debugTrace("[SLH]    :: Writing shape state to storage")
 
 	StorageUtil.SetFloatValue(kActor, "_SLH_fOrigWeight", fOrigWeight) 
 	StorageUtil.SetFloatValue(kActor, "_SLH_fOrigHeight", fOrigHeight) 
@@ -1846,7 +1847,7 @@ endFunction
 function getShapeState(Actor kActor)
 
 	; Debug.Notification("SexLab Hormones: Reading state from storage")
-	debugTrace("[SLH] <---  Reading shape state from storage")
+	debugTrace("[SLH]    ::  Reading shape state from storage")
  
 	fOrigWeight = StorageUtil.GetFloatValue(kActor, "_SLH_fOrigWeight") 
 	fOrigHeight = StorageUtil.GetFloatValue(kActor, "_SLH_fOrigHeight") 

@@ -61,6 +61,10 @@ EndFunction
 Event OnUpdate()
  	Actor PlayerActor= Game.GetPlayer() as Actor
 
+	If (StorageUtil.GetIntValue(none, "_SLS_iStoriesPlayerChaurusQueen")==0)
+		Return
+	endif
+	
  	daysPassed = Game.QueryStat("Days Passed")
 
  	; Initial values
@@ -100,6 +104,8 @@ Event OnPlayerChaurusQueen(String _eventName, String _args, Float _argc = -1.0, 
 	PlayerActor.SendModEvent("SLPInfectChaurusWorm")
 
 	SLS_PlayerChaurusQueenQuest.SetStage(10)
+
+	RegisterForSingleUpdate(10)
 
 EndEvent
 

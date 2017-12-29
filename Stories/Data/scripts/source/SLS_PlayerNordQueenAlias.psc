@@ -19,14 +19,30 @@ SPELL Property ReanimateCorpse  Auto
 SPELL Property CharmDraugr  Auto  
 SPELL Property SummonGhost  Auto  
 
+SPELL Property DrainUndeadPower  Auto  
+SPELL Property NordSpiritPower  Auto  
+SPELL Property ClearUndeadPower  Auto  
+ 
+WordOfPower Property WordDrainEssence Auto
+WordOfPower Property WordClearUndead Auto
+WordOfPower Property WordSpiritOfNord Auto
+WordOfPower Property WordKingSlayer Auto
+
+Location Property FolgunthurLocation  Auto  
+Location Property SaarthalLocation  Auto  
+Location Property GeirmundHallLocation  Auto  
+Location Property ReachwaterRockLocation  Auto  
+
 Keyword Property SLS_NordQueenFX Auto
 
 Race Property DraugrRace Auto
 Race Property NordRace Auto
 
-Faction Property draugrFaction Auto
+Faction Property DraugrFaction Auto
+Faction Property UndeadFaction Auto
 
 GlobalVariable Property PlayerNordQueenStage Auto
+GlobalVariable Property  AllowPlayerShout Auto
 Quest Property SLS_PlayerNordQueenQuest  Auto  
 
 bool  bUpdateStage = false 
@@ -76,6 +92,11 @@ EndFunction
 
 Event OnUpdate()
  	Actor PlayerActor= Game.GetPlayer() as Actor
+	Location currentLocation = Game.GetPlayer().GetCurrentLocation()
+
+	If  !Self || !SexLab || (StorageUtil.GetIntValue(none, "_SLS_iStoriesPlayerNordQueen")==0)
+		Return
+	EndIf
 
  	daysPassed = Game.QueryStat("Days Passed")
 
@@ -94,6 +115,34 @@ Event OnUpdate()
 
 	endIf
 
+	If (currentLocation)
+		If currentLocation.IsSameLocation(FolgunthurLocation) && (!Game.IsWordUnlocked(WordDrainEssence))
+			Debug.MessageBox("You are beginning to remember these halls. They still echo of the horrors you have suffered here. And with these painful memories come echoes of ancient words of powers you once knew.")
+
+			PlayerActor.ModActorValue("DragonSouls", 1)
+			Game.TeachWord(WordDrainEssence)
+			Game.UnlockWord(WordDrainEssence)
+			AllowPlayerShout.value = 1
+		endif
+		If currentLocation.IsSameLocation(SaarthalLocation) && (!Game.IsWordUnlocked(WordClearUndead))
+			Debug.MessageBox("There is power deep in this place. You can feel it course through you. And with it comes another word of power you learned from Gauldur himself.")
+			PlayerActor.ModActorValue("DragonSouls", 1)
+			Game.TeachWord(WordClearUndead)
+			Game.UnlockWord(WordClearUndead)
+		endif
+		If currentLocation.IsSameLocation(GeirmundHallLocation) && (!Game.IsWordUnlocked(WordSpiritOfNord))
+			Debug.MessageBox("These ruins remind you of the birthright you have lost. Your connection to the land and the people runs deep. After all this time, you are still their queen.")
+			PlayerActor.ModActorValue("DragonSouls", 1)
+			Game.TeachWord(WordSpiritOfNord)
+			Game.UnlockWord(WordSpiritOfNord)
+		endif
+		If currentLocation.IsSameLocation(ReachwaterRockLocation) && (!Game.IsWordUnlocked(WordKingSlayer))
+			Debug.MessageBox("The spirit of Gauldur is near. You can feel the presence of your lover and mentor deep within these walls.")
+			PlayerActor.ModActorValue("DragonSouls", 1)
+			Game.TeachWord(WordKingSlayer)
+			Game.UnlockWord(WordKingSlayer)
+		endif
+	Endif
 	iGameDateLastCheck = daysPassed  
 
 	RegisterForSingleUpdate(10)
@@ -106,7 +155,7 @@ Event OnLocationChange(Location akOldLoc, Location akNewLoc)
 	EndIf
 	
 	ObjectReference akActorREF= Game.GetPlayer() as ObjectReference
-	Actor akActor= Game.GetPlayer()
+	Actor PlayerActor= Game.GetPlayer() as Actor
 	Int daysSinceLastPass 
 	Int iGold 
 
@@ -114,6 +163,7 @@ Event OnLocationChange(Location akOldLoc, Location akNewLoc)
 		_RefreshQueenFX()
 
 	endIf
+
 EndEvent
 
 Event OnPlayerNordQueen(String _eventName, String _args, Float _argc = -1.0, Form _sender)
@@ -134,8 +184,9 @@ Event OnPlayerNordQueen(String _eventName, String _args, Float _argc = -1.0, For
 	PlayerActor.EquipItem(NordQueenDress)
 	Utility.Wait(1.0)
 
-	StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryLevel", 0)
-	StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryExposure", 0)
+	StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryLevel", 1)
+	StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryExposure", 50)
+	StorageUtil.SetIntValue(PlayerActor, "_SLH_iDaedricInfluence", 5)
 
 	Int iNordQueenSkinColor = Math.LeftShift(255, 24) + Math.LeftShift(100, 16) + Math.LeftShift(200, 8) + 255
 	StorageUtil.SetIntValue(PlayerActor, "_SLH_iSkinColor", iNordQueenSkinColor ) 
@@ -144,6 +195,8 @@ Event OnPlayerNordQueen(String _eventName, String _args, Float _argc = -1.0, For
 	StorageUtil.SetIntValue(PlayerActor, "_SLH_iForcedHairLoss", 1)
 	PlayerActor.SendModEvent("SLHShaveHead")
 	PlayerActor.SendModEvent("SLHRefresh")
+	
+	SendModEvent("SDSanguineBlessingMod", "", 5)  
 
 	ModEvent.Send(ModEvent.Create("HoSLDD_GivePlayerPowers"))
 
@@ -160,7 +213,7 @@ Event OnPlayerNordQueen(String _eventName, String _args, Float _argc = -1.0, For
 		SLS_PlayerNordQueenQuest.SetStage(10)
 	EndIf
 
-	PlayerActor.addtofaction(DraugrFaction) 
+	PlayerActor.addtofaction(UndeadFaction) 
 
 	StorageUtil.GetIntValue(PlayerActor, "_SLSL_iNordQueenPolymorphStage", 0)
 	PlayerNordQueenStage.SetValue(0)
@@ -168,6 +221,8 @@ Event OnPlayerNordQueen(String _eventName, String _args, Float _argc = -1.0, For
 	; PlayerActor.SetGhost()
 	; PlayerActor.SetAlpha(0.5)
 	NordQueenStage0FX.Cast(PlayerActor,PlayerActor)
+
+	RegisterForSingleUpdate(10)
 
 EndEvent
 
@@ -221,6 +276,7 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 	ActorBase pActorBase = PlayerActor.GetActorBase()
     sslBaseAnimation animation = SexLab.HookAnimation(_args)
     Float fBreastScale 
+    Int iPlayerPolymorphStage = 0
 
 	if !Self || !SexLab  || (StorageUtil.GetIntValue(none, "_SLS_iStoriesPlayerNordQueen")==0)
 	;	Debug.Trace("SexLab Stories: Critical error on SexLab End")
@@ -243,15 +299,41 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 
 	If (bUpdateStage)
 		bUpdateStage = false
+		iPlayerPolymorphStage = StorageUtil.GetIntValue(PlayerActor, "_SLSL_iNordQueenPolymorphStage")
 
 		If (iSexEnergy<0)
 			iSexEnergy = 0
 		EndIf
-		
-		If (PlayerNordQueenStage.GetValue()!=1) && (iSexEnergy >= 1) && (iSexEnergy < 5)
+
+		If  (iSexEnergy == 0) 
+
+			PlayerActor.addtofaction(DraugrFaction) 		
+			StorageUtil.SetIntValue(PlayerActor, "_SLSL_iNordQueenPolymorphStage", 0)
+			PlayerNordQueenStage.SetValue(0)
+			; PlayerActor.SetGhost()
+			; PlayerActor.SetAlpha(0.8)
+			PlayerActor.DispelSpell(NordQueenStage1FX)
+			NordQueenStage0FX.Cast(PlayerActor,PlayerActor)
+
+			If (StorageUtil.GetIntValue(none, "_SLH_iHormones") ==1)
+				PlayerActor.SendModEvent("SLHShaveHead")
+				PlayerActor.SendModEvent("yps-SetPubicHairLengthEvent", "", 0)
+				PlayerActor.SendModEvent("yps-SetArmpitsHairLengthEvent", "", 0)
+				StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast", 0.3 ) 
+				StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBelly", 0.6 ) 
+				StorageUtil.SetFloatValue(PlayerActor, "_SLH_fButt", 0.6 ) 
+				StorageUtil.SetFloatValue(PlayerActor, "_SLH_fWeight", 0.0 )  
+				PlayerActor.SendModEvent("SLHRefresh")
+			Endif		
+
+		ElseIf  (iSexEnergy >= 1) && (iSexEnergy < 5) && (iPlayerPolymorphStage!=1)
 			if (!PlayerActor.HasSpell(RaiseZombie))
 				PlayerActor.AddSpell(RaiseZombie)
 			endif
+
+			If (PlayerNordQueenStage.GetValue()!=1)
+				Debug.MessageBox("The sweet taste of life force at last! You feel stronger as you skin regains some substance.")
+			EndIf
 
 			PlayerActor.addtofaction(DraugrFaction) 		
 			StorageUtil.SetIntValue(PlayerActor, "_SLSL_iNordQueenPolymorphStage", 1)
@@ -262,19 +344,27 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 			PlayerActor.DispelSpell(NordQueenStage2FX)
 			NordQueenStage1FX.Cast(PlayerActor,PlayerActor)
 
-			StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast", 0.5 ) 
-			StorageUtil.SetFloatValue(PlayerActor, "_SLH_fWeight", 10.0 ) 
-			StorageUtil.SetIntValue(PlayerActor, "_SLH_iForcedHairLoss", 1)
-			PlayerActor.SendModEvent("SLHRefresh")
+			If (StorageUtil.GetIntValue(none, "_SLH_iHormones") ==1)
+				PlayerActor.SendModEvent("SLHShaveHead")
+				PlayerActor.SendModEvent("yps-SetPubicHairLengthEvent", "", 0)
+				PlayerActor.SendModEvent("yps-SetArmpitsHairLengthEvent", "", 0)
+				StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast", 0.5 ) 
+				StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBelly", 0.8 ) 
+				StorageUtil.SetFloatValue(PlayerActor, "_SLH_fButt", 0.8 ) 
+				StorageUtil.SetFloatValue(PlayerActor, "_SLH_fWeight", 0.0 )  
+				PlayerActor.SendModEvent("SLHRefresh")
+			Endif
 
-			Debug.MessageBox("The sweet taste of life force at last! You feel stronger as you skin regains some substance.")
-
-		ElseIf (PlayerNordQueenStage.GetValue()!=2) && (iSexEnergy >= 5) && (iSexEnergy < 10)
+		ElseIf  (iSexEnergy >= 5) && (iSexEnergy < 10) && (iPlayerPolymorphStage!=2)
 			if (!PlayerActor.HasSpell(ReanimateCorpse))
 				PlayerActor.AddSpell(ReanimateCorpse)
 			endif
 
-			PlayerActor.addtofaction(DraugrFaction) 			
+			If (PlayerNordQueenStage.GetValue()!=2)
+				Debug.MessageBox("Sensations are slowly reaching your soul again, like an owverwhelming swarm of pins and needles.")
+			EndIf
+
+			PlayerActor.addtofaction(UndeadFaction) 			
 			StorageUtil.SetIntValue(PlayerActor, "_SLSL_iNordQueenPolymorphStage", 2)
 			PlayerNordQueenStage.SetValue(2)
 			; PlayerActor.SetGhost()
@@ -283,19 +373,27 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 			PlayerActor.DispelSpell(NordQueenStage3FX)
 			NordQueenStage2FX.Cast(PlayerActor,PlayerActor)
 
-			StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast", 1.0 ) 
-			StorageUtil.SetFloatValue(PlayerActor, "_SLH_fWeight", 30.0 ) 
-			StorageUtil.SetIntValue(PlayerActor, "_SLH_iForcedHairLoss", 1)
-			PlayerActor.SendModEvent("SLHRefresh")
+			If (StorageUtil.GetIntValue(none, "_SLH_iHormones") ==1)
+				PlayerActor.SendModEvent("SLHShaveHead")
+				PlayerActor.SendModEvent("yps-SetPubicHairLengthEvent", "", 0)
+				PlayerActor.SendModEvent("yps-SetArmpitsHairLengthEvent", "", 0)
+				StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast", 0.7 ) 
+				StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBelly", 0.9 ) 
+				StorageUtil.SetFloatValue(PlayerActor, "_SLH_fButt", 0.9 ) 
+				StorageUtil.SetFloatValue(PlayerActor, "_SLH_fWeight", 10.0 ) 
+				PlayerActor.SendModEvent("SLHRefresh")
+			Endif
 
-			Debug.MessageBox("Sensations are slowly reaching your soul again, like an owverwhelming swarm of pins and needles.")
-
-		ElseIf (PlayerNordQueenStage.GetValue()!=3) && (iSexEnergy >= 10) && (iSexEnergy < 20)
+		ElseIf  (iSexEnergy >= 10) && (iSexEnergy < 20) && (iPlayerPolymorphStage!=3)
 			if (!PlayerActor.HasSpell(CharmDraugr))
 				PlayerActor.AddSpell(CharmDraugr)
 			Endif
 
-			PlayerActor.addtofaction(DraugrFaction) 
+			If (PlayerNordQueenStage.GetValue()!=3)
+				Debug.MessageBox("You can feel the cold caress of air on your skin and the wetness between your legs. Your transformation is almost complete.")
+			Endif
+
+			PlayerActor.addtofaction(UndeadFaction) 
 			StorageUtil.SetIntValue(PlayerActor, "_SLSL_iNordQueenPolymorphStage", 3)
 			PlayerNordQueenStage.SetValue(3)
 			; PlayerActor.SetGhost(false)
@@ -303,30 +401,44 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 			PlayerActor.DispelSpell(NordQueenStage2FX) 
 			NordQueenStage3FX.Cast(PlayerActor,PlayerActor)
 
-			StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast", 1.5 ) 
-			StorageUtil.SetFloatValue(PlayerActor, "_SLH_fWeight", 5.0 ) 
-			StorageUtil.SetIntValue(PlayerActor, "_SLH_iForcedHairLoss", 1)
-			PlayerActor.SendModEvent("SLHRefresh")
+			If (StorageUtil.GetIntValue(none, "_SLH_iHormones") ==1)
+				PlayerActor.SendModEvent("SLHShaveHead")
+				PlayerActor.SendModEvent("yps-SetPubicHairLengthEvent", "", 0)
+				PlayerActor.SendModEvent("yps-SetArmpitsHairLengthEvent", "", 0)
+				StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast", 0.9 ) 
+				StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBelly", 1.0 ) 
+				StorageUtil.SetFloatValue(PlayerActor, "_SLH_fButt", 1.0 ) 
+				StorageUtil.SetFloatValue(PlayerActor, "_SLH_fWeight", 20.0 ) 
+				PlayerActor.SendModEvent("SLHRefresh")
+			Endif
 
-			Debug.MessageBox("You can feel the cold caress of air on your skin and the wetness between your legs. Your transformation is almost complete.")
-
-		ElseIf (PlayerNordQueenStage.GetValue()!=4) && (iSexEnergy >= 20)
+		ElseIf  (iSexEnergy >= 20) && (iPlayerPolymorphStage!=4)
 			if (!PlayerActor.HasSpell(SummonGhost))
 				PlayerActor.AddSpell(SummonGhost)
 			endif
 
-			PlayerActor.removefromfaction(DraugrFaction) 
+			If (PlayerNordQueenStage.GetValue()!=4)
+				Debug.MessageBox("Reborn at last... you have now regained your lost beauty.")
+			Endif
+
+			PlayerActor.removefromfaction(UndeadFaction) 
 			StorageUtil.SetIntValue(PlayerActor, "_SLSL_iNordQueenPolymorphStage", 4)
 			PlayerNordQueenStage.SetValue(4)
 			PlayerActor.DispelSpell(NordQueenStage3FX)
 
-			StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast", 2.0 ) 
-			StorageUtil.SetFloatValue(PlayerActor, "_SLH_fWeight", 80.0 ) 
-			PlayerActor.SendModEvent("SLHRefresh")
+			If (StorageUtil.GetIntValue(none, "_SLH_iHormones") ==1)
+				StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast", 1.5 ) 
+				StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBelly", 1.2 ) 
+				StorageUtil.SetFloatValue(PlayerActor, "_SLH_fButt", 1.2 ) 
+				StorageUtil.SetFloatValue(PlayerActor, "_SLH_fWeight", 50.0 ) 
+				PlayerActor.SendModEvent("SLHRefresh")
+			Endif
 
 			ModEvent.Send(ModEvent.Create("HoSLDD_TakeAwayPlayerPowers"))
 
-			Debug.MessageBox("Reborn at last... you have now regained your lost beauty.")
+ 			; SLS_PlayerNordQueenQuest.SetObjectiveDisplayed(21, false)
+ 			; SLS_PlayerNordQueenQuest.SetObjectiveDisplayed(22, false)
+ 			; SLS_PlayerNordQueenQuest.SetObjectiveDisplayed(23, false)
 
 			; Game.ShowRaceMenu()
 		EndIf
@@ -358,19 +470,25 @@ Event OnSexLabOrgasm(String _eventName, String _args, Float _argc, Form _sender)
 			Debug.Notification("You can drain some Nord essence from sex with a draugr")
 			Debug.Notification("Recovery energy " + iSexEnergy)
 			bUpdateStage = true
+ 			SLS_PlayerNordQueenQuest.SetObjectiveDisplayed(22)
 		ElseIf (_hasRace(actors, NordRace))
 		;	Debug.Trace("SexLab Stories: Orgasm!")
 			iSexEnergy = iSexEnergy + 5
 			Debug.Notification("You can drain pure Nord essence from sex with a Nord")
 			Debug.Notification("Recovery energy " + iSexEnergy)
 			bUpdateStage = true
+ 			SLS_PlayerNordQueenQuest.SetObjectiveDisplayed(21)
 		Else
 			iSexEnergy = iSexEnergy - 1
 			Debug.Notification("Sex with a non Nord drains you")
 			Debug.Notification("Recovery energy " + iSexEnergy)
 			bUpdateStage = true
- 
+ 			SLS_PlayerNordQueenQuest.SetObjectiveDisplayed(23)
 		EndIf
+
+		If ((SLS_PlayerNordQueenQuest.GetStage()==10) || (SLS_PlayerNordQueenQuest.GetStage()==15))
+			SLS_PlayerNordQueenQuest.SetStage(20)
+		Endif
 	EndIf
 	
 EndEvent
@@ -383,13 +501,13 @@ Function _RefreshQueenFX()
 		Debug.Notification("[SLS] Skin refresh - Stage:" + PlayerNordQueenStage.GetValue() as Int)
 
 		if (PlayerNordQueenStage.GetValue()==0)
-			NordQueenStage0FX.Cast(PlayerActor,PlayerActor)
+			NordQueenStage0FX.Cast(PlayerActor,PlayerActor) ; Ghost FX
 		elseif (PlayerNordQueenStage.GetValue()==1)
-			NordQueenStage1FX.Cast(PlayerActor,PlayerActor)
+			NordQueenStage1FX.Cast(PlayerActor,PlayerActor) ; Shade FX
 		elseif (PlayerNordQueenStage.GetValue()==2)
-			NordQueenStage2FX.Cast(PlayerActor,PlayerActor)
+			NordQueenStage2FX.Cast(PlayerActor,PlayerActor) ; Zombie FX
 		elseif (PlayerNordQueenStage.GetValue()==3)
-			NordQueenStage3FX.Cast(PlayerActor,PlayerActor)
+			NordQueenStage3FX.Cast(PlayerActor,PlayerActor) ; Undead FX
 		endIf
 	endIf
 EndFunction
@@ -500,4 +618,7 @@ Bool Function _hasRace(Actor[] _actors, Race thisRace)
 	endwhile
 	Return False
 EndFunction
+
+
+
 

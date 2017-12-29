@@ -34,6 +34,10 @@ Event OnActivate(ObjectReference akActionRef)
 	ObjectReference akActorREF= Game.GetPlayer() as ObjectReference
 	Actor akActor= Game.GetPlayer()
 
+	if (StorageUtil.GetIntValue(akActor, "_SLS_toggleFetish" ) == 0)
+		Return
+	Endif
+
 	;  0- No fetish
 	int currentFetishID = _SLS_FetishID.GetValue() as Int
 

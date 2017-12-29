@@ -7,6 +7,7 @@ Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
 Int iRandomNum = Utility.RandomInt(0,100)
+Actor kPlayer = Game.GetPlayer()
 
 _SLS_PCSexWithTG.Mod(1)
 _SLS_PCPaidForTG.SetValue(0)
@@ -14,9 +15,14 @@ _SLS_PCPaidForTG.SetValue(0)
 If ( Utility.RandomInt(0,100) > 70 )
 
 	Game.AddPerkPoints(1)
-	RedeemPerkFX.Cast(Game.GetPlayer(),Game.GetPlayer())
+	RedeemPerkFX.Cast(kPlayer,kPlayer)
 
 EndIf
+
+If ( Utility.RandomInt(0,100) > 95 )
+	kPlayer.SendModEvent("SLHCastBimboCurse", "Dremora")
+Endif
+
 
 If ( Utility.RandomInt(0,100) > 50)
 	SexLab.TreatAsMale( akSpeaker )
@@ -25,13 +31,13 @@ Else
 EndIf
 		
 If (iRandomNum < 30 )
-	SexLab.QuickStart(SexLab.PlayerRef,  akSpeaker, AnimationTags = "Foreplay")
+	SexLab.QuickStart(kPlayer,  akSpeaker, AnimationTags = "Foreplay")
 ElseIf (iRandomNum < 60 )
-	SexLab.QuickStart(SexLab.PlayerRef,  akSpeaker, AnimationTags = "Loving")
+	SexLab.QuickStart(kPlayer,  akSpeaker, AnimationTags = "Loving")
 ElseIf (iRandomNum < 80 )
-	SexLab.QuickStart(SexLab.PlayerRef,  akSpeaker, AnimationTags = "Sex")
+	SexLab.QuickStart(kPlayer,  akSpeaker, AnimationTags = "Sex")
 Else
-	SexLab.QuickStart(SexLab.PlayerRef,  akSpeaker, AnimationTags = "Rough")
+	SexLab.QuickStart(kPlayer,  akSpeaker, AnimationTags = "Rough")
 EndIf
 ;END CODE
 EndFunction

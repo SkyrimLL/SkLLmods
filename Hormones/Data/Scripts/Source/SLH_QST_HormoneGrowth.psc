@@ -241,7 +241,9 @@ Function maintenanceVersionEvents()
 
 	RegisterForModEvent("SLHShaveHead",   "OnShaveHead")
 	RegisterForModEvent("SLHRefresh",    "OnRefreshShapeEvent")
+	RegisterForModEvent("SLHRefreshColor",    "OnRefreshColorsEvent")
 	RegisterForModEvent("SLHRefreshColors",    "OnRefreshColorsEvent")
+	RegisterForModEvent("SLHRefreshHairColor",    "OnRefreshHairColorEvent")
 	RegisterForModEvent("SLHSetShape",    "OnSetShapeEvent")
 	RegisterForModEvent("SLHResetShape",    "OnResetShapeEvent")
 	RegisterForModEvent("SLHSetSchlong",    "OnSetSchlongEvent")
@@ -638,6 +640,13 @@ Event OnCastBimboCurseEvent(String _eventName, String _args, Float _argc = 1.0, 
 	debugTrace("[SLH] Cast Bimbo Curse event" )	  
 	; PolymorphBimbo.Cast(PlayerActor,PlayerActor)
 	fctPolymorph.bimboTransformEffectON(kActor)
+
+	if (_args == "Dremora")
+		_SLH_QST_Bimbo.SetStage(11)
+	Elseif (_args == "Bimbo")
+		_SLH_QST_Bimbo.SetStage(10)
+	endif
+
 	Game.ShowRaceMenu()
 
 endEvent
@@ -657,6 +666,12 @@ Event OnCastHRTCurseEvent(String _eventName, String _args, Float _argc = 1.0, Fo
  	
 	debugTrace("[SLH] Cast HRT Curse event" )	  
 	; PolymorphBimbo.Cast(PlayerActor,PlayerActor)
+	if (_args == "Dremora")
+		_SLH_QST_Bimbo.SetStage(11)
+	Elseif (_args == "Bimbo")
+		_SLH_QST_Bimbo.SetStage(10)
+	endif
+
 	fctPolymorph.HRTEffectON(kActor)
     Game.ShowRaceMenu()
 
@@ -677,6 +692,12 @@ Event OnCastTGCurseEvent(String _eventName, String _args, Float _argc = 1.0, For
  	
 	debugTrace("[SLH] Cast TG Curse event" )	  
 	; PolymorphBimbo.Cast(PlayerActor,PlayerActor)
+	if (_args == "Dremora")
+		_SLH_QST_Bimbo.SetStage(11)
+	Elseif (_args == "Bimbo")
+		_SLH_QST_Bimbo.SetStage(10)
+	endif
+
 	fctPolymorph.TGEffectON(kActor)
 
 endEvent
@@ -705,6 +726,31 @@ Event OnRefreshColorsEvent(String _eventName, String _args, Float _argc = 1.0, F
 	debugTrace("[SLH] Receiving 'refresh colors' event. Actor: " + kActor )
 
 	refreshColor(kActor)
+EndEvent
+
+Event OnRefreshHairColorEvent(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+ 
+	debugTrace("[SLH] Receiving 'refresh hair color' event. Actor: " + kActor )
+
+	If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
+		; YPS Fashion override if detected
+		; See - http://www.loverslab.com/topic/56627-immersive-hair-growth-and-styling-yps-devious-immersive-fashion-v5/
+		debugTrace("[SLH]       -> YPS Fashion override")
+
+		If ((StorageUtil.HasStringValue(kActor, "_SLH_sHairColorName" )) && (StorageUtil.HasIntValue(kActor, "_SLH_iHairColor" )))
+			if (_args == "Dye")
+				SendModEvent("yps-HairColorDyeEvent", StorageUtil.GetStringValue(kActor, "_SLH_sHairColorName" ), StorageUtil.GetIntValue(kActor, "_SLH_iHairColor" ) )
+			else
+				SendModEvent("yps-HairColorBaseEvent", StorageUtil.GetStringValue(kActor, "_SLH_sHairColorName" ), StorageUtil.GetIntValue(kActor, "_SLH_iHairColor" ) )
+			endif
+		else
+		debugTrace("[SLH]       -> YPS Fashion hair color parameters missing - hair color change skipped")
+		endif
+
+	Else
+		debugTrace("[SLH]       -> YPS Fashion missing - hair color change skipped")
+	Endif
 EndEvent
 
 Event OnShaveHead(String _eventName, String _args, Float _argc = 1.0, Form _sender)
@@ -1013,19 +1059,16 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 				if fctUtil.isSameSex(PlayerActor,kBimbo)
 					if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo") == 0) && (GV_allowBimbo.GetValue()==1)						
 						debugTrace("[SLH]	 Casting Bimbo curse")
-						PlayerActor.SendModEvent("SLHCastBimboCurse")
-						_SLH_QST_Bimbo.SetStage(10)
+						PlayerActor.SendModEvent("SLHCastBimboCurse","Bimbo")
 					endIf
 				else
 					if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo") == 0) && (GV_allowBimbo.GetValue()==1)													
 						debugTrace("[SLH]	 Casting Bimbo curse")
-						PlayerActor.SendModEvent("SLHCastBimboCurse")
-						_SLH_QST_Bimbo.SetStage(10)
+						PlayerActor.SendModEvent("SLHCastBimboCurse","Bimbo")
 
 					elseif (StorageUtil.GetIntValue(PlayerActor, "_SLH_iTG") == 0) && (GV_allowTG.GetValue()==1)									
 						debugTrace("[SLH]	 Casting TG curse")
-						PlayerActor.SendModEvent("SLHCastTGCurse")
-						_SLH_QST_Bimbo.SetStage(10)
+						PlayerActor.SendModEvent("SLHCastTGCurse","Bimbo")
 					endIf
 				endIf
 
@@ -1043,8 +1086,7 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 					; Dremora and player are both female - small chance of bimbo curse
 					if (Utility.RandomInt(0,100)>90) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo") == 0) && (GV_allowBimbo.GetValue()==1)						
 						debugTrace("[SLH]	 Casting Bimbo curse")
-						PlayerActor.SendModEvent("SLHCastBimboCurse")
-						_SLH_QST_Bimbo.SetStage(11)
+						PlayerActor.SendModEvent("SLHCastBimboCurse", "Dremora")
 					else
 						debugTrace("[SLH]	 Lucky you - sex with Dremora left you unchanged")
 					endIf
@@ -1052,13 +1094,11 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 					; Dremora is female and player is male - small chance of bimbo or sex change curse
 					if (Utility.RandomInt(0,100)>60) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo") == 0)	 && (GV_allowBimbo.GetValue()==1)					
 						debugTrace("[SLH]	 Casting Bimbo curse")
-						PlayerActor.SendModEvent("SLHCastBimboCurse")
-						_SLH_QST_Bimbo.SetStage(11)
+						PlayerActor.SendModEvent("SLHCastBimboCurse", "Dremora")
 
 					elseif (Utility.RandomInt(0,100)>40)  && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iHRT") == 0) && (GV_allowHRT.GetValue()==1)						
 						debugTrace("[SLH]	 Casting Sex change curse")
-						PlayerActor.SendModEvent("SLHCastHRTCurse")
-						_SLH_QST_Bimbo.SetStage(11)
+						PlayerActor.SendModEvent("SLHCastHRTCurse", "Dremora")
 					else
 						debugTrace("[SLH]	 Lucky you - sex with Dremora left you unchanged")
 					endIf
@@ -1066,19 +1106,16 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 					; Dremora is male and player female - small chance of all 3 curses
 					if (Utility.RandomInt(0,100)>60) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo") == 0)	 && (GV_allowBimbo.GetValue()==1)					
 						debugTrace("[SLH]	 Casting Bimbo curse")
-						PlayerActor.SendModEvent("SLHCastBimboCurse")
-						_SLH_QST_Bimbo.SetStage(11)
+						PlayerActor.SendModEvent("SLHCastBimboCurse", "Dremora")
 
 					elseif (Utility.RandomInt(0,100)>80)  && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iTG") == 0) && (GV_allowTG.GetValue()==1)									
 						debugTrace("[SLH]	 Casting Transgender curse")
-						PlayerActor.SendModEvent("SLHCastTGCurse")
-						_SLH_QST_Bimbo.SetStage(11)
+						PlayerActor.SendModEvent("SLHCastTGCurse", "Dremora")
 
 					elseif (Utility.RandomInt(0,100)>50) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iHRT") == 0) && (GV_allowHRT.GetValue()==1)	&& (StorageUtil.GetIntValue(PlayerActor, "_SLH_isPregnant")!= 1) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iLactating") != 1)							
 						; no sex change while lactating or pregnant
 						debugTrace("[SLH]	 Casting Sex change curse")
-						PlayerActor.SendModEvent("SLHCastHRTCurse")
-						_SLH_QST_Bimbo.SetStage(11)
+						PlayerActor.SendModEvent("SLHCastHRTCurse", "Dremora")
 					else
 						debugTrace("[SLH]	 Lucky you - sex with Dremora left you unchanged")
 					endIf
@@ -1558,7 +1595,7 @@ endFunction
 
 function setHormonesState(Actor kActor)
 
-	debugTrace("[SLH] ---> Writing Hormones state to storage")
+	debugTrace("[SLH]    :: Writing Hormones state to storage")
  
 	fctBodyShape.setShapeState(kActor)
 	fctColor.setColorState(kActor)
@@ -1614,7 +1651,7 @@ endFunction
 
 function getHormonesState(Actor kActor)
 	; Debug.Notification("SexLab Hormones: Reading state from storage")
-	debugTrace("[SLH] <--- Reading Hormones state from storage")
+	debugTrace("[SLH]    :: Reading Hormones state from storage")
  
  	fctBodyShape.getShapeState(kActor)
 	fctColor.getColorState(kActor)

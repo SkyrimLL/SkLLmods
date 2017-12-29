@@ -75,7 +75,10 @@ Function _Maintenance()
 EndFunction
 
 Event OnUpdate()
-
+	If  !Self || !SexLab || (StorageUtil.GetIntValue(none, "_SLS_iStoriesPlayerRedWave")==0)
+		Return
+	EndIf
+	
  	daysPassed = Game.QueryStat("Days Passed")
 
  	; Initial values
@@ -178,6 +181,8 @@ Event OnPlayerRedWave(String _eventName, String _args, Float _argc = -1.0, Form 
 	Else
 		SLS_PlayerRedWaveQuest.SetStage(10)
 	EndIf
+
+	RegisterForSingleUpdate(10)
 
 EndEvent
 

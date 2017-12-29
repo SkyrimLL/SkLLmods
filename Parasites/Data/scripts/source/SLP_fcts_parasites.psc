@@ -620,7 +620,9 @@ Function cureSpiderEgg( Actor kActor, String _args, Bool bHarvestParasite = Fals
  
 		StorageUtil.SetIntValue(kActor, "_SLP_iSpiderEggCount", iNumSpiderEggs )
 		SendModEvent("SLPSpiderEggInfection")
-
+	Else
+		; Reset variables if called after device is removed
+		StorageUtil.SetIntValue(kActor, "_SLP_toggleSpiderEgg", 0)
 	EndIf
 EndFunction
 
@@ -703,6 +705,9 @@ Function cureSpiderPenis( Actor kActor, Bool bHarvestParasite = False   )
 
 		StorageUtil.SetIntValue(kActor, "_SLP_toggleSpiderEgg", 1 )
 		equipParasiteNPCByString (kActor, "SpiderEgg")
+	Else
+		; Reset variables if called after device is removed
+		StorageUtil.SetIntValue(kActor, "_SLP_toggleSpiderPenis", 0)
 	EndIf
 EndFunction
 
@@ -779,6 +784,9 @@ Function cureChaurusWorm( Actor kActor, Bool bHarvestParasite = False   )
 			ChaurusWormInfectedAlias.ForceRefTo(DummyAlias)
 		endIf
 
+	Else
+		; Reset variables if called after device is removed
+		StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusWorm", 0)
 	EndIf
 EndFunction
 
@@ -854,6 +862,9 @@ Function cureChaurusWormVag( Actor kActor, Bool bHarvestParasite = False   )
 			ChaurusWormInfectedAlias.ForceRefTo(DummyAlias)
 		endIf
 
+	Else
+		; Reset variables if called after device is removed
+		StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusWormVag", 0)
 	EndIf
 EndFunction
 
@@ -991,6 +1002,9 @@ Function cureTentacleMonster( Actor kActor, Bool bHarvestParasite = False   )
 			TentacleMonsterInfectedAlias.ForceRefTo(DummyAlias)
 		endIf
 
+	Else
+		; Reset variables if called after device is removed
+		StorageUtil.SetIntValue(kActor, "_SLP_toggleTentacleMonster", 0)
 	EndIf
 EndFunction
 
@@ -1126,7 +1140,9 @@ Function cureLivingArmor( Actor kActor, Bool bHarvestParasite = False   )
 		If (kActor == PlayerActor)
 			LivingArmorInfectedAlias.ForceRefTo(DummyAlias)
 		endIf
-
+	Else
+		; Reset variables if called after device is removed
+		StorageUtil.SetIntValue(kActor, "_SLP_toggleLivingArmor", 0)
 	EndIf
 EndFunction
 
@@ -1200,6 +1216,9 @@ Function cureFaceHugger( Actor kActor, Bool bHarvestParasite = False   )
 			FaceHuggerInfectedAlias.ForceRefTo(DummyAlias)
 		endIf
 
+	Else
+		; Reset variables if called after device is removed
+		StorageUtil.SetIntValue(kActor, "_SLP_toggleFaceHugger", 0)
 	EndIf
 EndFunction
 
@@ -1272,6 +1291,10 @@ Function cureFaceHuggerGag( Actor kActor, Bool bHarvestParasite = False   )
 			FaceHuggerInfectedAlias.ForceRefTo(DummyAlias)
 		endIf
 
+
+	Else
+		; Reset variables if called after device is removed
+		StorageUtil.SetIntValue(kActor, "_SLP_toggleFaceHuggerGag", 0)
 	EndIf
 EndFunction
 
@@ -1345,6 +1368,9 @@ Function cureBarnacles( Actor kActor, Bool bHarvestParasite = False   )
 			BarnaclesInfectedAlias.ForceRefTo(DummyAlias)
 		endIf
 
+	Else
+		; Reset variables if called after device is removed
+		StorageUtil.SetIntValue(kActor, "_SLP_toggleBarnacles", 0)
 	EndIf
 EndFunction
 

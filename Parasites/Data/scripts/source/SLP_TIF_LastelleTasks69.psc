@@ -6,7 +6,6 @@ Scriptname SLP_TIF_LastelleTasks69 Extends TopicInfo Hidden
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
-fctParasites.infectChaurusWormVag( akSpeaker )
 self.GetOwningQuest().setstage(69)
 ;END CODE
 EndFunction

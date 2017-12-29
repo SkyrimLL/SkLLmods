@@ -56,6 +56,11 @@ EndFunction
 Event OnUpdate()
  	Actor PlayerActor= Game.GetPlayer() as Actor
 
+	If (StorageUtil.GetIntValue(none, "_SLS_iStoriesPlayerSexBot")==0)
+		Return
+	endif
+	
+
  	daysPassed = Game.QueryStat("Days Passed")
 
  	; Initial values
@@ -93,6 +98,8 @@ Event OnPlayerSexBot(String _eventName, String _args, Float _argc = -1.0, Form _
 	FalmerSlaver.sendModEvent("PCSubEnslave")
 
 	SLS_PlayerSexBotQuest.SetStage(10)
+
+	RegisterForSingleUpdate(10)
 
 EndEvent
 

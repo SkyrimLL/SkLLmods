@@ -128,12 +128,17 @@ function bimboTransformEffectON(actor kActor)
     GV_allowHRT.SetValue( StorageUtil.GetIntValue(kActor, "_SLH_allowHRT") as Int)
     GV_allowBimbo.SetValue( StorageUtil.GetIntValue(kActor, "_SLH_allowBimbo") as Int)
 
+    isActorMale = fctUtil.isMale(kActor)
+
     ; Abort if no gender/bimbo option checked in MCM
-    If (GV_allowBimbo.GetValue()==0) ; && (GV_allowHRT.GetValue()==0) && (GV_allowTG.GetValue()==0)
+    If (GV_allowBimbo.GetValue()==0) 
        Return
     Endif
 
-    isActorMale = fctUtil.isMale(kActor)
+    If ((GV_allowHRT.GetValue()==0) && (isActorMale))
+        Return
+    Endif
+
     StorageUtil.SetIntValue(none, "_SLH_bimboIsOriginalActorMale", isActorMale as Int)
 
     debugTrace("[SLH] Bimbo Transform Init")
@@ -328,8 +333,8 @@ function bimboTransformEffectON(actor kActor)
 
     If (GV_allowBimboRace.GetValue()==0)
         ; Using Hormones changes to compensate for lack of Bimbo race
-        fctBodyshape.alterBodyByPercent(kActor, "Weight", 20.0)
-        fctBodyshape.alterBodyByPercent(kActor, "Breast", 20.0)
+        fctBodyshape.alterBodyByPercent(kActor, "Weight", 5.0)
+        fctBodyshape.alterBodyByPercent(kActor, "Breast", 5.0)
     endif
 
     isActorExhibitionist = slaUtil.IsActorExhibitionist(kActor)
@@ -420,7 +425,7 @@ function bimboTransformEffectON(actor kActor)
 
     SLH_Control.setBimboState(kActor, TRUE)
     kActor.SendModEvent("SLHRefresh")
-    fctColor.sendSlaveTatModEvent(kActor, "Bimbo","Feet Nails", bRefresh = True )
+    ; fctColor.sendSlaveTatModEvent(kActor, "Bimbo","Feet Nails", bRefresh = True )
 
     SLH_BimboControl.initBimbo()
 

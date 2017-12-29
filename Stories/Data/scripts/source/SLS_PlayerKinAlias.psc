@@ -60,6 +60,10 @@ EndFunction
 Event OnUpdate()
  	Actor PlayerActor= Game.GetPlayer() as Actor
 
+	If (StorageUtil.GetIntValue(none, "_SLS_iStoriesPlayerKin")==0)
+		Return
+	endif
+
  	daysPassed = Game.QueryStat("Days Passed")
 
  	; Initial values
@@ -118,6 +122,8 @@ Event OnPlayerKin(String _eventName, String _args, Float _argc = -1.0, Form _sen
 	EndIf
 
 	KinSlaver.sendModEvent("PCSubEnslave")
+
+	RegisterForSingleUpdate(10)
 
 EndEvent
 

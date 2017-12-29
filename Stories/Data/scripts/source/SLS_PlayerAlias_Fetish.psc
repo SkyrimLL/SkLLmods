@@ -217,20 +217,6 @@ Event OnPCStartAlicia(String _eventName, String _args, Float _argc = -1.0, Form 
 
 	StorageUtil.SetIntValue(none, "_SLS_iPlayerStartAlicia", 1)
 
-	; Equip with sanguine bindings only
-	; Rest of gear is normal
-	; 	- restrictive collar
-	; 	- harness or corset
-	; 	- boots
-
-	PlayerActor.SendModEvent("SDEquipDevice",   "Collar:restrictive")
-	PlayerActor.SendModEvent("SDEquipDevice",   "Corset:restrictive")
-	PlayerActor.SendModEvent("SDEquipDevice",   "Gloves:restrictive")
-	PlayerActor.SendModEvent("SDEquipDevice",   "Boots:restrictive")
-	PlayerActor.SendModEvent("SDEquipDevice",   "Gag:harness,ring")
-	; PlayerActor.SendModEvent("SDEquipDevice",   "Blindfold")
-	; PlayerActor.SendModEvent("SDEquipDevice",   "LegCuffs")
-
 	If (!StorageUtil.HasIntValue(none, "_SD_iSanguine")) && (!StorageUtil.HasIntValue(none, "_SD_version"))
 		PlayerActor.MoveTo(SLS_PlayerAliciaStartMarker)
 	Else
@@ -239,16 +225,17 @@ Event OnPCStartAlicia(String _eventName, String _args, Float _argc = -1.0, Form 
 
 	; a - r - g - b
 	; Int iAliciaHairColor = Math.LeftShift(255, 24) + Math.LeftShift(60, 16) + Math.LeftShift(16, 8) + 13
-	Int iAliciaHairColor = Math.LeftShift(60, 16) + Math.LeftShift(16, 8) + 13
-	StorageUtil.SetIntValue(PlayerActor, "_SLH_iHairColor", iAliciaHairColor ) 
-	StorageUtil.SetIntValue(PlayerActor, "_SLH_iHairColorDye", 1 ) 
-	StorageUtil.SetStringValue(PlayerActor, "_SLH_sHairColorName", "Alicia red" ) 
-	PlayerActor.SendModEvent("SLHRefreshColors")
+	; Int iAliciaHairColor = Math.LeftShift(60, 16) + Math.LeftShift(16, 8) + 13
+	; StorageUtil.SetIntValue(PlayerActor, "_SLH_iHairColor", iAliciaHairColor ) 
+	; StorageUtil.SetIntValue(PlayerActor, "_SLH_iHairColorDye", 1 ) 
+	; StorageUtil.SetStringValue(PlayerActor, "_SLH_sHairColorName", "Alicia red" ) 
+	; PlayerActor.SendModEvent("SLHRefreshColors")
 
 	PlayerActor.addtofaction(DremoraFaction) 
 
 	StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryLevel", 1)
 	StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryExposure", 50)
+	SendModEvent("SDSanguineBlessingMod", "", 5)  
 
 	SendModEvent("_SLS_PlayerAlicia")
 
