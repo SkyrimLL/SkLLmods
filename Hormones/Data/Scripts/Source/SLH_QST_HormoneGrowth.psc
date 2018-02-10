@@ -605,6 +605,9 @@ EndEvent
 Event OnCastSuccubusCurseEvent(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
  	
+ 	if (kActor == None)
+ 		kActor = Game.GetPlayer()
+ 	EndIf
 	debugTrace("[SLH] Cast succubus curse event" )	  
 	
 	If ( StorageUtil.GetIntValue(PlayerActor, "_SLH_iDaedricInfluence") <5) 
@@ -623,6 +626,9 @@ endEvent
 Event OnCureSuccubusCurseEvent(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
  	
+ 	if (kActor == None)
+ 		kActor = Game.GetPlayer()
+ 	EndIf
 	debugTrace("[SLH] Cure succubus curse event" )	  
 	
 	StorageUtil.SetIntValue(PlayerActor, "_SLH_iDaedricInfluence", 0)
@@ -637,6 +643,9 @@ endEvent
 Event OnCastBimboCurseEvent(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
  	
+ 	if (kActor == None)
+ 		kActor = Game.GetPlayer()
+ 	EndIf
 	debugTrace("[SLH] Cast Bimbo Curse event" )	  
 	; PolymorphBimbo.Cast(PlayerActor,PlayerActor)
 	fctPolymorph.bimboTransformEffectON(kActor)
@@ -654,6 +663,9 @@ endEvent
 Event OnCureBimboCurseEvent(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
 
+ 	if (kActor == None)
+ 		kActor = Game.GetPlayer()
+ 	EndIf
 	debugTrace("[SLH] Cure Bimbo Curse event" )	  
 
 	fctPolymorph.bimboTransformEffectOFF(kActor)
@@ -664,6 +676,9 @@ endEvent
 Event OnCastHRTCurseEvent(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
  	
+ 	if (kActor == None)
+ 		kActor = Game.GetPlayer()
+ 	EndIf
 	debugTrace("[SLH] Cast HRT Curse event" )	  
 	; PolymorphBimbo.Cast(PlayerActor,PlayerActor)
 	if (_args == "Dremora")
@@ -680,6 +695,9 @@ endEvent
 Event OnCureHRTCurseEvent(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
 
+ 	if (kActor == None)
+ 		kActor = Game.GetPlayer()
+ 	EndIf
 	debugTrace("[SLH] Cure HRT Curse event" )	  
 
 	fctPolymorph.HRTEffectOFF(kActor)
@@ -690,6 +708,9 @@ endEvent
 Event OnCastTGCurseEvent(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
  	
+ 	if (kActor == None)
+ 		kActor = Game.GetPlayer()
+ 	EndIf
 	debugTrace("[SLH] Cast TG Curse event" )	  
 	; PolymorphBimbo.Cast(PlayerActor,PlayerActor)
 	if (_args == "Dremora")
@@ -705,6 +726,9 @@ endEvent
 Event OnCureTGCurseEvent(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
 
+ 	if (kActor == None)
+ 		kActor = Game.GetPlayer()
+ 	EndIf
 	debugTrace("[SLH] Cure TG Curse event" )	  
 
 	fctPolymorph.TGEffectOFF(kActor)
@@ -714,6 +738,9 @@ endEvent
 Event OnRefreshShapeEvent(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
 
+ 	if (kActor == None)
+ 		kActor = Game.GetPlayer()
+ 	EndIf
 	debugTrace("[SLH] Receiving 'refresh shape' event. Actor: " + kActor )
 
 	refreshShape(kActor)
@@ -723,6 +750,9 @@ EndEvent
 Event OnRefreshColorsEvent(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
  
+ 	if (kActor == None)
+ 		kActor = Game.GetPlayer()
+ 	EndIf
 	debugTrace("[SLH] Receiving 'refresh colors' event. Actor: " + kActor )
 
 	refreshColor(kActor)
@@ -731,6 +761,9 @@ EndEvent
 Event OnRefreshHairColorEvent(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
  
+ 	if (kActor == None)
+ 		kActor = Game.GetPlayer()
+ 	EndIf
 	debugTrace("[SLH] Receiving 'refresh hair color' event. Actor: " + kActor )
 
 	If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
@@ -740,12 +773,14 @@ Event OnRefreshHairColorEvent(String _eventName, String _args, Float _argc = 1.0
 
 		If ((StorageUtil.HasStringValue(kActor, "_SLH_sHairColorName" )) && (StorageUtil.HasIntValue(kActor, "_SLH_iHairColor" )))
 			if (_args == "Dye")
+				StorageUtil.SetIntValue(kActor, "_SLH_iHairColorDye", 1 ) 
 				SendModEvent("yps-HairColorDyeEvent", StorageUtil.GetStringValue(kActor, "_SLH_sHairColorName" ), StorageUtil.GetIntValue(kActor, "_SLH_iHairColor" ) )
 			else
+				StorageUtil.SetIntValue(kActor, "_SLH_iHairColorDye", 0 ) 
 				SendModEvent("yps-HairColorBaseEvent", StorageUtil.GetStringValue(kActor, "_SLH_sHairColorName" ), StorageUtil.GetIntValue(kActor, "_SLH_iHairColor" ) )
 			endif
 		else
-		debugTrace("[SLH]       -> YPS Fashion hair color parameters missing - hair color change skipped")
+			debugTrace("[SLH]       -> YPS Fashion hair color parameters missing - hair color change skipped")
 		endif
 
 	Else
@@ -756,6 +791,9 @@ EndEvent
 Event OnShaveHead(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
 		
+ 	if (kActor == None)
+ 		kActor = Game.GetPlayer()
+ 	EndIf
 	debugTrace("[SLH] Detected forced hair change")
 
 	fctBodyShape.shaveHair(kActor)		
@@ -766,6 +804,9 @@ EndEvent
 Event OnSetShapeEvent(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
 
+ 	if (kActor == None)
+ 		kActor = Game.GetPlayer()
+ 	EndIf
 	debugTrace("[SLH] Receiving 'set shape' event" )
 
 	setHormonesStateDefault(kActor)
@@ -775,6 +816,9 @@ EndEvent
 Event OnResetShapeEvent(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
 
+ 	if (kActor == None)
+ 		kActor = Game.GetPlayer()
+ 	EndIf
 	debugTrace("[SLH] Receiving 'reset shape' event" )
 
 	resetHormonesState(kActor)
@@ -784,6 +828,9 @@ EndEvent
 Event OnSetSchlongEvent(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
 
+ 	if (kActor == None)
+ 		kActor = Game.GetPlayer()
+ 	EndIf
 	debugTrace("[SLH] Receiving 'set schlong' event" )
 
 	fctBodyShape.setSchlong(kActor, _args)
@@ -793,6 +840,9 @@ EndEvent
 Event OnRemoveSchlongEvent(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
 
+ 	if (kActor == None)
+ 		kActor = Game.GetPlayer()
+ 	EndIf
 	debugTrace("[SLH] Receiving 'remove schlong' event" )
 
 	fctBodyShape.removeSchlong(kActor)
@@ -1487,6 +1537,15 @@ function setHormonesStateDefault(Actor kActor)
 	If !( fctUtil.isExternalChangeModActive(PlayerActor) ) && (NextAllowed!= -1)
 		fctColor.applyColorChanges(kActor)
 		fctBodyShape.applyBodyShapeChanges(kActor)
+	EndIf
+
+	If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
+		fctUtil.checkGender(kActor) 
+		if (fctUtil.isMale(kActor))
+			SendModEvent("yps-SetPlayerGenderEvent", "male")
+		Else
+			SendModEvent("yps-SetPlayerGenderEvent", "female")
+		Endif
 	EndIf
 
 endFunction

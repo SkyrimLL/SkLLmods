@@ -139,6 +139,11 @@ function bimboTransformEffectON(actor kActor)
         Return
     Endif
 
+    ;; Abort if enslaved - to preserve slave related variables
+    If (StorageUtil.GetIntValue(kActor, "_SD_iEnslaved") == 1)
+        Return
+    endif
+
     StorageUtil.SetIntValue(none, "_SLH_bimboIsOriginalActorMale", isActorMale as Int)
 
     debugTrace("[SLH] Bimbo Transform Init")
@@ -602,6 +607,17 @@ function HRTEffectON(actor kActor)
     fctColor.sendSlaveTatModEvent(kActor, "Bimbo","Feet Nails", bRefresh = True )
 
     SLH_Control.setHRTState(kActor, TRUE)
+
+    Utility.Wait(1.0)
+    If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
+        fctUtil.checkGender(kActor) 
+        if (fctUtil.isMale(kActor))
+            SendModEvent("yps-SetPlayerGenderEvent", "male")
+        Else
+            SendModEvent("yps-SetPlayerGenderEvent", "female")
+        Endif
+    EndIf
+
     debugTrace("[SLH] HRT ON")
 
 endFunction

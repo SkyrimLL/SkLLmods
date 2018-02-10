@@ -457,7 +457,6 @@ event OnPageReset(string a_page)
 
 		AddHeaderOption(" Sex Change ")
 		AddToggleOptionST("STATE_SEX_CHANGE","Allow Sex Change Curse", _allowHRT as Float)
-		AddToggleOptionST("STATE_SET_SEX_CHANGE","Set Sex Change Curse now", _setHRT as Float)
 		AddToggleOptionST("STATE_TG","Allow Transgender Curse", _allowTG as Float)
 
 		AddHeaderOption(" Bimbo ")
@@ -488,6 +487,7 @@ event OnPageReset(string a_page)
 		SetCursorPosition(1)
 		AddHeaderOption(" Curses manual triggers ")
 		AddToggleOptionST("STATE_SET_SUCCUBUS","Set Succubus Curse now", _setSuccubus as Float)
+		AddToggleOptionST("STATE_SET_SEX_CHANGE","Set Sex Change Curse now", _setHRT as Float)
 		AddToggleOptionST("STATE_SET_TG","Set Transgender Curse now", _setTG as Float)
 		AddToggleOptionST("STATE_SET_BIMBO","Set Bimbo Curse now", _setBimbo as Float)
 
@@ -1469,6 +1469,8 @@ state STATE_SET_SUCCUBUS ; TOGGLE
 	event OnSelectST()
 		_setSuccubus = Math.LogicalXor( 1, _setSuccubus ) 
 		SetToggleOptionValueST( _setSuccubus as Bool )
+		GV_allowSuccubus.SetValueInt( 1 )
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_allowSuccubus", GV_allowSuccubus.GetValue() as Int)
 		If (StorageUtil.GetIntValue(PlayerActor, "_SLH_iSuccubus") == 0)
 			PlayerActor.SendModEvent("SLHCastSuccubusCurse")
 		else
@@ -1511,6 +1513,8 @@ state STATE_SET_BIMBO ; TOGGLE
 	event OnSelectST()
 		_setBimbo = Math.LogicalXor( 1, _setBimbo ) 
 		SetToggleOptionValueST( _setBimbo as Bool )
+		GV_allowBimbo.SetValueInt( 1 )
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_allowBimbo", GV_allowBimbo.GetValue() as Int)
 		If (StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo") == 0)
 			PlayerActor.SendModEvent("SLHCastBimboCurse")
 		else
@@ -1680,10 +1684,12 @@ state STATE_SEX_CHANGE ; TOGGLE
 		SetInfoText("Sex Change Curse - This curse could turn your gender upside down.")
 	endEvent
 endState
-state STATE_SET_SEXCHANGE ; TOGGLE
+state STATE_SET_SEX_CHANGE ; TOGGLE
 	event OnSelectST()
 		_setHRT = Math.LogicalXor( 1, _setHRT ) 
 		SetToggleOptionValueST( _setHRT as Bool )
+		GV_allowHRT.SetValueInt( 1 )
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_allowHRT", GV_allowHRT.GetValue() as Int)
 		If (StorageUtil.GetIntValue(PlayerActor, "_SLH_iHRT") == 0)
 			PlayerActor.SendModEvent("SLHCastHRTCurse")
 		else
@@ -1725,6 +1731,8 @@ state STATE_SET_TG ; TOGGLE
 	event OnSelectST()
 		_setTG = Math.LogicalXor( 1, _setTG ) 
 		SetToggleOptionValueST( _setTG as Bool )
+		GV_allowTG.SetValueInt( 1 )
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_allowTG", GV_allowTG.GetValue() as Int)
 		If (StorageUtil.GetIntValue(PlayerActor, "_SLH_iTG") == 0)
 			PlayerActor.SendModEvent("SLHCastTGCurse")
 		else

@@ -11,6 +11,12 @@ SexLabFramework Property SexLab  Auto
 
 Quest Property _SLH_QST_Bimbo  Auto  
 
+Keyword Property ClothingOn Auto
+Keyword Property ArmorOn Auto
+
+Bool bArmorOn = false
+Bool bClothingOn = false
+
 GlobalVariable      Property GV_isTG                   Auto
 GlobalVariable      Property GV_isHRT                   Auto
 GlobalVariable      Property GV_isBimbo                 Auto
@@ -593,6 +599,9 @@ function clumsyBimboLegs(Actor bimbo)
 		return
 	endif
 
+	bArmorOn = kPlayer.WornHasKeyword(ArmorOn)
+	bClothingOn = kPlayer.WornHasKeyword(ClothingOn)
+
 	;is pressing the movement keys?
 	if Input.IsKeyPressed(Input.GetMappedKey("Forward")) || Input.IsKeyPressed(Input.GetMappedKey("Back")) || Input.IsKeyPressed(Input.GetMappedKey("Strafe Left")) || Input.IsKeyPressed(Input.GetMappedKey("Strafe Right"))
 		;isn't on the menu?
@@ -637,8 +646,13 @@ function clumsyBimboLegs(Actor bimbo)
 						bimbo.StartSneaking()
 					EndIf
 					bimbo.CreateDetectionEvent(bimbo, 20)
-					bimbo.PushActorAway(bimbo, tumbleForce) ;how to push only to the bimbo movement direction?
-					Utility.Wait(1.0)
+
+					if ((bArmorOn) || (bClothingOn))
+						bimbo.PushActorAway(bimbo, tumbleForce) ;how to push only to the bimbo movement direction?
+						Utility.Wait(1.0)
+						Debug.Notification("You tripped! Clumsy bimbo!") ;temp messages
+					endIf
+
 					int[] drop = dropWeapons(bimbo, both = true, chanceMult = 0.1)
 					if drop[0] > 0 ;if dropped anything, play a moan sound
 						SLH_Control.playMoan(bimbo)
@@ -662,9 +676,7 @@ function clumsyBimboLegs(Actor bimbo)
 					endIf
 
 					if drop[0] > 0
-						Debug.Notification("You trip and drop your weapons!") ;temp messages
-					else
-						Debug.Notification("You tripped! Clumsy bimbo!") ;temp messages
+						Debug.Notification("You got distracted and dropped your weapons!") ;temp messages
 					endif
 					
 					Debug.Notification(bimboTripMessage) ;temp messages
@@ -704,14 +716,15 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 
 	;bimbo = Game.GetPlayer()
 	;transformationlevel is the same as the number of days
-	int transformationLevel = StorageUtil.GetIntValue(bimbo, "_SLH_bimboTransformGameDays")
+	int transformationDays = StorageUtil.GetIntValue(bimbo, "_SLH_bimboTransformGameDays")
+	int transformCycle = transformationLevel/5
+	int transformationLevel = transformationDays - (transformCycle * 5)
+	int hairLength = StorageUtil.GetIntValue(none, "YpsCurrentHairLengthStage")
+
 	bool showSchlongMessage = true
 	float fButtMax
 	float fButtActual
 	float fButtMin
-
-	int transformCycle = transformationLevel/5
-	transformationLevel = transformationLevel - (transformCycle * 5)
 
 	debug.trace("[slh+] bimbo transformation level: " + transformationLevel)
 
@@ -726,26 +739,35 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 
 	; Int iBimboHairColor = Math.LeftShift(255, 24) + Math.LeftShift(92, 16) + Math.LeftShift(80, 8) + 80
 	Int iBimboHairColor = Math.LeftShift(92, 16) + Math.LeftShift(80, 8) + 80
-	StorageUtil.SetIntValue(BimboActor, "_SLH_iHairColor", iBimboHairColor ) 
-	StorageUtil.SetIntValue(BimboActor, "_SLH_iHairColorDye", 1 ) 
-	StorageUtil.SetStringValue(BimboActor, "_SLH_sHairColorName", "Platinum blonde" ) 
+	StorageUtil.SetIntValue(BimboActor, "_SLH_iHairColor", iBimboHairColor )  
+	StorageUtil.SetStringValue(BimboActor, "_SLH_sHairColorName", "Platinum Blonde" ) 
 	debug.trace("[slh+] 	bimbo hair color: " + iBimboHairColor)
-	BimboActor.SendModEvent("SLHRefreshHairColor","Dye")
+	if (transformationDays>15) 
+		BimboActor.SendModEvent("SLHRefreshHairColor","Base")
+	else
+		BimboActor.SendModEvent("SLHRefreshHairColor","Dye")
+	endif
+	; BimboActor.SendModEvent("SLHRefreshColors")
 
-	;level 1: permanent makeup
-	if (transformationLevel == 1) 
-		;lipstick: pink, or should it be red? or random?
-		;eyelids shadow: pink too
+
+	;level 1: makeup
+	if (transformationLevel == 1)  
 		Debug.Notification("You feel a little tingling on your face.")
 
 		If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
-			SendModEvent("yps-LipstickEvent", "American Rose", 0xff033e)  
+			SendModEvent("yps-LipstickEvent", "Pink", 0xffc0db)  
 			SendModEvent("yps-EyeshadowEvent", "Pink", 0xffc0cb)   
+
+			if (hairLength<5)
+				SendModEvent("yps-SetHaircutEvent", "", 5)
+			endif
 		else
 			; SlaveTats.simple_add_tattoo(bimbo, "Bimbo", "Lipstick", color = 0x66FF0984, last = false, silent = true)
 			fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Lipstick", iColor = 0x66FF0984)
 			fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Eye Shadow", iColor = 0x99000000, bRefresh = True)
 		Endif
+
+		fctBodyshape.alterBodyByPercent(bimbo, "Breast", 2.0)
 
 	;level 2, nails, weak body (can drop weapons when hit)
 	elseif transformationLevel == 2
@@ -753,12 +775,16 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 		If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
 			SendModEvent("yps-FingerNailsEvent", "", 29) 
 			SendModEvent("yps-ToeNailsEvent",  "", 29)
+
+			if (hairLength<7)
+				SendModEvent("yps-SetHaircutEvent", "", 7)
+			endif
 		else
 			fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Feet Nails", iColor = 0x00FF0984 )
 			fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Hand Nails", iColor = 0x00FF0984, bRefresh = True )
 		Endif
 
-		fctBodyshape.alterBodyByPercent(bimbo, "Breast", 20.0)
+		fctBodyshape.alterBodyByPercent(bimbo, "Breast", 2.0)
 		isBimboClumsyHands = true
 
 	;level 3: back tattoo, clumsy hands
@@ -767,12 +793,12 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 		fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Tramp Stamp", bRefresh = True )
 
 		If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
-			SendModEvent("yps-SetHaircutEvent", "", 15)
-			SendModEvent("yps-SetPubicHairLengthEvent", "", 0)
-			SendModEvent("yps-SetArmpitsHairLengthEvent", "", 0)
-
+			if (hairLength<10)
+				SendModEvent("yps-SetHaircutEvent", "", 10)
+			endif
 		Endif
 
+		fctBodyshape.alterBodyByPercent(bimbo, "Breast", 2.0)
 
 	;level 4: belly tattoo, bigger butt, clumsy legs
 	elseif transformationLevel == 4
@@ -781,6 +807,10 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
  
  		If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
  			SendModEvent("yps-ArchedFeetEvent")
+
+			if (hairLength<14)
+				SendModEvent("yps-SetHaircutEvent", "", 14)
+			endif
 		EndIf
 
 		;butt
@@ -802,38 +832,45 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 			Debug.SendAnimationEvent(bimbo, "BleedOutStop")
         endif
 
+		fctBodyshape.alterBodyByPercent(bimbo, "Breast", 2.0)
 		isBimboClumsyLegs = true
 
 	;level 5,  pubic tattoo
 	elseif transformationLevel == 5
-		;i'm handling this as a bad end, on CK
-		;should equip long nails, but i dont know how to create quest items here, so 
-		;^    this is beeing handled on CK, slh_qst_bimbo
-		;^    .... and my ck crashes if i try to open this script >:(
-		;^    .... and i can't edit the quest dialogs, if i try everything will be blank (need to remove the 'is a cure' dialogs!!)
 		if !isMale ;no schlong on the way
 			; SlaveTats.simple_add_tattoo(bimbo, "Bimbo", "Pubic Tattoo", last = true, silent = true)
 			Debug.Notification("Your pussy feels so hot and empty.")
 			fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Pubic Tattoo", bRefresh = True  )
 		endif
 
- 		If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
-			SendModEvent("yps-LockMakeupEvent")
+ 		If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1) 
+			if (hairLength<15)
+				SendModEvent("yps-SetHaircutEvent", "", 15)
+			endif
+
 		EndIf
 
+		fctBodyshape.alterBodyByPercent(bimbo, "Breast", 2.0)
 		isBimboFrailBody = true
 
 	endif
 
+	if (transformationDays>15) 
+		SendModEvent("yps-LipstickEvent", "Pink", 0xffc0db)  
+		SendModEvent("yps-EyeshadowEvent", "Pink", 0xffc0cb)   
+		SendModEvent("yps-DisableSmudgingEvent")
+		SendModEvent("yps-LockMakeupEvent")
+		SendModEvent("yps-PermanentMakeupEvent")
+
+		if (StorageUtil.GetIntValue(none, "ypsPubicHairEnabled") == 1)
+			SendModEvent("yps-SetPubicHairLengthEvent", "", 0)
+		Endif
+
+		if (StorageUtil.GetIntValue(none, "ypsArmpitHairEnabled")==1)
+			SendModEvent("yps-SetArmpitsHairLengthEvent", "", 0)
+		endif
+	endif
 	;--------------------------------------------
-	;TODO
-	;- almost done: moving the clumsy stuff here, progressing each day too (hands, legs, combat hits)
-	;- the long nails, and the very long nails too should be here
-	;- done: better tramp stamp
-	;- make the bimbo scream when the combat starts (sometimes)
-	;- better makeup
-	;- create curses status, so the player can know about it
-	;
 	;IDEAS
 	;- some kind of sex need? or leave it for other mods?
 	;- the bad end should be better: an fx should play, trigger as masturbation too

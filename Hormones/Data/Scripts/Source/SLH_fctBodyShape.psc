@@ -1457,7 +1457,7 @@ function initShapeConstants(Actor kActor)
 		GV_buttMax.SetValue(1.5)
 		GV_buttSwellMod.SetValue(1.2)
 	Endif
-	If (GV_schlongMax.GetValue() == GV_schlongMax.GetValue())
+	If (GV_schlongMin.GetValue() == GV_schlongMax.GetValue())
 		GV_schlongMin.SetValue(0.5)
 		GV_schlongMax.SetValue(3.0)
 		GV_schlongSwellMod.SetValue(1.2)
