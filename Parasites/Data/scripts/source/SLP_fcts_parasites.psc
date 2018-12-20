@@ -37,6 +37,9 @@ Container Property EggSac  Auto
 Ingredient  Property TrollFat Auto
 Ingredient  Property IngredientChaurusWorm Auto
 
+Ingredient  Property SmallSpiderEgg Auto
+Ingredient  Property BarnaclesCluster Auto
+
 Keyword Property ArmorCuirass  Auto  
 Keyword Property ClothingBody  Auto  
 
@@ -97,6 +100,7 @@ int Property MAX_PRESETS = 4 AutoReadOnly
 int Property MAX_MORPHS = 19 AutoReadOnly
 
 Bool Property isNiOInstalled Auto
+Bool Property isSlifInstalled Auto
 
 
 ;  http://wiki.tesnexus.com/index.php/Skyrim_bodyparts_number
@@ -550,6 +554,11 @@ Function infectSpiderEgg( Actor kActor   )
 		Return
 	Endif
 
+	If (!isFemale( kActor))
+		Debug.Trace("		Actor is not female - Aborting")
+		Return
+	Endif
+
 	iNumSpiderEggs = Utility.RandomInt(5,10)
 	If (StorageUtil.GetIntValue(kActor, "_SLP_iSpiderEggCount")!=0)
 		iNumSpiderEggs = StorageUtil.GetIntValue(kActor, "_SLP_iSpiderEggCount")
@@ -651,6 +660,11 @@ Function infectSpiderPenis( Actor kActor   )
 		Return
 	Endif
 
+	If (!isFemale( kActor))
+		Debug.Trace("		Actor is not female - Aborting")
+		Return
+	Endif
+	
 	iNumSpiderEggs = Utility.RandomInt(5,10)
 
 	If (kActor == PlayerActor)
@@ -813,6 +827,12 @@ Function infectChaurusWormVag( Actor kActor   )
 		Return
 	Endif
 
+	If (!isFemale( kActor))
+		Debug.Trace("		Actor is not female - Aborting")
+		Return
+	Endif
+	
+
 	equipParasiteNPCByString (kActor, "ChaurusWormVag")
 
 	If (kActor == PlayerActor)
@@ -881,6 +901,12 @@ Function infectEstrusTentacles( Actor kActor   )
 		Return
 	Endif
 
+	If (!isFemale( kActor))
+		Debug.Trace("		Actor is not female - Aborting")
+		Return
+	Endif
+	
+
 	If (!ActorHasKeywordByString(kActor,  "PlugVaginal")) && (!ActorHasKeywordByString(kActor,  "Harness")) && (!isInfectedByString( kActor,  "TentacleMonster" )) && (Utility.RandomInt(1,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceTentacleMonster" )))
 			; PlayerActor.SendModEvent("SLPInfectTentacleMonster")
 			infectTentacleMonster(kActor)
@@ -945,7 +971,7 @@ Function infectTentacleMonster( Actor kActor   )
 		Return
 	Endif
 
-	If (isInfectedByString( kActor,  "TentacleMonster" ))
+	If ((isInfectedByString( kActor,  "TentacleMonster" )) || (isInfectedByString( kActor,  "FaceHugger" )) )
 		Debug.Trace("		Already infected - Aborting")
 		Return
 	Endif
@@ -954,6 +980,12 @@ Function infectTentacleMonster( Actor kActor   )
 		Debug.Trace("		Already wearing a harness- Aborting")
 		Return
 	Endif
+
+	If (!isFemale( kActor))
+		Debug.Trace("		Actor is not female - Aborting")
+		Return
+	Endif
+	
 
 	equipParasiteNPCByString (kActor, "TentacleMonster")
 
@@ -1021,6 +1053,12 @@ Function infectEstrusSlime( Actor kActor   )
 		Return
 	Endif
 
+	If (!isFemale( kActor))
+		Debug.Trace("		Actor is not female - Aborting")
+		Return
+	Endif
+	
+
 	If (!ActorHasKeywordByString(kActor,  "Harness")) && (!isInfectedByString( kActor,  "LivingArmor" )) && (Utility.RandomInt(1,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceLivingArmor" )))
 			; PlayerActor.SendModEvent("SLPInfectLivingArmor")
 			infectLivingArmor(kActor)
@@ -1084,7 +1122,7 @@ Function infectLivingArmor( Actor kActor   )
 		Return
 	Endif
 
-	If (isInfectedByString( kActor,  "LivingArmor" ))
+	If ((isInfectedByString( kActor,  "LivingArmor" )) || (isInfectedByString( kActor,  "FaceHugger" )) )
 		Debug.Trace("		Already infected - Aborting")
 		Return
 	Endif
@@ -1093,6 +1131,12 @@ Function infectLivingArmor( Actor kActor   )
 		Debug.Trace("		Already wearing a corset - Aborting")
 		Return
 	Endif
+
+	If (!isFemale( kActor))
+		Debug.Trace("		Actor is not female - Aborting")
+		Return
+	Endif
+	
 
 	equipParasiteNPCByString (kActor, "LivingArmor")
 
@@ -1149,7 +1193,8 @@ EndFunction
 ;------------------------------------------------------------------------------
 Function infectFaceHugger( Actor kActor   )
  	Actor PlayerActor = Game.GetPlayer()
- 
+ 	Cell kActorCell
+
   	if (kActor == None)
   		kActor = PlayerActor
   	endIf
@@ -1159,13 +1204,25 @@ Function infectFaceHugger( Actor kActor   )
 		Return
 	Endif
 
-	If (isInfectedByString( kActor,  "FaceHugger" ))
+	If (( isInfectedByString( kActor,  "FaceHugger" )) || (isInfectedByString( kActor,  "LivingArmor" )) || (isInfectedByString( kActor,  "TentacleMonster" )) )
 		Debug.Trace("		Already infected - Aborting")
 		Return
 	Endif
 
 	If (ActorHasKeywordByString( kActor, "Belt"  ))
 		Debug.Trace("		Already wearing a belt - Aborting")
+		Return
+	Endif
+
+	If (!isFemale( kActor))
+		Debug.Trace("		Actor is not female - Aborting")
+		Return
+	Endif
+	
+
+ 	kActorCell = kActor.GetParentCell()
+	If (kActorCell.IsInterior())
+		Debug.Trace("		Location is outdoors (some locations falsely register as caves) - Aborting")
 		Return
 	Endif
 
@@ -1224,6 +1281,7 @@ EndFunction
 
 Function infectFaceHuggerGag( Actor kActor   )
  	Actor PlayerActor = Game.GetPlayer()
+	Cell kActorCell
  
   	if (kActor == None)
   		kActor = PlayerActor
@@ -1241,6 +1299,12 @@ Function infectFaceHuggerGag( Actor kActor   )
 
 	If (ActorHasKeywordByString( kActor, "Gag"  ))
 		Debug.Trace("		Already wearing a gag - Aborting")
+		Return
+	Endif
+
+ 	kActorCell = kActor.GetParentCell()
+	If (kActorCell.IsInterior())
+		Debug.Trace("		Location is outdoors (some locations falsely register as caves) - Aborting")
 		Return
 	Endif
 
@@ -1301,6 +1365,7 @@ EndFunction
 ;------------------------------------------------------------------------------
 Function infectBarnacles( Actor kActor   )
  	Actor PlayerActor = Game.GetPlayer()
+	Cell kActorCell
 
   	if (kActor == None)
   		kActor = PlayerActor
@@ -1316,10 +1381,22 @@ Function infectBarnacles( Actor kActor   )
 		Return
 	Endif
 
-	If (ActorHasKeywordByString( kActor, "Harness"  ))
+	If ((ActorHasKeywordByString( kActor, "Harness"  )) || (ActorHasKeywordByString( kActor, "Corset"  )) )
 		Debug.Trace("		Already wearing a corset - Aborting")
 		Return
 	Endif
+
+ 	kActorCell = kActor.GetParentCell()
+	If (kActorCell.IsInterior())
+		Debug.Trace("		Location is outdoors (some locations falsely register as caves) - Aborting")
+		Return
+	Endif
+
+	If (!isFemale( kActor))
+		Debug.Trace("		Actor is not female - Aborting")
+		Return
+	Endif
+	
 
 	equipParasiteNPCByString (kActor, "Barnacles")
 
@@ -1382,6 +1459,12 @@ Function infectEstrusChaurusEgg( Actor kActor   )
   		kActor = PlayerActor
   	endIf
 
+	If (!isFemale( kActor))
+		Debug.Trace("		Actor is not female - Aborting")
+		Return
+	Endif
+	
+
 	; If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceEstrusChaurusEgg" )==0.0)
 	;	Debug.Trace("		Parasite disabled - Aborting")
 	;	Return
@@ -1423,6 +1506,148 @@ Function infectEstrusChaurusEgg( Actor kActor   )
 EndFunction
 
 ;------------------------------------------------------------------------------
+Function triggerEstrusChaurusBirth( Actor kActor, String  sParasite, Int iBirthItemCount  )
+  	Actor PlayerActor = Game.GetPlayer()
+  	Form fBirthItem = None
+
+  	if (kActor == None)
+  		kActor = PlayerActor
+  	endIf
+ 
+	; If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceEstrusChaurusEgg" )==0.0)
+	;	Debug.Trace("		Parasite disabled - Aborting")
+	;	Return
+	; Endif 
+
+	If (sParasite == "SpiderEgg")
+		fBirthItem = SmallSpiderEgg as Form
+
+	ElseIf (sParasite == "Barnacles")
+		fBirthItem = BarnaclesCluster as Form
+
+	Endif
+
+	If (fBirthItem != None)
+		; Testing EC birth event
+		;To call an EC Birth event use the following code:
+		;
+		int ECBirth = ModEvent.Create("ECGiveBirth") ; Int          Int does not have to be named "ECBirth" any name would do
+		if (ECBirth)
+		    ModEvent.PushForm(ECBirth, self)         ; Form         Pass the calling form to the event
+
+		    ModEvent.PushForm(ECBirth, kActor)      ; Form         The Actor to give birth
+		    ModEvent.PushForm(ECBirth, fBirthItem) ; Form    The Item to give birth to - if push None births Chaurus eg
+		    ModEvent.PushInt(ECBirth, iBirthItemCount)            ; Int    The number of Items to give birth too
+		    ModEvent.Send(ECBirth)
+		else
+		    ;EC is not installed
+		endIf
+		;
+		;   **NB** The birth event will not fire if the actor is already infected with the Chaurus Parasite effect
+		;               This birth event is unaware of calling mods effects on Breast/Belly/Butt nodes - Any changes to
+		;               inflation of these nodes at birth must be handled by the calling mod.
+	Endif
+
+EndFunction
+
+;------------------------------------------------------------------------------
+Function refreshParasite(Actor kActor, String sParasite)
+
+	If (sParasite == "SpiderPenis")
+		If (isInfectedByString( kActor,  "SpiderPenis" )) && (!ActorHasKeywordByString( kActor, "PlugVaginal"  ))
+			StorageUtil.SetIntValue(kActor, "_SLP_toggleSpiderPenis", 1)
+			equipParasiteNPCByString (kActor, "SpiderPenis")
+
+		Else
+			StorageUtil.SetIntValue(kActor, "_SLP_toggleSpiderPenis", 0)
+			clearParasiteNPCByString (kActor, "SpiderPenis")
+		Endif
+
+	ElseIf (sParasite == "SpiderEgg")
+		If (isInfectedByString( kActor,  "SpiderEgg" )) && (!ActorHasKeywordByString( kActor, "PlugVaginal"  ))
+			StorageUtil.SetIntValue(kActor, "_SLP_toggleSpiderEgg", 1)
+			equipParasiteNPCByString (kActor, "SpiderEgg")
+
+		Else
+			StorageUtil.SetIntValue(kActor, "_SLP_toggleSpiderEgg", 0)
+			clearParasiteNPCByString (kActor, "SpiderEgg")
+		Endif
+
+	ElseIf (sParasite == "ChaurusWorm")
+		If (isInfectedByString( kActor,  "ChaurusWorm" )) && (!ActorHasKeywordByString( kActor, "PlugAnal"  ))
+			StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusWorm", 1)
+			equipParasiteNPCByString (kActor, "ChaurusWorm")
+
+		Else
+			StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusWorm", 0)
+			clearParasiteNPCByString (kActor, "ChaurusWorm")
+		Endif
+
+	ElseIf (sParasite == "ChaurusWormVag")
+		If (isInfectedByString( kActor,  "ChaurusWormVag" )) && (!ActorHasKeywordByString( kActor, "PlugVaginal"  ))
+			StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusWormVag", 1)
+			equipParasiteNPCByString (kActor, "ChaurusWormVag")
+
+		Else
+			StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusWormVag", 0)
+			clearParasiteNPCByString (kActor, "ChaurusWormVag")
+		Endif
+
+	ElseIf (sParasite == "FaceHugger")
+		If (isInfectedByString( kActor,  "FaceHugger" )) && (!ActorHasKeywordByString( kActor, "Belt"  ))
+			StorageUtil.SetIntValue(kActor, "_SLP_toggleFaceHugger", 1)
+			equipParasiteNPCByString (kActor, "FaceHugger")
+
+		Else
+			StorageUtil.SetIntValue(kActor, "_SLP_toggleFaceHugger", 0)
+			clearParasiteNPCByString (kActor, "FaceHugger")
+		Endif
+
+	ElseIf (sParasite == "FaceHuggerGag")
+		If (isInfectedByString( kActor,  "FaceHuggerGag" )) && (!ActorHasKeywordByString( kActor, "Gag"  ))
+			StorageUtil.SetIntValue(kActor, "_SLP_toggleFaceHuggerGag", 1)
+			equipParasiteNPCByString (kActor, "FaceHuggerGag")
+
+		Else
+			StorageUtil.SetIntValue(kActor, "_SLP_toggleFaceHuggerGag", 0)
+			clearParasiteNPCByString (kActor, "FaceHuggerGag")
+		Endif
+
+	ElseIf (sParasite == "TentacleMonster")
+		If (isInfectedByString( kActor,  "TentacleMonster" )) && (!ActorHasKeywordByString( kActor, "Harness"  )) && (!ActorHasKeywordByString( kActor, "Corset"  ))
+			StorageUtil.SetIntValue(kActor, "_SLP_toggleTentacleMonster", 1)
+			equipParasiteNPCByString (kActor, "TentacleMonster")
+
+		Else
+			StorageUtil.SetIntValue(kActor, "_SLP_toggleTentacleMonster", 0)
+			clearParasiteNPCByString (kActor, "TentacleMonster")
+		Endif
+
+	ElseIf (sParasite == "LivingArmor")
+		If (isInfectedByString( kActor,  "LivingArmor" )) && (!ActorHasKeywordByString( kActor, "Harness"  )) && (!ActorHasKeywordByString( kActor, "Corset"  ))
+			StorageUtil.SetIntValue(kActor, "_SLP_toggleLivingArmor", 1)
+			equipParasiteNPCByString (kActor, "LivingArmor")
+
+		Else
+			StorageUtil.SetIntValue(kActor, "_SLP_toggleLivingArmor", 0)
+			clearParasiteNPCByString (kActor, "LivingArmor")
+		Endif
+
+	ElseIf (sParasite == "Barnacles")
+		If (isInfectedByString( kActor,  "Barnacles" )) && (!ActorHasKeywordByString( kActor, "Harness"  )) && (!ActorHasKeywordByString( kActor, "Corset"  ))
+			StorageUtil.SetIntValue(kActor, "_SLP_toggleBarnacles", 1)
+			equipParasiteNPCByString (kActor, "Barnacles")
+
+		Else
+			StorageUtil.SetIntValue(kActor, "_SLP_toggleBarnacles", 0)
+			clearParasiteNPCByString (kActor, "Barnacles")
+		Endif
+	Endif
+
+EndFunction
+
+
+;------------------------------------------------------------------------------
 Function ApplyBodyChange(Actor kActor, String sParasite, String sBodyPart, Float fValue=1.0, Float fValueMax=1.0)
   	ActorBase pActorBase = kActor.GetActorBase()
  	Actor PlayerActor = Game.GetPlayer()
@@ -1434,12 +1659,14 @@ Function ApplyBodyChange(Actor kActor, String sParasite, String sBodyPart, Float
 		Debug.Trace("[SLP]  	Node string: " + sParasite)
 		Debug.Trace("[SLP]  	Max node: " + fValueMax)
 
- 		if (fValue < 1.0)
-			fValue = 1.0     ; NiO node is reset with value of 1.0 - not 0.0!
-		Endif		
+ 		if (!isSlifInstalled)
+			if (fValue < 1.0)
+				fValue = 1.0     ; NiO node is reset with value of 1.0 - not 0.0!
+			Endif		
 
- 		if (fValue > fValueMax)
-			fValue = fValueMax
+			if (fValue > fValueMax)
+				fValue = fValueMax
+			Endif
 		Endif
 
 
@@ -1447,27 +1674,45 @@ Function ApplyBodyChange(Actor kActor, String sParasite, String sBodyPart, Float
 			Debug.Trace("[SLP]     Applying breast change: " + NiOString)
 			Debug.Trace("[SLP]     Value: " + fValue)
 
-			XPMSELib.SetNodeScale(kActor, true, NINODE_LEFT_BREAST, fValue, NiOString)
-			XPMSELib.SetNodeScale(kActor, true, NINODE_RIGHT_BREAST, fValue, NiOString)
+			if (isSlifInstalled)
+				SLIF_inflateMax(kActor, "slif_breast", fValue, fValueMax, NiOString)
+			else
+				XPMSELib.SetNodeScale(kActor, true, NINODE_LEFT_BREAST, fValue, NiOString)
+				XPMSELib.SetNodeScale(kActor, true, NINODE_RIGHT_BREAST, fValue, NiOString)
+			Endif
 
 		Elseif (( sBodyPart == "Belly"  ) && (pActorBase.GetSex()==1)) ; Female change
 			Debug.Trace("[SLP]     Applying belly change: " + NiOString)
 			Debug.Trace("[SLP]     Value: " + fValue)
 
-			XPMSELib.SetNodeScale(kActor, true, NINODE_BELLY, fValue, NiOString)
+			if (isSlifInstalled)
+				SLIF_inflateMax(kActor, "slif_belly", fValue, fValueMax, NiOString)
+			else
+				XPMSELib.SetNodeScale(kActor, true, NINODE_BELLY, fValue, NiOString)
+			Endif
+
 
 		Elseif (( sBodyPart == "Butt"  )) 
 			Debug.Trace("[SLP]     Applying butt change: " + NiOString)
 			Debug.Trace("[SLP]     Value: " + fValue)
 
-			XPMSELib.SetNodeScale(kActor, pActorBase.GetSex(), NINODE_LEFT_BUTT, fValue, NiOString)
-			XPMSELib.SetNodeScale(kActor, pActorBase.GetSex(), NINODE_RIGHT_BUTT, fValue, NiOString)
+			if (isSlifInstalled)
+				SLIF_inflateMax(kActor, "slif_butt", fValue, fValueMax, NiOString)
+			else
+				XPMSELib.SetNodeScale(kActor, pActorBase.GetSex(), NINODE_LEFT_BUTT, fValue, NiOString)
+				XPMSELib.SetNodeScale(kActor, pActorBase.GetSex(), NINODE_RIGHT_BUTT, fValue, NiOString)
+			Endif
+
 
 		Elseif (( sBodyPart == "Schlong"  ) ) 
 			Debug.Trace("[SLP]     Applying schlong change: " + NiOString)
 			Debug.Trace("[SLP]     Value: " + fValue)
 
-			XPMSELib.SetNodeScale(kActor, pActorBase.GetSex(), NINODE_SCHLONG, fValue, NiOString)
+			if (isSlifInstalled)
+				SLIF_inflateMax(kActor, "slif_schlong", fValue, fValueMax, NiOString)
+			else
+				XPMSELib.SetNodeScale(kActor, pActorBase.GetSex(), NINODE_SCHLONG, fValue, NiOString)
+			Endif
 
 		Endif
 	Else
@@ -1476,6 +1721,47 @@ Function ApplyBodyChange(Actor kActor, String sParasite, String sBodyPart, Float
 	EndIf
 
 EndFunction
+
+Bool function isFemale(actor kActor)
+	Bool bIsFemale
+	ActorBase kActorBase = kActor.GetActorBase()
+
+	if (kActorBase.GetSex() == 1) ; female
+		bIsFemale = True
+	Else
+		bIsFemale = False
+	EndIf
+
+	return bIsFemale
+EndFunction
+
+function SLIF_inflate(Actor kActor, String sKey, float value, String NiOString)
+	int SLIF_event = ModEvent.Create("SLIF_inflate")
+	If (SLIF_event)
+		ModEvent.PushForm(SLIF_event, kActor)
+		ModEvent.PushString(SLIF_event, "SexLab Parasites")
+		ModEvent.PushString(SLIF_event, sKey)
+		ModEvent.PushFloat(SLIF_event, value)
+		ModEvent.PushString(SLIF_event, NiOString)
+		ModEvent.Send(SLIF_event)
+	EndIf
+endFunction
+
+function SLIF_setMax(Actor kActor, String sKey, float maximum)
+	int SLIF_event = ModEvent.Create("SLIF_setMax")
+	If (SLIF_event)
+		ModEvent.PushForm(SLIF_event, kActor)
+		ModEvent.PushString(SLIF_event, "SexLab Parasites")
+		ModEvent.PushString(SLIF_event, sKey)
+		ModEvent.PushFloat(SLIF_event, maximum)
+		ModEvent.Send(SLIF_event)
+	EndIf	
+endFunction
+
+function SLIF_inflateMax(Actor kActor, String sKey, float value, float maximum, String NiOString)
+	SLIF_setMax(kActor, sKey, maximum)
+	SLIF_inflate(kActor, sKey, value, NiOString)
+endFunction
 
 ;------------------------------------------------------------------------------
 Function ParasiteSex(Actor kActor, Actor kParasite)

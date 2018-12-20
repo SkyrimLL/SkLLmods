@@ -1,6 +1,7 @@
 Scriptname SLP_QST_MCM extends SKI_ConfigBase  
 
 SLP_fcts_parasites Property fctParasites  Auto
+Ingredient  Property IngredientSpiderEgg Auto
 
 ; PRIVATE VARIABLES -------------------------------------------------------------------------------
 
@@ -48,6 +49,9 @@ float		_bellyMaxFaceHugger = 1.0
 
 bool		_toggleBarnacles = true
 float		_chanceBarnacles = -1.0 
+
+bool		_toggleRefreshAll = false
+bool		_toggleClearAll = false
 
 bool		_togglePriestOutfits = false
 float  		_resetTrigger = 1.0
@@ -195,6 +199,10 @@ event OnPageReset(string a_page)
 		AddSliderOptionST("STATE_TENTACLEMONSTER_BREAST","Max breast size (Tentacle monster)", _breastMaxTentacleMonster,"{1}")
 		AddSliderOptionST("STATE_LIVINGARMOR_BREAST","Max breast size (Living Armor)", _breastMaxLivingArmor,"{1}")
 		AddSliderOptionST("STATE_CHAURUSWORM_BUTT","Max butt size (Chaurus worm)", _buttMaxChaurusWorm,"{1}")
+
+		AddHeaderOption(" ")
+		AddToggleOptionST("STATE_REFRESH_ALL","Refresh all equipped parasites", _toggleRefreshAll as Float)
+		AddToggleOptionST("STATE_CLEAR_ALL","Clear all parasites", _toggleClearAll as Float)
 
 		AddHeaderOption(" ")
 		AddToggleOptionST("STATE_OUTFITS_TOGGLE","Custom Priest Outfits", _togglePriestOutfits as Float)
@@ -898,6 +906,45 @@ state STATE_BARNACLES_CHANCE ; SLIDER
 	endEvent
 endState
 
+; AddToggleOptionST("STATE_REFRESH_ALL","Refresh equipped parasites", _toggleRefreshAll, OPTION_FLAG_DISABLED)
+state STATE_REFRESH_ALL ; TOGGLE
+	event OnSelectST() 
+		; Force parasite equip refresh
+		SendModEvent("SLPRefreshParasites")
+		Debug.MessageBox("[Refreshing all equipped parasites. Wait a minute for all events to clear.]")
+		ForcePageReset()
+	endEvent
+
+	event OnDefaultST()
+		; No action on default
+		ForcePageReset()
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Refresh the state of current parasites and re-equip or clean up if necessary.")
+	endEvent
+endState
+
+; AddToggleOptionST("STATE_CLEAR_ALL","Clear all equipped parasites", _toggleClearAll, OPTION_FLAG_DISABLED)
+state STATE_CLEAR_ALL ; TOGGLE
+	event OnSelectST() 
+		; Force all parasite clear
+		SendModEvent("SLPClearParasites")
+		Debug.MessageBox("[Clearing all equipped parasites. Wait a minute for all events to clear.]")
+		ForcePageReset()
+	endEvent
+
+	event OnDefaultST()
+		; No action on default
+		ForcePageReset()
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Force clearing of all parasites (use for debug or in case of emergency).")
+	endEvent
+endState
+
+
 ; AddToggleOptionST("STATE_OUTFITS_TOGGLE","Priest outfits", _togglePriestOutfits as Float, OPTION_FLAG_DISABLED)
 state STATE_OUTFITS_TOGGLE ; TOGGLE
 	event OnSelectST() 
@@ -905,6 +952,7 @@ state STATE_OUTFITS_TOGGLE ; TOGGLE
 		_togglePriestOutfits = toggle
 		StorageUtil.SetIntValue(none, "_SLP_togglePriestOutfits", toggle )
 		SetToggleOptionValueST( toggle as Bool )
+		Debug.MessageBox("[Replacing priest outfits in Whiterun, Windhelm, Riften and Solitude.]")
 		ForcePageReset()
 	endEvent
 
@@ -924,6 +972,9 @@ state STATE_REGISTER_EVENTS ; TOGGLE
 	event OnSelectST()
 		SendModEvent("zadRegisterEvents")
 		Debug.MessageBox("[Devious Devices events registration started. Wait a minute before checking DD menu.]")
+
+		; Test of birthing scene
+		; kPlayer.SendModEvent("SLPTriggerEstrusChaurusBirth", "Barnacles", 5.0)
 	endEvent
 
 	event OnDefaultST()

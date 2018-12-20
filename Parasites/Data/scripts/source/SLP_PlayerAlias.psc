@@ -75,6 +75,8 @@ Function _maintenance()
 		fctParasites.isNiOInstalled = fctParasites.CheckXPMSERequirements(PlayerActor, pActorBase.GetSex())
 	EndIf
 
+	fctParasites.isSlifInstalled = Game.GetModbyName("SexLab Inflation Framework.esp") != 255
+
 	If (!StorageUtil.HasIntValue(none, "_SLP_iSexLabParasites"))
 		StorageUtil.SetIntValue(none, "_SLP_iSexLabParasites", 1)
 		fctParasites._resetParasiteSettings()
@@ -111,9 +113,14 @@ Function _maintenance()
 	RegisterForModEvent("SLPCureFaceHuggerGag",   "OnSLPCureFaceHuggerGag")
 	RegisterForModEvent("SLPInfectBarnacles",   "OnSLPInfectBarnacles")
 	RegisterForModEvent("SLPCureBarnacles",   "OnSLPCureBarnacles")
-	RegisterForModEvent("SLPInfectEstrusChaurusEgg",   "OnSLPInfectChaurusEgg")
+
+	RegisterForModEvent("SLPInfectEstrusChaurusEgg",   "OnSLPInfectEstrusChaurusEgg")
+	RegisterForModEvent("SLPTriggerEstrusChaurusBirth",   "OnSLPTriggerEstrusChaurusBirth")
 
 	RegisterForModEvent("ArachnophobiaPlayerCaptured",   "OnArachnophobiaPlayerCaptured")
+
+	RegisterForModEvent("SLPRefreshParasites",   "OnSLPRefreshParasites")
+	RegisterForModEvent("SLPClearParasites",   "OnSLPClearParasites")
 
 	RegisterForModEvent("SLPRefreshBodyShape",   "OnSLPRefreshBodyShape")
 
@@ -193,6 +200,7 @@ Event OnUpdate()
 			If  (iParasiteDuration > 5) && (!kLocation.IsSameLocation(SLP_BlackreachLocation)) && (!kLocation.HasKeyword(SLP_FalmerHiveLocType)) && (!kLocation.HasKeyword(SLP_CaveLocType)) && (!kLocation.HasKeyword(SLP_DwarvenRuinLocType))
 				Debug.Messagebox("The spores evaporated on their own.")
 				fctParasites.cureBarnacles( PlayerActor   )
+				PlayerActor.SendModEvent("SLPTriggerEstrusChaurusBirth", "Barnacles", Utility.RandomInt(1, 5))
 			  	
 			endIf
 		endif
@@ -478,6 +486,13 @@ Event OnSLPInfectSpiderEgg(String _eventName, String _args, Float _argc = 1.0, F
 
 	Debug.Trace("[SLP] Receiving 'infect spider egg' event - Actor: " + kActor)
 
+	ActorBase pActorBase = kActor.GetActorBase()
+
+	if (pActorBase.GetSex()==0)
+		Debug.Trace("[SLP]  	Actor is male - aborting infection")
+		return
+	Endif
+
 	fctParasites.infectSpiderEgg( kActor   )
 	
 EndEvent
@@ -507,6 +522,13 @@ Event OnSLPInfectSpiderPenis(String _eventName, String _args, Float _argc = 1.0,
  	Endif
 
 	Debug.Trace("[SLP] Receiving 'infect spider penis' event - Actor: " + kActor)
+
+	ActorBase pActorBase = kActor.GetActorBase()
+
+	if (pActorBase.GetSex()==0)
+		Debug.Trace("[SLP]  	Actor is male - aborting infection")
+		return
+	Endif
 
 	fctParasites.infectSpiderPenis( kActor   )
 
@@ -567,6 +589,13 @@ Event OnSLPInfectChaurusWormVag(String _eventName, String _args, Float _argc = 1
  
 	Debug.Trace("[SLP] Receiving 'infect chaurus worm vaginal' event - Actor: " + kActor)
 
+	ActorBase pActorBase = kActor.GetActorBase()
+
+	if (pActorBase.GetSex()==0)
+		Debug.Trace("[SLP]  	Actor is male - aborting infection")
+		return
+	Endif
+
 	fctParasites.infectChaurusWormVag( kActor   )
 	
 EndEvent
@@ -595,7 +624,7 @@ Event OnSLPInfectEstrusTentacles(String _eventName, String _args, Float _argc = 
  	Endif
 
 	Debug.Trace("[SLP] Receiving 'infect estrus tentacle' event - Actor: " + kActor)
-
+	
 	fctParasites.infectEstrusTentacles( kActor   )
 	
 EndEvent
@@ -609,6 +638,13 @@ Event OnSLPInfectTentacleMonster(String _eventName, String _args, Float _argc = 
  	Endif
  
 	Debug.Trace("[SLP] Receiving 'infect tentacle monster' event - Actor: " + kActor)
+
+	ActorBase pActorBase = kActor.GetActorBase()
+
+	if (pActorBase.GetSex()==0)
+		Debug.Trace("[SLP]  	Actor is male - aborting infection")
+		return
+	Endif
 
 	fctParasites.infectTentacleMonster( kActor   )
 	
@@ -653,6 +689,13 @@ Event OnSLPInfectLivingArmor(String _eventName, String _args, Float _argc = 1.0,
  
 	Debug.Trace("[SLP] Receiving 'infect living armor' event - Actor: " + kActor)
 
+	ActorBase pActorBase = kActor.GetActorBase()
+
+	if (pActorBase.GetSex()==0)
+		Debug.Trace("[SLP]  	Actor is male - aborting infection")
+		return
+	Endif
+
 	fctParasites.infectLivingArmor( kActor   )
 	
 EndEvent
@@ -681,6 +724,13 @@ Event OnSLPInfectFaceHugger(String _eventName, String _args, Float _argc = 1.0, 
  	Endif
  
 	Debug.Trace("[SLP] Receiving 'infect face hugger' event - Actor: " + kActor)
+
+	ActorBase pActorBase = kActor.GetActorBase()
+
+	if (pActorBase.GetSex()==0)
+		Debug.Trace("[SLP]  	Actor is male - aborting infection")
+		return
+	Endif
 
 	fctParasites.infectFaceHugger( kActor   )
 	
@@ -742,6 +792,13 @@ Event OnSLPInfectBarnacles(String _eventName, String _args, Float _argc = 1.0, F
 
 	Debug.Trace("[SLP] Receiving 'infect barnacles' event - Actor: " + kActor)
 
+	ActorBase pActorBase = kActor.GetActorBase()
+
+	if (pActorBase.GetSex()==0)
+		Debug.Trace("[SLP]  	Actor is male - aborting infection")
+		return
+	Endif
+
 	fctParasites.infectBarnacles( kActor   )
 	
 EndEvent
@@ -773,7 +830,34 @@ Event OnSLPInfectEstrusChaurusEgg(String _eventName, String _args, Float _argc =
 
 	Debug.Trace("[SLP] Receiving 'infect estrus chaurus egg' event - Actor: " + kActor)
 
+	ActorBase pActorBase = kActor.GetActorBase()
+
+	if (pActorBase.GetSex()==0)
+		Debug.Trace("[SLP]  	Actor is male - aborting infection")
+		return
+	Endif
+
 	fctParasites.infectEstrusChaurusEgg( kActor   )
+	
+EndEvent
+
+;------------------------------------------------------------------------------
+Event OnSLPTriggerEstrusChaurusBirth(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+  	Actor PlayerActor = Game.GetPlayer()
+ 	String sParasite = _args
+ 	Int iBirthItemCount = _argc as Int
+
+ 	If (kActor == None)
+ 		kActor = PlayerActor
+ 	Endif
+
+ 	; (sParasite == "SpiderEgg")
+	; (sParasite == "Barnacles")
+	
+	Debug.Trace("[SLP] Receiving 'trigger estrus chaurus birth' event - Actor: " + kActor)
+
+	fctParasites.triggerEstrusChaurusBirth( kActor, sParasite, iBirthItemCount  )
 	
 EndEvent
 ;------------------------------------------------------------------------------
@@ -872,6 +956,55 @@ Event OnSLPSexCure(String _eventName, String _args, Float _argc = 0.0, Form _sen
 
 EndEvent
 
+Event OnSLPClearParasites(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+  	Actor PlayerActor = Game.GetPlayer()
+ 	Bool bHarvestParasite = False
+
+ 	If (kActor == None)
+ 		kActor = PlayerActor
+ 	Endif
+ 	
+	Debug.Trace("[SLP] Receiving 'clear parasites' event - Actor: " + kActor)
+
+	fctParasites.cureSpiderEgg(kActor,"All", bHarvestParasite)
+	fctParasites.cureSpiderPenis(kActor,bHarvestParasite)
+ 	fctParasites.cureChaurusWorm(kActor, bHarvestParasite)
+ 	fctParasites.cureChaurusWormVag(kActor, bHarvestParasite)
+	fctParasites.cureTentacleMonster( kActor )
+	fctParasites.cureLivingArmor( kActor )
+  	fctParasites.cureFaceHugger(kActor, bHarvestParasite)
+	fctParasites.cureFaceHuggerGag(kActor, bHarvestParasite)
+	fctParasites.cureBarnacles( kActor )
+
+EndEvent
+
+Event OnSLPRefreshParasites(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+  	Actor PlayerActor = Game.GetPlayer()
+ 	Bool bHarvestParasite = False
+
+ 	If (kActor == None)
+ 		kActor = PlayerActor
+ 	Endif
+ 	
+	Debug.Trace("[SLP] Receiving 'refresh parasites' event - Actor: " + kActor)
+
+	; fctParasites.cureSpiderEgg(kActor,"All", bHarvestParasite)
+	; fctParasites.cureSpiderPenis(kActor,bHarvestParasite)
+ 	; fctParasites.cureChaurusWorm(kActor, bHarvestParasite)
+ 	; fctParasites.cureChaurusWormVag(kActor, bHarvestParasite)
+	fctParasites.refreshParasite(kActor, "Barnacles")
+	fctParasites.refreshParasite(kActor, "Barnacles")
+	fctParasites.refreshParasite(kActor, "FaceHugger")
+	fctParasites.refreshParasite(kActor, "FaceHuggerGag")
+	fctParasites.refreshParasite(kActor, "TentacleMonster")
+	fctParasites.refreshParasite(kActor, "LivingArmor")
+	fctParasites.refreshParasite(kActor, "Barnacles")
+
+
+EndEvent
+
 Event OnSLPRefreshBodyShape(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
  	Actor PlayerActor = Game.GetPlayer()
@@ -961,7 +1094,7 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 	endIf
 
 	if (bLocationAllowed)
-		If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceBarnacles" )>0.0)
+		If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceBarnacles" )>0.0) && (fctParasites.isFemale(PlayerActor)) 
 			; Sleeping naked in Blackreach -> chance of barnacles
 			If (!fctParasites.ActorHasKeywordByString(PlayerActor, "Harness")) && (!fctParasites.ActorHasKeywordByString(PlayerActor, "Belt")) && (!fctParasites.ActorHasKeywordByString(PlayerActor, "Barnacles")) && (fctOutfits.isActorNaked(PlayerActor)) && (Utility.RandomInt(1,100)<= (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceBarnacles" ) as Int) )
 				fctParasites.infectBarnacles( PlayerActor   )
@@ -976,7 +1109,7 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 
 		endif
 
-		if (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceFaceHugger" )>0.0)
+		if (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceFaceHugger" )>0.0) && (fctParasites.isFemale(PlayerActor)) 
 			; Sleeping naked in a draugr crypt -> chance of face hugger
 			If (!fctParasites.ActorHasKeywordByString(PlayerActor, "Belt")) && (!fctParasites.ActorHasKeywordByString(PlayerActor, "Harness")) && (!fctParasites.ActorHasKeywordByString(PlayerActor, "PlugVaginal")) && (!fctParasites.ActorHasKeywordByString(PlayerActor, "FaceHugger")) && (fctOutfits.isActorNaked(PlayerActor)) && (Utility.RandomInt(1,100)<= (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceFaceHugger" ) as Int) )
 				fctParasites.infectFaceHugger( PlayerActor   )

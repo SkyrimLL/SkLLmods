@@ -81,17 +81,17 @@ Function Execute(actor akActor)
 
 	Elseif akActor.WornHasKeyword ( _SLPKP_FaceHugger  ) 
 		If (Utility.RandomInt(0,100)>40)
-			libs.NotifyPlayer("The critter pumps thick fluids deep inside your womb.")
+			libs.NotifyPlayer("The critter pumps thick fluids deep inside you.")
 			libs.Pant(akActor)	
 
 		Else 
-			libs.NotifyPlayer("The mouth of the critter is hopelessly locked around your clit.")
+			libs.NotifyPlayer("The mouth of the critter is hopelessly locked around your sex.")
 			libs.SexlabMoan(akActor)
 		Endif	
 
 	Elseif akActor.WornHasKeyword ( _SLPKP_FaceHuggerGag  ) 
 		If (Utility.RandomInt(0,100)>40)
-			libs.NotifyPlayer("The tail of the critter squeeze your throat.")
+			libs.NotifyPlayer("The tail of the critter squeezes your throat.")
 			libs.Pant(akActor)	
 
 		Else 

@@ -37,7 +37,7 @@ function DeviceMenuRemoveWithKey()
 	    elseif Aroused.GetActorExposure(libs.PlayerRef) < libs.ArousalThreshold("Desperate")
 		    msg = "Unable to resist your carnal desires any longer you anxiously desperately jab the critter until it leaves your hips ."
 	    else
-		    msg = "After several frenzied attempts your trembling fingers finally manage to somehow pull the squirmy critter away from your throbbing pussy."
+		    msg = "After several frenzied attempts your trembling fingers finally manage to somehow pull the squirmy critter away from your throbbing sex."
 	    endif
 	    libs.Notify(msg, true)
     Endif
@@ -191,7 +191,7 @@ Function OnRemoveDevice(actor akActor)
 		Else
 			;        deviceQuest.SetObjectiveCompleted(100)
 			;        deviceQuest.SetObjectivedisplayed(100)
-			if Aroused.GetActorExposure(libs.PlayerRef) >= libs.ArousalThreshold("Desperate") && libs.Config.MasturbateOnBeltRemoval
+			if Aroused.GetActorExposure(libs.PlayerRef) >= libs.ArousalThreshold("Desperate") ; && libs.Config.MasturbateOnBeltRemoval
 				deviceQuest.SetObjectiveCompleted(10)
 				deviceQuest.SetObjectiveFailed(20)
 				deviceQuest.setStage(80)
