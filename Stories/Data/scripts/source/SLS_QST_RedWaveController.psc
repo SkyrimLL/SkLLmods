@@ -11,6 +11,18 @@ ObjectReference Property _SLS_TempWhore  Auto
 
 MiscObject Property Gold001  Auto  
 
+Function RedWaveStart()
+	Actor PlayerActor = Game.GetPlayer()
+	; Stop other mods like Deviously Enslaved while in RedWave
+	SendModEvent("dhlp-Suspend")
+	StorageUtil.SetIntValue(PlayerActor, "_SLS_iStoriesRedWaveJob", 1)
+EndFunction
+
+Function RedWaveStop()
+	Actor PlayerActor = Game.GetPlayer()
+	SendModEvent("dhlp-Resume")
+	StorageUtil.SetIntValue(PlayerActor, "_SLS_iStoriesRedWaveJob", -1)
+EndFunction
 
 Bool Function ReserveFollowerWhore()
 

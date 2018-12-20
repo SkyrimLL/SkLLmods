@@ -22,8 +22,6 @@ GlobalVariable Property _SLS_NPCRumorsON  Auto
 bool  bIsPregnant = false 
 bool  bBeeingFemale = false 
 bool  bEstrusChaurus = false 
-spell  BeeingFemalePregnancy 
-spell  ChaurusBreeder 
 
 Int iArousalThrottle ; Chance of success to consider updating arousal
 
@@ -123,7 +121,30 @@ Function _Maintenance()
 
 	StorageUtil.SetFormValue(none, "_SLS_UniqueActorLotte", LotteRef as Form)
 
-	_InitExternalPregancy()
+	; Mod detection / compatibility
+	StorageUtil.SetIntValue(none, "_SLS_isEstrusChaurusON",  0) 
+	StorageUtil.SetIntValue(none, "_SLS_isBeeingFemaleON",  0) 
+	StorageUtil.SetIntValue(none, "_SLS_isCagedFollowerON",  0) 
+
+	int idx = Game.GetModCount()
+	string modName = ""
+	while idx > 0
+		idx -= 1
+		modName = Game.GetModName(idx)
+		if modName == "EstrusChaurus.esp"
+			StorageUtil.SetIntValue(none, "_SLS_isEstrusChaurusON",  1) 
+			StorageUtil.SetFormValue(none, "_SLS_getEstrusChaurusBreederSpell",  Game.GetFormFromFile(0x00019121, modName)) ; as Spell
+
+		elseif modName == "BeeingFemale.esm"
+			StorageUtil.SetIntValue(none, "_SLS_isBeeingFemaleON",  1) 
+			StorageUtil.SetFormValue(none, "_SLS_getBeeingFemalePregnancySpell",  Game.GetFormFromFile(0x000028A0, modName)) ; as Spell
+
+		elseif modName == "CagedFollowers.esp"
+			StorageUtil.SetIntValue(none, "_SLS_isCagedFollowerON",  1) 
+			StorageUtil.SetFormValue(none, "_SLS_getCagedFollowerQuestKeyword",  Game.GetFormFromFile(0x0000184d, modName)) ; as Keyword
+
+		endif
+	endWhile
 EndFunction
 
 Event OnPCStartRedWave(String _eventName, String _args, Float _argc = -1.0, Form _sender)
@@ -234,12 +255,12 @@ Event OnPCStartAlicia(String _eventName, String _args, Float _argc = -1.0, Form 
 	PlayerActor.addtofaction(DremoraFaction) 
 
 	StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryLevel", 1)
-	StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryExposure", 50)
-	SendModEvent("SDSanguineBlessingMod", "", 5)  
+	StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryExposure", 2)
+	SendModEvent("SDSanguineBlessingMod", "", 2)  
 
 	SendModEvent("_SLS_PlayerAlicia")
 
-	Debug.MessageBox("Lord Sanguine has chosen you as a concubine. It is up to you to embrace his gift, revel in his debauchery and, if you survive, even earn his love.")
+	Debug.MessageBox("You wake up in a strange place. The last thing you remember are drinks, banter and singing in... a tavern maybe? This is so confusing. Is this a dream? or something else?")
 
 EndEvent
 
@@ -836,26 +857,6 @@ function _refreshGameStats()
 EndFunction
 
 
-Function _InitExternalPregancy()
-	bEstrusChaurus = false
-	bBeeingFemale = false
-	int idx = Game.GetModCount()
-	string modName = ""
-	while idx > 0
-	idx -= 1
-	modName = Game.GetModName(idx)
-
-	if modName == "EstrusChaurus.esp"
-	  bEstrusChaurus = true
-	  ChaurusBreeder = Game.GetFormFromFile(0x00019121, modName) as spell
-
-	elseif modName == "BeeingFemale.esm"
-	  bBeeingFemale = true
-	  BeeingFemalePregnancy = Game.GetFormFromFile(0x000028A0, modName) as spell
-	endif
-	endWhile
-EndFunction
-
 bool function isPregnantBySoulGemOven(actor kActor) 
   	return (StorageUtil.GetIntValue(Game.GetPlayer(), "sgo_IsBellyScaling") == 1) || (StorageUtil.GetIntValue(Game.GetPlayer(), "sgo_IsBreastScaling ") == 1)
 
@@ -867,17 +868,21 @@ bool function isPregnantBySimplePregnancy(actor kActor)
 endFunction
 
 bool function isPregnantByBeeingFemale(actor kActor)
-	 if ( (bBeeingFemale==true) &&  ( (StorageUtil.GetIntValue(kActor, "FW.CurrentState")>=4) && (StorageUtil.GetIntValue(kActor, "FW.CurrentState")<=8))  )
-    	return true
-	endIf
-	return false
+  if ( (StorageUtil.GetIntValue(none, "_SLS_isBeeingFemaleON")==1 ) &&  ( (StorageUtil.GetIntValue(kActor, "FW.CurrentState")>=4) && (StorageUtil.GetIntValue(kActor, "FW.CurrentState")<=8))  )
+    return true
+  endIf
+  return false
 endFunction
  
 bool function isPregnantByEstrusChaurus(actor kActor)
-	if bEstrusChaurus==true && ChaurusBreeder != none
-	return kActor.HasSpell(ChaurusBreeder)
-	endIf
-	return false
+  spell  ChaurusBreeder 
+  if (StorageUtil.GetIntValue(none, "_SLS_isCagedFollowerON") ==  1) 
+  	ChaurusBreeder = StorageUtil.GetFormValue(none, "_SLS_getCagedFollowerQuestKeyword") as Spell
+  	if (ChaurusBreeder != none)
+    	return kActor.HasSpell(ChaurusBreeder)
+    endif
+  endIf
+  return false
 endFunction
 
 bool function isPregnant(actor kActor)

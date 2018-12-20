@@ -32,7 +32,7 @@ SLS_QST_CowLife Property CowLife Auto
 int MilkLevel = 0
 
 ; String                   Property NINODE_SCHLONG	 	= "NPC Genitals01 [Gen01]" AutoReadOnly
-string                   Property SLH_KEY               = "SexLab_Hormones.esp" AutoReadOnly
+string                   Property SLS_KEY               = "SLSDDi_MilkFarm" AutoReadOnly
 String                   Property NINODE_SCHLONG	 	= "NPC GenitalsBase [GenBase]" AutoReadOnly
 String                   Property NINODE_LEFT_BREAST    = "NPC L Breast" AutoReadOnly
 String                   Property NINODE_LEFT_BREAST01  = "NPC L Breast01" AutoReadOnly
@@ -62,6 +62,8 @@ int MILK_LEVEL_TRIGGER = 20
 
 
 Bool isNiOInstalled = false
+Bool Property isSlifInstalled Auto
+
 int daysPassed
 int iGameDateLastCheck = -1
 int iDaysSinceLastCheck
@@ -83,6 +85,8 @@ Function _maintenance()
 	if (!isNiOInstalled)
 		isNiOInstalled = CheckXPMSERequirements(PlayerActor, pActorBase.GetSex())
 	EndIf
+
+	isSlifInstalled = Game.GetModbyName("SexLab Inflation Framework.esp") != 255
 
 	If (!StorageUtil.HasIntValue(none, "_SLS_iStoriesDevious"))
 		StorageUtil.SetIntValue(none, "_SLS_iStoriesDevious", 1)
@@ -283,19 +287,21 @@ Function updateCowStatus(Actor kActor, String bCreateMilk = "")
 	Debug.Trace("[SLSDDi] Milk level: " + StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel"))
 	Debug.Trace("[SLSDDi] Prolactin level: " + StorageUtil.GetIntValue(kActor, "_SLH_iProlactinLevel"))
 
-	if (( isNiOInstalled  ) && (pActorBase.GetSex()==1))
-
+	if (pActorBase.GetSex()==1)
 		; Debug.Notification("[SLSDDi] Days since last milking: " + (fLactationMilkDate as Int))
-
 		Float fBreast  = 1.0 +  (fLactationBase * 0.2) + (fLactationLevel * 0.1) + (fLactationMilkDate * 0.15)
 		if (fbreast > StorageUtil.GetFloatValue(PlayerActor, "_SLS_breastMaxMilkFarm"  ))
 			fBreast = StorageUtil.GetFloatValue(PlayerActor, "_SLS_breastMaxMilkFarm"  )
 		Endif
- 
+	 
+		if (isSlifInstalled)
+			SLIF_inflateMax(kActor, "slif_belly", fBreast, NINODE_MAX_SCALE, SLS_KEY)
 
-		XPMSELib.SetNodeScale(kActor, true, NINODE_LEFT_BREAST, fBreast, "SLSDDi_MilkFarm")
-		XPMSELib.SetNodeScale(kActor, true, NINODE_RIGHT_BREAST, fBreast, "SLSDDi_MilkFarm")
+		elseif ( isNiOInstalled  ) 
+			XPMSELib.SetNodeScale(kActor, true, NINODE_LEFT_BREAST, fBreast, SLS_KEY)
+			XPMSELib.SetNodeScale(kActor, true, NINODE_RIGHT_BREAST, fBreast, SLS_KEY)
 
+		Endif
 		; Debug.Notification("[SLSDDi] Updating breast size to " + fBreast)
 	
 	EndIf
@@ -833,6 +839,33 @@ Bool Function _hasRace(Actor[] _actors, Race thisRace)
 	Return False
 EndFunction
  
+function SLIF_inflate(Actor kActor, String sKey, float value, String NiOString)
+	int SLIF_event = ModEvent.Create("SLIF_inflate")
+	If (SLIF_event)
+		ModEvent.PushForm(SLIF_event, kActor)
+		ModEvent.PushString(SLIF_event, "SexLab Parasites")
+		ModEvent.PushString(SLIF_event, sKey)
+		ModEvent.PushFloat(SLIF_event, value)
+		ModEvent.PushString(SLIF_event, NiOString)
+		ModEvent.Send(SLIF_event)
+	EndIf
+endFunction
+
+function SLIF_setMax(Actor kActor, String sKey, float maximum)
+	int SLIF_event = ModEvent.Create("SLIF_setMax")
+	If (SLIF_event)
+		ModEvent.PushForm(SLIF_event, kActor)
+		ModEvent.PushString(SLIF_event, "SexLab Parasites")
+		ModEvent.PushString(SLIF_event, sKey)
+		ModEvent.PushFloat(SLIF_event, maximum)
+		ModEvent.Send(SLIF_event)
+	EndIf	
+endFunction
+
+function SLIF_inflateMax(Actor kActor, String sKey, float value, float maximum, String NiOString)
+	SLIF_setMax(kActor, sKey, maximum)
+	SLIF_inflate(kActor, sKey, value, NiOString)
+endFunction
 
 
 bool Function CheckXPMSERequirements(Actor akActor, bool isFemale)

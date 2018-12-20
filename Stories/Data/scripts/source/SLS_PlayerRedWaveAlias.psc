@@ -29,8 +29,6 @@ Location Property RedWaveLocation Auto
 bool  bIsPregnant = false 
 bool  bBeeingFemale = false 
 bool  bEstrusChaurus = false 
-spell  BeeingFemalePregnancy 
-spell  ChaurusBreeder 
 
 int daysPassed
 int iGameDateLastCheck = -1
@@ -70,15 +68,19 @@ Function _Maintenance()
 	RegisterForModEvent("RedWaveWhip",   "OnSDStoryWhip")
 	RegisterForModEvent("RedWavePunish",   "OnSDStoryPunish")
 	
-	_InitExternalPregancy()
-
 EndFunction
 
 Event OnUpdate()
+	Actor PlayerActor= Game.GetPlayer() as Actor
+
 	If  !Self || !SexLab || (StorageUtil.GetIntValue(none, "_SLS_iStoriesPlayerRedWave")==0)
 		Return
 	EndIf
-	
+
+	If (StorageUtil.GetIntValue(PlayerActor, "_SLS_iStoriesRedWaveJob") == -1)
+		Return
+	EndIf	
+
  	daysPassed = Game.QueryStat("Days Passed")
 
  	; Initial values
@@ -112,6 +114,10 @@ Event OnLocationChange(Location akOldLoc, Location akNewLoc)
 	Int daysSinceLastPass 
 	Int iGold 
 
+	If (StorageUtil.GetIntValue(akActor, "_SLS_iStoriesRedWaveJob") == -1)
+		Return
+	EndIf
+	 
  	daysPassed = Game.QueryStat("Days Passed")
 	daysSinceLastPass = daysPassed - (PlayerDayPass.GetValue() as Int )
 	
@@ -320,26 +326,6 @@ Event OnSDStoryPunish(String _eventName, String _args, Float _argc = 1.0, Form _
 EndEvent
 
 
-Function _InitExternalPregancy()
-	bEstrusChaurus = false
-	bBeeingFemale = false
-	int idx = Game.GetModCount()
-	string modName = ""
-	while idx > 0
-	idx -= 1
-	modName = Game.GetModName(idx)
-
-	if modName == "EstrusChaurus.esp"
-	  bEstrusChaurus = true
-	  ChaurusBreeder = Game.GetFormFromFile(0x00019121, modName) as spell
-
-	elseif modName == "BeeingFemale.esm"
-	  bBeeingFemale = true
-	  BeeingFemalePregnancy = Game.GetFormFromFile(0x000028A0, modName) as spell
-	endif
-	endWhile
-EndFunction
-
 bool function isPregnantBySoulGemOven(actor kActor) 
   	return (StorageUtil.GetIntValue(Game.GetPlayer(), "sgo_IsBellyScaling") == 1) || (StorageUtil.GetIntValue(Game.GetPlayer(), "sgo_IsBreastScaling ") == 1)
 
@@ -351,21 +337,26 @@ bool function isPregnantBySimplePregnancy(actor kActor)
 endFunction
 
 bool function isPregnantByBeeingFemale(actor kActor)
-	 if ( (bBeeingFemale==true) &&  ( (StorageUtil.GetIntValue(kActor, "FW.CurrentState")>=4) && (StorageUtil.GetIntValue(kActor, "FW.CurrentState")<=8))  )
-    	return true
-	endIf
-	return false
+  if ( (StorageUtil.GetIntValue(none, "_SLS_isBeeingFemaleON")==1 ) &&  ( (StorageUtil.GetIntValue(kActor, "FW.CurrentState")>=4) && (StorageUtil.GetIntValue(kActor, "FW.CurrentState")<=8))  )
+    return true
+  endIf
+  return false
 endFunction
  
 bool function isPregnantByEstrusChaurus(actor kActor)
-	if bEstrusChaurus==true && ChaurusBreeder != none
-	return kActor.HasSpell(ChaurusBreeder)
-	endIf
-	return false
+  spell  ChaurusBreeder 
+  if (StorageUtil.GetIntValue(none, "_SLS_isCagedFollowerON") ==  1) 
+  	ChaurusBreeder = StorageUtil.GetFormValue(none, "_SLS_getCagedFollowerQuestKeyword") as Spell
+  	if (ChaurusBreeder != none)
+    	return kActor.HasSpell(ChaurusBreeder)
+    endif
+  endIf
+  return false
 endFunction
 
 bool function isPregnant(actor kActor)
 	bIsPregnant = ( isPregnantBySoulGemOven(kActor) || isPregnantBySimplePregnancy(kActor) || isPregnantByBeeingFemale(kActor) || isPregnantByEstrusChaurus(kActor) || ((StorageUtil.GetIntValue(Game.GetPlayer(), "PSQ_SuccubusON") == 1) && (StorageUtil.GetIntValue(Game.GetPlayer(), "PSQ_SoulGemPregnancyON") == 1)) )
+	Return bIsPregnant
 EndFunction
 
 Bool function isFemale(actor kActor)

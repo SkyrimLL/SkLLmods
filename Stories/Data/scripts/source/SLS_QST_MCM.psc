@@ -1,6 +1,11 @@
 Scriptname SLS_QST_MCM extends SKI_ConfigBase  
 
+ObjectReference Property inventoryChestREF Auto
+ObjectReference Property inventoryKeysREF Auto
 
+Armor Property setInventoryCloth Auto
+Armor Property setInventoryShoes Auto
+Weapon Property setInventoryDagger Auto
 
 ; PRIVATE VARIABLES -------------------------------------------------------------------------------
 
@@ -34,6 +39,8 @@ bool		_fetishTower
 bool		_fetishWarrior
 
 Float 		_breastMaxMilkFarm
+bool 		_clearInventory
+bool 		_setInventory
 
 Actor kPlayer
 bool toggle
@@ -195,6 +202,10 @@ event OnPageReset(string a_page)
 		; 13- The Warrior Stone - Using weapons 
 		; AddToggleOptionST("STATE_FETISH_WARRIOR","The Warrior", _fetishWarrior as Float, OPTION_FLAG_DISABLED)
 
+		AddHeaderOption(" Role Play Utilities")
+		AddToggleOptionST("STATE_CLEARINVENTORY","Clear inventory", _clearInventory as Float)
+		AddToggleOptionST("STATE_SETINVENTORY","Set inventory", _setInventory as Float)
+
 	ElseIf (a_page == "Stories")
 		SetCursorFillMode(TOP_TO_BOTTOM)
 	
@@ -325,7 +336,92 @@ state STATE_MILKFARM_BREAST ; SLIDER
 		SetInfoText("Max size of breast node while lactation is ON (for NiOverride compatiblity).")
 	endEvent
 endState
+; AddToggleOptionST("STATE_CLEARINVENTORY","Clear inventory", _clearInventory as Float, OPTION_FLAG_DISABLED)
+state STATE_CLEARINVENTORY ; TOGGLE
+	event OnSelectST() 
+		_clearInventory = True 
+		SetToggleOptionValueST( _clearInventory )
 
+		limitedRemoveAllKeys( akContainer=kPlayer, akTransferTo = inventoryKeysREF, abSilent = True, akIgnored = None)
+		kPlayer.RemoveAllItems(akTransferTo = inventoryChestREF, abKeepOwnership = True)
+
+
+		ForcePageReset()
+	endEvent
+
+	event OnDefaultST()
+		_clearInventory = false
+		SetToggleOptionValueST( _clearInventory )
+		ForcePageReset()
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Transfers player inventory in hidden chest (in sewers under abandonned prison)")
+	endEvent
+
+endState
+; AddToggleOptionST("STATE_SETINVENTORY","Set inventory", _setInventory as Float, OPTION_FLAG_DISABLED)
+state STATE_SETINVENTORY ; TOGGLE
+	event OnSelectST() 
+		_setInventory = True 
+		SetToggleOptionValueST( _setInventory )
+
+		kPlayer.AddItem(setInventoryCloth, 1)
+		kPlayer.EquipItem(setInventoryCloth)
+		kPlayer.AddItem(setInventoryShoes, 1)
+		kPlayer.EquipItem(setInventoryShoes)
+		kPlayer.AddItem(setInventoryDagger, 1)
+
+		ForcePageReset()
+	endEvent
+
+	event OnDefaultST()
+		_setInventory = false
+		SetToggleOptionValueST( _setInventory )
+		ForcePageReset()
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Adds default items to player inventory (common clothes, boots and dagger)")
+	endEvent
+
+endState
+
+Function limitedRemoveAllKeys ( ObjectReference akContainer, ObjectReference akTransferTo = None, Bool abSilent = True, FormList akIgnored = None )
+	Int iFormIndex = 0
+	Bool bDeviousDeviceEquipped = False
+	Actor kActor = akContainer as Actor
+
+	; Send all items in Equipment to akTransferTo
+
+	Int[] uiTypes = New Int[12]
+	uiTypes[0] = 23; kScrollItem = 23
+	uiTypes[1] = 26; kArmor = 26
+	uiTypes[2] = 27; kBook = 27
+	uiTypes[3] = 30; kIngredient = 30
+	uiTypes[4] = 32; kMisc = 32
+	uiTypes[6] = 41; kWeapon = 41
+	uiTypes[7] = 42; kAmmo = 42
+	uiTypes[8] = 45; kKey = 45
+	uiTypes[9] = 46; kPotion = 46
+	uiTypes[10] = 48; kNote = 48
+	uiTypes[11] = 52; kSoulGem = 52
+
+	iFormIndex = akContainer.GetNumItems()
+
+	While ( iFormIndex > 0 )
+		iFormIndex -= 1
+		Form kForm = akContainer.GetNthForm(iFormIndex)
+
+		If ( kForm && akIgnored && akIgnored.HasForm( kForm ) ) || (uiTypes.Find( kForm.GetType() ) == 26)
+			; continue
+		ElseIf ( kForm &&  uiTypes.Find( kForm.GetType() ) > -1 ) 
+			if (kForm.GetType()==45) ; keys only
+				akContainer.RemoveItem(kForm, akContainer.GetItemCount( kForm ), abSilent, akTransferTo)
+			endif
+		EndIf
+	EndWhile
+EndFunction
 
 float function fMin(float  a, float b)
 	if (a<=b)
