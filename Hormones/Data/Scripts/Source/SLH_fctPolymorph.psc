@@ -146,8 +146,8 @@ function bimboTransformEffectON(actor kActor)
 
     StorageUtil.SetIntValue(none, "_SLH_bimboIsOriginalActorMale", isActorMale as Int)
 
-    debugTrace("[SLH] Bimbo Transform Init")
-    debugTrace("[SLH] Bimbo Transform ON")
+    debugTrace(" Bimbo Transform Init")
+    debugTrace(" Bimbo Transform ON")
 
     ActorOriginalRace = kActor.GetRace()
     StorageUtil.SetFormValue(none, "_SLH_bimboOriginalActor", kActor)           
@@ -299,7 +299,7 @@ function bimboTransformEffectON(actor kActor)
             kActor.DispelSpell (VampireSunDamage04)
 
             ;======= CHANGING RACE HERE
-            debugTrace("[SLH] Bimbo Transform - Change Race")
+            debugTrace(" Bimbo Transform - Change Race")
             kActor.SetRace(PolymorphRace)
             ;=======
 
@@ -434,11 +434,11 @@ function bimboTransformEffectON(actor kActor)
 
     SLH_BimboControl.initBimbo()
 
-    debugTrace("[SLH] Bimbo ON")
+    debugTrace(" Bimbo ON")
 
-    debugTrace("[SLH] Bimbo Curse Start - IsBimbo: " + GV_isBimbo.GetValue() as Int)
-    debugTrace("[SLH] Bimbo Curse Start - IsHRT: " + GV_isHRT.GetValue() as Int)
-    debugTrace("[SLH] Bimbo Curse Start - IsTG: " + GV_isTG.GetValue() as Int)
+    debugTrace(" Bimbo Curse Start - IsBimbo: " + GV_isBimbo.GetValue() as Int)
+    debugTrace(" Bimbo Curse Start - IsHRT: " + GV_isHRT.GetValue() as Int)
+    debugTrace(" Bimbo Curse Start - IsTG: " + GV_isTG.GetValue() as Int)
 
 endFunction
 
@@ -448,13 +448,13 @@ function bimboTransformEffectOFF(actor kActor)
     GV_allowBimbo.SetValue( StorageUtil.GetIntValue(kActor, "_SLH_allowBimbo") as Int)
 
     ; PolymorphBimboFX.Cast(kActor,kActor) 
-    debugTrace("[SLH] Bimbo Curse Shutdown - IsBimbo: " + GV_isBimbo.GetValue() as Int)
-    debugTrace("[SLH] Bimbo Curse Shutdown - IsHRT: " + GV_isHRT.GetValue() as Int)
-    debugTrace("[SLH] Bimbo Curse Shutdown - IsTG: " + GV_isTG.GetValue() as Int)
+    debugTrace(" Bimbo Curse Shutdown - IsBimbo: " + GV_isBimbo.GetValue() as Int)
+    debugTrace(" Bimbo Curse Shutdown - IsHRT: " + GV_isHRT.GetValue() as Int)
+    debugTrace(" Bimbo Curse Shutdown - IsTG: " + GV_isTG.GetValue() as Int)
 
     If (GV_allowBimbo.GetValue()==1) && (GV_isBimbo.GetValue()==1)
         TransformationEffect.Cast(kActor,kActor)
-        debugTrace("[SLH] Bimbo Transform OFF")
+        debugTrace(" Bimbo Transform OFF")
   
         If (GV_allowBimboRace.GetValue()==1)
             ; kActor.RemoveSpell(PolymorphSpell)
@@ -480,14 +480,14 @@ function bimboTransformEffectOFF(actor kActor)
             Game.SetPlayerReportCrime(true)
             kActor.SetAttackActorOnSight(false)
             kActor.RemoveFromFaction(ActorWerewolfFaction)
-            debugTrace("[SLH] Bimbo - Setting race " + (CompanionsTrackingQuest as CompanionsHousekeepingScript).PlayerOriginalRace + " on " + kActor)
+            debugTrace(" Bimbo - Setting race " + (CompanionsTrackingQuest as CompanionsHousekeepingScript).PlayerOriginalRace + " on " + kActor)
 
             ; VFX3.Play(kActor, afTime = 3)
             ; VFX1.Stop(kActor)
             ; VFX2.Stop(kActor)
             kActor.DispelSpell(TransformationSpell)
 
-            debugTrace("[SLH] Original race - " + ActorOriginalRace)
+            debugTrace(" Original race - " + ActorOriginalRace)
 
             ActorOriginalRace = StorageUtil.GetFormValue(none, "_SLH_bimboOriginalRace") as Race
             If (ActorOriginalRace == None)
@@ -573,7 +573,7 @@ function bimboTransformEffectOFF(actor kActor)
     fctColor.sendSlaveTatModEvent(kActor, "Bimbo","Feet Nails", bRefresh = True )
  
     SLH_Control.setBimboState(kActor, FALSE)
-    debugTrace("[SLH] Bimbo OFF")
+    debugTrace(" Bimbo OFF")
 
  	; kActor.RegenerateHead()
  	; kActor.QueueNiNodeUpdate()
@@ -588,19 +588,19 @@ function HRTEffectON(actor kActor)
     GV_allowHRT.SetValue( StorageUtil.GetIntValue(kActor, "_SLH_allowHRT") as Int)
     GV_allowBimbo.SetValue( StorageUtil.GetIntValue(kActor, "_SLH_allowBimbo") as Int)
 
-    debugTrace("[SLH] HRT Start - IsHRT: " + GV_isHRT.GetValue() as Int)
+    debugTrace(" HRT Start - IsHRT: " + GV_isHRT.GetValue() as Int)
 
     If (GV_allowHRT.GetValue()==0) 
         Return
     Endif
 
-    debugTrace("[SLH] SexChange Init")
+    debugTrace(" SexChange Init")
  
     If (fctBodyShape.isSchlongSet(kActor )) ; add check for isGenderChangeON
         setSchlong = True
     endif
 
-    debugTrace("[SLH] SexChange - Change Gender")
+    debugTrace(" SexChange - Change Gender")
     ConsoleUtil.ExecuteCommand("player.sexchange")
 
     SLH_Control.playMoan(kActor)
@@ -618,7 +618,7 @@ function HRTEffectON(actor kActor)
         Endif
     EndIf
 
-    debugTrace("[SLH] HRT ON")
+    debugTrace(" HRT ON")
 
 endFunction
 
@@ -627,7 +627,7 @@ function HRTEffectOFF(actor kActor)
     GV_allowHRT.SetValue( StorageUtil.GetIntValue(kActor, "_SLH_allowHRT") as Int)
     GV_allowBimbo.SetValue( StorageUtil.GetIntValue(kActor, "_SLH_allowBimbo") as Int)
 
-    debugTrace("[SLH] HRT Shutdown - IsHRT: " + GV_isHRT.GetValue() as Int)
+    debugTrace(" HRT Shutdown - IsHRT: " + GV_isHRT.GetValue() as Int)
 
     If (GV_allowHRT.GetValue()==0) 
         Return
@@ -636,13 +636,13 @@ function HRTEffectOFF(actor kActor)
     SexLab.ClearForcedGender(kActor)
 
     ; MiscUtil.ExecuteBat("SLH_sexchange.bat")
-    debugTrace("[SLH] Sexchange")
+    debugTrace(" Sexchange")
     ConsoleUtil.ExecuteCommand("player.sexchange")
 
     SLH_Control.playMoan(kActor)
     fctColor.sendSlaveTatModEvent(kActor, "Bimbo","Feet Nails", bRefresh = True )
 
-    debugTrace("[SLH] HRT OFF")
+    debugTrace(" HRT OFF")
     SLH_Control.setHRTState(kActor, FALSE)
          
 endFunction
@@ -659,7 +659,7 @@ function TGEffectON(actor kActor)
         Return
     Endif
 
-    debugTrace("[SLH] TG Init")
+    debugTrace(" TG Init")
 
     If (fctBodyShape.isSchlongSet(kActor )) ; add check for isGenderChangeON
         setSchlong = True
@@ -672,7 +672,7 @@ function TGEffectON(actor kActor)
            
         ;    kActor.SendModEvent("SLHSetSchlong", "UNP Bimbo")
         ;    SLH_Control.setTGState(kActor, TRUE)
-        ;    debugTrace("[SLH] TG ON")
+        ;    debugTrace(" TG ON")
 
     elseif (!isActorMale) 
         ; Female to Female + Schlong
@@ -683,11 +683,11 @@ function TGEffectON(actor kActor)
 
         Sexlab.TreatAsMale(kActor)
         SLH_Control.setTGState(kActor, TRUE)
-        debugTrace("[SLH] TG ON")
+        debugTrace(" TG ON")
 
     endif
 
-    debugTrace("[SLH] TG Start - IsTG: " + GV_isTG.GetValue() as Int)
+    debugTrace(" TG Start - IsTG: " + GV_isTG.GetValue() as Int)
 
 endFunction
 
@@ -696,7 +696,7 @@ function TGEffectOFF(actor kActor)
     GV_allowHRT.SetValue( StorageUtil.GetIntValue(kActor, "_SLH_allowHRT") as Int)
     GV_allowBimbo.SetValue( StorageUtil.GetIntValue(kActor, "_SLH_allowBimbo") as Int)
     
-    debugTrace("[SLH] TG Shutdown - IsTG: " + GV_isTG.GetValue() as Int)
+    debugTrace(" TG Shutdown - IsTG: " + GV_isTG.GetValue() as Int)
 
     If (GV_allowTG.GetValue()==0)
         Return
@@ -709,7 +709,7 @@ function TGEffectOFF(actor kActor)
 
         SexLab.ClearForcedGender(kActor)
 
-        debugTrace("[SLH] TG OFF")
+        debugTrace(" TG OFF")
         kActor.SendModEvent("SLHSetSchlong", "")
         SLH_Control.setTGState(kActor, FALSE)
 
@@ -723,7 +723,7 @@ function TGEffectOFF(actor kActor)
         kActor.SendModEvent("SLHRemoveSchlong")
         Sexlab.TreatAsFemale(kActor)
         SLH_Control.setTGState(kActor, FALSE)
-        debugTrace("[SLH] TG OFF")
+        debugTrace(" TG OFF")
 
         SLH_Control.playMoan(kActor)
 
@@ -733,6 +733,6 @@ endFunction
 
 Function debugTrace(string traceMsg)
     if (StorageUtil.GetIntValue(none, "_SLH_debugTraceON")==1)
-        Debug.Trace(traceMsg)
+        Debug.Trace("[SLH_fctPolymorph]" + traceMsg)
     endif
 endFunction

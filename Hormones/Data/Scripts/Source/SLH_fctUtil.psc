@@ -128,7 +128,7 @@ Bool function hasRace(Actor[] _actors, Race thisRace)
 	ActorBase aBase 
 	Race aRace 
 
-	; debugTrace("[SLH] Race check:" + _actors.Length + " actors" )
+	; debugTrace(" Race check:" + _actors.Length + " actors" )
 
 	int idx = 0
 	while idx < _actors.Length
@@ -136,7 +136,7 @@ Bool function hasRace(Actor[] _actors, Race thisRace)
 			; aBase = _actors[idx].GetBaseObject() as ActorBase
 			aRace = _actors[idx].GetRace()
 
-			; debugTrace("[SLH] Race check:" + aRace + " / "  + thisRace)
+			; debugTrace(" Race check:" + aRace + " / "  + thisRace)
 
 			if aRace == thisRace
 				return True
@@ -151,7 +151,7 @@ Actor function getRaceActor(Actor[] _actors, Race thisRace)
 	ActorBase aBase 
 	Race aRace 
 
-	; debugTrace("[SLH] Race check:" + _actors.Length + " actors" )
+	; debugTrace(" Race check:" + _actors.Length + " actors" )
 
 	int idx = 0
 	while idx < _actors.Length
@@ -159,7 +159,7 @@ Actor function getRaceActor(Actor[] _actors, Race thisRace)
 			; aBase = _actors[idx].GetBaseObject() as ActorBase
 			aRace = _actors[idx].GetRace()
 
-			; debugTrace("[SLH] Race check:" + aRace + " / "  + thisRace)
+			; debugTrace(" Race check:" + aRace + " / "  + thisRace)
 
 			if aRace == thisRace
 				return _actors[idx]
@@ -281,7 +281,7 @@ endFunction
 
 Function debugTrace(string traceMsg)
 	if (StorageUtil.GetIntValue(none, "_SLH_debugTraceON")==1)
-		Debug.Trace(traceMsg)
+		Debug.Trace("[SLH_fctUtil]" + traceMsg)
 	endif
 endFunction
 

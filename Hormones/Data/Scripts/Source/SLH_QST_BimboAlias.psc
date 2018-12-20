@@ -41,6 +41,7 @@ int iDaysPassed
 
 Float fRFSU = 0.1
 Bool isUpdating = False
+Int iCommentThrottle = 0
 
 Bool isMale 
 Bool isMaleToBimbo
@@ -64,22 +65,22 @@ Bool isClumsyLegsRegistered = False
 Event OnPlayerLoadGame()
 	Actor kPlayer = Game.GetPlayer()
 	; if (!isUpdating)
-		debug.trace("[slh+] game loaded, registering for update")
+		debugTrace(" game loaded, registering for update")
 		if (StorageUtil.GetIntValue(kPlayer, "_SLH_iBimbo")==0) && StorageUtil.GetIntValue(kPlayer, "_SLH_bimboTransformDate") == 0
 			StorageUtil.SetIntValue(kPlayer, "_SLH_bimboTransformDate", -1)
-			debug.trace("[slh+] poor bimbo, are you lost?")
+			debugTrace(" poor bimbo, are you lost?")
 		endif
 
 		isMaleToBimbo =  StorageUtil.GetIntValue(none, "_SLH_bimboIsOriginalActorMale") as Bool
 
 		BimboActor= BimboAliasRef.GetReference() as Actor
-		debug.trace("[slh+] BimboActor: " + BimboActor)
-		debug.trace("[slh+] Bimbo Transform date: " + StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") )
-		debug.trace("[slh+] Player is bimbo: " + StorageUtil.GetIntValue(kPlayer, "_SLH_iBimbo"))
+		debugTrace(" BimboActor: " + BimboActor)
+		debugTrace(" Bimbo Transform date: " + StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") )
+		debugTrace(" Player is bimbo: " + StorageUtil.GetIntValue(kPlayer, "_SLH_iBimbo"))
 
     	RegisterForSingleUpdate( 10 )
     ; else
-	; 	debug.trace("[slh+] game loaded, is already updating (is it?)")
+	; 	debugTrace(" game loaded, is already updating (is it?)")
     ; endif
 EndEvent
 
@@ -88,9 +89,9 @@ Function initBimbo()
 	isMaleToBimbo =  StorageUtil.GetIntValue(none, "_SLH_bimboIsOriginalActorMale") as Bool
 
 	BimboActor= BimboAliasRef.GetReference() as Actor
-	debug.trace("[slh+] Init BimboActor: " + BimboActor)
-	debug.trace("[slh+] Bimbo Transform date: " + StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") )
-	debug.trace("[slh+] Player is bimbo: " + StorageUtil.GetIntValue(kPlayer, "_SLH_iBimbo"))
+	debugTrace(" Init BimboActor: " + BimboActor)
+	debugTrace(" Bimbo Transform date: " + StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") )
+	debugTrace(" Player is bimbo: " + StorageUtil.GetIntValue(kPlayer, "_SLH_iBimbo"))
 
 	debug.notification("(Giggle)")
 	
@@ -127,7 +128,7 @@ EndEvent
 Event OnActorAction(int actionType, Actor akActor, Form source, int slot)
 	; Safeguard - Exit if alias not set
 	if (StorageUtil.GetIntValue(Game.GetPlayer(), "_SLH_iBimbo")==0)
-		;debug.trace("[slh+] bimbo OnActorAction, None")
+		;debugTrace(" bimbo OnActorAction, None")
 		Return
 	Endif
 
@@ -145,6 +146,7 @@ EndEvent
 
 Event OnUpdate()
 	; Safeguard - Exit if alias not set
+	float bimboArousal = slaUtil.GetActorArousal(BimboActor) as float
 
 	if (StorageUtil.GetIntValue(Game.GetPlayer(), "_SLH_iBimbo")==0)
 		; Debug.Notification( "[SLH] Bimbo status update: " + StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") as Int )
@@ -161,7 +163,7 @@ Event OnUpdate()
 
 	; Safeguard - Evaluate the rest only when transformation happened
 	if (StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") == -1)
-		; debug.trace("[slh+] bimbo OnUpdate, No TF Date")
+		; debugTrace(" bimbo OnUpdate, No TF Date")
     	RegisterForSingleUpdate( 10 )
 		Return
 	Endif
@@ -281,6 +283,14 @@ Event OnUpdate()
 
         iGameDateLastCheck = iDaysPassed
 
+    else
+    	if ( (iCommentThrottle > 100) && (Utility.RandomInt(0,100) > (100 - ((bimboArousal as Int)/5)) ) )
+    		bimboRandomThoughts(BimboActor)
+ 			iCommentThrottle = 0   	
+ 		else
+        	; debug.notification("Bimbo arousal:" + bimboArousal)
+			iCommentThrottle = iCommentThrottle + 1
+    	endif
     Endif
 
     If (StorageUtil.GetIntValue(BimboActor, "_SD_iSlaveryExposure") <= 150)
@@ -300,7 +310,7 @@ Event OnUpdate()
     isUpdating = false
     ;RegisterForSingleUpdate( fRFSU )
     RegisterForSingleUpdate( fRFSU * 2 ) ;performance
-	;debug.trace("[slh+] bimbo OnUpdate, Done")
+	;debugTrace(" bimbo OnUpdate, Done")
 EndEvent
 
 Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile, bool abPowerAttack, bool abSneakAttack, bool abBashAttack, bool abHitBlocked)
@@ -330,7 +340,7 @@ Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile,
 
 		float bimboArousal = slaUtil.GetActorArousal(BimboActor) as float
 		float dropchance = 1.0 + (bimboArousal / 30.0 ) * (GV_bimboClumsinessMod.GetValue() as Float)
-		; Debug.Trace("[slh+] bimbo beeing hit, drop chance: " + dropchance)
+		; debugTrace(" bimbo beeing hit, drop chance: " + dropchance)
       	If (Utility.RandomInt(0,100) <= dropchance) &&  (GV_bimboClumsinessMod.GetValue()!=0); && (!(akAggressor as Actor).IsInFaction(pCreatureFaction)))
 				;
 
@@ -384,7 +394,7 @@ EndFunction
 int[] function dropWeapons(Actor pl, bool both = false, float chanceMult = 1.0)
 	; By default, drops only stuff on left hand, if both == true, also right hand
 	; returns an array of dropped item counts, weapon & shield at 0, spells at 1
-	; debug.trace("[slh+] dropWeapons(both = "+both+", chanceMult = "+chanceMult+")")
+	; debugTrace(" dropWeapons(both = "+both+", chanceMult = "+chanceMult+")")
 	
 	; Calculate the drop chance
 	float spellDropChance = ( 100.0 - ( pl.GetAvPercentage("Stamina") * 100.0 ) ) ; inverse of stamina percentage
@@ -407,7 +417,7 @@ int[] function dropWeapons(Actor pl, bool both = false, float chanceMult = 1.0)
 		spellDropChance = 0
 	endif
 
-	; debug.trace("[slh+] weapon drop chance: " + spellDropChance)
+	; debugTrace(" weapon drop chance: " + spellDropChance)
 	
 	int[] drops = new int[2]
 	drops[0] = 0
@@ -528,7 +538,7 @@ function clumsyBimboHands(int actionType, Actor bimbo, Form source, int slot)
 	;debug: checking why this is beeing called without doing an attack
 	BimboActor= BimboAliasRef.GetReference() as Actor
 	if (bimbo != BimboActor)
-		; debug.trace("[slh+] bimbo clumsy hands, not the bimbo")
+		; debugTrace(" bimbo clumsy hands, not the bimbo")
 		return
 	endif
 
@@ -552,7 +562,7 @@ function clumsyBimboHands(int actionType, Actor bimbo, Form source, int slot)
 
 	;TODO check long nails (equipped at the bad end), dropchance *= 2 
 	int roll = Utility.RandomInt(0,100)
-	; debug.trace("[slh+] bimbo clumsy hands, drop chance/roll = " + dropchance + "/" + roll)
+	; debugTrace(" bimbo clumsy hands, drop chance/roll = " + dropchance + "/" + roll)
 	if (roll <= (dropchance) as int) && (GV_bimboClumsinessMod.GetValue() != 0)
 		handMessage = randomBimboHandsMessage(bimboArousal, actionType)
 		if actionType == 5
@@ -573,7 +583,10 @@ function clumsyBimboHands(int actionType, Actor bimbo, Form source, int slot)
 		if drops[0] > 0 ;dropped weapons
 			handMessage = handMessage + "... and lose grip. Oopsy!"
 		endif
-		Debug.Notification(handMessage)
+
+		If (StorageUtil.GetIntValue(bimbo, "_SLH_iShowStatus")!=0)
+			Debug.Notification(handMessage)
+		Endif
 		SLH_Control.playMoan(bimbo)
 	endif
 
@@ -612,7 +625,7 @@ function clumsyBimboLegs(Actor bimbo)
 			float bimboArousal = 0.0
 			if bimbo != None
 				bimboArousal = slaUtil.GetActorArousal(bimbo) as float
-				; debug.trace("[slh+] ---- is aroused: " + bimboArousal)
+				; debugTrace(" ---- is aroused: " + bimboArousal)
 			else
 				; Debug.Trace("[sla+] null player on clumsyBimboLegs")
 			endif
@@ -635,7 +648,7 @@ function clumsyBimboLegs(Actor bimbo)
 			endif
 
 			int roll = Utility.RandomInt()
-			; debug.trace("[slh+] ------- stumble [" + roll + " < " + tumbleChance + "]?")
+			; debugTrace(" ------- stumble [" + roll + " < " + tumbleChance + "]?")
 			if (roll <= tumbleChance) && (GV_bimboClumsinessMod.GetValue()!=0)
 				If (bimboClumsyBuffer < ( 7 - (GV_bimboClumsinessMod.GetValue() as Int) * 6) )
 					bimboClumsyBuffer = bimboClumsyBuffer + 1
@@ -647,7 +660,9 @@ function clumsyBimboLegs(Actor bimbo)
 					EndIf
 					bimbo.CreateDetectionEvent(bimbo, 20)
 
-					if ((bArmorOn) || (bClothingOn))
+					int rollMessage = Utility.RandomInt(0,100)
+
+					if ((bArmorOn && (rollMessage >30)) || (bClothingOn && (rollMessage >90)))
 						bimbo.PushActorAway(bimbo, tumbleForce) ;how to push only to the bimbo movement direction?
 						Utility.Wait(1.0)
 						Debug.Notification("You tripped! Clumsy bimbo!") ;temp messages
@@ -661,7 +676,7 @@ function clumsyBimboLegs(Actor bimbo)
 					;wait a little to show the messages, because on ragdoll the hud is hidden
 					Utility.Wait(2.0)
 
-					int rollMessage = Utility.RandomInt()
+					rollMessage = Utility.RandomInt(0,100)
 
 					if (rollMessage >= 80)
 						bimboTripMessage = "You notice a chipped nail and skip a step."
@@ -709,7 +724,8 @@ endfunction
 ;
 ;===========================================================================
 function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
-	; debug.trace("[slh+] bimbo progressive transformation: " + iDaysPassed)
+ 	Actor PlayerActor = Game.GetPlayer()
+	; debugTrace(" bimbo progressive transformation: " + iDaysPassed)
 	if (bimbo == None)
 		return
 	endIf
@@ -726,7 +742,7 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 	float fButtActual
 	float fButtMin
 
-	debug.trace("[slh+] bimbo transformation level: " + transformationLevel)
+	debugTrace(" bimbo transformation level: " + transformationLevel)
 
 	;no tg = always female, never has a schlong
 	;tg:
@@ -738,10 +754,18 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 	endif
 
 	; Int iBimboHairColor = Math.LeftShift(255, 24) + Math.LeftShift(92, 16) + Math.LeftShift(80, 8) + 80
-	Int iBimboHairColor = Math.LeftShift(92, 16) + Math.LeftShift(80, 8) + 80
+	Int iBimboHairColor = StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimboHairColor") ; Math.LeftShift(92, 16) + Math.LeftShift(80, 8) + 80
+
+	if (StorageUtil.GetIntValue(BimboActor, "_SD_iAliciaHair")== 1 )  
+		iBimboHairColor = StorageUtil.GetIntValue(PlayerActor, "_SLH_iSuccubusHairColor") ; Math.LeftShift(247, 16) + Math.LeftShift(163, 8) + 240  ; Pink
+		StorageUtil.SetStringValue(BimboActor, "_SLH_sHairColorName", "Pink" ) 
+
+	else
+		StorageUtil.SetStringValue(BimboActor, "_SLH_sHairColorName", "Platinum Blonde" ) 
+	EndIf
+
 	StorageUtil.SetIntValue(BimboActor, "_SLH_iHairColor", iBimboHairColor )  
-	StorageUtil.SetStringValue(BimboActor, "_SLH_sHairColorName", "Platinum Blonde" ) 
-	debug.trace("[slh+] 	bimbo hair color: " + iBimboHairColor)
+	debugTrace(" 	bimbo hair color: " + iBimboHairColor)
 	if (transformationDays>15) 
 		BimboActor.SendModEvent("SLHRefreshHairColor","Base")
 	else
@@ -776,8 +800,8 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 			SendModEvent("yps-FingerNailsEvent", "", 29) 
 			SendModEvent("yps-ToeNailsEvent",  "", 29)
 
-			if (hairLength<7)
-				SendModEvent("yps-SetHaircutEvent", "", 7)
+			if (hairLength<6)
+				SendModEvent("yps-SetHaircutEvent", "", 6)
 			endif
 		else
 			fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Feet Nails", iColor = 0x00FF0984 )
@@ -793,8 +817,8 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 		fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Tramp Stamp", bRefresh = True )
 
 		If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
-			if (hairLength<10)
-				SendModEvent("yps-SetHaircutEvent", "", 10)
+			if (hairLength<8)
+				SendModEvent("yps-SetHaircutEvent", "", 8)
 			endif
 		Endif
 
@@ -808,8 +832,8 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
  		If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
  			SendModEvent("yps-ArchedFeetEvent")
 
-			if (hairLength<14)
-				SendModEvent("yps-SetHaircutEvent", "", 14)
+			if (hairLength<11)
+				SendModEvent("yps-SetHaircutEvent", "", 11)
 			endif
 		EndIf
 
@@ -844,8 +868,8 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 		endif
 
  		If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1) 
-			if (hairLength<15)
-				SendModEvent("yps-SetHaircutEvent", "", 15)
+			if (hairLength>13) || (hairLength<13)
+				SendModEvent("yps-SetHaircutEvent", "", 13)
 			endif
 
 		EndIf
@@ -900,5 +924,143 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 	;--------------------------------------------
 endfunction
 
+function bimboRandomThoughts(actor bimbo)
+	Int rollMessage = Utility.RandomInt(0,100)
+	String bimboMessage = ""
+
+	if (rollMessage > 60) ;if dropped anything, play a moan sound
+		SLH_Control.playMoan(bimbo)
+	else
+		SLH_Control.playGiggle(bimbo)
+	endif
+
+	;wait a little to show the messages, because on ragdoll the hud is hidden
+	Utility.Wait(2.0)
+
+	If (StorageUtil.GetIntValue(bimbo, "_SLH_iShowStatus")==0)
+		Return
+	Endif
+
+	rollMessage = Utility.RandomInt(0,100)
+
+	If (SexLab.ValidateActor( bimbo) <= 0)
+		if (rollMessage >= 90)
+			bimboMessage = "It's fun to be a slut"
+		elseif (rollMessage >= 80)
+			bimboMessage = "Pleasure is all that matters"
+		elseif (rollMessage >= 70)
+			bimboMessage = "Get your brain fucked out now"
+		elseif (rollMessage >= 60)
+			bimboMessage = "Keep yourself wet"
+		elseif (rollMessage >= 50)
+			bimboMessage = "Think less. Suck more."
+		elseif (rollMessage >= 50)
+			bimboMessage = "Good girls fuck!"
+		else 
+			bimboMessage = "I am a fuck puppet"
+		endIf
+
+	Elseif bimbo.IsOnMount() 
+		if (rollMessage >= 90)
+			bimboMessage = "My boobs are bouncing!"
+		elseif (rollMessage >= 80)
+			bimboMessage = "Riding is making me tingle!"
+		elseif (rollMessage >= 70)
+			bimboMessage = " Rub yourself"
+		elseif (rollMessage >= 60)
+			bimboMessage = "Bounce more"
+		elseif (rollMessage >= 50)
+			bimboMessage = "Tits out, legs open. Good girl."
+		else 
+			bimboMessage = "I need to ride a cock."
+		endIf
+
+	elseif	bimbo.IsRunning() || bimbo.IsSprinting() 
+		if (rollMessage >= 90)
+			bimboMessage = "My tits are jiggling."
+		elseif (rollMessage >= 50)
+			bimboMessage = "Running is ruining my hair."
+		else 
+			bimboMessage = "I'm so horny."
+		endIf
+
+	elseif	bimbo.IsInCombat() 
+		if (rollMessage >= 90)
+			bimboMessage = "Maybe you will get fucked if you surrender."
+		elseif (rollMessage >= 50)
+			bimboMessage = "I need to be fucked!"
+		else 
+			bimboMessage = "I need a good pounding."
+		endIf
+
+	elseif	bimbo.IsWeaponDrawn() 
+		if (rollMessage >= 90)
+			bimboMessage = "I would rather hold a dildo."
+		elseif (rollMessage >= 50)
+			bimboMessage = "I would rather hold a cock."
+		else 
+			bimboMessage = "I would rather fuck someone."
+		endIf
+
+	elseif (StorageUtil.GetIntValue(bimbo, "_SD_iEnslaved") == 1) 
+		if (rollMessage >= 90)
+			bimboMessage = "Obedience is pleasure."
+		elseif (rollMessage >= 80)
+			bimboMessage = "Obedience makes you free."
+		elseif (rollMessage >= 70)
+			bimboMessage = "Obedience is bliss."
+		elseif (rollMessage >= 60)
+			bimboMessage = "Surrender."
+		elseif (rollMessage >= 50)
+			bimboMessage = "Obey."
+		elseif (rollMessage >= 40)
+			bimboMessage = "Good girls obey."
+		else 
+			bimboMessage = "Stop resisting."
+		endIf
+
+	else
+		if (rollMessage >= 90)
+			bimboMessage = "You are a fuck doll"
+		elseif (rollMessage >= 85)
+			bimboMessage = "Giggles are pretty"
+		elseif (rollMessage >= 80)
+			bimboMessage = "Thoughts are just noise"
+		elseif (rollMessage >= 70)
+			bimboMessage = "Suck cock"
+		elseif (rollMessage >= 65)
+			bimboMessage = "You are a mindless toy"
+		elseif (rollMessage >= 60)
+			bimboMessage = "You are a cocksucker"
+		elseif (rollMessage >= 55)
+			bimboMessage = "Good girls want cock"
+		elseif (rollMessage >= 50)
+			bimboMessage = "Good girls suck"
+		elseif (rollMessage >= 40)
+			bimboMessage = "I need to check my make up."
+		elseif (rollMessage >= 30)
+			bimboMessage = "Giggles make your mind empty"
+		elseif (rollMessage >= 20)
+			bimboMessage = "Brains are for boys"
+		elseif (rollMessage >= 15)
+			bimboMessage = "I need to check my hair."
+		elseif (rollMessage >= 10)
+			bimboMessage = "Giggle more"
+		elseif (rollMessage >= 5)
+			bimboMessage = "Dumber is better"
+		else 
+			bimboMessage = "Sexy is better"
+		endIf
+	endif
+	
+	Debug.Notification(bimboMessage) ;temp messages
+endfunction
 
 
+
+
+Function debugTrace(string traceMsg)
+	if (StorageUtil.GetIntValue(none, "_SLH_debugTraceON")==1)
+		Debug.Trace("[SLH_QST_BimboAlias]" + traceMsg)
+	endif
+endFunction

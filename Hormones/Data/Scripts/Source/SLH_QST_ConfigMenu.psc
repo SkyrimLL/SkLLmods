@@ -47,10 +47,6 @@ GlobalVariable      Property GV_armorMod 				Auto
 GlobalVariable      Property GV_clothMod	 			Auto
 
 GlobalVariable      Property GV_startingLibido 			Auto
-GlobalVariable      Property GV_sexActivityThreshold 	Auto
-GlobalVariable      Property GV_sexActivityBuffer		Auto
-GlobalVariable      Property GV_baseSwellFactor 		Auto
-GlobalVariable      Property GV_baseShrinkFactor 		Auto
 
 GlobalVariable      Property GV_useNodes 				Auto
 GlobalVariable      Property GV_useBreastNode 			Auto
@@ -59,12 +55,6 @@ GlobalVariable      Property GV_useBellyNode 			Auto
 GlobalVariable      Property GV_useSchlongNode 			Auto
 
 GlobalVariable      Property GV_useWeight 				Auto
-GlobalVariable      Property GV_useColors 				Auto
-GlobalVariable      Property GV_useHairColors 			Auto
-GlobalVariable      Property GV_redShiftColor  			Auto
-GlobalVariable      Property GV_redShiftColorMod 		Auto
-GlobalVariable      Property GV_blueShiftColor 			Auto
-GlobalVariable      Property GV_blueShiftColorMod 		Auto
 
 GlobalVariable      Property GV_allowTG 				Auto
 GlobalVariable      Property GV_allowHRT 				Auto
@@ -94,6 +84,27 @@ GlobalVariable      Property GV_bimboClumsinessMod      Auto
 GlobalVariable      Property GV_hornyBegON     			Auto
 GlobalVariable      Property GV_hornyBegArousal      	Auto
 GlobalVariable      Property GV_bimboClumsinessDrop    	Auto
+
+; ====================================================
+; Deprecated global variables
+
+; GlobalVariable      Property GV_sexActivityThreshold 	Auto
+; GlobalVariable      Property GV_sexActivityBuffer		Auto
+; GlobalVariable      Property GV_baseSwellFactor 		Auto
+; GlobalVariable      Property GV_baseShrinkFactor 		Auto
+
+; GlobalVariable      Property GV_useColors 				Auto
+; GlobalVariable      Property GV_useHairColors 			Auto
+; GlobalVariable      Property GV_redShiftColor  			Auto
+; GlobalVariable      Property GV_redShiftColorMod 		Auto
+; GlobalVariable      Property GV_blueShiftColor 			Auto
+; GlobalVariable      Property GV_blueShiftColorMod 		Auto
+; GlobalVariable      Property GV_bimboShiftColor 		Auto
+; GlobalVariable      Property GV_bimboShiftColorMod 		Auto
+; GlobalVariable      Property GV_succubusShiftColor 		Auto
+; GlobalVariable      Property GV_succubusShiftColorMod 	Auto
+
+; ====================================================
 
 SLH_QST_HormoneGrowth 	Property SLH_Control auto
 
@@ -164,18 +175,41 @@ bool		_useButtNode			= true
 bool		_useBellyNode			= true
 bool		_useSchlongNode			= true
 bool		_useWeight				= true
-bool		_useColors				= true
-bool		_useHairColors			= true
 bool		_changeOverrideToggle	= true
 bool		_shapeUpdateOnCellChange = true
 bool		_shapeUpdateAfterSex 	= true
 bool		_shapeUpdateOnTimer 	= true
 bool		_enableNiNodeUpdate 	= false
 bool		_enableNiNodeOverride	= true
+
+bool		_useColors				= true
+bool		_useHairColors			= true
+int			_defaultColor 			= 0
 int			_redShiftColor 			= 0
 float		_redShiftColorMod 		= 1.0
 int			_blueShiftColor 		= 0
 float		_blueShiftColorMod 		= 1.0
+int			_bimboHairColor 		= 0
+float		_bimboHairColorMod 	= 1.0
+int			_succubusHairColor 	= 0
+float		_succubusHairColorMod 	= 1.0
+
+float		_pigmentationMod = 0.1 
+float		_growthMod = 0.5 
+float		_metabolismMod = 0.5	 
+float		_sleepMod = 1.2 
+float		_hungerMod = 1.2 		 
+float		_immunityMod = 0.5	 
+float		_stressMod = 1.8 			 
+float		_moodMod = 0.5 			 
+float		_maleMod = 1.2		 
+float		_femaleMod = 1.2 			 
+float		_sexDriveMod = 1.1	 
+float		_pheromonesMod = 1.1		 
+float		_lactationMod = 1.5 		 
+float		_bimboMod = 0.0 		 
+float		_succubusMod = 0.0 		 
+
 
 bool		_allowExhibitionist		= false
 bool		_allowSelfSpells		= false
@@ -207,6 +241,8 @@ float 		_buttSetValue 			= 1.0
 float 		_schlongSetValue		= 1.0
 
 bool 		_refreshToggle 			= false
+bool 		_resetHormonesToggle 	= false
+bool 		_resetColorsToggle 		= false
 int 		_applyNodeBalancing     = 0
 
 
@@ -269,11 +305,16 @@ event OnPageReset(string a_page)
 		UnloadCustomContent()
 	endIf
 
+	PlayerREF= PlayerAlias.GetReference()
+	PlayerActor= PlayerAlias.GetReference() as Actor
+	pActorBase = PlayerActor.GetActorBase()
+	PlayerGender = pActorBase.GetSex() ; 0 = Male ; 1 = Female
+
 	_startingLibido = GV_startingLibido.GetValue() as Int
-	_sexActivityThreshold = GV_sexActivityThreshold.GetValue() as Int
-	_sexActivityBuffer = GV_sexActivityBuffer.GetValue() as Int
-	_baseSwellFactor = GV_baseSwellFactor.GetValue() as Float
-	_baseShrinkFactor = GV_baseShrinkFactor.GetValue() as Float
+	_sexActivityThreshold = StorageUtil.GetIntValue(PlayerActor, "_SLH_iSexActivityThreshold") 
+	_sexActivityBuffer = StorageUtil.GetIntValue(PlayerActor, "_SLH_iSexActivityBuffer") 
+	_baseSwellFactor = StorageUtil.GetFloatValue(PlayerActor, "_SLH_fBaseSwellFactor")
+	_baseShrinkFactor = StorageUtil.GetFloatValue(PlayerActor, "_SLH_fBaseShrinkFactor")
 
 	_breastSwellMod = GV_breastSwellMod.GetValue()   as Float
 	_bellySwellMod = GV_bellySwellMod.GetValue()   as Float 
@@ -316,16 +357,38 @@ event OnPageReset(string a_page)
 	_useBellyNode = GV_useBellyNode.GetValue()  as Int
 	_useSchlongNode = GV_useSchlongNode.GetValue()  as Int
 	_useWeight = GV_useWeight.GetValue()  as Int
-	_useColors = GV_useColors.GetValue()  as Int
-	_useHairColors = GV_useHairColors.GetValue()  as Int
+
+	_useColors = StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseColors") as Bool  
+	_useHairColors = StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseHairColors") as Bool
+
+	_defaultColor 		= StorageUtil.GetIntValue(PlayerActor, "_SLH_iDefaultColor")  
+	_redShiftColor 		= StorageUtil.GetIntValue(PlayerActor, "_SLH_iRedShiftColor") 
+	_redShiftColorMod 	= StorageUtil.GetFloatValue(PlayerActor, "_SLH_fRedShiftColorMod")
+	_blueShiftColor 	= StorageUtil.GetIntValue(PlayerActor, "_SLH_iBlueShiftColor")
+	_blueShiftColorMod 	= StorageUtil.GetFloatValue(PlayerActor, "_SLH_fBlueShiftColorMod")
+	_bimboHairColor 	= StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimboHairColor")
+	_bimboHairColorMod 	= StorageUtil.GetFloatValue(PlayerActor, "_SLH_fBimboHairColorMod")
+	_succubusHairColor 	= StorageUtil.GetIntValue(PlayerActor, "_SLH_iSuccubusHairColor")
+	_succubusHairColorMod 	= StorageUtil.GetFloatValue(PlayerActor, "_SLH_fSuccubusHairColorMod")
+
+	_pigmentationMod 	= StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormonePigmentationMod" ) 
+	_growthMod 			= StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneGrowthMod" ) 
+	_metabolismMod 		= StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneMetabolismMod")	 
+	_sleepMod 			= StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneSleepMod" )  
+	_hungerMod 			= StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneHungerMod" )		 
+	_immunityMod 		= StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneImmunityMod")		 
+	_stressMod 			= StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneStressMod" ) 			 
+	_moodMod 			= StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneMoodMod" )  			 
+	_maleMod 			= StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneMaleMod" )		 
+	_femaleMod 			= StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneFemaleMod" ) 			 
+	_sexDriveMod 		= StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneSexDriveMod" )		 
+	_pheromonesMod 		= StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormonePheromonesMod" )		 
+	_lactationMod 		= StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneLactationMod" ) 	
+	_bimboMod 			= StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneBimboMod" ) 	
+	_succubusMod 		= StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneSuccubusMod" ) 	
 
 	_showStatus = GV_showStatus.GetValue() as Bool
 	_commentsFrequency = GV_commentsFrequency.GetValue() as Float
-
-	_redShiftColor 			= GV_redShiftColor.GetValue() as Int
-	_redShiftColorMod 		= GV_redShiftColorMod.GetValue() as Float
-	_blueShiftColor 		= GV_blueShiftColor.GetValue() as Int
-	_blueShiftColorMod 		= GV_blueShiftColorMod.GetValue() as Float
 
 	_allowExhibitionist = GV_allowExhibitionist.GetValue()  as Int
 	_allowSelfSpells = GV_allowSelfSpells.GetValue()  as Int
@@ -346,16 +409,11 @@ event OnPageReset(string a_page)
 	_shapeUpdateAfterSex = GV_shapeUpdateAfterSex.GetValue()  as Int
 	_shapeUpdateOnTimer = GV_shapeUpdateOnTimer.GetValue()  as Int
 	_enableNiNodeUpdate = GV_enableNiNodeUpdate.GetValue()  as Int
-	_enableNiNodeOverride = GV_enableNiNodeOverride.GetValue()  as Int
+	_enableNiNodeOverride = StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON")
 
 	_setshapeToggle = GV_setshapeToggle.GetValue()  as Int
 	_resetToggle = GV_resetToggle.GetValue()  as Int
 	_showDebug = StorageUtil.GetIntValue(none, "_SLH_debugTraceON")
-
-	PlayerREF= PlayerAlias.GetReference()
-	PlayerActor= PlayerAlias.GetReference() as Actor
-	pActorBase = PlayerActor.GetActorBase()
-	PlayerGender = pActorBase.GetSex() ; 0 = Male ; 1 = Female
 
 	Bool bEnableLeftBreast  = NetImmerse.HasNode(PlayerActor, NINODE_LEFT_BREAST, false)
 	Bool bEnableRightBreast = NetImmerse.HasNode(PlayerActor, NINODE_RIGHT_BREAST, false)
@@ -373,10 +431,53 @@ event OnPageReset(string a_page)
 	If (a_page == "Customization")
 		SetCursorFillMode(TOP_TO_BOTTOM)
 
-		AddHeaderOption(" Changes customization")
-		AddSliderOptionST("STATE_LIBIDO","Starting libido", _startingLibido as Float) 
+		AddHeaderOption(" Sexual activity trigger")
+		; AddSliderOptionST("STATE_LIBIDO","Starting libido", _startingLibido as Float) 
 		AddSliderOptionST("STATE_SEX_TRIGGER","High Sex Activity trigger", _sexActivityThreshold as Float)		
 		AddSliderOptionST("STATE_SEX_BUFFER","Low Sex Activity buffer", _sexActivityBuffer as Float)
+
+		AddHeaderOption(" Hormones Levels")
+		AddSliderOptionST("STATE_PIGMENTATION","Pigmentation hormone", _pigmentationMod as Float,"{1}") 
+		AddSliderOptionST("STATE_GROWTH","Growth hormone", _growthMod as Float,"{1}") 
+		AddSliderOptionST("STATE_METABOLISM","Metabolism hormone", _metabolismMod as Float,"{1}") 
+		AddSliderOptionST("STATE_SLEEP","Sleep hormone", _sleepMod as Float,"{1}") 
+		AddSliderOptionST("STATE_HUNGER","Hunger hormone", _hungerMod as Float,"{1}") 
+		AddSliderOptionST("STATE_IMMUNITY","Immunity hormone", _immunityMod as Float,"{1}") 
+		AddSliderOptionST("STATE_STRESS","Stress hormone", _stressMod as Float,"{1}") 
+		AddSliderOptionST("STATE_MOOD","Mood hormone", _moodMod as Float,"{1}") 
+		AddSliderOptionST("STATE_MALE","Male hormone", _maleMod as Float,"{1}") 
+		AddSliderOptionST("STATE_FEMALE","Female hormone", _femaleMod as Float,"{1}") 
+		AddSliderOptionST("STATE_SEXDRIVE","Sex Drive hormone", _sexDriveMod as Float,"{1}") 
+		AddSliderOptionST("STATE_PHEROMONES","Pheromones", _pheromonesMod as Float,"{1}") 
+		AddSliderOptionST("STATE_LACTATION","Lactation hormone", _lactationMod as Float,"{1}") 
+		AddSliderOptionST("STATE_BIMBO_HORMONE","Bimbo hormone", _bimboMod as Float,"{1}") 
+		AddSliderOptionST("STATE_SUCCUBUS_HORMONE","Succubus hormone", _succubusMod as Float,"{1}") 
+
+		AddEmptyOption()
+		AddHeaderOption("Hormone Levels Modifiers") 
+		AddTextOption("      (not used before v3.0)", "", OPTION_FLAG_DISABLED) 
+
+		AddTextOption("     Pigmentation: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormonePigmentation") as Int, "", OPTION_FLAG_DISABLED)
+		AddTextOption("     Growth: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneGrowth") as Int, "", OPTION_FLAG_DISABLED)
+		AddTextOption("     Metabolism: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneMetabolism") as Int, "", OPTION_FLAG_DISABLED)
+		AddTextOption("     Sleep: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneSleep") as Int, "", OPTION_FLAG_DISABLED)
+		AddTextOption("     Hunger: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneHunger") as Int, "", OPTION_FLAG_DISABLED)
+		AddTextOption("     Immunity: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneImmunity") as Int, "", OPTION_FLAG_DISABLED)
+		AddTextOption("     Stress: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneStress") as Int, "", OPTION_FLAG_DISABLED)
+		AddTextOption("     Mood: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneMood") as Int, "", OPTION_FLAG_DISABLED)
+		AddTextOption("     Female: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneFemale") as Int, "", OPTION_FLAG_DISABLED)
+		AddTextOption("     Male: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneMale") as Int, "", OPTION_FLAG_DISABLED)
+		AddTextOption("     SexDrive: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneSexDrive") as Int, "", OPTION_FLAG_DISABLED)
+		AddTextOption("     Pheromones: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormonePheromones") as Int, "", OPTION_FLAG_DISABLED)
+		AddTextOption("     Lactation: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneLactation") as Int, "", OPTION_FLAG_DISABLED)
+		AddTextOption("     Bimbo: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneBimbo") as Int, "", OPTION_FLAG_DISABLED)
+		AddTextOption("     Succubus: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneSuccubus") as Int, "", OPTION_FLAG_DISABLED)
+
+		AddEmptyOption()
+		AddToggleOptionST("STATE_RESET_HORMONES","Reset hormone levels", _resetHormonesToggle as Float)
+		AddToggleOptionST("STATE_RESET_COLORS","Reset colors", _resetColorsToggle as Float)
+
+		SetCursorPosition(1)
 
 		AddHeaderOption(" Weight")
 		AddToggleOptionST("STATE_CHANGE_WEIGHT","Change Weight scale", _useWeight as Float)
@@ -386,13 +487,33 @@ event OnPageReset(string a_page)
 		AddToggleOptionST("STATE_CHANGE_COLOR","Change skin color", _useColors as Float)
 		AddToggleOptionST("STATE_CHANGE_HAIRCOLOR","Change hair color", _useHairColors as Float)
 
+		AddColorOptionST("STATE_DEFAULT_COLOR","Default color", _defaultColor as Int)
 		AddColorOptionST("STATE_RED_COLOR_SHIFT","Red color shift", _redShiftColor as Int)
 		AddSliderOptionST("STATE_RED_COLOR_SHIFT_MOD","Red color shift mod", _redShiftColorMod as Float,"{1}")
 
 		AddColorOptionST("STATE_BLUE_COLOR_SHIFT","Blue color shift", _blueShiftColor as Int)
 		AddSliderOptionST("STATE_BLUE_COLOR_SHIFT_MOD","Blue color shift mod", _blueShiftColorMod as Float,"{1}")
 
-		SetCursorPosition(1)
+		AddColorOptionST("STATE_BIMBO_HAIR_COLOR_SHIFT","Bimbo Hair color shift", _bimboHairColor as Int)
+		AddSliderOptionST("STATE_BIMBO_HAIR_COLOR_SHIFT_MOD","Bimbo Hair color shift mod", _bimboHairColorMod as Float,"{1}")
+
+		AddColorOptionST("STATE_SUCCUBUS_HAIR_COLOR_SHIFT","Succubus Hair color shift", _succubusHairColor as Int)
+		AddSliderOptionST("STATE_SUCCUBUS_HAIR_COLOR_SHIFT_MOD","Succubus Hair color shift mod", _succubusHairColorMod as Float,"{1}")
+
+		AddHeaderOption(" Shape refresh controls")
+		AddToggleOptionST("STATE_CHANGE_OVERRIDE","Shape change override", _changeOverrideToggle as Float)
+		AddToggleOptionST("STATE_UPDATE_ON_CELL","Update on cell change", _shapeUpdateOnCellChange as Float)
+		AddToggleOptionST("STATE_UPDATE_ON_SEX","Update after sex", _shapeUpdateAfterSex as Float)
+		AddToggleOptionST("STATE_UPDATE_ON_TIMER","Update on timer", _shapeUpdateOnTimer as Float)
+		AddToggleOptionST("STATE_ENABLE_NODE_UPDATE","Enable QueueNodeUpdate", _enableNiNodeUpdate as Float)
+
+		If CheckXPMSERequirements(PlayerActor, PlayerGender as Bool)
+			AddToggleOptionST("STATE_ENABLE_NODE_OVERRIDE","Enable NiOverride", StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON") as Float)
+		else
+			AddToggleOptionST("STATE_ENABLE_NODE_OVERRIDE","Enable NiOverride", StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON") as Float, OPTION_FLAG_DISABLED)
+		endif
+		AddToggleOptionST("STATE_BALANCE","NiO Node Balancing", _applyNodeBalancing  as Float)
+
 		AddHeaderOption(" NetImmerse Nodes")
 		AddToggleOptionST("STATE_CHANGE_NODES","Change NetImmerse Nodes", _useNodes as Float)
 		AddSliderOptionST("STATE_SWELL_FACTOR","Base swell factor", _baseSwellFactor as Float,"{0} %")
@@ -401,6 +522,7 @@ event OnPageReset(string a_page)
 		AddSliderOptionST("STATE_ARMOR_MOD","Armor shrink", _armorMod as Float,"{1}")
 		AddSliderOptionST("STATE_CLOTH_MOD","Cloth shrink", _clothMod as Float,"{1}")
 
+		AddHeaderOption(" Breast")
 		If (bBreastEnabled)
 			AddToggleOptionST("STATE_CHANGE_BREAST_NODE","Change Breast Node", _useBreastNode as Float)	
 			AddSliderOptionST("STATE_BREAST_SWELL","Breast swell modifier", _breastSwellMod as Float,"{1}")
@@ -412,6 +534,7 @@ event OnPageReset(string a_page)
 			; AddSliderOptionST("STATE_BREAST_MAX","Breast swell max", _breastMax as Float,"{1}", OPTION_FLAG_DISABLED)
 		EndIf
 
+		AddHeaderOption(" Belly")
 		If (bBellyEnabled)
 			AddToggleOptionST("STATE_CHANGE_BELLY_NODE","Change Belly Node", _useBellyNode as Float)	
 			AddSliderOptionST("STATE_BELLY_SWELL","Belly swell modifier", _bellySwellMod as Float,"{1}")
@@ -423,6 +546,7 @@ event OnPageReset(string a_page)
 			; AddSliderOptionST("STATE_BELLY_MAX","Belly swell max", _bellyMax as Float,"{1}", OPTION_FLAG_DISABLED)
 		EndIf
 
+		AddHeaderOption(" Butt")
 		If (bButtEnabled)
 			AddToggleOptionST("STATE_CHANGE_BUTT_NODE","Change Butt Node", _useButtNode as Float)		
 			AddSliderOptionST("STATE_BUTT_SWELL","Butt swell modifier", _buttSwellMod as Float,"{1}")
@@ -434,6 +558,7 @@ event OnPageReset(string a_page)
 			; AddSliderOptionST("STATE_BUTT_MAX","Butt swell max", _buttMax as Float,"{1}", OPTION_FLAG_DISABLED)
 		EndIf
 
+		AddHeaderOption(" Schlong")
 		If (bSchlongEnabled)
 			AddToggleOptionST("STATE_CHANGE_SCHLONG_NODE","Change Schlong Node", _useSchlongNode as Float)
 			AddSliderOptionST("STATE_SCHLONG_SWELL","Schlong swell modifier", _schlongSwellMod as Float,"{1}")
@@ -445,21 +570,17 @@ event OnPageReset(string a_page)
 			; AddSliderOptionST("STATE_SCHLONG_MAX","Schlong swell max", _schlongMax as Float,"{1}", OPTION_FLAG_DISABLED)
 		EndIf
 
-
-
-
 	elseIf (a_page == "Add-ons")
 		SetCursorFillMode(TOP_TO_BOTTOM)
 
-		AddHeaderOption(" Optional curses")
-		AddHeaderOption(" Succubus ")
+		AddHeaderOption(" Succubus Curse")
 		AddToggleOptionST("STATE_SUCCUBUS","Allow Succubus Curse", _allowSuccubus as Float)
 
-		AddHeaderOption(" Sex Change ")
+		AddHeaderOption(" Sex Change Curse")
 		AddToggleOptionST("STATE_SEX_CHANGE","Allow Sex Change Curse", _allowHRT as Float)
 		AddToggleOptionST("STATE_TG","Allow Transgender Curse", _allowTG as Float)
 
-		AddHeaderOption(" Bimbo ")
+		AddHeaderOption(" Bimbo Curse")
 		AddToggleOptionST("STATE_BIMBO","Allow Bimbo Curse", _allowBimbo as Float)
 		AddToggleOptionST("STATE_BIMBO_RACE","Bimbo Race", _allowBimboRace as Float)
 		AddSliderOptionST("STATE_BIMBO_CLUMSINESS","Clumsiness factor", _bimboClumsinessMod as Float,"{1}")
@@ -469,19 +590,10 @@ event OnPageReset(string a_page)
 		AddToggleOptionST("STATE_HORNY_BEG","Beg for sex", _hornyBegON   as Bool)
 		AddSliderOptionST("STATE_BEG_TRIGGER","Beg arousal trigger", _hornyBegArousal  as Float,"{1}")
 		AddSliderOptionST("STATE_GRAB_TRIGGER","Public sex attack", _hornyGrab  as Float,"{1}")
-
-		AddHeaderOption(" Shape refresh controls")
-		AddToggleOptionST("STATE_CHANGE_OVERRIDE","Shape change override", _changeOverrideToggle as Float)
-		AddToggleOptionST("STATE_UPDATE_ON_CELL","Update on cell change", _shapeUpdateOnCellChange as Float)
-		AddToggleOptionST("STATE_UPDATE_ON_SEX","Update after sex", _shapeUpdateAfterSex as Float)
-		AddToggleOptionST("STATE_UPDATE_ON_TIMER","Update on timer", _shapeUpdateOnTimer as Float)
-		AddToggleOptionST("STATE_ENABLE_NODE_UPDATE","Enable QueueNodeUpdate", _enableNiNodeUpdate as Float)
-
-		If CheckXPMSERequirements(PlayerActor, PlayerGender as Bool)
-			AddToggleOptionST("STATE_ENABLE_NODE_OVERRIDE","Enable NiOverride", _enableNiNodeOverride as Float)
-		else
-			AddToggleOptionST("STATE_ENABLE_NODE_OVERRIDE","Enable NiOverride", _enableNiNodeOverride as Float, OPTION_FLAG_DISABLED)
-		endif
+		AddSliderOptionST("STATE_COMMENTS_FREQUENCY","NPC Comments Frequency ", _commentsFrequency as Float,"{1} %")
+		AddToggleOptionST("STATE_EXHIBITIONIST","Allow Exhibitionist", _allowExhibitionist as Float)
+		AddToggleOptionST("STATE_SELF_SPELLS","Allow Self Spells", _allowSelfSpells as Float)
+		AddToggleOptionST("STATE_SHOW_STATUS","Show Status messages", _showStatus as Bool)
 
 		AddEmptyOption()
 		SetCursorPosition(1)
@@ -494,11 +606,6 @@ event OnPageReset(string a_page)
 		AddHeaderOption(" Status")
 		AddToggleOptionST("STATE_STATUS","Display current status", _statusToggle as Float)
 
-		AddToggleOptionST("STATE_SHOW_STATUS","Show Status messages", _showStatus as Bool)
-		AddSliderOptionST("STATE_COMMENTS_FREQUENCY","NPC Comments Frequency ", _commentsFrequency as Float,"{1} %")
-		AddToggleOptionST("STATE_EXHIBITIONIST","Allow Exhibitionist", _allowExhibitionist as Float)
-		AddToggleOptionST("STATE_SELF_SPELLS","Allow Self Spells", _allowSelfSpells as Float)
-
 		AddHeaderOption(" Change shape values")
 		AddSliderOptionST("STATE_WEIGHT_VALUE","Weight ", _weightSetValue as Float,"{1}")
 		AddSliderOptionST("STATE_BREAST_VALUE","Breast", _breastSetValue as Float,"{1}")
@@ -508,14 +615,442 @@ event OnPageReset(string a_page)
 
 		AddEmptyOption()
 		AddToggleOptionST("STATE_REFRESH","Apply changes", _refreshToggle as Float)
-
+ 
 		AddEmptyOption()
-		AddToggleOptionST("STATE_BALANCE","NiO Node Balancing", _applyNodeBalancing  as Float)
 		AddToggleOptionST("STATE_SETSHAPE","Set default shape", _setshapeToggle as Float)
 		AddToggleOptionST("STATE_RESET","Reset changes", _resetToggle as Float)
 		AddToggleOptionST("STATE_DEBUG","Debug messages", _showDebug as Float)
+
 	endIf
 endEvent
+
+; AddSliderOptionST("STATE_PIGMENTATION","Pigmentation hormone", _pigmentationMod as Float) 
+state STATE_PIGMENTATION ; SLIDER
+	event OnSliderOpenST()
+		SetSliderDialogStartValue( _pigmentationMod )
+		SetSliderDialogDefaultValue( 1.0 )  
+		SetSliderDialogRange( 0.0, 2.0 )
+		SetSliderDialogInterval( 0.1 )
+	endEvent
+
+	event OnSliderAcceptST(float value)
+		_pigmentationMod  = value 
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fHormonePigmentationMod", _pigmentationMod) 
+		SetSliderOptionValueST( _pigmentationMod, "{1}" )
+	endEvent
+
+	event OnDefaultST()
+		_pigmentationMod = 1.0
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fHormonePigmentationMod", _pigmentationMod) 
+		SetSliderOptionValueST( _pigmentationMod , "{1}" )
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Pigmentation hormone - How easily skin can change color (0: No change - 1: Normal rate - 2: Accelerated rate)")
+	endEvent
+endState
+
+; AddSliderOptionST("STATE_GROWTH","Growth hormone", _growthMod as Float) 
+state STATE_GROWTH ; SLIDER
+	event OnSliderOpenST()
+		SetSliderDialogStartValue( _growthMod )
+		SetSliderDialogDefaultValue( 1.0 )  
+		SetSliderDialogRange( 0.0, 2.0 )
+		SetSliderDialogInterval( 0.1 )
+	endEvent
+
+	event OnSliderAcceptST(float value)
+		_growthMod  = value 
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fHormoneGrowthMod", _growthMod) 
+		SetSliderOptionValueST( _growthMod, "{1}" )
+	endEvent
+
+	event OnDefaultST()
+		_growthMod = 1.0
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fHormoneGrowthMod", _growthMod) 
+		SetSliderOptionValueST( _growthMod , "{1}" )
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Growth hormone - How easily weight can change (0: No change - 1: Normal rate - 2: Accelerated rate)")
+	endEvent
+endState
+
+; AddSliderOptionST("STATE_METABOLISM","Metabolism hormone", _metabolismMod as Float) 
+state STATE_METABOLISM ; SLIDER
+	event OnSliderOpenST()
+		SetSliderDialogStartValue( _metabolismMod )
+		SetSliderDialogDefaultValue( 1.0 )  
+		SetSliderDialogRange( 0.0, 2.0 )
+		SetSliderDialogInterval( 0.1 )
+	endEvent
+
+	event OnSliderAcceptST(float value)
+		_metabolismMod  = value 
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fHormoneMetabolismMod", _metabolismMod) 
+		SetSliderOptionValueST( _metabolismMod, "{1}" )
+	endEvent
+
+	event OnDefaultST()
+		_metabolismMod = 1.0
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fHormoneMetabolismMod", _metabolismMod) 
+		SetSliderOptionValueST( _metabolismMod , "{1}" )
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Metabolism hormone - Fat accumulation and heat loss resistance (0: No change - 1: Normal rate - 2: Accelerated rate)")
+	endEvent
+endState
+
+; AddSliderOptionST("STATE_SLEEP","Sleep hormone", _sleepMod as Float) 
+state STATE_SLEEP ; SLIDER
+	event OnSliderOpenST()
+		SetSliderDialogStartValue( _sleepMod )
+		SetSliderDialogDefaultValue( 1.0 )  
+		SetSliderDialogRange( 0.0, 2.0 )
+		SetSliderDialogInterval( 0.1 )
+	endEvent
+
+	event OnSliderAcceptST(float value)
+		_sleepMod  = value 
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fHormoneSleepMod", _sleepMod) 
+		SetSliderOptionValueST( _sleepMod, "{1}" )
+	endEvent
+
+	event OnDefaultST()
+		_sleepMod = 1.0
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fHormoneSleepMod", _sleepMod) 
+		SetSliderOptionValueST( _sleepMod , "{1}" )
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Sleep hormone - How quickly need for sleep happens (0: No change - 1: Normal rate - 2: Accelerated rate)")
+	endEvent
+endState
+
+; AddSliderOptionST("STATE_HUNGER","Hunger hormone", _hungerMod as Float) 
+state STATE_HUNGER ; SLIDER
+	event OnSliderOpenST()
+		SetSliderDialogStartValue( _hungerMod )
+		SetSliderDialogDefaultValue( 1.0 )  
+		SetSliderDialogRange( 0.0, 2.0 )
+		SetSliderDialogInterval( 0.1 )
+	endEvent
+
+	event OnSliderAcceptST(float value)
+		_hungerMod  = value 
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fHormoneHungerMod", _hungerMod) 
+		SetSliderOptionValueST( _hungerMod, "{1}" )
+	endEvent
+
+	event OnDefaultST()
+		_hungerMod = 1.0
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fHormoneHungerMod", _hungerMod) 
+		SetSliderOptionValueST( _hungerMod , "{1}" )
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Hunger hormone - How quickly need for food happens (0: No change - 1: Normal rate - 2: Accelerated rate)")
+	endEvent
+endState
+
+; AddSliderOptionST("STATE_IMMUNITY","Immunity hormone", _immunityMod as Float) 
+state STATE_IMMUNITY ; SLIDER
+	event OnSliderOpenST()
+		SetSliderDialogStartValue( _immunityMod )
+		SetSliderDialogDefaultValue( 1.0 )  
+		SetSliderDialogRange( 0.0, 2.0 )
+		SetSliderDialogInterval( 0.1 )
+	endEvent
+
+	event OnSliderAcceptST(float value)
+		_immunityMod  = value 
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fHormoneImmunityMod", _immunityMod) 
+		SetSliderOptionValueST( _immunityMod, "{1}" )
+	endEvent
+
+	event OnDefaultST()
+		_immunityMod = 1.0
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fHormoneImmunityMod", _immunityMod) 
+		SetSliderOptionValueST( _immunityMod , "{1}" )
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Immunity hormone - Resistance to diseases (0: No change - 1: Normal rate - 2: Accelerated rate)")
+	endEvent
+endState
+
+; AddSliderOptionST("STATE_STRESS","Stress hormone", _stressMod as Float) 
+state STATE_STRESS ; SLIDER
+	event OnSliderOpenST()
+		SetSliderDialogStartValue( _stressMod )
+		SetSliderDialogDefaultValue( 1.0 )  
+		SetSliderDialogRange( 0.0, 2.0 )
+		SetSliderDialogInterval( 0.1 )
+	endEvent
+
+	event OnSliderAcceptST(float value)
+		_stressMod  = value 
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fHormoneStressMod", _stressMod) 
+		SetSliderOptionValueST( _stressMod, "{1}" )
+	endEvent
+
+	event OnDefaultST()
+		_stressMod = 1.0
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fHormoneStressMod", _stressMod) 
+		SetSliderOptionValueST( _stressMod , "{1}" )
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Stress hormone - Fight or flight response (0: No change - 1: Normal rate - 2: Accelerated rate)")
+	endEvent
+endState
+
+; AddSliderOptionST("STATE_MOOD","Mood hormone", _moodMod as Float) 
+state STATE_MOOD ; SLIDER
+	event OnSliderOpenST()
+		SetSliderDialogStartValue( _moodMod )
+		SetSliderDialogDefaultValue( 1.0 )  
+		SetSliderDialogRange( 0.0, 2.0 )
+		SetSliderDialogInterval( 0.1 )
+	endEvent
+
+	event OnSliderAcceptST(float value)
+		_moodMod  = value 
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fHormoneMoodMod", _moodMod) 
+		SetSliderOptionValueST( _moodMod, "{1}" )
+	endEvent
+
+	event OnDefaultST()
+		_moodMod = 1.0
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fHormoneMoodMod", _moodMod) 
+		SetSliderOptionValueST( _moodMod , "{1}" )
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Mood hormone - Calm to volatile (0: No change - 1: Normal rate - 2: Accelerated rate)")
+	endEvent
+endState
+
+; AddSliderOptionST("STATE_MALE","Male hormone", _maleMod as Float) 
+state STATE_MALE ; SLIDER
+	event OnSliderOpenST()
+		SetSliderDialogStartValue( _maleMod )
+		SetSliderDialogDefaultValue( 1.0 )  
+		SetSliderDialogRange( 0.0, 2.0 )
+		SetSliderDialogInterval( 0.1 )
+	endEvent
+
+	event OnSliderAcceptST(float value)
+		_maleMod  = value 
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fHormoneMaleMod", _maleMod) 
+		SetSliderOptionValueST( _maleMod, "{1}" )
+	endEvent
+
+	event OnDefaultST()
+		_maleMod = 1.0
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fHormoneMaleMod", _maleMod) 
+		SetSliderOptionValueST( _maleMod , "{1}" )
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Male hormone - Controls masculine organ growth and function (0: No change - 1: Normal rate - 2: Accelerated rate)")
+	endEvent
+endState
+
+; AddSliderOptionST("STATE_FEMALE","Female hormone", _femaleMod as Float) 
+state STATE_FEMALE ; SLIDER
+	event OnSliderOpenST()
+		SetSliderDialogStartValue( _femaleMod )
+		SetSliderDialogDefaultValue( 1.0 )  
+		SetSliderDialogRange( 0.0, 2.0 )
+		SetSliderDialogInterval( 0.1 )
+	endEvent
+
+	event OnSliderAcceptST(float value)
+		_femaleMod  = value 
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fHormoneFemaleMod", _femaleMod) 
+		SetSliderOptionValueST( _femaleMod, "{1}" )
+	endEvent
+
+	event OnDefaultST()
+		_femaleMod = 1.0
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fHormoneFemaleMod", _femaleMod) 
+		SetSliderOptionValueST( _femaleMod , "{1}" )
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Female hormone - Controls feminine organ growth and function (0: No change - 1: Normal rate - 2: Accelerated rate)")
+	endEvent
+endState
+
+; AddSliderOptionST("STATE_SEXDRIVE","Sex Drive hormone", _sexDriveMod as Float) 
+state STATE_SEXDRIVE ; SLIDER
+	event OnSliderOpenST()
+		SetSliderDialogStartValue( _sexDriveMod )
+		SetSliderDialogDefaultValue( 1.0 )  
+		SetSliderDialogRange( 0.0, 2.0 )
+		SetSliderDialogInterval( 0.1 )
+	endEvent
+
+	event OnSliderAcceptST(float value)
+		_sexDriveMod  = value 
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fHormoneSexDriveMod", _sexDriveMod) 
+		SetSliderOptionValueST( _sexDriveMod, "{1}" )
+	endEvent
+
+	event OnDefaultST()
+		_sexDriveMod = 1.0
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fHormoneSexDriveMod", _sexDriveMod) 
+		SetSliderOptionValueST( _sexDriveMod , "{1}" )
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Sex Drive hormone - Controls personal need for sex (0: No change - 1: Normal rate - 2: Accelerated rate)")
+	endEvent
+endState
+
+; AddSliderOptionST("STATE_PHEROMONES","Pheromones", _pheromonesMod as Float) 
+state STATE_PHEROMONES ; SLIDER
+	event OnSliderOpenST()
+		SetSliderDialogStartValue( _pheromonesMod )
+		SetSliderDialogDefaultValue( 1.0 )  
+		SetSliderDialogRange( 0.0, 2.0 )
+		SetSliderDialogInterval( 0.1 )
+	endEvent
+
+	event OnSliderAcceptST(float value)
+		_pheromonesMod  = value 
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fHormonePheromonesMod", _pheromonesMod) 
+		SetSliderOptionValueST( _pheromonesMod, "{1}" )
+	endEvent
+
+	event OnDefaultST()
+		_pheromonesMod = 1.0
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fHormonePheromonesMod", _pheromonesMod) 
+		SetSliderOptionValueST( _pheromonesMod , "{1}" )
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Pheromones - Controls arousal in others (0: No change - 1: Normal rate - 2: Accelerated rate)")
+	endEvent
+endState
+
+; AddSliderOptionST("STATE_LACTATION","Lactation hormone", _lactationMod as Float) 
+state STATE_LACTATION ; SLIDER
+	event OnSliderOpenST()
+		SetSliderDialogStartValue( _lactationMod )
+		SetSliderDialogDefaultValue( 1.0 )  
+		SetSliderDialogRange( 0.0, 2.0 )
+		SetSliderDialogInterval( 0.1 )
+	endEvent
+
+	event OnSliderAcceptST(float value)
+		_lactationMod  = value 
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fHormoneLactationMod", _lactationMod) 
+		SetSliderOptionValueST( _lactationMod, "{1}" )
+	endEvent
+
+	event OnDefaultST()
+		_lactationMod = 1.0
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fHormoneLactationMod", _lactationMod) 
+		SetSliderOptionValueST( _lactationMod , "{1}" )
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Lactation hormone - Controls milk production (0: No change - 1: Normal rate - 2: Accelerated rate)")
+	endEvent
+endState
+
+; AddSliderOptionST("STATE_BIMBO_HORMONE","Bimbo hormone", _bimboMod as Float,"{1}") 
+state STATE_BIMBO_HORMONE ; SLIDER
+	event OnSliderOpenST()
+		SetSliderDialogStartValue( _bimboMod )
+		SetSliderDialogDefaultValue( 1.0 )  
+		SetSliderDialogRange( 0.0, 2.0 )
+		SetSliderDialogInterval( 0.1 )
+	endEvent
+
+	event OnSliderAcceptST(float value)
+		_bimboMod  = value 
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fHormoneBimboMod", _bimboMod) 
+		SetSliderOptionValueST( _bimboMod, "{1}" )
+	endEvent
+
+	event OnDefaultST()
+		_bimboMod = 1.0
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fHormoneBimboMod", _bimboMod) 
+		SetSliderOptionValueST( _bimboMod , "{1}" )
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Bimbo hormone - Controls amount of brain fuzz in a bimbo (0: No change - 1: Normal rate - 2: Accelerated rate)")
+	endEvent
+endState
+
+; AddSliderOptionST("STATE_SUCCUBUS_HORMONE","Succubus hormone", _succubusMod as Float,"{1}") 
+state STATE_SUCCUBUS_HORMONE ; SLIDER
+	event OnSliderOpenST()
+		SetSliderDialogStartValue( _succubusMod )
+		SetSliderDialogDefaultValue( 1.0 )  
+		SetSliderDialogRange( 0.0, 2.0 )
+		SetSliderDialogInterval( 0.1 )
+	endEvent
+
+	event OnSliderAcceptST(float value)
+		_succubusMod  = value 
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fHormoneSuccubusMod", _succubusMod) 
+		SetSliderOptionValueST( _succubusMod, "{1}" )
+	endEvent
+
+	event OnDefaultST()
+		_succubusMod = 1.0
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fHormoneSuccubusMod", _succubusMod) 
+		SetSliderOptionValueST( _succubusMod , "{1}" )
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Succubus hormone - Controls power of succubus effects (0: No change - 1: Normal rate - 2: Accelerated rate)")
+	endEvent
+endState
+
+; 	AddToggleOptionST("STATE_RESET_HORMONES","Reset hormone levels", _resetHormonesToggle as Float)
+state STATE_RESET_HORMONES ; TOGGLE
+	event OnSelectST()
+		; SLH_Control._refreshBodyShape()
+
+		SendModEvent("SLHResetHormones")
+		
+		Debug.MessageBox("Hormone levels reset")
+	endEvent
+
+	event OnDefaultST()
+		; Simple button - no default state
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Reset hormone levels to 'normal' levels based on race.")
+	endEvent
+endState
+
+; AddToggleOptionST("STATE_RESET_COLORS","Reset colors", _resetColorsToggle as Float)
+state STATE_RESET_COLORS ; TOGGLE
+	event OnSelectST()
+		; SLH_Control._refreshBodyShape()
+
+		SendModEvent("SLHResetColors")
+		
+		Debug.MessageBox("Hormone colors reset")
+	endEvent
+
+	event OnDefaultST()
+		; Simple button - no default state
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Reset hormone colors to default settings.")
+	endEvent
+endState
 
 ; AddSliderOptionST("STATE_LIBIDO","Starting libido", _startingLibido)
 state STATE_LIBIDO ; SLIDER
@@ -544,7 +1079,7 @@ endState
 ; AddSliderOptionST("STATE_SEX_TRIGGER","High Sex Activity trigger", _sexActivityThreshold)
 state STATE_SEX_TRIGGER ; SLIDER
 	event OnSliderOpenST()
-		SetSliderDialogStartValue( GV_sexActivityThreshold.GetValueInt() )
+		SetSliderDialogStartValue( StorageUtil.GetIntValue(PlayerActor, "_SLH_iSexActivityThreshold") )
 		SetSliderDialogDefaultValue( 2 )
 		SetSliderDialogRange( 2, 10 )
 		SetSliderDialogInterval( 1 )
@@ -552,13 +1087,14 @@ state STATE_SEX_TRIGGER ; SLIDER
 
 	event OnSliderAcceptST(float value)
 		int thisValue = value as int
-		GV_sexActivityThreshold.SetValueInt( thisValue )
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iSexActivityThreshold",thisValue)
 		SetSliderOptionValueST( thisValue )
 	endEvent
 
 	event OnDefaultST()
-		GV_sexActivityThreshold.SetValueInt( 2 )
-		SetSliderOptionValueST( 2 )
+		Int thisValue = 3
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iSexActivityThreshold",thisValue)
+		SetSliderOptionValueST( thisValue )
 	endEvent
 
 	event OnHighlightST()
@@ -568,7 +1104,7 @@ endState
 ; AddSliderOptionST("STATE_SEX_BUFFER","High Sex Activity buffer", _sexActivityBuffer)
 state STATE_SEX_BUFFER ; SLIDER
 	event OnSliderOpenST()
-		SetSliderDialogStartValue( GV_sexActivityBuffer.GetValueInt() )
+		SetSliderDialogStartValue( StorageUtil.GetIntValue(PlayerActor, "_SLH_iSexActivityBuffer") )
 		SetSliderDialogDefaultValue( 7 )
 		SetSliderDialogRange( 1, 10 )
 		SetSliderDialogInterval( 1 )
@@ -576,13 +1112,14 @@ state STATE_SEX_BUFFER ; SLIDER
 
 	event OnSliderAcceptST(float value)
 		int thisValue = value as int
-		GV_sexActivityBuffer.SetValueInt( thisValue )
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iSexActivityBuffer",thisValue)
 		SetSliderOptionValueST( thisValue )
 	endEvent
 
 	event OnDefaultST()
-		GV_sexActivityBuffer.SetValueInt( 7 )
-		SetSliderOptionValueST( 7 )
+		Int thisValue = 7
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iSexActivityBuffer",thisValue)
+		SetSliderOptionValueST( thisValue )
 	endEvent
 
 	event OnHighlightST()
@@ -683,7 +1220,7 @@ endState
 ; AddSliderOptionST("STATE_SWELL_FACTOR","Base swell factor", _baseSwellFactor)
 state STATE_SWELL_FACTOR ; SLIDER
 	event OnSliderOpenST()
-		SetSliderDialogStartValue( GV_baseSwellFactor.GetValue() )
+		SetSliderDialogStartValue( StorageUtil.GetFloatValue(PlayerActor, "_SLH_fBaseSwellFactor") )
 		SetSliderDialogDefaultValue( 10.0 )
 		SetSliderDialogRange( 0.0, 100.0 )
 		SetSliderDialogInterval( 1.0 )
@@ -691,13 +1228,14 @@ state STATE_SWELL_FACTOR ; SLIDER
 
 	event OnSliderAcceptST(float value)
 		float thisValue = value 
-		GV_baseSwellFactor.SetValue( thisValue  )
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBaseSwellFactor",thisValue)
 		SetSliderOptionValueST( thisValue,"{0} %" )
 	endEvent
 
 	event OnDefaultST()
-		GV_baseSwellFactor.SetValue( 10.0 )
-		SetSliderOptionValueST( 10.0,"{0} %" )
+		float thisValue = 10.0 
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBaseSwellFactor",thisValue)
+		SetSliderOptionValueST( thisValue,"{0} %" )
 	endEvent
 
 	event OnHighlightST()
@@ -707,7 +1245,7 @@ endState
 ; AddSliderOptionST("STATE_SHRINK_FACTOR","Base shrink factor", _baseShrinkFactor)
 state STATE_SHRINK_FACTOR ; SLIDER
 	event OnSliderOpenST()
-		SetSliderDialogStartValue( GV_baseShrinkFactor.GetValue() )
+		SetSliderDialogStartValue( StorageUtil.GetIntValue(PlayerActor, "_SLH_fBaseShrinkFactor") )
 		SetSliderDialogDefaultValue( 5.0 )
 		SetSliderDialogRange( 0.0, 100.0 )
 		SetSliderDialogInterval( 1.0 )
@@ -715,13 +1253,14 @@ state STATE_SHRINK_FACTOR ; SLIDER
 
 	event OnSliderAcceptST(float value)
 		float thisValue = value 
-		GV_baseShrinkFactor.SetValue( thisValue )
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBaseShrinkFactor",thisValue)
 		SetSliderOptionValueST( thisValue ,"{0} %")
 	endEvent
 
 	event OnDefaultST()
-		GV_baseShrinkFactor.SetValue( 5.0 )
-		SetSliderOptionValueST( 5.0,"{0} %" )
+		float thisValue = 5.0 
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBaseShrinkFactor",thisValue)
+		SetSliderOptionValueST( thisValue,"{0} %" )
 	endEvent
 
 	event OnHighlightST()
@@ -1157,13 +1696,14 @@ endState
 ; AddToggleOptionST("STATE_CHANGE_COLOR","Change colors", _useColors)
 state STATE_CHANGE_COLOR ; TOGGLE
 	event OnSelectST()
-		GV_useColors.SetValueInt( Math.LogicalXor( 1, GV_useColors.GetValueInt() ) )
-		SetToggleOptionValueST( GV_useColors.GetValueInt() as Bool )
+		_useColors = Math.LogicalXor( 1, _useColors as Int )
+		SetToggleOptionValueST( _useColors as Bool )
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iUseColors", _useColors as Int)
 		ForcePageReset()
 	endEvent
 
 	event OnDefaultST()
-		GV_useColors.SetValueInt( 0 )
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iUseColors", 0)
 		SetToggleOptionValueST( false )
 		ForcePageReset()
 	endEvent
@@ -1176,13 +1716,14 @@ endState
 ; AddToggleOptionST("STATE_CHANGE_HairCOLOR","Change colors", _useHairColors)
 state STATE_CHANGE_HAIRCOLOR ; TOGGLE
 	event OnSelectST()
-		GV_useHairColors.SetValueInt( Math.LogicalXor( 1, GV_useHairColors.GetValueInt() ) )
-		SetToggleOptionValueST( GV_useHairColors.GetValueInt() as Bool )
+		_useHairColors = Math.LogicalXor( 1, _useHairColors as Int )
+		SetToggleOptionValueST( _useHairColors as Bool )
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iUseHairColors", _useHairColors as Int)
 		ForcePageReset()
 	endEvent
 
 	event OnDefaultST()
-		GV_useHairColors.SetValueInt( 0 )
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iUseHairColors", 0)
 		SetToggleOptionValueST( false )
 		ForcePageReset()
 	endEvent
@@ -1192,22 +1733,46 @@ state STATE_CHANGE_HAIRCOLOR ; TOGGLE
 	endEvent
 endState
 
-; AddColorOptionST("STATE_RED_COLOR_SHIFT","Red color shift", _redShiftColor as Int)
-state STATE_RED_COLOR_SHIFT ; COLOR
+; AddColorOptionST("STATE_DEFAULT_COLOR","Default color", _defaultColor as Int)
+state STATE_DEFAULT_COLOR ; COLOR
 	event OnColorOpenST()
-		SetColorDialogStartColor( GV_redShiftColor.GetValue() as Int  )
-		SetColorDialogDefaultColor( GV_redShiftColor.GetValue() as Int ) ; Get starting weight as global variable
+		SetColorDialogStartColor( _defaultColor )
+		SetColorDialogDefaultColor( _defaultColor )  
 	endEvent
 
-	event OnColorAcceptST(int value)
-		Int thisValue = value  
-		GV_redShiftColor.SetValue( thisValue)   
-		SetColorOptionValueST( thisValue )
+	event OnColorAcceptST(int value) 
+		_defaultColor = value
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iDefaultColor", _defaultColor)
+		SetColorOptionValueST( _defaultColor )
 	endEvent
 
 	event OnDefaultST()
-		GV_redShiftColor.SetValue( 32 )
-		SetColorOptionValueST( 32 )
+		_defaultColor =  Math.LeftShift(255, 16) + Math.LeftShift(255, 8) + 255
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iDefaultColor", _defaultColor)
+		SetColorOptionValueST( _defaultColor )
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Red shift color - Color for 'red' shift from current color (blushing after sex)")
+	endEvent
+endState
+; AddColorOptionST("STATE_RED_COLOR_SHIFT","Red color shift", _redShiftColor as Int)
+state STATE_RED_COLOR_SHIFT ; COLOR
+	event OnColorOpenST()
+		SetColorDialogStartColor( _redShiftColor )
+		SetColorDialogDefaultColor( _redShiftColor )  
+	endEvent
+
+	event OnColorAcceptST(int value) 
+		_redShiftColor = value
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iRedShiftColor", _redShiftColor)
+		SetColorOptionValueST( _redShiftColor )
+	endEvent
+
+	event OnDefaultST()
+		_redShiftColor = 32
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iRedShiftColor", _redShiftColor)
+		SetColorOptionValueST( _redShiftColor )
 	endEvent
 
 	event OnHighlightST()
@@ -1217,21 +1782,22 @@ endState
 ; AddSliderOptionST("STATE_RED_COLOR_SHIFT_MOD","Red color shift mod", _redShiftColorMod as Float,"{1}")
 state STATE_RED_COLOR_SHIFT_MOD ; SLIDER
 	event OnSliderOpenST()
-		SetSliderDialogStartValue( GV_redShiftColorMod.GetValue()  )
+		SetSliderDialogStartValue( _redShiftColorMod )
 		SetSliderDialogDefaultValue( 1.0 )  
 		SetSliderDialogRange( 0.0, 1.0 )
 		SetSliderDialogInterval( 0.1 )
 	endEvent
 
 	event OnSliderAcceptST(float value)
-		float thisValue = value 
-		GV_redShiftColorMod.SetValue( thisValue)   
-		SetSliderOptionValueST( thisValue, "{1}" )
+		_redShiftColorMod  = value 
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fRedShiftColorMod", _redShiftColorMod) 
+		SetSliderOptionValueST( _redShiftColorMod, "{1}" )
 	endEvent
 
 	event OnDefaultST()
-		GV_redShiftColorMod.SetValue( 1.0 )
-		SetSliderOptionValueST( 1.0 , "{1}" )
+		_redShiftColorMod = 1.0
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fRedShiftColorMod", _redShiftColorMod) 
+		SetSliderOptionValueST( _redShiftColorMod , "{1}" )
 	endEvent
 
 	event OnHighlightST()
@@ -1242,19 +1808,20 @@ endState
 ; AddColorOptionST("STATE_BLUE_COLOR_SHIFT","Blue color shift", _blueShiftColor as Int)
 state STATE_BLUE_COLOR_SHIFT ; COLOR
 	event OnColorOpenST()
-		SetColorDialogStartColor( GV_blueShiftColor.GetValue()  as Int )
-		SetColorDialogDefaultColor( GV_blueShiftColor.GetValue()  as Int) ; Get starting weight as global variable
+		SetColorDialogStartColor( _blueShiftColor )
+		SetColorDialogDefaultColor( _blueShiftColor)
 	endEvent
 
 	event OnColorAcceptST(int value)
-		Int thisValue = value 
-		GV_blueShiftColor.SetValue( thisValue )   
-		SetColorOptionValueST( thisValue )
+		_blueShiftColor = value 
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iBlueShiftColor", _blueShiftColor)  
+		SetColorOptionValueST( _blueShiftColor )
 	endEvent
 
 	event OnDefaultST()
-		GV_blueShiftColor.SetValue( 3 )
-		SetColorOptionValueST( 3 )
+		_blueShiftColor = 3
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iBlueShiftColor", _blueShiftColor)
+		SetColorOptionValueST( _blueShiftColor )
 	endEvent
 
 	event OnHighlightST()
@@ -1265,25 +1832,126 @@ endState
 ; AddSliderOptionST("STATE_BLUE_COLOR_SHIFT_MOD","Blue color shift mod", _blueShiftColorMod as Float,"{1}")
 state STATE_BLUE_COLOR_SHIFT_MOD ; SLIDER
 	event OnSliderOpenST()
-		SetSliderDialogStartValue( GV_blueShiftColorMod.GetValue()  )
+		SetSliderDialogStartValue( _blueShiftColorMod )
 		SetSliderDialogDefaultValue( 1.0 )  
 		SetSliderDialogRange( 0.0, 1.0 )
 		SetSliderDialogInterval( 0.1 )
 	endEvent
 
 	event OnSliderAcceptST(float value)
-		float thisValue = value 
-		GV_blueShiftColorMod.SetValue( thisValue)   
-		SetSliderOptionValueST( thisValue, "{1}" )
+		_blueShiftColorMod  = value 
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBlueShiftColorMod", _blueShiftColorMod) 
+		SetSliderOptionValueST( _blueShiftColorMod, "{1}" )
 	endEvent
 
 	event OnDefaultST()
-		GV_blueShiftColorMod.SetValue( 1.0 )
-		SetSliderOptionValueST( 1.0 , "{1}" )
+		_blueShiftColorMod = 1.0
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBlueShiftColorMod", _blueShiftColorMod) 
+		SetSliderOptionValueST( _blueShiftColorMod , "{1}" )
 	endEvent
 
 	event OnHighlightST()
 		SetInfoText("Blue shift color modifier - Amount of base change applied to shift to blue color from current color (1 being the full amount)")
+	endEvent
+endState
+
+; AddColorOptionST("STATE_BIMBO_HAIR_COLOR_SHIFT","Bimbo Hair color shift", _bimboHairColor as Int)
+state STATE_BIMBO_HAIR_COLOR_SHIFT ; COLOR
+	event OnColorOpenST()
+		SetColorDialogStartColor( _bimboHairColor )
+		SetColorDialogDefaultColor( _bimboHairColor)
+	endEvent
+
+	event OnColorAcceptST(int value)
+		_bimboHairColor = value 
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iBimboHairColor", _bimboHairColor)  
+		SetColorOptionValueST( _bimboHairColor )
+	endEvent
+
+	event OnDefaultST()
+		_bimboHairColor = 3
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iBimboHairColor", _bimboHairColor)
+		SetColorOptionValueST( _bimboHairColor )
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Bimbo Hair color - Hair Color for 'Bimbo' curse")
+	endEvent
+endState
+
+; AddSliderOptionST("STATE_BIMBO_HAIR_COLOR_SHIFT_MOD","Bimbo Hair shift mod", _bimboHairColorMod as Float,"{1}")
+state STATE_BIMBO_HAIR_COLOR_SHIFT_MOD ; SLIDER
+	event OnSliderOpenST()
+		SetSliderDialogStartValue( _bimboHairColorMod )
+		SetSliderDialogDefaultValue( 1.0 )  
+		SetSliderDialogRange( 0.0, 1.0 )
+		SetSliderDialogInterval( 0.1 )
+	endEvent
+
+	event OnSliderAcceptST(float value)
+		_bimboHairColorMod  = value 
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBimboHairColorMod", _bimboHairColorMod) 
+		SetSliderOptionValueST( _bimboHairColorMod, "{1}" )
+	endEvent
+
+	event OnDefaultST()
+		_bimboHairColorMod = 1.0
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBimboHairColorMod", _bimboHairColorMod) 
+		SetSliderOptionValueST( _bimboHairColorMod , "{1}" )
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Bimbo Hair color modifier - Amount of base change applied to shift to the full Bimbo Hair color from current color (1 being the full amount)")
+	endEvent
+endState
+
+; AddColorOptionST("STATE_SUCCUBUS_HAIR_COLOR_SHIFT","Succubus Hair color shift", _succubusHairColor as Int)
+state STATE_SUCCUBUS_HAIR_COLOR_SHIFT ; COLOR
+	event OnColorOpenST()
+		SetColorDialogStartColor( _succubusHairColor )
+		SetColorDialogDefaultColor( _succubusHairColor)
+	endEvent
+
+	event OnColorAcceptST(int value)
+		_succubusHairColor = value 
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iSuccubusHairColor", _succubusHairColor)  
+		SetColorOptionValueST( _succubusHairColor )
+	endEvent
+
+	event OnDefaultST()
+		_succubusHairColor = 3
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iSuccubusHairColor", _succubusHairColor)
+		SetColorOptionValueST( _succubusHairColor )
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Succubus Hair color - Hair Color for 'Succubus' curse")
+	endEvent
+endState
+
+; AddSliderOptionST("STATE_SUCCUBUS_HAIR_COLOR_SHIFT_MOD","Succubus Hair shift mod", _succubusHairColorMod as Float,"{1}")
+state STATE_SUCCUBUS_HAIR_COLOR_SHIFT_MOD ; SLIDER
+	event OnSliderOpenST()
+		SetSliderDialogStartValue( _succubusHairColorMod )
+		SetSliderDialogDefaultValue( 1.0 )  
+		SetSliderDialogRange( 0.0, 1.0 )
+		SetSliderDialogInterval( 0.1 )
+	endEvent
+
+	event OnSliderAcceptST(float value)
+		_succubusHairColorMod  = value 
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fSuccubusHairColorMod", _succubusHairColorMod) 
+		SetSliderOptionValueST( _succubusHairColorMod, "{1}" )
+	endEvent
+
+	event OnDefaultST()
+		_succubusHairColorMod = 1.0
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fSuccubusHairColorMod", _succubusHairColorMod) 
+		SetSliderOptionValueST( _succubusHairColorMod , "{1}" )
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Succubus Hair color modifier - Amount of base change applied to shift to the full Succubus Hair color from current color (1 being the full amount)")
 	endEvent
 endState
 
@@ -1444,6 +2112,7 @@ state STATE_REFRESH ; TOGGLE
 		SetInfoText("Apply these values to current Hormones settings.")
 	endEvent
 endState
+
 
 ; AddToggleOptionST("STATE_SUCCUBUS","Succubus mode", _allowSuccubus)
 state STATE_SUCCUBUS ; TOGGLE
@@ -1809,11 +2478,13 @@ state STATE_SHOW_STATUS ; TOGGLE
 	event OnSelectST()
 		GV_showStatus.SetValueInt( Math.LogicalXor( 1, GV_showStatus.GetValueInt() ) )
 		SetToggleOptionValueST( GV_showStatus.GetValueInt() as Bool )
+		StorageUtil.SetIntValue(Game.GetPlayer(), "_SLH_iShowStatus", GV_showStatus.GetValueInt() as Int) 
 		ForcePageReset()
 	endEvent
 
 	event OnDefaultST()
 		GV_showStatus.SetValueInt( 0 )
+		StorageUtil.SetIntValue(Game.GetPlayer(), "_SLH_iShowStatus", 0) 
 		SetToggleOptionValueST( false )
 		ForcePageReset()
 	endEvent
@@ -1835,12 +2506,14 @@ state STATE_COMMENTS_FREQUENCY ; SLIDER
 	event OnSliderAcceptST(float value)
 		float thisValue = value 
 		GV_commentsFrequency.SetValue(thisValue)  
+		StorageUtil.SetFloatValue(Game.GetPlayer(), "_SLH_fCommentFrequency", thisValue) 
 
 		SetSliderOptionValueST( thisValue, "{1} %" )
 	endEvent
 
 	event OnDefaultST()
 		GV_commentsFrequency.SetValue(70.0)
+		StorageUtil.SetFloatValue(Game.GetPlayer(), "_SLH_fCommentFrequency", 70) 
 		SetSliderOptionValueST( 70.0, "{1} %" )
 	endEvent
 
@@ -1931,7 +2604,7 @@ state STATE_ENABLE_NODE_UPDATE ; TOGGLE
 	event OnSelectST()
 		; NiOverride and QueueNodeUpdates are mutually exclusive
 		GV_enableNiNodeUpdate.SetValueInt( Math.LogicalXor( 1, GV_enableNiNodeUpdate.GetValueInt() ) )
-		GV_enableNiNodeOverride.SetValueInt( 0 )
+		StorageUtil.SetIntValue(none, "_SLH_NiNodeOverrideON", 0)
 		SetToggleOptionValueST( GV_enableNiNodeUpdate.GetValueInt() as Bool )
 		refreshStorageFromGlobals()
 		ForcePageReset()
@@ -1952,15 +2625,16 @@ endState
 state STATE_ENABLE_NODE_OVERRIDE ; TOGGLE
 	event OnSelectST()
 		; NiOverride and QueueNodeUpdates are mutually exclusive
-		GV_enableNiNodeOverride.SetValueInt( Math.LogicalXor( 1, GV_enableNiNodeOverride.GetValueInt() ) )
+		_enableNiNodeOverride = StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON")
+		_enableNiNodeOverride = Math.LogicalXor( 1, _enableNiNodeOverride as Int ) 
 		GV_enableNiNodeUpdate.SetValueInt( 0)
-		SetToggleOptionValueST( GV_enableNiNodeOverride.GetValueInt() as Bool )
+		SetToggleOptionValueST( _enableNiNodeOverride as Bool )
 		refreshStorageFromGlobals()
 		ForcePageReset()
 	endEvent
 
 	event OnDefaultST()
-		GV_enableNiNodeOverride.SetValueInt( 1 )
+		StorageUtil.SetIntValue(none, "_SLH_NiNodeOverrideON", 1)
 		SetToggleOptionValueST( true )
 		ForcePageReset()
 	endEvent
@@ -1971,7 +2645,7 @@ state STATE_ENABLE_NODE_OVERRIDE ; TOGGLE
 
 endState
 
-; AddToggleOptionST("STATE_RESET","Reset changes", _resetToggle)
+; AddToggleOptionST("STATE_SETSHAPE","Reset changes", _resetToggle)
 state STATE_SETSHAPE ; TOGGLE
 	event OnSelectST()
 		; SLH_Control._resetHormonesState()
