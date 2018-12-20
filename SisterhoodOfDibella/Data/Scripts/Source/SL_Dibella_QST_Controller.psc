@@ -11,23 +11,23 @@ Event OnPlayerLoadGame()
 	_maintenance()
 EndEvent
 
-Event OnLocationChange(Location akOldLoc, Location akNewLoc)
-	ObjectReference akActorREF= Game.GetPlayer() as ObjectReference
-	Actor akActor= Game.GetPlayer()
+; Event OnLocationChange(Location akOldLoc, Location akNewLoc)
+;	ObjectReference akActorREF= Game.GetPlayer() as ObjectReference
+;	Actor akActor= Game.GetPlayer()
 
 	; Check sex with Fjotra
 	; Trigger scenes as Dibella's vessel
 
-EndEvent
+; EndEvent
 
 Function _Maintenance()
 	If (!StorageUtil.HasIntValue(none, "_SLSD_iDibellaSisterhood"))
 		StorageUtil.SetIntValue(none, "_SLSD_iDibellaSisterhood", 1)
 	EndIf
 
-	; UnregisterForAllModEvents()
+	UnregisterForAllModEvents()
 	Debug.Trace("[SLD] Reset SexLab events")
-	RegisterForModEvent("AnimationStart", "OnSexLabStart")
+	; RegisterForModEvent("AnimationStart", "OnSexLabStart")
 	RegisterForModEvent("AnimationEnd",   "OnSexLabEnd")
 	RegisterForModEvent("OrgasmStart",    "OnSexLabOrgasm")
 	RegisterForSleep()
@@ -78,14 +78,18 @@ EndFunction
 
 Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 	Actor kPlayer = Game.GetPlayer() as Actor
-	Location kLocation = Game.GetPlayer().GetCurrentLocation()
-	Int iTempleCorruption = StorageUtil.GetIntValue( Game.GetPlayer(), "_SLSD_iDibellaTempleCorruption")
+	Location kLocation = kPlayer.GetCurrentLocation()
 
-	If kLocation.IsSameLocation( DibellaTempleBaths ) && (iTempleCorruption >= 2)
-		If (Utility.RandomInt(0,100)<= (TempleCorruption.GetValue() * 10) ) && (StorageUtil.GetIntValue(Game.getPlayer(), "_SD_iDisableDreamworldOnSleep") == 0) && ( StorageUtil.GetIntValue(Game.getPlayer(), "_SD_iSanguineBlessings") > 0)
-			SendModEvent("SDDreamworldPull")
-		Endif
-	EndIf
+	If (kLocation != None)
+
+		Int iTempleCorruption = StorageUtil.GetIntValue( kPlayer, "_SLSD_iDibellaTempleCorruption")
+
+		If kLocation.IsSameLocation( DibellaTempleBaths ) && (iTempleCorruption >= 2)
+			If (Utility.RandomInt(0,100)<= (TempleCorruption.GetValue() * 10) ) && (StorageUtil.GetIntValue(kPlayer, "_SD_iDisableDreamworldOnSleep") == 0) && ( StorageUtil.GetIntValue(kPlayer, "_SD_iSanguineBlessings") > 0)
+				SendModEvent("SDDreamworldPull")
+			Endif
+		EndIf
+	Endif
 Endevent
 
 Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
@@ -195,7 +199,7 @@ Event OnSexLabOrgasm(String _eventName, String _args, Float _argc, Form _sender)
 			iRandomNum = Utility.RandomInt(0,100)
 
 			If (iRandomNum > 70) && (TempleCorruption.getValue()>0)
-		 		InitiationFX.Cast(FjotraRef as Actor ,FjotraRef as Actor )
+		 		DibellaKissFX.Cast(FjotraRef as Actor ,FjotraRef as Actor )
 		 		Utility.Wait(2.0)
 
 		 		iRandomNum = Utility.RandomInt(0,100)
@@ -215,6 +219,10 @@ Event OnSexLabOrgasm(String _eventName, String _args, Float _argc, Form _sender)
 					Debug.MessageBox("The Sybil is possessed by the essence of Dibella, transfixed, eyes glowing and looking right through you.")
 
 				EndIf
+			ElseIf  (TempleCorruption.getValue()<=0)
+		 		DibellaKissFX.Cast(FjotraRef as Actor ,FjotraRef as Actor )
+		 		Utility.Wait(2.0)
+				Debug.MessageBox("The eyes of the Sybil glow in extasy.")
 
 	 		Endif
 
@@ -339,6 +347,7 @@ GlobalVariable Property SybilLevel Auto
 GlobalVariable Property TempleCorruption Auto
 
 SPELL Property InitiationFX  Auto 
+SPELL Property DibellaKissFX  Auto 
 Quest Property DibellaHeartQuest Auto
 Quest Property DibellaPathQuest Auto
 

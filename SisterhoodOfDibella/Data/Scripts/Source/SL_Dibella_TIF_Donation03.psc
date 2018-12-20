@@ -34,9 +34,9 @@ Self.GetOwningQuest().ModObjectiveGlobal( 1, TempleDonations, 10, 10, True, True
 		Thread.AddActor(akSpeaker) ; // IsVictim = true
 
 		If (actorGender == 1)
-			Thread.SetAnimations(SexLab.GetAnimationsByTags(2, "Sex,Lesbian"))
+			Thread.SetAnimations(SexLab.GetAnimationsByTags(2, "Foreplay,Lesbian"))
 		Else
-			Thread.SetAnimations(SexLab.GetAnimationsByTags(2, "Sex,MF"))
+			Thread.SetAnimations(SexLab.GetAnimationsByTags(2, "Foreplay"))
 		EndIf
 
 		Thread.StartThread()
