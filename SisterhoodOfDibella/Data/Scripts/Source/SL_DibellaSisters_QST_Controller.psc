@@ -8,10 +8,17 @@ Event OnPlayerLoadGame()
 EndEvent
 
 Event OnLocationChange(Location akOldLoc, Location akNewLoc)
+	; Only runs going in or out of Markarth Temple
+	If ((akNewLoc != TempleLocation) && (akOldLoc == TempleLocation))
+		Return
+	Endif
+
+
+
 	ObjectReference akActorREF= Game.GetPlayer() as ObjectReference
 	Actor akActor= Game.GetPlayer()
-	Int iTempleCorruption = StorageUtil.GetIntValue( Game.GetPlayer(), "_SLSD_iDibellaTempleCorruption")
-	Int iSybilLevel = StorageUtil.GetIntValue( Game.GetPlayer(), "_SLSD_iDibellaSybilLevel" )
+	Int iTempleCorruption = StorageUtil.GetIntValue( akActor, "_SLSD_iDibellaTempleCorruption")
+	Int iSybilLevel = StorageUtil.GetIntValue( akActor, "_SLSD_iDibellaSybilLevel" )
 
 	; Check if new location is Temple or Inner Sanctum
 	; Check value of temple corruption from StorageUtil
@@ -53,7 +60,7 @@ Event OnLocationChange(Location akOldLoc, Location akNewLoc)
 					(SybilRef as Actor).SetOutfit(FjotraInitiateOutfit)
 					; Debug.Notification("[SLSD] Fjotra is a Initiate")
 					
-				ElseIf (iSybilLevel == 4)
+				ElseIf (iSybilLevel >= 4)
 					(SybilRef as Actor).SetOutfit(FjotraCorruptedOutfit)
 					; Debug.Notification("[SLSD] Fjotra is a Mother")
 					
@@ -86,6 +93,7 @@ Function _Maintenance()
  		_SLS_SisterClothingDresserCorrupted.Enable()
 	Endif
 EndFunction
+
 
 
 Event OnSLSDEquipOutfit(String _eventName, String _args, Float _argc = -1.0, Form _sender)

@@ -3,6 +3,10 @@ Scriptname SL_Dibella_TRG_HamalSybilLesson extends ObjectReference
 ReferenceAlias Property HamalAlias  Auto  
 ReferenceAlias Property SybilAlias  Auto  
 
+Quest Property DibellaCorruptionQuest Auto
+Quest Property DibellaPurificationQuest Auto
+
+
 Scene  Property HamalSybilLesson  Auto  
 
 Event OnTriggerEnter(ObjectReference akActionRef)
@@ -32,6 +36,11 @@ Event OnTriggerEnter(ObjectReference akActionRef)
 		; 	InitiationFX.Cast(akActor ,akActor )
 		; EndIf
 
+		If (DibellaCorruptionQuest.GetStageDone(59))
+			SybilLevel.SetValue(6)
+			StorageUtil.SetIntValue( Game.GetPlayer() , "_SLSD_iDibellaTempleCorruption", 5)
+		Endif
+
 		If ( SybilLevel.GetValue() == 0)   ; Sybil is rescued -  Start Initiation to Novice
 			InitiationStart.SetValue(Game.QueryStat("Days Passed") ) 
 			InitiationQuest.SetStage(5)
@@ -43,19 +52,28 @@ Event OnTriggerEnter(ObjectReference akActionRef)
 				DibellaPathQuest.SetStage(10)
 			EndIf
 
-		ElseIf ( SybilLevel.GetValue() == 3)   ; Initiation to Accolyte
+		ElseIf ( SybilLevel.GetValue() == 1)   ; Initiation to Accolyte
 		;	InitiationQuest.SetStage(30)
 		;	InitiationFX.Cast(akActor ,akActor )
 		;	DibellaPathQuest.SetStage(20)
+			Sybil.SendModEvent("SLSDEquipOutfit","FjotraNovice")
 
-		ElseIf ( SybilLevel.GetValue() == 5)   ; Initiation to Initiate
+		ElseIf ( SybilLevel.GetValue() == 2)   ; Initiation to Accolyte
+		;	InitiationQuest.SetStage(30)
+		;	InitiationFX.Cast(akActor ,akActor )
+		;	DibellaPathQuest.SetStage(20)
+			Sybil.SendModEvent("SLSDEquipOutfit","FjotraAccolyte")
+
+		ElseIf ( SybilLevel.GetValue() == 3)   ; Initiation to Initiate
 		;	InitiationQuest.SetStage(30)
 		;	InitiationFX.Cast(akActor ,akActor )
 		;	DibellaPathQuest.SetStage(50)
+			Sybil.SendModEvent("SLSDEquipOutfit","FjotraInitiate")
 
-		ElseIf ( SybilLevel.GetValue() == 6)   ; Initiation to Mother
+		ElseIf ( SybilLevel.GetValue() >= 4)   ; Initiation to Mother
 		;	InitiationQuest.SetStage(60)
 		;	InitiationFX.Cast(akActor ,akActor )
+			Sybil.SendModEvent("SLSDEquipOutfit","FjotraCorrupted")
 		EndIf
 
 		StorageUtil.SetIntValue( Game.GetPlayer(), "_SLSD_iSybilLevel", SybilLevel.GetValue() as Int )

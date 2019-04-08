@@ -9,6 +9,8 @@ Actor akSpeaker = akSpeakerRef as Actor
 Self.GetOwningQuest().SetStage(50)
 Self.GetOwningQuest().SetStage(51)
 
+MUSCombatBoss.Add()
+
 TempleCorruptionLightRef.Enable()
 ;END CODE
 EndFunction
@@ -17,3 +19,5 @@ EndFunction
 ;END FRAGMENT CODE - Do not edit anything between this and the begin comment
 
 ObjectReference Property TempleCorruptionLightRef  Auto  
+
+MusicType Property MUSCombatBoss  Auto  

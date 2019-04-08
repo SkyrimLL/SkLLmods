@@ -6,12 +6,15 @@ Scriptname SL_Dibella_TIF_Corruption100 Extends TopicInfo Hidden
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
+Actor kPlayer = Game.GetPlayer()
 Self.GetOwningQuest().SetStage(100)
 
 SanguineFX.Play( _SLSD_Sanguine, 15)
 Utility.Wait(2.0)
 
 _SLSD_Sanguine.Disable()
+
+akSpeaker.SendModEvent("PCSubEnslave")
 ;END CODE
 EndFunction
 ;END FRAGMENT

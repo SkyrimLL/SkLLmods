@@ -107,8 +107,9 @@ Event OnTriggerLeave(ObjectReference akActionRef)
 
 	EndIf
 
-      ApplySweatFX.RemoteCast(akActionRef, akActionRef as Actor,akActionRef)
-
+	if (_SLSD_TempleSweatON.GetValue() == 1)
+          ApplySweatFX.RemoteCast(akActionRef, akActionRef as Actor,akActionRef)
+      endif
 EndEvent
 
 
