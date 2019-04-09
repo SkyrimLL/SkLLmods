@@ -26,6 +26,10 @@ Function Maintenance()
 
 	ObjectReference AliciaRef = Alias_Alicia.GetReference()
 	Actor AliciaActor= AliciaRef as Actor
+
+	If (!StorageUtil.HasIntValue(none, "_SLA_iAlicia"))
+		StorageUtil.SetIntValue(none, "_SLA_iAlicia", 1)
+	EndIf
 	
 	If fVersion < 3.0 ; <--- Edit this value when updating
 		fVersion = 3.0 ; and this

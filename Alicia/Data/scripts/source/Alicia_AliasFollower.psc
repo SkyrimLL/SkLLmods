@@ -282,11 +282,14 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 
 	; If player sleeps in Windhelm and enough time since last victim
 	; AND Alicia is enabled
-	if ((Game.GetPlayer().GetCurrentLocation() == WindhelmArea) && ( !(AliciaREF.IsDisabled())) && (NPCVictimActive.GetValue()==0))
-		NPCVictimActive.SetValue(1)
+	NPCVictimActive.SetValue(0)
 
-		If (Utility.RandomInt(0,100)>90) && (StorageUtil.GetIntValue(Game.getPlayer(), "_SD_iDisableDreamworldOnSleep") == 0) && ( StorageUtil.GetIntValue(Game.getPlayer(), "_SD_iSanguineBlessings") > 0)
+	if ((Game.GetPlayer().GetCurrentLocation() == WindhelmArea) && ( !(AliciaREF.IsDisabled())) && (NPCVictimActive.GetValue()==0))
+
+		If (Utility.RandomInt(0,100)>70) && (StorageUtil.GetIntValue(Game.getPlayer(), "_SD_iDisableDreamworldOnSleep") == 0) && ( StorageUtil.GetIntValue(Game.getPlayer(), "_SD_iSanguineBlessings") > 0)
 			SendModEvent("SDDreamworldPull")
+		elseif (Utility.RandomInt(0,100)>90)
+			NPCVictimActive.SetValue(1)
 		EndIf
 	EndIf
 endEvent

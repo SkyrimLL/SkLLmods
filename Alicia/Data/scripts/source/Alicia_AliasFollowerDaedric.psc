@@ -268,7 +268,7 @@ Event OnInit()
 
 	AliciaDaedricInWorld.SetValue(0)
 
-	StorageUtil.SetIntValue(AliciaActor, "_SD_iCanBeStripped", 0)
+	StorageUtil.SetIntValue(AliciaActor, "_SD_iCanBeStripped", -1)
 
 	AliciaActor.SetAv("WaitingForPlayer", 1) 
 	;follower will wait 3 days

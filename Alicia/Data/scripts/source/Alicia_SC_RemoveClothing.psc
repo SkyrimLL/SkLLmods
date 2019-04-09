@@ -4,6 +4,7 @@ ReferenceAlias Property Alias_Alicia  Auto
 GlobalVariable Property NPCVictimDays  Auto  
 GlobalVariable Property NPCVictimActive  Auto  
 Actor Property AliciaNPCVictim  Auto  
+ObjectReference Property AliciaNPCVictimLocationREF Auto
 
 Armor  Property AliciaClothingToken  Auto  
 
@@ -25,11 +26,12 @@ function OnTriggerEnter(ObjectReference akActionRef)
 		; Debug.Notification("Days since last visit:" + daysSinceLastVictim)
 
 		if  ((NPCVictimActive.GetValue()==1) && (AliciaNPCVictim.IsDisabled()) )  
-			AliciaNPCVictim.Enable()
-
 			if (AliciaNPCVictim.IsDead())
 				AliciaNPCVictim.Resurrect()
 			EndIf
+
+			AliciaNPCVictim.MoveTo(AliciaNPCVictimLocationREF)
+			AliciaNPCVictim.Enable()
 
 			(AliciaNPCVictim as ObjectReference).additem(AliciaClothingToken)
 			utility.wait(0.5)
