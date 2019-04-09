@@ -120,7 +120,7 @@ Bool isActorMale = False
 
 Bool isActorExhibitionist = False
 
-function bimboTransformEffectON(actor kActor)
+Bool function bimboTransformEffectON(actor kActor)
 	ObjectReference kActorREF= kActor as ObjectReference
 	ActorBase pActorBase = kActor.GetActorBase()
 
@@ -132,16 +132,19 @@ function bimboTransformEffectON(actor kActor)
 
     ; Abort if no gender/bimbo option checked in MCM
     If (GV_allowBimbo.GetValue()==0) 
-       Return
+        debugTrace(" Bimbo Transform Aborted - Bimbo curse is OFF")
+       Return False
     Endif
 
     If ((GV_allowHRT.GetValue()==0) && (isActorMale))
-        Return
+        debugTrace(" Bimbo Transform Aborted - Player is male and sex change is OFF")
+        Return False
     Endif
 
     ;; Abort if enslaved - to preserve slave related variables
     If (StorageUtil.GetIntValue(kActor, "_SD_iEnslaved") == 1)
-        Return
+        debugTrace(" Bimbo Transform Aborted - Player is enslaved")
+        Return False
     endif
 
     StorageUtil.SetIntValue(none, "_SLH_bimboIsOriginalActorMale", isActorMale as Int)
@@ -440,6 +443,8 @@ function bimboTransformEffectON(actor kActor)
     debugTrace(" Bimbo Curse Start - IsHRT: " + GV_isHRT.GetValue() as Int)
     debugTrace(" Bimbo Curse Start - IsTG: " + GV_isTG.GetValue() as Int)
 
+    Return True
+
 endFunction
 
 function bimboTransformEffectOFF(actor kActor)
@@ -580,7 +585,7 @@ function bimboTransformEffectOFF(actor kActor)
 
 endFunction
 
-function HRTEffectON(actor kActor)
+Bool function HRTEffectON(actor kActor)
     ObjectReference kActorREF= kActor as ObjectReference
     ActorBase pActorBase = kActor.GetActorBase()
 
@@ -591,7 +596,8 @@ function HRTEffectON(actor kActor)
     debugTrace(" HRT Start - IsHRT: " + GV_isHRT.GetValue() as Int)
 
     If (GV_allowHRT.GetValue()==0) 
-        Return
+        debugTrace(" Sex Change Transform Aborted - HRT curse is OFF")
+        Return False
     Endif
 
     debugTrace(" SexChange Init")
@@ -619,6 +625,7 @@ function HRTEffectON(actor kActor)
     EndIf
 
     debugTrace(" HRT ON")
+    Return True
 
 endFunction
 
@@ -647,7 +654,7 @@ function HRTEffectOFF(actor kActor)
          
 endFunction
 
-function TGEffectON(actor kActor)
+Bool function TGEffectON(actor kActor)
     ObjectReference kActorREF= kActor as ObjectReference
     ActorBase pActorBase = kActor.GetActorBase()
 
@@ -656,7 +663,8 @@ function TGEffectON(actor kActor)
     GV_allowBimbo.SetValue( StorageUtil.GetIntValue(kActor, "_SLH_allowBimbo") as Int)
 
     If (GV_allowTG.GetValue()==0)
-        Return
+        debugTrace(" Transgender Transform Aborted - Transgender curse is OFF")
+        Return False
     Endif
 
     debugTrace(" TG Init")
@@ -688,7 +696,7 @@ function TGEffectON(actor kActor)
     endif
 
     debugTrace(" TG Start - IsTG: " + GV_isTG.GetValue() as Int)
-
+    Return True
 endFunction
 
 function TGEffectOFF(actor kActor)

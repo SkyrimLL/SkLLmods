@@ -9,6 +9,8 @@ slaUtilScr Property slaUtil  Auto
 SexlabFramework Property SexLab Auto
 
 GlobalVariable      Property GV_allowExhibitionist		Auto 
+GlobalVariable      Property GV_isGagEquipped		Auto 
+GlobalVariable      Property GV_isPlugEquipped		Auto 
 
 bool property bIsPregnant = false auto
 bool property bBeeingFemale = false auto
@@ -119,6 +121,28 @@ Bool function hasActor(Actor[] _actors, Actor thisActor)
 		if _actors[idx] == thisActor as ObjectReference
 			return True
 		endif
+		idx += 1
+	endwhile
+	Return False
+EndFunction
+
+Bool function hasFormKeyword(Actor[] _actors, Keyword thisKeyword)
+	ActorBase aBase 
+	Form kForm
+
+	; debugTrace(" Keyword check:" + _actors.Length + " actors" )
+
+	int idx = 0
+	while idx < _actors.Length
+		if (_actors[idx])
+			kForm = _actors[idx] as Form
+
+			; debugTrace(" Keyword check:" + thisKeyword + " / "  + kForm.HasKeyword(thisKeyword))
+			
+			if kForm.HasKeyword(thisKeyword)
+				return True
+			endif
+		EndIf
 		idx += 1
 	endwhile
 	Return False
@@ -246,38 +270,48 @@ endFunction
 function manageSexLabAroused(Actor kActor, int aiModRank = -1)
  
 	Float Libido = StorageUtil.GetFloatValue(kActor, "_SLH_fLibido" ) 
-	Float AbsLibido = Math.abs(Libido)
+	Float fAbsLibido = Math.abs(Libido)
+	Float fArousalRateMod = 1.0
 	
 	If (Libido > 0)
-		If (GV_allowExhibitionist.GetValue() == 1) && ((StorageUtil.GetIntValue(kActor, "_SLH_isPregnant") == 1) || (StorageUtil.GetIntValue(kActor, "_SLH_isBimbo") == 1) || (StorageUtil.GetIntValue(kActor, "_SLH_isSuccubus") == 1))
-			If (AbsLibido >= 50)
+		If (GV_allowExhibitionist.GetValue() == 1) && ((StorageUtil.GetIntValue(kActor, "_SLH_isPregnant") == 1) || (StorageUtil.GetIntValue(kActor, "_SLH_iBimbo") == 1) || (StorageUtil.GetIntValue(kActor, "_SLH_isSuccubus") == 1))
+			If (fAbsLibido >= 50)
 				slaUtil.SetActorExhibitionist(kActor, True)
 			Else
 				slaUtil.SetActorExhibitionist(kActor, False)
 			EndIf
 		EndIf
 		
-	    slaUtil.UpdateActorExposureRate(kActor, AbsLibido / 10.0)
+	    fArousalRateMod = fAbsLibido / 10.0
 	EndIf
 
 	if (StorageUtil.GetIntValue(kActor, "_SLH_isSuccubus") == 1)
-		slaUtil.UpdateActorExposureRate(kActor, 9.0)
+		fArousalRateMod = 9.0
 	EndIf
 
-	if (StorageUtil.GetIntValue(kActor, "_SLH_isBimbo") == 1)
-		slaUtil.UpdateActorExposureRate(kActor, 5.0)
+	if (StorageUtil.GetIntValue(kActor, "_SLH_iBimbo") == 1)
+		fArousalRateMod = 5.0
 	EndIf
 
 	if (StorageUtil.GetIntValue(kActor, "_SLH_isPregnant") == 1)
-		slaUtil.UpdateActorExposureRate(kActor, 3.0)
+		fArousalRateMod = 2.0
 	EndIf
 
 	if ( StorageUtil.GetIntValue(kActor, "_SLH_isDrugged") == 1)
-		slaUtil.UpdateActorExposureRate(kActor, 9.0)
+		fArousalRateMod = 9.0
 	EndIf
+
+	if (StorageUtil.GetIntValue(kActor, "_SLH_iBimbo") == 1) && ((GV_isGagEquipped.GetValue()==1) || (GV_isPlugEquipped.GetValue()==1))
+		fArousalRateMod = fMax( fArousalRateMod / 9.0 , 1.1)
+	Endif
+
+	slaUtil.UpdateActorExposureRate(kActor, fArousalRateMod)
 
 endFunction
 
+function updateSexLabArousedExposure(Actor kActor, int iExposure)
+	slaUtil.UpdateActorExposure(kActor, iExposure, " Updated from SL Hormones")
+endFunction
 
 Function debugTrace(string traceMsg)
 	if (StorageUtil.GetIntValue(none, "_SLH_debugTraceON")==1)

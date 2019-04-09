@@ -11,6 +11,8 @@ SLH_fctPolymorph Property fctPolymorph Auto
 SLH_fctUtil Property fctUtil Auto
 SLH_fctHormonesLevels Property fctHormones Auto
 
+Keyword Property ActorTypeDaedra  Auto  
+
 ReferenceAlias Property PlayerAlias  Auto  
 ReferenceAlias Property SuccubusPlayerAlias  Auto  
 ObjectReference PlayerREF
@@ -104,8 +106,18 @@ GlobalVariable      Property GV_allowSelfSpells			Auto
 GlobalVariable      Property GV_resetToggle 			Auto 
 
 GlobalVariable      Property GV_isGagEquipped		Auto 
+GlobalVariable      Property GV_isPlugEquipped		Auto 
 GlobalVariable      Property GV_isPregnant		Auto 
+
 GlobalVariable      Property GV_isSuccubusFinal 				Auto
+GlobalVariable      Property GV_isTGFinal                   Auto
+GlobalVariable      Property GV_isHRTFinal                   Auto
+GlobalVariable      Property GV_isBimboFinal                 Auto
+
+GlobalVariable      Property GV_isSuccubusLocked 				Auto
+GlobalVariable      Property GV_isTGLocked                   Auto
+GlobalVariable      Property GV_isHRTLocked                   Auto
+GlobalVariable      Property GV_isBimboLocked                 Auto
 
 FormList Property VanillaHairRaceList  Auto  
 FormList Property CustomHairRaceList  Auto  
@@ -392,16 +404,16 @@ Event OnSleepStop(bool abInterrupted)
 	EndIf
 EndEvent
 
-Event OnUpdate()
+Function _updatePlayerState()
 	PlayerREF= PlayerAlias.GetReference()
 	PlayerActor= PlayerREF as Actor
 	pActorBase = PlayerActor.GetActorBase()
-	Int RandomNum = 0
-	Form kForm
-
-	if !Self
-		Return
-	EndIf
+	Form kFormGag
+	Form kFormAnalPlug
+	Form kFormVaginalPlug
+	Float fBimboClumsyMod 
+	Int iPlugCount = 0
+	Int iLastPlugCount = 0
 
 	bExternalChangeModActive = fctUtil.isExternalChangeModActive(PlayerActor)
 	GV_allowTG.SetValue( StorageUtil.GetIntValue(PlayerActor, "_SLH_allowTG") as Int)
@@ -411,14 +423,70 @@ Event OnUpdate()
 	GV_allowSelfSpells.SetValue( StorageUtil.GetIntValue(PlayerActor, "_SLH_allowSelfSpells") as Int)
 
 	; Detect gags from ZAP and DD
-	kForm = PlayerActor.GetWornForm( 0x00004000 ) ; 44  DD Gags Mouthpieces
+	kFormGag = PlayerActor.GetWornForm( 0x00004000 ) ; 44  DD Gags Mouthpieces
 
-	if ((GV_isGagEquipped.GetValue() as Int) == 0) && (kForm != None)
+	if ((GV_isGagEquipped.GetValue() as Int) == 0) && (kFormGag != None)
 		GV_isGagEquipped.SetValue(1)
 
-	Elseif ((GV_isGagEquipped.GetValue() as Int) == 1) && (kForm == None)
+	Elseif ((GV_isGagEquipped.GetValue() as Int) == 1) && (kFormGag == None)
 		GV_isGagEquipped.SetValue(0)
 	Endif
+
+	; Detect plugs from ZAP and DD
+	kFormAnalPlug = PlayerActor.GetWornForm( 0x00040000 ) ; 48 DD plugs 
+	kFormVaginalPlug = PlayerActor.GetWornForm( 0x08000000 ) ; 57  DD plugs 
+
+	if ((GV_isPlugEquipped.GetValue() as Int) == 0) && ((kFormAnalPlug != None) || (kFormVaginalPlug != None))
+		GV_isPlugEquipped.SetValue(1)
+
+	Elseif ((GV_isPlugEquipped.GetValue() as Int) == 1) && ((kFormAnalPlug == None) && (kFormVaginalPlug == None))
+		GV_isPlugEquipped.SetValue(0)
+	Endif
+
+	if (StorageUtil.GetFloatValue(PlayerActor, "_SLH_fBimboClumsyMod" ) ==0)
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBimboClumsyMod", 1.0 ) 
+	endif 
+
+	if (kFormGag != None)
+		iPlugCount += 1
+	endif
+	if (kFormAnalPlug != None)
+		iPlugCount += 1
+	endif
+	if (kFormVaginalPlug != None)
+		iPlugCount += 1
+	endif
+
+	if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo") == 1)
+		fBimboClumsyMod = StorageUtil.GetFloatValue(PlayerActor, "_SLH_fBimboClumsyMod") 
+		; debug.notification("[SLH] Player is bimbo")
+		If (iPlugCount>0) && (iLastPlugCount != iPlugCount); && (fBimboClumsyMod==1.0)
+			; If Bimbo and plugged, severely decrease chance of clumsy event
+			StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBimboClumsyMod", 1.0 / ((iPlugCount as Float) * 2.0) ) 
+			iLastPlugCount = iPlugCount
+			; debug.notification("[SLH] Setting bimbo clumsiness to 0.2")
+		ElseIf (iPlugCount==0) && (fBimboClumsyMod!=1.0)
+			; If Bimbo and plugged, restore chance of clumsy event
+			StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBimboClumsyMod", 1.0 ) 
+			; debug.notification("[SLH] Setting bimbo clumsiness to 1.0")
+		Endif
+	Else
+		; debug.notification("[SLH] Player is NOT bimbo")
+	EndIf
+
+EndFunction
+
+Event OnUpdate()
+	PlayerREF= PlayerAlias.GetReference()
+	PlayerActor= PlayerREF as Actor
+	pActorBase = PlayerActor.GetActorBase()
+	Int RandomNum = 0
+
+	if !Self
+		Return
+	EndIf
+
+	_updatePlayerState()
 	
 	; Modifiers for each part - on update in case they were modified in MCM
 	; fctBodyShape.refreshGlobalValues()
@@ -462,6 +530,8 @@ Event OnUpdate()
 		if (fRefreshAfterSleep>0.0)
 			Debug.Notification("[SLH] Hormones cooldown hours: " + (fHoursSleep as Int))
 			fctHormones.cooldownHormoneLevels(PlayerActor, fHoursSleep)
+			; Set base arousal to SexDrive value
+			fctUtil.updateSexLabArousedExposure(PlayerActor, (fctHormones.getHormoneLevelsRacialAdjusted(PlayerActor, "SexDrive") as Int))
 		Endif
 
 		; Manage sex effect ==================================================
@@ -675,32 +745,39 @@ Event OnCureSuccubusCurseEvent(String _eventName, String _args, Float _argc = 1.
  	EndIf
 	debugTrace(" Cure succubus curse event" )	  
 	
-	StorageUtil.SetIntValue(PlayerActor, "_SLH_iDaedricInfluence", 0)
-	StorageUtil.SetIntValue(PlayerActor, "PSQ_SpellON", 0)
-	ModEvent.Send(ModEvent.Create("HoSLDD_TakeAwayPlayerPowers"))
-	; _SLH_QST_Succubus.SetStage(90)
-	GV_isSuccubusFinal.SetValue(0) 
-	setSuccubusState(PlayerActor, FALSE)
 
+ 	if (GV_isSuccubusFinal.GetValue()==0)
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iDaedricInfluence", 0)
+		StorageUtil.SetIntValue(PlayerActor, "PSQ_SpellON", 0)
+		ModEvent.Send(ModEvent.Create("HoSLDD_TakeAwayPlayerPowers"))
+		; _SLH_QST_Succubus.SetStage(90)
+		GV_isSuccubusFinal.SetValue(0) 
+		setSuccubusState(PlayerActor, FALSE)
+	Else
+		debugTrace(" Cure Succubus Curse event - Aborted. Succubus is locked." )	  
+	Endif
 endEvent
 
 Event OnCastBimboCurseEvent(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
+ 	Bool isBimbo = False
  	
  	if (kActor == None)
  		kActor = Game.GetPlayer()
  	EndIf
 	debugTrace(" Cast Bimbo Curse event" )	  
 	; PolymorphBimbo.Cast(PlayerActor,PlayerActor)
-	fctPolymorph.bimboTransformEffectON(kActor)
+	isBimbo = fctPolymorph.bimboTransformEffectON(kActor)
 
-	if (_args == "Dremora")
-		_SLH_QST_Bimbo.SetStage(11)
-	Elseif (_args == "Bimbo")
-		_SLH_QST_Bimbo.SetStage(10)
-	endif
+	If (isBimbo)
+		if (_args == "Dremora")
+			_SLH_QST_Bimbo.SetStage(11)
+		Elseif (_args == "Bimbo")
+			_SLH_QST_Bimbo.SetStage(10)
+		endif
 
-	Game.ShowRaceMenu()
+		Game.ShowRaceMenu()
+	Endif
 
 endEvent
 
@@ -710,30 +787,39 @@ Event OnCureBimboCurseEvent(String _eventName, String _args, Float _argc = 1.0, 
  	if (kActor == None)
  		kActor = Game.GetPlayer()
  	EndIf
-	debugTrace(" Cure Bimbo Curse event" )	  
 
-	fctPolymorph.bimboTransformEffectOFF(kActor)
-    Game.ShowRaceMenu()
+ 	if (GV_isBimboFinal.GetValue()==0)
+		debugTrace(" Cure Bimbo Curse event" )	  
+
+	    GV_isBimboFinal.SetValue(0)
+		fctPolymorph.bimboTransformEffectOFF(kActor)
+	    Game.ShowRaceMenu()	
+	Else
+		debugTrace(" Cure Bimbo Curse event - Aborted. Bimbo is locked." )	  
+	Endif
 
 endEvent
 
 Event OnCastHRTCurseEvent(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
+ 	Bool isHRT = False
  	
  	if (kActor == None)
  		kActor = Game.GetPlayer()
  	EndIf
 	debugTrace(" Cast HRT Curse event" )	  
+	isHRT = fctPolymorph.HRTEffectON(kActor)
+
 	; PolymorphBimbo.Cast(PlayerActor,PlayerActor)
-	if (_args == "Dremora")
-		_SLH_QST_Bimbo.SetStage(11)
-	Elseif (_args == "Bimbo")
-		_SLH_QST_Bimbo.SetStage(10)
-	endif
+	if (isHRT)
+		if (_args == "Dremora")
+			_SLH_QST_Bimbo.SetStage(11)
+		Elseif (_args == "Bimbo")
+			_SLH_QST_Bimbo.SetStage(10)
+		endif
 
-	fctPolymorph.HRTEffectON(kActor)
-    Game.ShowRaceMenu()
-
+	    Game.ShowRaceMenu()
+	Endif
 endEvent
 
 Event OnCureHRTCurseEvent(String _eventName, String _args, Float _argc = 1.0, Form _sender)
@@ -742,28 +828,38 @@ Event OnCureHRTCurseEvent(String _eventName, String _args, Float _argc = 1.0, Fo
  	if (kActor == None)
  		kActor = Game.GetPlayer()
  	EndIf
-	debugTrace(" Cure HRT Curse event" )	  
 
-	fctPolymorph.HRTEffectOFF(kActor)
-     Game.ShowRaceMenu()
-	
+
+ 	if (GV_isHRTFinal.GetValue()==0)
+		debugTrace(" Cure HRT Curse event" )	  
+
+	    GV_isHRTFinal.SetValue(0)
+		fctPolymorph.HRTEffectOFF(kActor)
+	     Game.ShowRaceMenu()	
+	Else
+		debugTrace(" Cure HRT Curse event - Aborted. HRT is locked." )	  
+	Endif
+
 endEvent
 
 Event OnCastTGCurseEvent(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
- 	
+ 	Bool isTG = False
+  	
  	if (kActor == None)
  		kActor = Game.GetPlayer()
  	EndIf
 	debugTrace(" Cast TG Curse event" )	  
-	; PolymorphBimbo.Cast(PlayerActor,PlayerActor)
-	if (_args == "Dremora")
-		_SLH_QST_Bimbo.SetStage(11)
-	Elseif (_args == "Bimbo")
-		_SLH_QST_Bimbo.SetStage(10)
-	endif
+	isTG = fctPolymorph.TGEffectON(kActor)
 
-	fctPolymorph.TGEffectON(kActor)
+	if (isTG)
+		; PolymorphBimbo.Cast(PlayerActor,PlayerActor)
+		if (_args == "Dremora")
+			_SLH_QST_Bimbo.SetStage(11)
+		Elseif (_args == "Bimbo")
+			_SLH_QST_Bimbo.SetStage(10)
+		endif
+	endif
 
 endEvent
 
@@ -773,9 +869,15 @@ Event OnCureTGCurseEvent(String _eventName, String _args, Float _argc = 1.0, For
  	if (kActor == None)
  		kActor = Game.GetPlayer()
  	EndIf
-	debugTrace(" Cure TG Curse event" )	  
 
-	fctPolymorph.TGEffectOFF(kActor)
+ 	if (GV_isTGFinal.GetValue()==0)
+		debugTrace(" Cure TG Curse event" )	  
+
+	    GV_isTGFinal.SetValue(0)
+		fctPolymorph.TGEffectOFF(kActor)
+	Else
+		debugTrace(" Cure TG Curse event - Aborted. TG is locked." )	  
+	Endif
  	
 endEvent
 
@@ -1089,7 +1191,7 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 
 
 		fctHormones.modHormoneLevel(PlayerActor, "Pigmentation", 0.5)
-		fctHormones.modHormoneLevel(PlayerActor, "SexDrive", 0.5)
+		fctHormones.modHormoneLevelPercent(PlayerActor, "SexDrive", 10.0)
 
 		if (StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormonePheromones")>0)
 			fctHormones.modHormoneLevel(PlayerActor, "Pheromones", 0.2)
@@ -1100,12 +1202,23 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 		Endif
 
 		If (isBimbo)
-			fctHormones.modHormoneLevel(PlayerActor, "Bimbo", 0.5)
+			fctHormones.modHormoneLevel(PlayerActor, "Bimbo", 0.5 * (actors.Length as Float))
+			; Bonus for type of sex
+			If (bOral)
+				fctHormones.modHormoneLevel(PlayerActor, "Bimbo", 1.0)
+			endIf
+			If (bAnal)
+				fctHormones.modHormoneLevel(PlayerActor, "Bimbo", 2.0)
+			endIf
+			If (bVaginal)
+				fctHormones.modHormoneLevel(PlayerActor, "Bimbo", 0.5)
+			endIf
+
 		endIf
 
 		iDaedricInfluence = StorageUtil.GetIntValue(PlayerActor, "_SLH_iDaedricInfluence")
 
-		if animation.HasTag("Daedra") || fctUtil.hasRace(actors, _SLH_DremoraRace) || fctUtil.hasRace(actors, _SLH_DremoraOutcastRace)
+		if  animation.HasTag("Daedra") || fctUtil.hasFormKeyword(actors, ActorTypeDaedra) || fctUtil.hasRace(actors, _SLH_DremoraRace) || fctUtil.hasRace(actors, _SLH_DremoraOutcastRace)
 			iSexDaedraAll   	= iSexDaedraAll + 1
 			iDaedricInfluence   = iSexDaedraAll * 3 + Game.QueryStat("Daedric Quests Completed") * 2 + Game.QueryStat("Daedra Killed") + 1
 
@@ -1370,12 +1483,20 @@ Event OnSexLabOrgasm(String _eventName, String _args, Float _argc, Form _sender)
 
 		iGameDateLastSex = Game.QueryStat("Days Passed")   
 		Float AbsLibido = (Math.abs(StorageUtil.GetFloatValue(PlayerActor, "_SLH_fLibido")) as Float)
+		fctUtil.updateSexLabArousedExposure(PlayerActor, (fctHormones.getHormoneLevelsRacialAdjusted(PlayerActor, "SexDrive") as Int))
 
  		StorageUtil.SetIntValue(PlayerActor, "_SLH_iGameDateLastSex", iGameDateLastSex) 
 		StorageUtil.SetIntValue(PlayerActor, "_SLH_iDaysSinceLastSex", iDaysSinceLastSex) 
 
 		fctHormones.modHormoneLevel(PlayerActor, "Pigmentation", 0.5)
-		fctHormones.modHormoneLevel(PlayerActor, "SexDrive", 1.0)
+
+		If (fctUtil.IsMale(PlayerActor))
+			; Male - massive drop of sex drive after orgasm, small chance of multiple orgasms
+			fctHormones.modHormoneLevelPercent(PlayerActor, "SexDrive", -30.0 - 10.0 * (Utility.RandomInt(0,3)))
+		Else
+			; Female - chance of increased sex drive after orgasm, possibility of multiple orgasms
+			fctHormones.modHormoneLevelPercent(PlayerActor, "SexDrive", -10.0 * (Utility.RandomInt(0,2)))
+		Endif
 
 		if (StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormonePheromones")>0)
 			fctHormones.modHormoneLevel(PlayerActor, "Pheromones", 0.4)

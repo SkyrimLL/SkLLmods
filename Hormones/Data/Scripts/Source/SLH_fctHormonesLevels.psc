@@ -162,25 +162,6 @@ Function capHormoneLevels(Actor kActor)
 
 endFunction
 
-Function cooldownHormoneLevels(Actor kActor, Float fHours) 
-	cooldownHormoneLevel(kActor, "Pigmentation", fHours)
-	cooldownHormoneLevel(kActor, "Growth", fHours)
-	cooldownHormoneLevel(kActor, "Metabolism", fHours)
-	cooldownHormoneLevel(kActor, "Sleep", fHours)
-	cooldownHormoneLevel(kActor, "Hunger", fHours)
-	cooldownHormoneLevel(kActor, "Immunity", fHours)
-	cooldownHormoneLevel(kActor, "Stress", fHours)
-	cooldownHormoneLevel(kActor, "Mood", fHours)
-	cooldownHormoneLevel(kActor, "Female", fHours)
-	cooldownHormoneLevel(kActor, "Male", fHours)
-	cooldownHormoneLevel(kActor, "SexDrive", fHours)
-	cooldownHormoneLevel(kActor, "Pheromones", fHours)
-	cooldownHormoneLevel(kActor, "Lactation", fHours)
-	cooldownHormoneLevel(kActor, "Bimbo", fHours)
-	cooldownHormoneLevel(kActor, "Succubus", fHours)
-
-endFunction
-
 function capHormoneLevel(Actor kActor, String sHormoneLevel)
 	Float fHormoneLevel = StorageUtil.GetFloatValue(kActor, "_SLH_fHormone" + sHormoneLevel)
 
@@ -190,37 +171,26 @@ function capHormoneLevel(Actor kActor, String sHormoneLevel)
 
 EndFunction
 
-Float function getHormoneLevelsRacialAdjusted(Actor kActor, String sHormoneLevel)
-	Float fHormoneLevel  = StorageUtil.GetFloatValue(kActor, "_SLH_fHormone" + sHormoneLevel)
-	; Racial adjustment of hormone level
-	fHormoneLevel = fHormoneLevel * StorageUtil.GetFloatValue(kActor, "_SLH_fHormone" + sHormoneLevel + "Mod")
+Function cooldownHormoneLevels(Actor kActor, Float fHours) 
+	cooldownHormoneLevel(kActor, "Pigmentation", fHours, 0.1)
+	cooldownHormoneLevel(kActor, "Growth", fHours, 0.1)
+	cooldownHormoneLevel(kActor, "Metabolism", fHours, 0.1)
+	cooldownHormoneLevel(kActor, "Sleep", fHours, 8.0)
+	cooldownHormoneLevel(kActor, "Hunger", fHours, -2.0)
+	cooldownHormoneLevel(kActor, "Immunity", fHours, 0.1)
+	cooldownHormoneLevel(kActor, "Stress", fHours, 2.0)
+	cooldownHormoneLevel(kActor, "Mood", fHours, 2.0)
+	cooldownHormoneLevel(kActor, "Female", fHours, 0.1)
+	cooldownHormoneLevel(kActor, "Male", fHours, 0.1)
+	cooldownHormoneLevel(kActor, "SexDrive", fHours, 4.0)
+	cooldownHormoneLevel(kActor, "Pheromones", fHours, 5.0)
+	cooldownHormoneLevel(kActor, "Lactation", fHours, 0.1)
+	cooldownHormoneLevel(kActor, "Bimbo", fHours, 0.1)
+	cooldownHormoneLevel(kActor, "Succubus", fHours, 0.1)
 
-	fHormoneLevel = fctUtil.fRange( fHormoneLevel , 0.0, 100.0)
+endFunction
 
-	return fHormoneLevel 
-EndFunction
-
-function modHormoneLevel(Actor kActor, String sHormoneLevel, Float fModValue)
-	Float fHormoneLevel  = StorageUtil.GetFloatValue(kActor, "_SLH_fHormone" + sHormoneLevel)
-	; Racial adjustment of mod value
-	fModValue = fModValue * StorageUtil.GetFloatValue(kActor, "_SLH_fHormone" + sHormoneLevel + "Mod")
-
-	debugTrace("    :: Mod Hormone " + sHormoneLevel + " : Value = " + fHormoneLevel)
-
-	fHormoneLevel = fctUtil.fRange( fHormoneLevel + fModValue , 0.0, 100.0)
-
-	StorageUtil.SetFloatValue(kActor, "_SLH_fHormone" + sHormoneLevel, fHormoneLevel)
-	debugTrace("    :: Mod Hormone " + sHormoneLevel + " : New Value = " + fHormoneLevel)
-
-	If (fModValue > 0)
-		debugTrace(" Hormone Mod UP - " + sHormoneLevel)
-	Else
-		debugTrace(" Hormone Mod DOWN - " + sHormoneLevel)
-	endIf
-EndFunction
-
-function cooldownHormoneLevel(Actor kActor, String sHormoneLevel, Float fHours)
-	Float fBaseCooldown = 0.05
+function cooldownHormoneLevel(Actor kActor, String sHormoneLevel, Float fHours, Float fBaseCooldown)
 	Float fHormoneLevel  = StorageUtil.GetFloatValue(kActor, "_SLH_fHormone" + sHormoneLevel)
 	; Racial adjustment of mod value
 	Float fModValue = fHours * fBaseCooldown * StorageUtil.GetFloatValue(kActor, "_SLH_fHormone" + sHormoneLevel + "Mod")
@@ -240,6 +210,56 @@ function cooldownHormoneLevel(Actor kActor, String sHormoneLevel, Float fHours)
 	StorageUtil.SetFloatValue(kActor, "_SLH_fHormone" + sHormoneLevel, fHormoneLevel)
 	debugTrace("    :: Cooldown Hormone " + sHormoneLevel + " : New Value = " + fHormoneLevel)
 EndFunction
+
+
+Float function getHormoneLevelsRacialAdjusted(Actor kActor, String sHormoneLevel)
+	Float fHormoneLevel  = StorageUtil.GetFloatValue(kActor, "_SLH_fHormone" + sHormoneLevel)
+	; Racial adjustment of hormone level
+	fHormoneLevel = fHormoneLevel * StorageUtil.GetFloatValue(kActor, "_SLH_fHormone" + sHormoneLevel + "Mod")
+
+	fHormoneLevel = fctUtil.fRange( fHormoneLevel , 0.0, 100.0)
+
+	return fHormoneLevel 
+EndFunction
+
+function modHormoneLevel(Actor kActor, String sHormoneLevel, Float fModValue)
+	Float fHormoneLevel  = StorageUtil.GetFloatValue(kActor, "_SLH_fHormone" + sHormoneLevel)
+	; Racial adjustment of mod value
+	fModValue = fModValue * StorageUtil.GetFloatValue(kActor, "_SLH_fHormone" + sHormoneLevel + "Mod")
+
+	debugTrace("    :: Hormone Mod " + sHormoneLevel + " : Value = " + fHormoneLevel)
+
+	fHormoneLevel = fctUtil.fRange( fHormoneLevel + fModValue , 0.0, 100.0)
+
+	StorageUtil.SetFloatValue(kActor, "_SLH_fHormone" + sHormoneLevel, fHormoneLevel)
+	debugTrace("    :: Hormone Mod " + sHormoneLevel + " : New Value = " + fHormoneLevel)
+
+	If (fModValue > 0)
+		debugTrace(" Hormone Mod UP - " + sHormoneLevel)
+	Else
+		debugTrace(" Hormone Mod DOWN - " + sHormoneLevel)
+	endIf
+EndFunction
+
+function modHormoneLevelPercent(Actor kActor, String sHormoneLevel, Float fModValue)
+	Float fHormoneLevel  = StorageUtil.GetFloatValue(kActor, "_SLH_fHormone" + sHormoneLevel)
+	; Racial adjustment of mod value
+	fModValue = fModValue * StorageUtil.GetFloatValue(kActor, "_SLH_fHormone" + sHormoneLevel + "Mod")
+
+	debugTrace("    :: Hormone Mod Percent " + sHormoneLevel + " : Value = " + fHormoneLevel)
+
+	fHormoneLevel = fctUtil.fRange( fHormoneLevel + ((fModValue / 100.0 ) * fHormoneLevel) , 0.0, 100.0)
+
+	StorageUtil.SetFloatValue(kActor, "_SLH_fHormone" + sHormoneLevel, fHormoneLevel)
+	debugTrace("    :: Hormone Mod Percente " + sHormoneLevel + " : New Value = " + fHormoneLevel)
+
+	If (fModValue > 0)
+		debugTrace(" Hormone Mod UP - " + sHormoneLevel)
+	Else
+		debugTrace(" Hormone Mod DOWN - " + sHormoneLevel)
+	endIf
+EndFunction
+
 
 
 Float function updateActorLibido(Actor kActor)

@@ -20,6 +20,10 @@ Bool bClothingOn = false
 GlobalVariable      Property GV_isTG                   Auto
 GlobalVariable      Property GV_isHRT                   Auto
 GlobalVariable      Property GV_isBimbo                 Auto
+
+GlobalVariable      Property GV_isBimboFinal                 Auto
+GlobalVariable      Property GV_isBimboLocked                 Auto
+
 GlobalVariable      Property GV_allowTG                Auto
 GlobalVariable      Property GV_allowHRT                Auto
 GlobalVariable      Property GV_allowBimbo              Auto
@@ -55,6 +59,7 @@ Int bimboClumsyBuffer = 0
 Bool isBimboClumsyLegs = false
 Bool isBimboClumsyHands = false
 Bool isBimboFrailBody = false
+Bool isBimboPermanent = false
 Bool isClumsyHandsRegistered = False
 Bool isClumsyLegsRegistered = False
 ;===========================================================================
@@ -77,6 +82,9 @@ Event OnPlayerLoadGame()
 		debugTrace(" BimboActor: " + BimboActor)
 		debugTrace(" Bimbo Transform date: " + StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") )
 		debugTrace(" Player is bimbo: " + StorageUtil.GetIntValue(kPlayer, "_SLH_iBimbo"))
+
+		SLH_Control._updatePlayerState()
+		; debug.Notification(" Clumsy mod: " + StorageUtil.GetFloatValue(kPlayer, "_SLH_fBimboClumsyMod" ))
 
     	RegisterForSingleUpdate( 10 )
     ; else
@@ -147,8 +155,9 @@ EndEvent
 Event OnUpdate()
 	; Safeguard - Exit if alias not set
 	float bimboArousal = slaUtil.GetActorArousal(BimboActor) as float
+	Actor kPlayer = Game.GetPlayer()
 
-	if (StorageUtil.GetIntValue(Game.GetPlayer(), "_SLH_iBimbo")==0)
+	if (StorageUtil.GetIntValue(kPlayer, "_SLH_iBimbo")==0)
 		; Debug.Notification( "[SLH] Bimbo status update: " + StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") as Int )
 		Debug.Trace( "[SLH] Bimbo alias is None: " )
 		; try again later
@@ -168,9 +177,9 @@ Event OnUpdate()
 		Return
 	Endif
 
-	if ((GV_hornyBegArousal.GetValue() as Int) > 80)
-		GV_hornyBegArousal.SetValue(80)
-	endif
+	; if ((GV_hornyBegArousal.GetValue() as Int) > 80)
+	;	GV_hornyBegArousal.SetValue(80)
+	; endif
 
     iDaysPassed = Game.QueryStat("Days Passed")
 
@@ -284,7 +293,9 @@ Event OnUpdate()
         iGameDateLastCheck = iDaysPassed
 
     else
-    	if ( (iCommentThrottle > 100) && (Utility.RandomInt(0,100) > (100 - ((bimboArousal as Int)/5)) ) )
+		Float fClumsyMod = StorageUtil.GetFloatValue(kPlayer, "_SLH_fBimboClumsyMod" ) 
+
+    	if ( (iCommentThrottle > 100) && (Utility.RandomInt(0,100) > (100 - (((bimboArousal * fClumsyMod) as Int)/5)) ) )
     		bimboRandomThoughts(BimboActor)
  			iCommentThrottle = 0   	
  		else
@@ -319,6 +330,8 @@ Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile,
 		Return
 	Endif
 
+	Actor kPlayer = Game.GetPlayer()
+	Float fClumsyMod = StorageUtil.GetFloatValue(kPlayer, "_SLH_fBimboClumsyMod" ) 
 	BimboActor= BimboAliasRef.GetReference() as Actor
 
 	; Safeguard - Evaluate the rest only when transformation happened
@@ -339,7 +352,7 @@ Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile,
       	;If ((randomNum>90) && (BimboActor.GetActorValuePercentage("health")<0.3)) ; && (!(akAggressor as Actor).IsInFaction(pCreatureFaction)))
 
 		float bimboArousal = slaUtil.GetActorArousal(BimboActor) as float
-		float dropchance = 1.0 + (bimboArousal / 30.0 ) * (GV_bimboClumsinessMod.GetValue() as Float)
+		float dropchance = 1.0 + (bimboArousal / 30.0 ) * (GV_bimboClumsinessMod.GetValue() as Float) * fClumsyMod
 		; debugTrace(" bimbo beeing hit, drop chance: " + dropchance)
       	If (Utility.RandomInt(0,100) <= dropchance) &&  (GV_bimboClumsinessMod.GetValue()!=0); && (!(akAggressor as Actor).IsInFaction(pCreatureFaction)))
 				;
@@ -550,8 +563,11 @@ function clumsyBimboHands(int actionType, Actor bimbo, Form source, int slot)
 		return
 	endif
 
+
+	Actor kPlayer = Game.GetPlayer()
 	float bimboArousal = slaUtil.GetActorArousal(bimbo) as float
 	float dropchance = 1.0 + (bimboArousal / 10 )
+	Float fClumsyMod = StorageUtil.GetFloatValue(kPlayer, "_SLH_fBimboClumsyMod" ) 
 	string handMessage
 	int[] drops
 
@@ -560,10 +576,16 @@ function clumsyBimboHands(int actionType, Actor bimbo, Form source, int slot)
 		dropchance *= 3.0 * (GV_bimboClumsinessMod.GetValue() as Float)
 	endif
 
+	dropchance *= fClumsyMod
+
 	;TODO check long nails (equipped at the bad end), dropchance *= 2 
 	int roll = Utility.RandomInt(0,100)
 	; debugTrace(" bimbo clumsy hands, drop chance/roll = " + dropchance + "/" + roll)
 	if (roll <= (dropchance) as int) && (GV_bimboClumsinessMod.GetValue() != 0)
+
+		; Debug.Notification("[SLH] dropchance: " + dropchance)
+		; Debug.Notification("[SLH] fClumsyMod: " + fClumsyMod)
+
 		handMessage = randomBimboHandsMessage(bimboArousal, actionType)
 		if actionType == 5
 			; bow fumble
@@ -605,6 +627,7 @@ endfunction
 function clumsyBimboLegs(Actor bimbo)
 	Actor kPlayer = Game.GetPlayer()
 	string bimboTripMessage = ""
+	Float fClumsyMod = StorageUtil.GetFloatValue(kPlayer, "_SLH_fBimboClumsyMod" ) 
 
 	;not clumsy anymore?
 	if !isBimboClumsyLegs
@@ -646,6 +669,8 @@ function clumsyBimboLegs(Actor bimbo)
 				;just walking, no stumbling
 				tumbleChance = 0.0
 			endif
+
+			tumbleChance *= fClumsyMod
 
 			int roll = Utility.RandomInt()
 			; debugTrace(" ------- stumble [" + roll + " < " + tumbleChance + "]?")
@@ -876,6 +901,7 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 
 		fctBodyshape.alterBodyByPercent(bimbo, "Breast", 2.0)
 		isBimboFrailBody = true
+		GV_isBimboFinal.SetValue(1)
 
 	endif
 
@@ -893,6 +919,16 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 		if (StorageUtil.GetIntValue(none, "ypsArmpitHairEnabled")==1)
 			SendModEvent("yps-SetArmpitsHairLengthEvent", "", 0)
 		endif
+
+		Float fBimboHormoneLevel = StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneBimbo") 
+
+		if (!isBimboPermanent) && (Utility.RandomInt(0,100)< (fBimboHormoneLevel as Int))
+			isBimboPermanent = true
+			GV_isBimboLocked.SetValue(1)
+			Debug.Messagebox("The curse has rewired your brain and transformed your body it its core. The changes are now irreversible. Enjoy your new life little Bimbo.")
+		endif
+	else
+		Debug.Notification("Every day as a Bimbo drains your mind away.")
 	endif
 	;--------------------------------------------
 	;IDEAS
