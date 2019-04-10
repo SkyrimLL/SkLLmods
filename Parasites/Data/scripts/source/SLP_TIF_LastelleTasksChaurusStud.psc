@@ -6,7 +6,12 @@ Scriptname SLP_TIF_LastelleTasksChaurusStud Extends TopicInfo Hidden
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
-Actor kChaurus =  ChaurusFollowerAlias.GetRef() as Actor
+; ObjectReference kChaurus =  ChaurusFollowerAlias.GetRef() as Actor
+; ObjectReference kChaurusLastelle =  ChaurusLastelleFollowerAlias.GetRef() as Actor
+
+ChaurusFollowerAlias.ForceRefTo(DummyMudcrabRef)
+ChaurusLastelleFollowerAlias.ForceRefTo(DummyMudcrabRef)
+
 
 SLP_ChaurusStudWithLastelle.SetValue(0)
 ;END CODE
@@ -17,5 +22,8 @@ EndFunction
 
 SLP_fcts_parasites Property fctParasites  Auto
 ReferenceAlias Property ChaurusFollowerAlias  Auto 
+ReferenceAlias Property ChaurusLastelleFollowerAlias  Auto 
 
 GlobalVariable Property SLP_ChaurusStudWithLastelle  Auto  
+
+ObjectReference Property DummyMudcrabRef  Auto  

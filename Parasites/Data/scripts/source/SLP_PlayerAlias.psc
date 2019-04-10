@@ -298,14 +298,16 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 
 				if (Utility.RandomInt(1,100)<= (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceChaurusWorm" ) as Int) )
 					; PlayerActor.SendModEvent("SLPInfectChaurusWorm")
-					fctParasites.infectChaurusWorm( PlayerActor   )
-					Debug.MessageBox("You moan helplessly as a thick worm forces itself inside your guts.")
+					if (fctParasites.infectChaurusWorm( PlayerActor   ))
+						Debug.MessageBox("You moan helplessly as a thick worm forces itself inside your guts.")
+					Endif
 				Endif
 
 				if (Utility.RandomInt(1,100)<= (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceChaurusWormVag" ) as Int) )
 					; PlayerActor.SendModEvent("SLPInfectChaurusWormVag")
-					fctParasites.infectChaurusWormVag( PlayerActor   )
-					Debug.MessageBox("You shudder deeply as a squirming worm forces itself inside your womb.")
+					if (fctParasites.infectChaurusWormVag( PlayerActor   ))
+						Debug.MessageBox("You shudder deeply as a squirming worm forces itself inside your womb.")
+					Endif
 				Endif
 
 			EndIf
@@ -324,19 +326,21 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 					; Debug.Trace("[SLP] Receiving spider penis")
 
 					; PlayerActor.SendModEvent("SLPInfectSpiderPenis")
-					fctParasites.infectSpiderPenis( PlayerActor   )
-					kSexPartner = _firstNotPlayer(actors)
-					SpiderFollowerAlias.ForceRefTo(kSexPartner)
+					if (fctParasites.infectSpiderPenis( PlayerActor   ))
+						kSexPartner = _firstNotPlayer(actors)
+						SpiderFollowerAlias.ForceRefTo(kSexPartner)
 
-					Debug.MessageBox("You gasp as the spider fills your womb with a string of slimy eggs. Unfortunately, the penis of the spider remains firmly lodged inside you after the act.")
+						Debug.MessageBox("You gasp as the spider fills your womb with a string of slimy eggs. Unfortunately, the penis of the spider remains firmly lodged inside you after the act.")
+					Endif
 
 				elseif (Utility.RandomInt(1,100)<= (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceSpiderEgg" ) as Int) )
 					; Debug.Notification("[SLP] Receiving spider eggs")
 					; Debug.Trace("[SLP] Receiving spider eggs")
 					; PlayerActor.SendModEvent("SLPInfectSpiderEgg")
-					fctParasites.infectSpiderEgg( PlayerActor   )
+					if (fctParasites.infectSpiderEgg( PlayerActor   ))
 
-					Debug.MessageBox("You gasp as the spider fills your womb with a string of slimy eggs.")
+						Debug.MessageBox("You gasp as the spider fills your womb with a string of slimy eggs.")
+					Endif
 
 				endif
 			EndIf
@@ -1097,8 +1101,10 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 		If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceBarnacles" )>0.0) && (fctParasites.isFemale(PlayerActor)) 
 			; Sleeping naked in Blackreach -> chance of barnacles
 			If (!fctParasites.ActorHasKeywordByString(PlayerActor, "Harness")) && (!fctParasites.ActorHasKeywordByString(PlayerActor, "Belt")) && (!fctParasites.ActorHasKeywordByString(PlayerActor, "Barnacles")) && (fctOutfits.isActorNaked(PlayerActor)) && (Utility.RandomInt(1,100)<= (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceBarnacles" ) as Int) )
-				fctParasites.infectBarnacles( PlayerActor   )
-				Debug.MessageBox("As you wake up from an uneasy sleep, you discover your skin is covered with hard growths. They pulsate with a soft glow and burry painfully into your skin when you touch them.")
+				if (fctParasites.infectBarnacles( PlayerActor   ))
+					Debug.Trace("[SLP] Barnacle infection successful")
+					Debug.MessageBox("As you wake up from an uneasy sleep, you discover your skin is covered with hard growths. They pulsate with a soft glow and burry painfully into your skin when you touch them.")
+				Endif
 			Else
 				Debug.Trace("[SLP] Barnacle infection failed")
 				Debug.Trace("[SLP]   Harness: " + fctParasites.ActorHasKeywordByString(PlayerActor, "Harness"))
@@ -1112,8 +1118,10 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 		if (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceFaceHugger" )>0.0) && (fctParasites.isFemale(PlayerActor)) 
 			; Sleeping naked in a draugr crypt -> chance of face hugger
 			If (!fctParasites.ActorHasKeywordByString(PlayerActor, "Belt")) && (!fctParasites.ActorHasKeywordByString(PlayerActor, "Harness")) && (!fctParasites.ActorHasKeywordByString(PlayerActor, "PlugVaginal")) && (!fctParasites.ActorHasKeywordByString(PlayerActor, "FaceHugger")) && (fctOutfits.isActorNaked(PlayerActor)) && (Utility.RandomInt(1,100)<= (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceFaceHugger" ) as Int) )
-				fctParasites.infectFaceHugger( PlayerActor   )
-				Debug.MessageBox("As you wake up from a restless sleep, you find with horror that your exposed crotch is filled with the tail of a critter, firmly wrapped around your hips. The end of that tail throbs deeply inside you.")
+				if (fctParasites.infectFaceHugger( PlayerActor   ))
+					Debug.Trace("[SLP] Creepy crawler infection successful")
+					Debug.MessageBox("As you wake up from a restless sleep, you find with horror that your exposed crotch is filled with the tail of a critter, firmly wrapped around your hips. The end of that tail throbs deeply inside you.")
+				Endif
 			Else
 				Debug.Trace("[SLP] Creepy crawler infection failed")
 				Debug.Trace("[SLP]   Belt: " + fctParasites.ActorHasKeywordByString(PlayerActor, "Belt"))
@@ -1130,8 +1138,10 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 		if (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceFaceHuggerGag" )>0.0)
 			; Sleeping naked in a draugr crypt -> chance of face hugger
 			If (!fctParasites.ActorHasKeywordByString(PlayerActor, "Gag")) && (!fctParasites.ActorHasKeywordByString(PlayerActor, "FaceHuggerGag")) && (Utility.RandomInt(1,100)<= (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceFaceHuggerGag" ) as Int) )
-				fctParasites.infectFaceHuggerGag( PlayerActor   )
-				Debug.MessageBox("A suffocating sensation wakes you suddenly. You find your face wrapped in the sticky embrace of a creature as its tail squirms deeply into your throat. Surprisinly, you seem to be breathing through the creature.")
+				if (fctParasites.infectFaceHuggerGag( PlayerActor   ))
+					Debug.Trace("[SLP] Creepy crawler (face) infection successful")
+					Debug.MessageBox("A suffocating sensation wakes you suddenly. You find your face wrapped in the sticky embrace of a creature as its tail squirms deeply into your throat. Surprisinly, you seem to be breathing through the creature.")
+				Endif
 			Else
 				Debug.Trace("[SLP] Creepy crawler (face) infection failed")
 				Debug.Trace("[SLP]   Gag: " + fctParasites.ActorHasKeywordByString(PlayerActor, "Gag"))

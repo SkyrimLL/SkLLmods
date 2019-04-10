@@ -531,7 +531,7 @@ Bool Function isInfectedByString( Actor akActor,  String sParasiteString  )
 EndFunction
 
 ;------------------------------------------------------------------------------
-Function infectSpiderEgg( Actor kActor   )
+Bool Function infectSpiderEgg( Actor kActor   )
  	Actor PlayerActor = Game.GetPlayer()
   	Int iNumSpiderEggs
   
@@ -541,22 +541,22 @@ Function infectSpiderEgg( Actor kActor   )
  
  	If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceSpiderEgg" )==0.0)
 		Debug.Trace("		Parasite disabled - Aborting")
-		Return
+		Return False
 	Endif
 
 	If (isInfectedByString( kActor,  "SpiderEgg" ))
 		Debug.Trace("		Already infected - Aborting")
-		Return
+		Return False
 	Endif
 
 	If (ActorHasKeywordByString( kActor, "PlugVaginal"  ))
 		Debug.Trace("		Already wearing a vaginal plug - Aborting")
-		Return
+		Return False
 	Endif
 
 	If (!isFemale( kActor))
 		Debug.Trace("		Actor is not female - Aborting")
-		Return
+		Return False
 	Endif
 
 	iNumSpiderEggs = Utility.RandomInt(5,10)
@@ -595,6 +595,8 @@ Function infectSpiderEgg( Actor kActor   )
 	if (!KynesBlessingQuest.GetStageDone(20)) && (kActor == PlayerActor)
 		KynesBlessingQuest.SetStage(20)
 	endif
+	
+	Return True
 EndFunction
 
 Function cureSpiderEgg( Actor kActor, String _args, Bool bHarvestParasite = False   )
@@ -637,7 +639,7 @@ EndFunction
 
 
 ;------------------------------------------------------------------------------
-Function infectSpiderPenis( Actor kActor   )
+Bool Function infectSpiderPenis( Actor kActor   )
  	Actor PlayerActor = Game.GetPlayer()
   	Int iNumSpiderEggs
  
@@ -647,22 +649,22 @@ Function infectSpiderPenis( Actor kActor   )
  
 	If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceSpiderPenis" )==0.0)
 		Debug.Trace("		Parasite disabled - Aborting")
-		Return
+		Return False
 	Endif
 
 	If (isInfectedByString( kActor,  "SpiderPenis" ))
 		Debug.Trace("		Already infected - Aborting")
-		Return
+		Return False
 	Endif
 
 	If (ActorHasKeywordByString( kActor, "PlugVaginal"  ))
 		Debug.Trace("		Already wearing a vaginal plug - Aborting")
-		Return
+		Return False
 	Endif
 
 	If (!isFemale( kActor))
 		Debug.Trace("		Actor is not female - Aborting")
-		Return
+		Return False
 	Endif
 	
 	iNumSpiderEggs = Utility.RandomInt(5,10)
@@ -700,6 +702,8 @@ Function infectSpiderPenis( Actor kActor   )
 		KynesBlessingQuest.SetStage(20)
 	endif
 
+	
+	Return True
 EndFunction
 
 Function cureSpiderPenis( Actor kActor, Bool bHarvestParasite = False   )
@@ -727,7 +731,7 @@ EndFunction
 
 
 ;------------------------------------------------------------------------------
-Function infectChaurusWorm( Actor kActor   )
+Bool Function infectChaurusWorm( Actor kActor   )
  	Actor PlayerActor = Game.GetPlayer()
  
   	if (kActor == None)
@@ -736,17 +740,17 @@ Function infectChaurusWorm( Actor kActor   )
  
 	If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceChaurusWorm" )==0.0)
 		Debug.Trace("		Parasite disabled - Aborting")
-		Return
+		Return False
 	Endif
 
 	If (isInfectedByString( kActor,  "ChaurusWorm" ))
 		Debug.Trace("		Already infected - Aborting")
-		Return
+		Return False
 	Endif
 
 	If (ActorHasKeywordByString( kActor, "PlugAnal"  ))
 		Debug.Trace("		Already wearing an anal plug - Aborting")
-		Return
+		Return False
 	Endif
 
 	equipParasiteNPCByString (kActor, "ChaurusWorm")
@@ -776,6 +780,8 @@ Function infectChaurusWorm( Actor kActor   )
 	if (!KynesBlessingQuest.GetStageDone(20)) && (kActor == PlayerActor)
 		KynesBlessingQuest.SetStage(20)
 	endif
+	
+	Return True
 EndFunction
 
 Function cureChaurusWorm( Actor kActor, Bool bHarvestParasite = False   )
@@ -805,7 +811,7 @@ Function cureChaurusWorm( Actor kActor, Bool bHarvestParasite = False   )
 EndFunction
 
 ;------------------------------------------------------------------------------
-Function infectChaurusWormVag( Actor kActor   )
+Bool Function infectChaurusWormVag( Actor kActor   )
  	Actor PlayerActor = Game.GetPlayer()
  
   	if (kActor == None)
@@ -814,22 +820,22 @@ Function infectChaurusWormVag( Actor kActor   )
  
 	If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceChaurusWormVag" )==0.0)
 		Debug.Trace("		Parasite disabled - Aborting")
-		Return
+		Return False
 	Endif
 
 	If (isInfectedByString( kActor,  "ChaurusWormVag" ))
 		Debug.Trace("		Already infected - Aborting")
-		Return
+		Return False
 	Endif
 
 	If (ActorHasKeywordByString( kActor, "PlugVaginal"  ))
 		Debug.Trace("		Already wearing a vaginal plug - Aborting")
-		Return
+		Return False
 	Endif
 
 	If (!isFemale( kActor))
 		Debug.Trace("		Actor is not female - Aborting")
-		Return
+		Return False
 	Endif
 	
 
@@ -860,6 +866,8 @@ Function infectChaurusWormVag( Actor kActor   )
 	if (!KynesBlessingQuest.GetStageDone(20)) && (kActor == PlayerActor)
 		KynesBlessingQuest.SetStage(20)
 	endif
+	
+	Return True
 EndFunction
 
 Function cureChaurusWormVag( Actor kActor, Bool bHarvestParasite = False   )
@@ -889,7 +897,7 @@ Function cureChaurusWormVag( Actor kActor, Bool bHarvestParasite = False   )
 EndFunction
 
 ;------------------------------------------------------------------------------
-Function infectEstrusTentacles( Actor kActor   )
+Bool Function infectEstrusTentacles( Actor kActor   )
   	Actor PlayerActor = Game.GetPlayer()
  
   	if (kActor == None)
@@ -898,12 +906,12 @@ Function infectEstrusTentacles( Actor kActor   )
  
 	If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceEstrusTentacles" )==0.0)
 		Debug.Trace("		Parasite disabled - Aborting")
-		Return
+		Return False
 	Endif
 
 	If (!isFemale( kActor))
 		Debug.Trace("		Actor is not female - Aborting")
-		Return
+		Return False
 	Endif
 	
 
@@ -956,10 +964,12 @@ Function infectEstrusTentacles( Actor kActor   )
 	if (!KynesBlessingQuest.GetStageDone(20)) && (kActor == PlayerActor)
 		KynesBlessingQuest.SetStage(20)
 	endif
+	
+	Return True
 EndFunction
 
 ;------------------------------------------------------------------------------
-Function infectTentacleMonster( Actor kActor   )
+Bool Function infectTentacleMonster( Actor kActor   )
  	Actor PlayerActor = Game.GetPlayer()
  
   	if (kActor == None)
@@ -968,22 +978,22 @@ Function infectTentacleMonster( Actor kActor   )
  
 	If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceTentacleMonster" )==0.0)
 		Debug.Trace("		Parasite disabled - Aborting")
-		Return
+		Return False
 	Endif
 
 	If ((isInfectedByString( kActor,  "TentacleMonster" )) || (isInfectedByString( kActor,  "FaceHugger" )) )
 		Debug.Trace("		Already infected - Aborting")
-		Return
+		Return False
 	Endif
 
 	If (ActorHasKeywordByString( kActor, "Harness"  ))
 		Debug.Trace("		Already wearing a harness- Aborting")
-		Return
+		Return False
 	Endif
 
 	If (!isFemale( kActor))
 		Debug.Trace("		Actor is not female - Aborting")
-		Return
+		Return False
 	Endif
 	
 
@@ -1012,6 +1022,8 @@ Function infectTentacleMonster( Actor kActor   )
 	if (!KynesBlessingQuest.GetStageDone(20)) && (kActor == PlayerActor)
 		KynesBlessingQuest.SetStage(20)
 	endif
+	
+	Return True
 EndFunction
 
 Function cureTentacleMonster( Actor kActor, Bool bHarvestParasite = False   )
@@ -1041,7 +1053,7 @@ Function cureTentacleMonster( Actor kActor, Bool bHarvestParasite = False   )
 EndFunction
 
 ;------------------------------------------------------------------------------
-Function infectEstrusSlime( Actor kActor   )
+Bool Function infectEstrusSlime( Actor kActor   )
   	Actor PlayerActor = Game.GetPlayer()
  
   	if (kActor == None)
@@ -1050,12 +1062,12 @@ Function infectEstrusSlime( Actor kActor   )
  
 	If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceEstrusSlime" )==0.0)
 		Debug.Trace("		Parasite disabled - Aborting")
-		Return
+		Return False
 	Endif
 
 	If (!isFemale( kActor))
 		Debug.Trace("		Actor is not female - Aborting")
-		Return
+		Return False
 	Endif
 	
 
@@ -1106,11 +1118,13 @@ Function infectEstrusSlime( Actor kActor   )
 	if (!KynesBlessingQuest.GetStageDone(20)) && (kActor == PlayerActor)
 		KynesBlessingQuest.SetStage(20)
 	endif
+	
+	Return True
 
 EndFunction
 
 ;------------------------------------------------------------------------------
-Function infectLivingArmor( Actor kActor   )
+Bool Function infectLivingArmor( Actor kActor   )
  	Actor PlayerActor = Game.GetPlayer()
  
   	if (kActor == None)
@@ -1119,22 +1133,22 @@ Function infectLivingArmor( Actor kActor   )
  
 	If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceLivingArmor" )==0.0)
 		Debug.Trace("		Parasite disabled - Aborting")
-		Return
+		Return False
 	Endif
 
 	If ((isInfectedByString( kActor,  "LivingArmor" )) || (isInfectedByString( kActor,  "FaceHugger" )) )
 		Debug.Trace("		Already infected - Aborting")
-		Return
+		Return False
 	Endif
 
 	If (ActorHasKeywordByString( kActor, "Harness"  ))
 		Debug.Trace("		Already wearing a corset - Aborting")
-		Return
+		Return False
 	Endif
 
 	If (!isFemale( kActor))
 		Debug.Trace("		Actor is not female - Aborting")
-		Return
+		Return False
 	Endif
 	
 
@@ -1163,6 +1177,8 @@ Function infectLivingArmor( Actor kActor   )
 	if (!KynesBlessingQuest.GetStageDone(20)) && (kActor == PlayerActor)
 		KynesBlessingQuest.SetStage(20)
 	endif
+	
+	Return True
 EndFunction
 
 Function cureLivingArmor( Actor kActor, Bool bHarvestParasite = False   )
@@ -1191,7 +1207,7 @@ Function cureLivingArmor( Actor kActor, Bool bHarvestParasite = False   )
 EndFunction
 
 ;------------------------------------------------------------------------------
-Function infectFaceHugger( Actor kActor   )
+Bool Function infectFaceHugger( Actor kActor   )
  	Actor PlayerActor = Game.GetPlayer()
  	Cell kActorCell
 
@@ -1201,29 +1217,29 @@ Function infectFaceHugger( Actor kActor   )
  
 	If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceFaceHugger" )==0.0)
 		Debug.Trace("		Parasite disabled - Aborting")
-		Return
+		Return False
 	Endif
 
 	If (( isInfectedByString( kActor,  "FaceHugger" )) || (isInfectedByString( kActor,  "LivingArmor" )) || (isInfectedByString( kActor,  "TentacleMonster" )) )
 		Debug.Trace("		Already infected - Aborting")
-		Return
+		Return False
 	Endif
 
 	If (ActorHasKeywordByString( kActor, "Belt"  ))
 		Debug.Trace("		Already wearing a belt - Aborting")
-		Return
+		Return False
 	Endif
 
 	If (!isFemale( kActor))
 		Debug.Trace("		Actor is not female - Aborting")
-		Return
+		Return False
 	Endif
 	
 
  	kActorCell = kActor.GetParentCell()
 	If (kActorCell.IsInterior())
 		Debug.Trace("		Location is outdoors (some locations falsely register as caves) - Aborting")
-		Return
+		Return False
 	Endif
 
 	equipParasiteNPCByString (kActor, "FaceHugger")
@@ -1251,6 +1267,8 @@ Function infectFaceHugger( Actor kActor   )
 	if (!KynesBlessingQuest.GetStageDone(20)) && (kActor == PlayerActor)
 		KynesBlessingQuest.SetStage(20)
 	endif
+	
+	Return True
 EndFunction
 
 Function cureFaceHugger( Actor kActor, Bool bHarvestParasite = False   )
@@ -1279,7 +1297,7 @@ Function cureFaceHugger( Actor kActor, Bool bHarvestParasite = False   )
 	EndIf
 EndFunction
 
-Function infectFaceHuggerGag( Actor kActor   )
+Bool Function infectFaceHuggerGag( Actor kActor   )
  	Actor PlayerActor = Game.GetPlayer()
 	Cell kActorCell
  
@@ -1289,23 +1307,23 @@ Function infectFaceHuggerGag( Actor kActor   )
  
 	If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceFaceHugger" )==0.0)
 		Debug.Trace("		Parasite disabled - Aborting")
-		Return
+		Return False
 	Endif
 
 	If (isInfectedByString( kActor,  "FaceHuggerGag" ))
 		Debug.Trace("		Already infected - Aborting")
-		Return
+		Return False
 	Endif
 
 	If (ActorHasKeywordByString( kActor, "Gag"  ))
 		Debug.Trace("		Already wearing a gag - Aborting")
-		Return
+		Return False
 	Endif
 
  	kActorCell = kActor.GetParentCell()
 	If (kActorCell.IsInterior())
 		Debug.Trace("		Location is outdoors (some locations falsely register as caves) - Aborting")
-		Return
+		Return False
 	Endif
 
 	equipParasiteNPCByString (kActor, "FaceHuggerGag")
@@ -1333,6 +1351,8 @@ Function infectFaceHuggerGag( Actor kActor   )
 	if (!KynesBlessingQuest.GetStageDone(20)) && (kActor == PlayerActor)
 		KynesBlessingQuest.SetStage(20)
 	endif
+	
+	Return True
 EndFunction
 
 Function cureFaceHuggerGag( Actor kActor, Bool bHarvestParasite = False   )
@@ -1363,7 +1383,7 @@ Function cureFaceHuggerGag( Actor kActor, Bool bHarvestParasite = False   )
 EndFunction
 
 ;------------------------------------------------------------------------------
-Function infectBarnacles( Actor kActor   )
+Bool Function infectBarnacles( Actor kActor   )
  	Actor PlayerActor = Game.GetPlayer()
 	Cell kActorCell
 
@@ -1373,28 +1393,28 @@ Function infectBarnacles( Actor kActor   )
 
 	If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceBarnacles" )==0.0)
 		Debug.Trace("		Parasite disabled - Aborting")
-		Return
+		Return False
 	Endif
 
 	If (isInfectedByString( kActor,  "Barnacles" ))
 		Debug.Trace("		Already infected - Aborting")
-		Return
+		Return False
 	Endif
 
 	If ((ActorHasKeywordByString( kActor, "Harness"  )) || (ActorHasKeywordByString( kActor, "Corset"  )) )
 		Debug.Trace("		Already wearing a corset - Aborting")
-		Return
+		Return False
 	Endif
 
  	kActorCell = kActor.GetParentCell()
 	If (kActorCell.IsInterior())
 		Debug.Trace("		Location is outdoors (some locations falsely register as caves) - Aborting")
-		Return
+		Return False
 	Endif
 
 	If (!isFemale( kActor))
 		Debug.Trace("		Actor is not female - Aborting")
-		Return
+		Return False
 	Endif
 	
 
@@ -1423,6 +1443,8 @@ Function infectBarnacles( Actor kActor   )
 	if (!KynesBlessingQuest.GetStageDone(20)) && (kActor == PlayerActor)
 		KynesBlessingQuest.SetStage(20)
 	endif
+
+	Return True
 EndFunction
 
 Function cureBarnacles( Actor kActor, Bool bHarvestParasite = False   )
@@ -1452,7 +1474,7 @@ Function cureBarnacles( Actor kActor, Bool bHarvestParasite = False   )
 EndFunction
 
 ;------------------------------------------------------------------------------
-Function infectEstrusChaurusEgg( Actor kActor   )
+Bool Function infectEstrusChaurusEgg( Actor kActor   )
   	Actor PlayerActor = Game.GetPlayer()
 
   	if (kActor == None)
@@ -1461,7 +1483,7 @@ Function infectEstrusChaurusEgg( Actor kActor   )
 
 	If (!isFemale( kActor))
 		Debug.Trace("		Actor is not female - Aborting")
-		Return
+		Return False
 	Endif
 	
 
@@ -1503,6 +1525,7 @@ Function infectEstrusChaurusEgg( Actor kActor   )
 		KynesBlessingQuest.SetStage(20)
 	endif
 
+	Return True
 EndFunction
 
 ;------------------------------------------------------------------------------
