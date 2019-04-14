@@ -10,6 +10,9 @@ Event OnInit()
 EndEvent
  
 Function Maintenance()
+	If (!StorageUtil.HasIntValue(none, "_SLMC_iMindControl"))
+		StorageUtil.SetIntValue(none, "_SLMC_iMindControl", 1)
+	EndIf
 
 	If fVersion < 0.7 ; <--- Edit this value when updating
 		fVersion = 0.7 ; and this

@@ -371,7 +371,7 @@ Function _changeNPCShape ( Actor akActor )
 
 		HeadPart EyesHP = _SLMC_EyesMC.GetAt(eyesIndex) as HeadPart
 	  	akActor.ChangeHeadPart(EyesHP)
-	 	; akActor.RegenerateHead()
+	 	akActor.RegenerateHead()
 	 EndIf
 
 	If (GV_useBodyChanges.GetValue()  == 1)  || (GV_useEyesChanges.GetValue()  == 1)

@@ -2,18 +2,29 @@ Scriptname SL_Hypnosis_functions extends Quest
 
 SexLabFramework Property SexLab  Auto  
 Faction Property undressedFaction Auto
+Outfit Property nakedOutfit Auto
 
 function Undress(Actor target)
+	Debug.Trace("[SLhypno] Undressing NPC")
 	if(!target)
 		return
 	endif
 
-	if(!IsDressed(target))
-		return
-	endif
+	; if(!IsDressed(target))
+	;	Debug.Trace("[SLhypno] NPC already undressed")
+	;	return
+	; endif
 
+	Debug.Trace("[SLhypno] Removing NPC clothes")
 	target.AddToFaction(undressedFaction)
 	SexLab.ActorLib.StripActor(target, Doanimate = false)
+endfunction
+
+function UndressClear(Actor target)
+	if(!target)
+		return
+	endif
+	target.SetOutfit(nakedOutfit)
 endfunction
 
 function Dress(Actor target)
