@@ -28,6 +28,7 @@ Race rPlayerCurrentRace
 int age
 int	baseAge 
 int	anniversaryFrequency 
+int	agingFrequency 
 
 int daysPassed = 0
 int yearsCount  = 0
@@ -48,6 +49,7 @@ Event OnInit()
 
 	StorageUtil.SetFloatValue(PlayerActor, "_FT_baseAge", 18.0 )
 	StorageUtil.SetFloatValue(PlayerActor, "_FT_anniversaryFrequency", 364.0 ) 
+	StorageUtil.SetFloatValue(PlayerActor, "_FT_agingFrequency", 364.0 ) 
 
 	StorageUtil.SetIntValue(none, "_FT_startAging", 0 )
  	StorageUtil.SetIntValue(none, "_FT_pauseAging", 0 )
@@ -77,6 +79,9 @@ Function _maintenance()
 	rPlayerCurrentRace = PlayerActor.getrace()
 	StorageUtil.SetFormValue(PlayerActor, "_FT_fPlayerCurrentRace", rPlayerCurrentRace as Form)
 	StorageUtil.SetIntValue(PlayerActor, "_FT_iPlayerYearsCount", yearsCount)
+
+	StorageUtil.SetFloatValue(none, "_FT_fMinHeight", 0.96)
+	StorageUtil.SetFloatValue(none, "_FT_fMaxHeight", 1.1)
 
 	if ((StorageUtil.GetFormValue(PlayerActor, "_FT_fPlayerRealRace") as Race) != None )
 		rPlayerRealRace = StorageUtil.GetFormValue(PlayerActor, "_FT_fPlayerRealRace") as Race
@@ -118,6 +123,13 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 
 	baseAge = StorageUtil.GetFloatValue(PlayerActor, "_FT_baseAge" ) as Int
 	anniversaryFrequency = StorageUtil.GetFloatValue(PlayerActor, "_FT_anniversaryFrequency" ) as Int
+	agingFrequency = StorageUtil.GetFloatValue(PlayerActor, "_FT_agingFrequency" ) as Int
+
+	if (anniversaryFrequency > agingFrequency)
+		anniversaryFrequency = agingFrequency
+		StorageUtil.SetFloatValue(PlayerActor, "_FT_anniversaryFrequency",anniversaryFrequency as Float ) 
+	EndIf
+
  	daysPassed = Game.QueryStat("Days Passed")
 
  	; Initial values
@@ -149,10 +161,10 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 
 	If (daysCount > anniversaryFrequency)
 
-		if (daysCount>=364)
+		if (daysCount>=agingFrequency)
 			yearsCount = yearsCount + 1
 	 		age = baseAge + yearsCount
-	 		daysCount = daysCount - 364
+	 		daysCount = daysCount - agingFrequency
 			celebrateBirthday()
 		Else
 			celebrateAnniversary()
@@ -170,6 +182,7 @@ Function celebrateAnniversary()
 	Actor PlayerActor
 	Form fPlayerRealRace 
 	Form fPlayerCurrentRace 
+	agingFrequency = StorageUtil.GetFloatValue(PlayerActor, "_FT_agingFrequency" ) as Int
 
 	PlayerActor = Game.GetPlayer() as Actor
 	rPlayerCurrentRace = PlayerActor.getrace()
@@ -192,7 +205,7 @@ Function celebrateAnniversary()
 
 		Debug.Messagebox("Anniversary update\nPlayer Level: "+ PlayerActor.getlevel() +"\nPlayer Age : " + age )
 
-		if (Utility.RandomInt(1,364)<=anniversaryFrequency)
+		if (Utility.RandomInt(1,agingFrequency)<=anniversaryFrequency)
 			Game.AddPerkPoints(1)
 		endif
 
@@ -206,6 +219,8 @@ Function celebrateBirthday()
 	Actor PlayerActor
 	Form fPlayerRealRace 
 	Form fPlayerCurrentRace 
+	float fMinHeight =	StorageUtil.GetFloatValue(none, "_FT_fMinHeight")
+	float fMaxHeight =	StorageUtil.GetFloatValue(none, "_FT_fMaxHeight")
 
 	PlayerActor = Game.GetPlayer() as Actor
 	rPlayerCurrentRace = PlayerActor.getrace()
@@ -232,7 +247,7 @@ Function celebrateBirthday()
 			if ( rPlayerRealRace == bteen) ||  ( rPlayerRealRace == iteen) ||  ( rPlayerRealRace == nteen) ||  ( rPlayerRealRace == rteen) 
 				Debug.Messagebox("Happy birthday!\n At " + age + ", you are no longer a sheltered child. As a teenager, you are discovering the harsh environment of Skyrim. Life is short.. make the most of it.")
 
-				PlayerActor.SetScale(0.96 + ((age - baseAge) * 0.01 ) )
+				_changePlayerScale(fMinHeight + ((age - baseAge) * 0.01 ) )
  			Else
 				Debug.Messagebox("Happy birthday!\n You are " + age + ". ")
 			Endif
@@ -255,7 +270,7 @@ Function celebrateBirthday()
 					PlayerActor.setrace(rrace)
 			 	endif
 					
-				PlayerActor.SetScale(1.0)
+				_changePlayerScale(fMaxHeight)
 
 			 	Utility.Wait(10.0)
 				int iopt2 = adultmsg.show()
@@ -276,7 +291,7 @@ Function celebrateBirthday()
 				Debug.Messagebox("Happy birthday!\n After years of adventuring, with old age comes power and wisdom. Happly both carefully.")
 
 				PlayerActor.setrace(erace)
-				PlayerActor.SetScale(1.0)
+				_changePlayerScale(fMaxHeight - 0.2)
 				Utility.Wait(10.0)
 				int iopt3 = eldermsg.show()
 	 			if iopt3 == 0
@@ -321,3 +336,28 @@ Function _registerNewRacesForHeadparts(FormList HairRaceList)
  
 EndFunction
 
+Function _changePlayerScale(float fHeight)
+	Actor PlayerActor 
+	float fMinHeight =	StorageUtil.GetFloatValue(none, "_FT_fMinHeight")
+	float fMaxHeight =	StorageUtil.GetFloatValue(none, "_FT_fMaxHeight")
+	fHeight = fMax(fMin(fHeight, fMaxHeight), fMinHeight)
+
+	PlayerActor = Game.getPlayer() as Actor
+	PlayerActor.SetScale(fHeight)
+EndFunction
+
+float function fMin(float  a, float b)
+	if (a<=b)
+		return a
+	else
+		return b
+	EndIf
+EndFunction
+
+float function fMax(float a, float b)
+	if (a<b)
+		return b
+	else
+		return a
+	EndIf
+EndFunction

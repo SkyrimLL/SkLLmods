@@ -15,6 +15,7 @@ bool 		_resetRace = false
 
 float		_baseAge = 18.0
 float		_anniversaryFrequency = 364.0
+float		_agingFrequency = 364.0
 
 Actor kPlayer
 
@@ -74,10 +75,17 @@ event OnPageReset(string a_page)
 		StorageUtil.SetIntValue(none, "_FT_initMCM", 1 )
 	EndIf
 
-	StorageUtil.SetIntValue(none, "_FT_versionMCM", 20171128 )
+	StorageUtil.SetIntValue(none, "_FT_versionMCM", 20190319 )
 
 	_baseAge = StorageUtil.GetFloatValue(kPlayer, "_FT_baseAge" )
 	_anniversaryFrequency = StorageUtil.GetFloatValue(kPlayer, "_FT_anniversaryFrequency" ) 
+
+	If (StorageUtil.GetFloatValue(kPlayer, "_FT_agingFrequency" )==0)
+		StorageUtil.SetFloatValue(kPlayer, "_FT_agingFrequency",_anniversaryFrequency )
+	Endif	
+	_agingFrequency = StorageUtil.GetFloatValue(kPlayer, "_FT_agingFrequency" ) 
+
+
 
 	_startAging = StorageUtil.GetIntValue(none, "_FT_startAging" )
  	_pauseAging = StorageUtil.GetIntValue(none, "_FT_pauseAging" )
@@ -99,6 +107,7 @@ event OnPageReset(string a_page)
 		AddHeaderOption(" Days to birthday : " + playerAgeDays as Int )
 		AddSliderOptionST("STATE_BASE_AGE","Base age", _baseAge,"{0}")
 		AddSliderOptionST("STATE_ANNIV_FREQ","Anniversary frequency", _anniversaryFrequency,"{0}")
+		AddSliderOptionST("STATE_AGING_FREQ","Aging frequency", _agingFrequency,"{0}")
 
 		SetCursorPosition(1)
 		AddToggleOptionST("STATE_AGING_TOGGLE","Start/Stop aging", _startAging as Float)
@@ -154,10 +163,11 @@ endState
 ; AddSliderOptionST("STATE_ANNIV_FREQ","Anniverasy frequency", _anniversaryFrequency,"{0}")
 state STATE_ANNIV_FREQ ; SLIDER
 	event OnSliderOpenST()
+		_agingFrequency = StorageUtil.GetFloatValue(kPlayer, "_FT_agingFrequency" ) 
 		SetSliderDialogStartValue( StorageUtil.GetFloatValue(kPlayer, "_FT_anniversaryFrequency" ) )
 		SetSliderDialogDefaultValue( 364.0 )
-		SetSliderDialogRange( 7.0, 364.0 )
-		SetSliderDialogInterval( 7.0 )
+		SetSliderDialogRange( 1.0, _agingFrequency )
+		SetSliderDialogInterval( 1.0 )
 	endEvent
 
 	event OnSliderAcceptST(float value)
@@ -167,12 +177,38 @@ state STATE_ANNIV_FREQ ; SLIDER
 	endEvent
 
 	event OnDefaultST()
-		StorageUtil.SetFloatValue(kPlayer, "_FT_anniversaryFrequency", 364.0 )
-		SetSliderOptionValueST( 364.0,"{1}" )
+		_agingFrequency = StorageUtil.GetFloatValue(kPlayer, "_FT_agingFrequency" ) 
+		StorageUtil.SetFloatValue(kPlayer, "_FT_anniversaryFrequency", _agingFrequency )
+		SetSliderOptionValueST( _agingFrequency,"{1}" )
 	endEvent
 
 	event OnHighlightST()
 		SetInfoText("Frequency of anniversary treats (in days)")
+	endEvent
+endState
+
+; AddSliderOptionST("STATE_AGING_FREQ","Aging frequency", _anniversaryFrequency,"{0}")
+state STATE_AGING_FREQ ; SLIDER
+	event OnSliderOpenST()
+		SetSliderDialogStartValue( StorageUtil.GetFloatValue(kPlayer, "_FT_agingFrequency" ) )
+		SetSliderDialogDefaultValue( 364.0 )
+		SetSliderDialogRange( 7.0, 364.0 )
+		SetSliderDialogInterval( 1.0 )
+	endEvent
+
+	event OnSliderAcceptST(float value)
+		float thisValue = value 
+		StorageUtil.SetFloatValue(kPlayer, "_FT_agingFrequency", thisValue )
+		SetSliderOptionValueST( thisValue,"{1}" )
+	endEvent
+
+	event OnDefaultST()
+		StorageUtil.SetFloatValue(kPlayer, "_FT_agingFrequency", 364.0 )
+		SetSliderOptionValueST( 364.0,"{1}" )
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Frequency of age changes (in days)")
 	endEvent
 endState
 
@@ -230,6 +266,7 @@ state STATE_RACE_RESET ; TOGGLE
 		Actor PlayerActor 
 		Race rPlayerRealRace 
 		Race rPlayerCurrentRace 
+		float fMinHeight =	StorageUtil.GetFloatValue(none, "_FT_fMinHeight") 
 
 		StorageUtil.SetIntValue(none, "_FT_resetRace", 0 )
 		SetToggleOptionValueST( false )
@@ -247,7 +284,7 @@ state STATE_RACE_RESET ; TOGGLE
 			StorageUtil.SetFloatValue(PlayerActor, "_SLH_fWeight", 20.0 ) 
 			PlayerActor.SendModEvent("SLHRefresh")
 
-			PlayerActor.SetScale(0.96 + ((playerAge - baseAge) * 0.01 ) )
+			_changePlayerScale(fMinHeight + ((playerAge - baseAge) * 0.01 ) )
 		endif
 
 		Debug.MessageBox("Family ties: Player race reset")
@@ -263,3 +300,29 @@ state STATE_RACE_RESET ; TOGGLE
 	endEvent
 
 endState
+
+Function _changePlayerScale(float fHeight)
+	Actor PlayerActor 
+	float fMinHeight =	StorageUtil.GetFloatValue(none, "_FT_fMinHeight")
+	float fMaxHeight =	StorageUtil.GetFloatValue(none, "_FT_fMaxHeight")
+	fHeight = fMax(fMin(fHeight, fMaxHeight), fMinHeight)
+
+	PlayerActor = Game.getPlayer() as Actor
+	PlayerActor.SetScale(fHeight)
+EndFunction
+
+float function fMin(float  a, float b)
+	if (a<=b)
+		return a
+	else
+		return b
+	EndIf
+EndFunction
+
+float function fMax(float a, float b)
+	if (a<b)
+		return b
+	else
+		return a
+	EndIf
+EndFunction
