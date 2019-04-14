@@ -17,8 +17,11 @@ Faction Property pCurrentHireling Auto
 DialogueFollowerScript Property DialogueFollower Auto
 Quest Property pDialogueFollower  Auto  
 
+MusicType Property MUSdrama  Auto  
+
 Auto STATE Waiting
 	EVENT onActivate (objectReference triggerRef)
+		Actor kPlayer = Game.getPlayer()
    		ObjectReference AliciaREF= Alias_Alicia.GetReference() 
 		Actor AliciaActor = AliciaREF as Actor
    		ObjectReference AliciaCuredREF= Alias_AliciaCured.GetReference() 
@@ -28,8 +31,10 @@ Auto STATE Waiting
 		ObjectReference AliciaDaedricREF= Alias_AliciaDaedric.GetReference() 
 		Actor AliciaDaedricActor = AliciaREF as Actor
 
-		Debug.Notification("Activating..."  )
-		DeviceActivation.RemoteCast(Game.GetPlayer() , Game.GetPlayer() as Actor,Game.GetPlayer() )
+		; Debug.Notification("Activating..."  )
+		SendModEvent("da_PacifyNearbyEnemies")
+
+		DeviceActivation.RemoteCast(kPlayer, kPlayer, kPlayer )
 
 		If (AliciaSoulLocked.GetValue() == 1)
 			Debug.Notification("Alicia's soul shard is locked")
@@ -50,7 +55,9 @@ Auto STATE Waiting
 
 		AliciaStoryQuest.SetStage(60)
 		AliciaStoryQuest.SetObjectiveDisplayed(60, false)
- 
+
+		MUSdrama.Add()
+
 
 		If (AliciaDaedricSoulLocked.GetValue() == 1) && (AliciaSoulLocked.GetValue() == 1)     ; both souls locked - Alicia is cured
 			; control quest stage = 40
@@ -91,6 +98,8 @@ Auto STATE Waiting
 			AliciaGhostREF.disable()
 			AliciaCuredREF.enable()
 
+			debug.messagebox("Alicia and her tormentor scream in agony as their souls are pulled into the gems inside the chest. Is this it? Is Alicia cured?")
+
 
 		ElseIf (AliciaDaedricSoulLocked.GetValue() == 1) && (AliciaSoulLocked.GetValue() == 0) ; Ali soul is locked - Keep Alicia only
 			; control quest stage = 30
@@ -108,11 +117,13 @@ Auto STATE Waiting
 
 			AliciaREF.enable()
 			AliciaDaedricREF.disable()
-			AliciaGhostREF.enable()
+			AliciaGhostREF.disable()
 			AliciaCuredREF.disable()
 
             (pDialogueFollower as DialogueFollowerScript).SetFollower(AliciaREF)
             (pDialogueFollower as DialogueFollowerScript).FollowerFollow()
+
+			debug.messagebox("Alicia smiles wickedly as the soul of her tormentor is pulled into the gem inside the chest. She is free to experience pain on her own terms now.")
 
 		ElseIf (AliciaDaedricSoulLocked.GetValue() == 0) && (AliciaSoulLocked.GetValue() == 1) ; Alicia soul is locked - Keep Ali only
 			; control quest stage = 20
@@ -130,12 +141,14 @@ Auto STATE Waiting
 
 			AliciaREF.disable()
 			AliciaDaedricREF.enable()
-			AliciaGhostREF.enable()
+			AliciaGhostREF.disable()
 			AliciaCuredREF.disable()
 
 
             (pDialogueFollower as DialogueFollowerScript).SetFollower(AliciaDaedricREF)
             (pDialogueFollower as DialogueFollowerScript).FollowerFollow()
+
+			debug.messagebox("Alicia cries out in agony as her soul is pulled into the gem inside the chest, leaving only her tormentor behind. Her daedric self is smiling wickedly at her victory over her weaker self.")
 
 		Else                                                                                   ; Both souls are free - Keep Alicia and Ali
 			; control quest stage = 10
@@ -144,9 +157,12 @@ Auto STATE Waiting
 			
 			AliciaREF.enable()
 			AliciaDaedricREF.disable()
-			AliciaGhostREF.enable()
+			AliciaGhostREF.disable()
 			AliciaCuredREF.disable()
+
+			debug.messagebox("Both Alicia and her tormentor react to the shockwave of energy from the chest. They stand there, ready to serve you at your pleasure.")
 		EndIf
+
 	endEVENT
 endState
 

@@ -14,6 +14,8 @@ SanguinePortaColumn.Enable()
 
 BackStoryQuest.SetStage(50)
 
+MUSdrama.Add()
+
 EndEvent
 
 ObjectReference Property PrisonPortalDoor  Auto  
@@ -26,3 +28,5 @@ ObjectReference Property SanguinePortaColumn  Auto
 Quest Property BackStoryQuest  Auto  
 
 SPELL Property PortalOpenFX  Auto  
+
+MusicType Property MUSdrama  Auto  
