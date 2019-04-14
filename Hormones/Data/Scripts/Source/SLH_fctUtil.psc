@@ -14,9 +14,7 @@ GlobalVariable      Property GV_isPlugEquipped		Auto
 
 bool property bIsPregnant = false auto
 bool property bBeeingFemale = false auto
-bool property bEstrusChaurus = false auto
-spell property BeeingFemalePregnancy auto
-spell property ChaurusBreeder auto
+bool property bEstrusChaurus = false auto 
 
 int function iMin(int a, int b)
 	if (a<=b)
@@ -242,15 +240,19 @@ bool function isPregnantBySimplePregnancy(actor kActor)
 endFunction
 
 bool function isPregnantByBeeingFemale(actor kActor)
-  if ( (bBeeingFemale==true) &&  ( (StorageUtil.GetIntValue(kActor, "FW.CurrentState")>=4) && (StorageUtil.GetIntValue(kActor, "FW.CurrentState")<=8))  )
+  if ( (StorageUtil.GetIntValue(none, "_SLS_isBeeingFemaleON")==1 ) &&  ( (StorageUtil.GetIntValue(kActor, "FW.CurrentState")>=4) && (StorageUtil.GetIntValue(kActor, "FW.CurrentState")<=8))  )
     return true
   endIf
   return false
 endFunction
  
 bool function isPregnantByEstrusChaurus(actor kActor)
-  if bEstrusChaurus==true && ChaurusBreeder != none
-    return kActor.HasSpell(ChaurusBreeder)
+  spell  ChaurusBreeder 
+  if (StorageUtil.GetIntValue(none, "_SLS_isCagedFollowerON") ==  1) 
+  	ChaurusBreeder = StorageUtil.GetFormValue(none, "_SLS_getEstrusChaurusBreederSpell") as Spell
+  	if (ChaurusBreeder != none)
+    	return kActor.HasSpell(ChaurusBreeder)
+    endif
   endIf
   return false
 endFunction

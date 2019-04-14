@@ -767,7 +767,9 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 	float fButtActual
 	float fButtMin
 
+	debugTrace(" bimbo transformation days: " + transformationDays)
 	debugTrace(" bimbo transformation level: " + transformationLevel)
+	debugTrace(" bimbo transformation cycle: " + transformCycle)
 
 	;no tg = always female, never has a schlong
 	;tg:
