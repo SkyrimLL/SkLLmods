@@ -1758,6 +1758,27 @@ Bool function isFemale(actor kActor)
 	return bIsFemale
 EndFunction
 
+;------------------------------------------------------------------------------
+bool function isPregnantByEstrusChaurus(actor kActor)
+  spell  ChaurusBreeder 
+  if (StorageUtil.GetIntValue(none, "_SLS_isCagedFollowerON") ==  1) 
+  	ChaurusBreeder = StorageUtil.GetFormValue(none, "_SLS_getEstrusChaurusBreederSpell") as Spell
+  	if (ChaurusBreeder != none)
+    	return kActor.HasSpell(ChaurusBreeder)
+    endif
+  endIf
+  return false
+endFunction
+
+bool function isEstrusChaurusON()
+	if (StorageUtil.GetFormValue(none, "_SLS_getEstrusChaurusBreederSpell")!=none)
+		return true
+	else
+		return false
+	endif
+endFunction
+
+;------------------------------------------------------------------------------
 function SLIF_inflate(Actor kActor, String sKey, float value, String NiOString)
 	int SLIF_event = ModEvent.Create("SLIF_inflate")
 	If (SLIF_event)
