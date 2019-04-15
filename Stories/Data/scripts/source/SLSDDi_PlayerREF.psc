@@ -27,7 +27,7 @@ SPELL Property ApplySweatFX  Auto
 ObjectReference Property MilkOMaticSoundFX  Auto  
 ObjectReference Property LeonaraRef  Auto  
 
-SLS_QST_CowLife Property CowLife Auto
+SLSDDi_QST_CowLife Property CowLife Auto
 
 int MilkLevel = 0
 
