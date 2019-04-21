@@ -156,6 +156,8 @@ Event OnUpdate()
 	; Safeguard - Exit if alias not set
 	float bimboArousal = slaUtil.GetActorArousal(BimboActor) as float
 	Actor kPlayer = Game.GetPlayer()
+	Int rollFirstPerson 
+
 
 	if (StorageUtil.GetIntValue(kPlayer, "_SLH_iBimbo")==0)
 		; Debug.Notification( "[SLH] Bimbo status update: " + StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") as Int )
@@ -197,6 +199,7 @@ Event OnUpdate()
        
     ; Debug.Notification( "[SLH] Bimbo status update - Days: " + daysSinceEnslavement )
     ; Debug.Notification( "[SLH] iDaysSinceLastCheck: " + iDaysSinceLastCheck )
+	rollFirstPerson = Utility.RandomInt(0,100)
 
     ; Exit conditions
     If (iDaysSinceLastCheck >= 1)
@@ -231,16 +234,33 @@ Event OnUpdate()
 	            fctBodyshape.alterBodyByPercent(BimboActor, "Breast", 10.0)
 	        endif
 
-            ; Male to female bimbo
-            if (daysSinceEnslavement==1)
-            	debug.messagebox("Your boobs are growing larger every day. You find it more and more difficult to resist cupping them and feeling their weight in your hand. If they grow any larger, they will make using bows and armors a lot more difficult. That's alright though.. bimbos don't need to fight. They get others to fight for the right to use them.")
-            elseif (daysSinceEnslavement==2)
-            	debug.messagebox("Your lips are full and feel parched if they are not frequently coated with semen. Who knew semen tasted so good. A good bimbo doesn't let a drop go to waste. It has to land on her or better, deep inside.")
-            elseif (daysSinceEnslavement==3)
-            	debug.messagebox("Your cock is shrinking and getting more sensitive every day. Squeezing your legs and rubbing it frequently only provide temporary relief and wets your expanding vagina. Don't worry about your cock little bimbo... you will get plenty of cocks to squeeze.")
-            elseif (daysSinceEnslavement==4)
-            	debug.messagebox("Everything around you looks so confusing and difficult. Except for sex. Sex is easy and fun. Being horny makes your hand shake and your legs weak with anticipation. Being a slut is one of the many perks of being a bimbo.")
-            endif
+			If (rollFirstPerson <= (StorageUtil.GetFloatValue(BimboActor, "_SLH_fHormoneBimbo") as Int))
+				; First person thought
+
+	            ; Male to female bimbo
+	            if (daysSinceEnslavement==1)
+	            	debug.messagebox("I have boobs now and they are growing larger every day. It feels so good cupping them and feeling their weight. If they grow any larger, they will make using bows and armors a lot more difficult. That's alright though.. I guess I can find someone to fight for me. That's kind of hot actually.")
+	            elseif (daysSinceEnslavement==2)
+	            	debug.messagebox("My lips are full and feel parched if they are not frequently coated with semen. Oh my gods.. who knew semen tasted so good! I just can't get enough of the stuff. I need to feel it on my skin, inside me and down my throat.")
+	            elseif (daysSinceEnslavement==3)
+	            	debug.messagebox("My cock is shrinking and getting more sensitive every day. Squeezing my legs and rubbing it frequently only provide temporary relief. And my balls.. I can feel them sink into a deep, wet slit. That's okay I suppose, as long as I can find big fat cocks to fill me.")
+	            elseif (daysSinceEnslavement==4)
+	            	debug.messagebox("Everything now looks so confusing and difficult. Except for sex. Sex is easy and fun. Being horny makes my hands shake and my legs weak with anticipation. Being a slut is one of the many perks of being a bimbo.")
+	            endif
+	        else
+				; Third person thought
+
+	            ; Male to female bimbo
+	            if (daysSinceEnslavement==1)
+	            	debug.messagebox("Your boobs are growing larger every day. You find it more and more difficult to resist cupping them and feeling their weight in your hand. If they grow any larger, they will make using bows and armors a lot more difficult. That's alright though.. bimbos don't need to fight. They get others to fight for the right to use them.")
+	            elseif (daysSinceEnslavement==2)
+	            	debug.messagebox("Your lips are full and feel parched if they are not frequently coated with semen. Who knew semen tasted so good. A good bimbo doesn't let a drop go to waste. It has to land on her or better, deep inside.")
+	            elseif (daysSinceEnslavement==3)
+	            	debug.messagebox("Your cock is shrinking and getting more sensitive every day. Squeezing your legs and rubbing it frequently only provide temporary relief and wets your expanding vagina. Don't worry about your cock little bimbo... you will get plenty of cocks to squeeze.")
+	            elseif (daysSinceEnslavement==4)
+	            	debug.messagebox("Everything around you looks so confusing and difficult. Except for sex. Sex is easy and fun. Being horny makes your hand shake and your legs weak with anticipation. Being a slut is one of the many perks of being a bimbo.")
+	            endif	        
+	        endIf
         	
             if (GV_isTG.GetValue() == 1) && (StorageUtil.GetFloatValue(BimboActor, "_SLH_fSchlong") >= fSchlongMin ) && ( daysSinceEnslavement < 5 )
                 ; StorageUtil.SetFloatValue(BimboActor, "_SLH_fSchlong", StorageUtil.GetFloatValue(BimboActor, "_SLH_fSchlong") * 0.65 - 0.1) 
@@ -265,16 +285,30 @@ Event OnUpdate()
 	            fctBodyshape.alterBodyByPercent(BimboActor, "Breast", 10.0)
 	        endif
 
-            ; Female to female bimbo
-            if (daysSinceEnslavement==1)
-            	debug.messagebox("Your boobs are growing larger every day and your hair is definitely blonde now. Forget about wearing armor and using bows, you will soon have to rely on your charms to get a strong warrior to fight for you... maybe he will give you a good fuck too.")
-            elseif (daysSinceEnslavement==2)
-            	debug.messagebox("The constant tingle in your tits is only relieved after they have been sucked on for a long time, or tweaked.. or pinched with your long pink nails. Damn.. just thinking about it made them tingle again.")
-            elseif (daysSinceEnslavement==3)
-            	debug.messagebox("Forget about using swords as well. You constantly crave only one kind of sword now... the hard and throbbing kind. There is nothing a good bimbo wouldn't do for a good cock in her hand.. or lips.. or loged deep inside her.")
-            elseif (daysSinceEnslavement==4)
-            	debug.messagebox("Sex is all you can think about now.. you crave it.. your tits crave it.. you lips crave it. Being horny makes your hand shake and your legs weak with anticipation. Being a slut is one of the many perks of being a bimbo.")
-            endif
+			If (rollFirstPerson <= (StorageUtil.GetFloatValue(BimboActor, "_SLH_fHormoneBimbo") as Int))
+				; First person thought
+	            ; Female to female bimbo
+	            if (daysSinceEnslavement==1)
+	            	debug.messagebox("My boobs are growing larger every day and my hair is definitely blonde now. Armors and weapons are like, so heavy now. I need to find me a strong buy to carry all my stuff and fight for mw. Maybe he will give me a good fuck too. That would be totally worth it.")
+	            elseif (daysSinceEnslavement==2)
+	            	debug.messagebox("The constant tingle in your tits driving me mad. They need to be sucked on for a long time, or tweaked.. or pinched with my long pink nails. Damn.. just thinking about it made them tingle again.")
+	            elseif (daysSinceEnslavement==3)
+	            	debug.messagebox("I constantly crave only one kind of sword now... the hard, curved and throbbing kind. There is nothing I wouldn't do for a good cock in her hand.. or lips.. or lodged deep inside me.")
+	            elseif (daysSinceEnslavement==4)
+	            	debug.messagebox("Sex is all that matters now.. I need it.. my tits crave it.. my lips crave it. Being horny makes my hand shake and my legs weak with anticipation. Making men hard and receiving their cum is my only purpose in life now... or and maybe doing quests too.. but mostly being fucked.")
+	            endif
+	        Else
+                ; Third person thought
+	            if (daysSinceEnslavement==1)
+	            	debug.messagebox("Your boobs are growing larger every day and your hair is definitely blonde now. Forget about wearing armor and using bows, you will soon have to rely on your charms to get a strong warrior to fight for you... maybe he will give you a good fuck too.")
+	            elseif (daysSinceEnslavement==2)
+	            	debug.messagebox("The constant tingle in your tits is only relieved after they have been sucked on for a long time, or tweaked.. or pinched with your long pink nails. Damn.. just thinking about it made them tingle again.")
+	            elseif (daysSinceEnslavement==3)
+	            	debug.messagebox("Forget about using swords as well. You constantly crave only one kind of sword now... the hard and throbbing kind. There is nothing a good bimbo wouldn't do for a good cock in her hand.. or lips.. or lodged deep inside her.")
+	            elseif (daysSinceEnslavement==4)
+	            	debug.messagebox("Sex is all you can think about now.. you crave it.. your tits crave it.. you lips crave it. Being horny makes your hand shake and your legs weak with anticipation. Being a slut is one of the many perks of being a bimbo.")
+	            endif
+	        Endif
   
             ; bimboDailyProgressiveTransformation(BimboActor, true) ;[mod]
             if (GV_isTG.GetValue() == 1) && (StorageUtil.GetFloatValue(BimboActor, "_SLH_fSchlong") <= fSchlongMax )  && ( daysSinceEnslavement < 5 )
@@ -495,18 +529,36 @@ endFunction
 ;called to start the clumsiness
 ;===========================================================================
 function updateClumsyBimbo()
-    if (isBimboClumsyHands && !isClumsyHandsRegistered)
-    	isClumsyHandsRegistered = True
-		RegisterForActorAction(0) ; Weapon Swing
-		RegisterForActorAction(5) ; Bow Draw
-		Debug.Notification("Your hands feel weak, trembling with arousal.")
-	endif
+	int rollFirstPerson  = Utility.RandomInt(0,100)
+	If (rollFirstPerson <= (StorageUtil.GetFloatValue(Game.GetPlayer(), "_SLH_fHormoneBimbo") as Int))
+		; First person thought
+	    if (isBimboClumsyHands && !isClumsyHandsRegistered)
+	    	isClumsyHandsRegistered = True
+			RegisterForActorAction(0) ; Weapon Swing
+			RegisterForActorAction(5) ; Bow Draw
+			Debug.Notification("I'm so horny I can't carry a thing.")
+		endif
 
-	if (isBimboClumsyLegs && !isClumsyLegsRegistered)
-    	isClumsyLegsRegistered = True
-    	RegisterForSingleUpdateGameTime(0.015) ;walking
-		Debug.Notification("You feel clumsy, your hips swaying without control.")
-    endif
+		if (isBimboClumsyLegs && !isClumsyLegsRegistered)
+	    	isClumsyLegsRegistered = True
+	    	RegisterForSingleUpdateGameTime(0.015) ;walking
+			Debug.Notification("I need to fuck. Now!")
+	    endif
+	else
+		; Third person thought
+	    if (isBimboClumsyHands && !isClumsyHandsRegistered)
+	    	isClumsyHandsRegistered = True
+			RegisterForActorAction(0) ; Weapon Swing
+			RegisterForActorAction(5) ; Bow Draw
+			Debug.Notification("Your hands feel weak, trembling with arousal.")
+		endif
+
+		if (isBimboClumsyLegs && !isClumsyLegsRegistered)
+	    	isClumsyLegsRegistered = True
+	    	RegisterForSingleUpdateGameTime(0.015) ;walking
+			Debug.Notification("You feel clumsy, your hips swaying without control.")
+	    endif
+	endIf
 endfunction
 
 ;===========================================================================
@@ -515,30 +567,61 @@ endfunction
 ;===========================================================================
 string Function randomBimboHandsMessage(float bimboArousal, int actionType)
 	int chance = Utility.RandomInt(0, 5)
+	int rollFirstPerson  = Utility.RandomInt(0,100)
 	String handMessage
-	if bimboArousal > 40
-		if chance < 1
-			handMessage = "You fantasize about caressing your tits."
+
+	If (rollFirstPerson <= (StorageUtil.GetFloatValue(Game.GetPlayer(), "_SLH_fHormoneBimbo") as Int))
+		; First person thought
+		if bimboArousal > 40
+			if chance < 1
+				handMessage = "My tits feel so full and soft."
+			elseif chance < 2
+				handMessage = "I could use cock like.. right now."
+			elseif chance < 3
+				handMessage = "Mmm..  my pussy feel so wet."
+			elseif chance < 4
+				handMessage = "My tits are tingly!"
+			else
+				handMessage = "A cock in my mouth would feel so good."
+			endif
+		elseif chance < 1
+			handMessage = "I need a male companion with a big fat dick."
 		elseif chance < 2
-			handMessage = "You fantasize about holding dicks all around."
+			handMessage = "I haven't had two dicks at once in like .. forever."
 		elseif chance < 3
-			handMessage = "For a moment you try to finger your pussy."
+			handMessage = "I need to find someone to carry all my stuff."
 		elseif chance < 4
-			handMessage = "Your tight nipples beg for attention."
-		else
-			handMessage = "You need to feel a cock in your hand..now!"
+			handMessage = "Running makes me feel so horny."
+		elseif chance < 5
+			handMessage = "I can't use weapons or I will chip a nail."
 		endif
-	elseif chance < 1
-		handMessage = "You daydream about holding a fat dick."
-	elseif chance < 2
-		handMessage = "You fantasize about holding a dick with each hand."
-	elseif chance < 3
-		handMessage = "Your dainty hands feel so weak and tingly."
-	elseif chance < 4
-		handMessage = "You feel lightheaded and breathless."
-	elseif chance < 5
-		handMessage = "You worry about chipping your nails."
-	endif
+	else
+		; Third person thought
+		if bimboArousal > 40
+			if chance < 1
+				handMessage = "You fantasize about caressing your tits."
+			elseif chance < 2
+				handMessage = "You fantasize about holding dicks all around."
+			elseif chance < 3
+				handMessage = "For a moment you try to finger your pussy."
+			elseif chance < 4
+				handMessage = "Your tight nipples beg for attention."
+			else
+				handMessage = "You need to feel a cock in your hand..now!"
+			endif
+		elseif chance < 1
+			handMessage = "You daydream about holding a fat dick."
+		elseif chance < 2
+			handMessage = "You fantasize about holding a dick with each hand."
+		elseif chance < 3
+			handMessage = "Your dainty hands feel so weak and tingly."
+		elseif chance < 4
+			handMessage = "You feel lightheaded and breathless."
+		elseif chance < 5
+			handMessage = "You worry about chipping your nails."
+		endif
+	endIf
+
 	return handMessage
 EndFunction
 
@@ -673,6 +756,7 @@ function clumsyBimboLegs(Actor bimbo)
 			tumbleChance *= fClumsyMod
 
 			int roll = Utility.RandomInt()
+			Int rollFirstPerson = Utility.RandomInt(0,100)
 			; debugTrace(" ------- stumble [" + roll + " < " + tumbleChance + "]?")
 			if (roll <= tumbleChance) && (GV_bimboClumsinessMod.GetValue()!=0)
 				If (bimboClumsyBuffer < ( 7 - (GV_bimboClumsinessMod.GetValue() as Int) * 6) )
@@ -703,20 +787,40 @@ function clumsyBimboLegs(Actor bimbo)
 
 					rollMessage = Utility.RandomInt(0,100)
 
-					if (rollMessage >= 80)
-						bimboTripMessage = "You notice a chipped nail and skip a step."
-					elseif (rollMessage >= 60)
-						bimboTripMessage = "You know what you need? a hard pounding.."
-					elseif (rollMessage >= 40)
-						bimboTripMessage = "Semen coating your lips. That's what you need right now."
-					elseif (rollMessage >= 20)
-						bimboTripMessage = "Oh.. What you would give to have all your holes filled..."
-					else 
-						bimboTripMessage = "Your clit demands to be licked.. right now!"
-					endIf
+					If (rollFirstPerson <= (StorageUtil.GetFloatValue(bimbo, "_SLH_fHormoneBimbo") as Int))
+						; First person thought
+						if (rollMessage >= 80)
+							bimboTripMessage = "Oh My Gods.. is that a chipped nail?!"
+						elseif (rollMessage >= 60)
+							bimboTripMessage = "I need a hard pounding so bad!"
+						elseif (rollMessage >= 40)
+							bimboTripMessage = "I need to taste cum soon."
+						elseif (rollMessage >= 20)
+							bimboTripMessage = "I haven't had cock inside me in like.. forever."
+						else 
+							bimboTripMessage = "My clitty needs to be licked.. like right now!"
+						endIf
+					else
+						; Third person thought
+						if (rollMessage >= 80)
+							bimboTripMessage = "You notice a chipped nail and skip a step."
+						elseif (rollMessage >= 60)
+							bimboTripMessage = "You know what you need? a hard pounding.."
+						elseif (rollMessage >= 40)
+							bimboTripMessage = "Semen coating your lips. That's what you need right now."
+						elseif (rollMessage >= 20)
+							bimboTripMessage = "Oh.. What you would give to have all your holes filled..."
+						else 
+							bimboTripMessage = "Your clit demands to be licked.. right now!"
+						endIf
+					endif
 
 					if drop[0] > 0
-						Debug.Notification("You got distracted and dropped your weapons!") ;temp messages
+						If (rollFirstPerson <= (StorageUtil.GetFloatValue(bimbo, "_SLH_fHormoneBimbo") as Int))
+							Debug.Notification("Oopsies... that weapon is so heavy.") ;temp messages
+						Else
+							Debug.Notification("You got distracted and dropped your weapons!") ;temp messages
+						Endif
 					endif
 					
 					Debug.Notification(bimboTripMessage) ;temp messages
@@ -731,7 +835,13 @@ function clumsyBimboLegs(Actor bimbo)
 				endIf
 
 			elseif bimboArousal > 80 && roll <= 20 ;warn the player
-				Debug.Notification("You squeeze your legs with arousal.")
+				If (rollFirstPerson <= (StorageUtil.GetFloatValue(bimbo, "_SLH_fHormoneBimbo") as Int))
+					; First person thought
+					Debug.Notification("I'm so horny.")
+				else
+					Debug.Notification("You squeeze your legs with arousal.")
+				endif
+
 				SLH_Control.playMoan(bimbo)
 				bimbo.CreateDetectionEvent(bimbo, 10)
 			endif
@@ -755,10 +865,9 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 		return
 	endIf
 
-	;bimbo = Game.GetPlayer()
-	;transformationlevel is the same as the number of days
+	;bimbo = Game.GetPlayer() 
 	int transformationDays = StorageUtil.GetIntValue(bimbo, "_SLH_bimboTransformGameDays")
-	int transformCycle = transformationLevel/5
+	int transformCycle = transformationDays/5
 	int transformationLevel = transformationDays - (transformCycle * 5)
 	int hairLength = StorageUtil.GetIntValue(none, "YpsCurrentHairLengthStage")
 
@@ -963,7 +1072,8 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 endfunction
 
 function bimboRandomThoughts(actor bimbo)
-	Int rollMessage = Utility.RandomInt(0,100)
+	Int rollMessage 
+	Int rollFirstPerson 
 	String bimboMessage = ""
 
 	if (rollMessage > 60) ;if dropped anything, play a moan sound
@@ -975,122 +1085,267 @@ function bimboRandomThoughts(actor bimbo)
 	;wait a little to show the messages, because on ragdoll the hud is hidden
 	Utility.Wait(2.0)
 
+	rollMessage = Utility.RandomInt(0,100)
+	rollFirstPerson = Utility.RandomInt(0,100)
+
 	If (StorageUtil.GetIntValue(bimbo, "_SLH_iShowStatus")==0)
 		Return
 	Endif
 
-	rollMessage = Utility.RandomInt(0,100)
+	; Debug.Notification("[SLH] Bimbo First Person Roll: " + rollFirstPerson)
+	; Debug.Notification("[SLH] Bimbo First Person: " + (StorageUtil.GetFloatValue(bimbo, "_SLH_fHormoneBimbo") as Int))
 
-	If (SexLab.ValidateActor( bimbo) <= 0)
-		if (rollMessage >= 90)
-			bimboMessage = "It's fun to be a slut"
-		elseif (rollMessage >= 80)
-			bimboMessage = "Pleasure is all that matters"
-		elseif (rollMessage >= 70)
-			bimboMessage = "Get your brain fucked out now"
-		elseif (rollMessage >= 60)
-			bimboMessage = "Keep yourself wet"
-		elseif (rollMessage >= 50)
-			bimboMessage = "Think less. Suck more."
-		elseif (rollMessage >= 50)
-			bimboMessage = "Good girls fuck!"
-		else 
-			bimboMessage = "I am a fuck puppet"
-		endIf
+	If (rollFirstPerson <= (StorageUtil.GetFloatValue(bimbo, "_SLH_fHormoneBimbo") as Int))
+		; First person thought
+		If (SexLab.ValidateActor( bimbo) <= 0)
+			if (rollMessage >= 90)
+				bimboMessage = "I, like, love being a slut!"
+			elseif (rollMessage >= 80)
+				bimboMessage = "Pleasure is all that matters"
+			elseif (rollMessage >= 70)
+				bimboMessage = "I'm totally getting my brains fucked out."
+			elseif (rollMessage >= 60)
+				bimboMessage = "Always wet, always horny."
+			elseif (rollMessage >= 50)
+				bimboMessage = "Think less. Suck more."
+			elseif (rollMessage >= 50)
+				bimboMessage = "Good girls fuck! I'm a good girl."
+			else 
+				bimboMessage = "I totally love being a fuck puppet."
+			endIf
 
-	Elseif bimbo.IsOnMount() 
-		if (rollMessage >= 90)
-			bimboMessage = "My boobs are bouncing!"
-		elseif (rollMessage >= 80)
-			bimboMessage = "Riding is making me tingle!"
-		elseif (rollMessage >= 70)
-			bimboMessage = " Rub yourself"
-		elseif (rollMessage >= 60)
-			bimboMessage = "Bounce more"
-		elseif (rollMessage >= 50)
-			bimboMessage = "Tits out, legs open. Good girl."
-		else 
-			bimboMessage = "I need to ride a cock."
-		endIf
+		elseif bimbo.IsOnMount() 
+			if (rollMessage >= 90)
+				bimboMessage = "My boobies are bouncing! *Giggle*"
+			elseif (rollMessage >= 80)
+				bimboMessage = "Riding is making me tingle!"
+			elseif (rollMessage >= 70)
+				bimboMessage = "Rub myself"
+			elseif (rollMessage >= 60)
+				bimboMessage = "Bounce more"
+			elseif (rollMessage >= 50)
+				bimboMessage = "Tits out, legs open. Good girl."
+			elseif (rollMessage >= 10)
+				bimboMessage = "I wanna ride a cock."
+			else 
+				bimboMessage = "*Giggle*"
+			endIf
 
-	elseif	bimbo.IsRunning() || bimbo.IsSprinting() 
-		if (rollMessage >= 90)
-			bimboMessage = "My tits are jiggling."
-		elseif (rollMessage >= 50)
-			bimboMessage = "Running is ruining my hair."
-		else 
-			bimboMessage = "I'm so horny."
-		endIf
+		elseif	bimbo.IsRunning() || bimbo.IsSprinting() 
+			if (rollMessage >= 90)
+				bimboMessage = "Jiggle your tits, just like this."
+			elseif (rollMessage >= 50)
+				bimboMessage = "I don't wanna run.  It's, like, ruining my hair."
+			else 
+				bimboMessage = "I'm so horny."
+			endIf
 
-	elseif	bimbo.IsInCombat() 
-		if (rollMessage >= 90)
-			bimboMessage = "Maybe you will get fucked if you surrender."
-		elseif (rollMessage >= 50)
-			bimboMessage = "I need to be fucked!"
-		else 
-			bimboMessage = "I need a good pounding."
-		endIf
+		elseif	bimbo.IsInCombat() 
+			if (rollMessage >= 90)
+				bimboMessage = "Maybe I'll get fucked if I surrender."
+			elseif (rollMessage >= 70)
+				bimboMessage = "I need to be fucked."
+			elseif (rollMessage >=30) 
+				bimboMessage = "I need a good pounding."
+			else 
+				bimboMessage = "*Giggle*"
+			endIf
+			
+		elseif	bimbo.IsWeaponDrawn() 
+			if (rollMessage >= 90)
+				bimboMessage = "I would rather hold a dildo."
+			elseif (rollMessage >= 70)
+				bimboMessage = "I would rather hold a cock."
+			elseif (rollMessage >= 40) 
+				bimboMessage = "I would rather fuck someone."
+			else
+				bimboMessage = "*Giggle*"
+			endIf
 
-	elseif	bimbo.IsWeaponDrawn() 
-		if (rollMessage >= 90)
-			bimboMessage = "I would rather hold a dildo."
-		elseif (rollMessage >= 50)
-			bimboMessage = "I would rather hold a cock."
-		else 
-			bimboMessage = "I would rather fuck someone."
-		endIf
+		elseif (StorageUtil.GetIntValue(bimbo, "_SD_iEnslaved") == 1) 
+			if (rollMessage >= 90)
+				bimboMessage = "Obedience is pleasure."
+			elseif (rollMessage >= 80)
+				bimboMessage = "Obedience makes you free."
+			elseif (rollMessage >= 70)
+				bimboMessage = "Obedience is bliss."
+			elseif (rollMessage >= 60)
+				bimboMessage = "Surrender."
+			elseif (rollMessage >= 50)
+				bimboMessage = "Obey."
+			elseif (rollMessage >= 40)
+				bimboMessage = "Good girls obey."
+			else 
+				bimboMessage = "Stop resisting."
+			endIf
 
-	elseif (StorageUtil.GetIntValue(bimbo, "_SD_iEnslaved") == 1) 
-		if (rollMessage >= 90)
-			bimboMessage = "Obedience is pleasure."
-		elseif (rollMessage >= 80)
-			bimboMessage = "Obedience makes you free."
-		elseif (rollMessage >= 70)
-			bimboMessage = "Obedience is bliss."
-		elseif (rollMessage >= 60)
-			bimboMessage = "Surrender."
-		elseif (rollMessage >= 50)
-			bimboMessage = "Obey."
-		elseif (rollMessage >= 40)
-			bimboMessage = "Good girls obey."
-		else 
-			bimboMessage = "Stop resisting."
-		endIf
+		else
+			if (rollmessage >= 95)
+				bimboMessage = "Pink is for girls, brains are for boys."		
+			elseif (rollMessage >= 90)
+				bimboMessage = "I'm a fuck doll"
+			elseif (rollMessage >= 85)
+				bimboMessage = "Giggles are pretty"
+			elseif (rollMessage >= 80)
+				bimboMessage = "Thoughts are just noise"
+			elseif (rollMessage >= 70)
+				bimboMessage = "Pink is for girls."
+			elseif (rollMessage >= 65)
+				bimboMessage = "I'm a mindless toy"
+			elseif (rollMessage >= 60)
+				bimboMessage = "I love sucking cock."
+			elseif (rollMessage >= 55)
+				bimboMessage = "Good girls want cock"
+			elseif (rollMessage >= 50)
+				bimboMessage = "Good girls suck"
+			elseif (rollMessage >= 45)
+				bimboMessage = "I totally need to check my make up."
+			elseif (rollMessage >= 40)
+				bimboMessage = "Giggling makes me horny."
+			elseif (rollMessage >= 35)
+				bimboMessage = "Giggles make my mind empty"
+			elseif (rollMessage >= 30)
+				bimboMessage = "Brains are for boys"
+			elseif (rollMessage >= 25)
+				bimboMessage = "I, like, need to check my hair."
+			elseif (rollMessage >= 20)
+				bimboMessage = "I'm a good girl."
+			elseif (rollMessage >= 15)
+				bimboMessage = "Giggle more"
+			elseif (rollMessage >= 10)
+				bimboMessage = "Dumber is better"
+			elseif (rollMessage >=5)
+				bimboMessage = "Sexy is better"
+			else
+				bimboMessage = "*Giggle*"
+			endIf
+		endif
 
 	else
-		if (rollMessage >= 90)
-			bimboMessage = "You are a fuck doll"
-		elseif (rollMessage >= 85)
-			bimboMessage = "Giggles are pretty"
-		elseif (rollMessage >= 80)
-			bimboMessage = "Thoughts are just noise"
-		elseif (rollMessage >= 70)
-			bimboMessage = "Suck cock"
-		elseif (rollMessage >= 65)
-			bimboMessage = "You are a mindless toy"
-		elseif (rollMessage >= 60)
-			bimboMessage = "You are a cocksucker"
-		elseif (rollMessage >= 55)
-			bimboMessage = "Good girls want cock"
-		elseif (rollMessage >= 50)
-			bimboMessage = "Good girls suck"
-		elseif (rollMessage >= 40)
-			bimboMessage = "I need to check my make up."
-		elseif (rollMessage >= 30)
-			bimboMessage = "Giggles make your mind empty"
-		elseif (rollMessage >= 20)
-			bimboMessage = "Brains are for boys"
-		elseif (rollMessage >= 15)
-			bimboMessage = "I need to check my hair."
-		elseif (rollMessage >= 10)
-			bimboMessage = "Giggle more"
-		elseif (rollMessage >= 5)
-			bimboMessage = "Dumber is better"
-		else 
-			bimboMessage = "Sexy is better"
-		endIf
-	endif
-	
+		; Third person thought
+		If (SexLab.ValidateActor( bimbo) <= 0)
+			if (rollMessage >= 90)
+				bimboMessage = "It's fun to be a slut"
+			elseif (rollMessage >= 80)
+				bimboMessage = "Pleasure is all that matters"
+			elseif (rollMessage >= 70)
+				bimboMessage = "Get your brain fucked out now"
+			elseif (rollMessage >= 60)
+				bimboMessage = "Keep yourself wet"
+			elseif (rollMessage >= 50)
+				bimboMessage = "Think less. Suck more."
+			elseif (rollMessage >= 50)
+				bimboMessage = "Good girls fuck!"
+			else 
+				bimboMessage = "Good girl.  You are a fuck puppet."
+			endIf
+
+		elseif bimbo.IsOnMount() 
+			if (rollMessage >= 90)
+				bimboMessage = "Your boobies are bouncing!  Good Girl."
+			elseif (rollMessage >= 80)
+				bimboMessage = "Riding is making me tingle!"
+			elseif (rollMessage >= 70)
+				bimboMessage = "Rub yourself"
+			elseif (rollMessage >= 60)
+				bimboMessage = "Bounce more"
+			elseif (rollMessage >= 50)
+				bimboMessage = "Tits out, legs open. Good girl."
+			else 
+				bimboMessage = "You need to ride a cock."
+			endIf
+
+		elseif	bimbo.IsRunning() || bimbo.IsSprinting() 
+			if (rollMessage >= 90)
+				bimboMessage = "Jiggle your tits, just like this."
+			elseif (rollMessage >= 50)
+				bimboMessage = "Running is ruining your hair.  You should stop."
+			else 
+				bimboMessage = "You're so horny."
+			endIf
+
+		elseif	bimbo.IsInCombat() 
+			if (rollMessage >= 90)
+				bimboMessage = "Maybe you will get fucked if you surrender."
+			elseif (rollMessage >= 70)
+				bimboMessage = "You need to be fucked."
+			elseif (rollMessage >=30) 
+				bimboMessage = "You need a good pounding."
+			else 
+				bimboMessage = "*Giggle*"
+			endIf
+			
+		elseif	bimbo.IsWeaponDrawn() 
+			if (rollMessage >= 90)
+				bimboMessage = "You would rather hold a dildo."
+			elseif (rollMessage >= 70)
+				bimboMessage = "You would rather hold a cock."
+			elseif (rollMessage >= 40) 
+				bimboMessage = "You would rather fuck someone."
+			else
+				bimboMessage = "*Giggle*"
+			endIf
+
+		elseif (StorageUtil.GetIntValue(bimbo, "_SD_iEnslaved") == 1) 
+			if (rollMessage >= 90)
+				bimboMessage = "Obedience is pleasure."
+			elseif (rollMessage >= 80)
+				bimboMessage = "Obedience makes you free."
+			elseif (rollMessage >= 70)
+				bimboMessage = "Obedience is bliss."
+			elseif (rollMessage >= 60)
+				bimboMessage = "Surrender."
+			elseif (rollMessage >= 50)
+				bimboMessage = "Obey."
+			elseif (rollMessage >= 40)
+				bimboMessage = "Good girls obey."
+			else 
+				bimboMessage = "Stop resisting."
+			endIf
+
+		else
+			if (rollmessage >= 95)
+				bimboMessage = "Pink is for girls, brains are for boys."		
+			elseif (rollMessage >= 90)
+				bimboMessage = "You are a fuck doll"
+			elseif (rollMessage >= 85)
+				bimboMessage = "Giggles are pretty"
+			elseif (rollMessage >= 80)
+				bimboMessage = "Thoughts are just noise"
+			elseif (rollMessage >= 70)
+				bimboMessage = "Suck cock"
+			elseif (rollMessage >= 65)
+				bimboMessage = "You are a mindless toy"
+			elseif (rollMessage >= 60)
+				bimboMessage = "You are a cocksucker"
+			elseif (rollMessage >= 55)
+				bimboMessage = "Good girls want cock"
+			elseif (rollMessage >= 50)
+				bimboMessage = "Good girls suck"
+			elseif (rollMessage >= 45)
+				bimboMessage = "You need to check your make up."
+			elseif (rollMessage >= 40)
+				bimboMessage = "Giggling makes you horny."
+			elseif (rollMessage >= 35)
+				bimboMessage = "Giggles make your mind empty"
+			elseif (rollMessage >= 30)
+				bimboMessage = "Brains are for boys"
+			elseif (rollMessage >= 25)
+				bimboMessage = "You need to check your hair."
+			elseif (rollMessage >= 20)
+				bimboMessage = "You are a good girl."
+			elseif (rollMessage >= 15)
+				bimboMessage = "Giggle more"
+			elseif (rollMessage >= 10)
+				bimboMessage = "Dumber is better"
+			elseif (rollMessage >=5)
+				bimboMessage = "Sexy is better"
+			else
+				bimboMessage = "*Giggle*"
+			endIf
+		endif
+	endIf
+
 	Debug.Notification(bimboMessage) ;temp messages
 endfunction
 

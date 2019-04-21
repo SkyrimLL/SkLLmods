@@ -500,6 +500,7 @@ Event OnUpdate()
 	PlayerActor= PlayerREF as Actor
 	pActorBase = PlayerActor.GetActorBase()
 	Int RandomNum = 0
+	Int rollFirstPerson 
 
 	if !Self
 		Return
@@ -601,6 +602,8 @@ Event OnUpdate()
 
 	Else
 		RandomNum = Utility.RandomInt(0,100)
+		rollFirstPerson = Utility.RandomInt(0,100)
+
 		; If (RandomNum>90)
 			; debugTrace("  Today: Sex acts: " + iSexCountToday + " - Orgasms: " + iOrgasmsCountToday)
 			; debugTrace("  Sex dates: " + Game.QueryStat("Days Passed") + " - " + iGameDateLastSex + " = " + iDaysSinceLastSex)
@@ -615,42 +618,83 @@ Event OnUpdate()
 		If (RandomNum>50) && (fctUtil.isFemale(PlayerActor))  && (iSexCountToday > 0) && (NextAllowed > 15) && (GV_showStatus.GetValue() == 1)
 			; Debug.Notification("[Hormones] s:" + iSexCountToday + " - v:" + iVaginalCountToday + " - a:" + iAnalCountToday + " - o:" + iOralCountToday)
 
-			If (iVaginalCountToday > 0) 
-				If (iVaginalCountToday > 10) 
-					Debug.Notification("Your pussy feels sore and slippery.")
-				ElseIf (iVaginalCountToday > 5) 
-					Debug.Notification("Semen runs down your leg slowly.")
-				Else
-					Debug.Notification("Your pussy is moist and throbbing softly.")
+			If (rollFirstPerson <= (StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneBimbo") as Int))
+				; First person thought
+				If (iVaginalCountToday > 0) 
+					If (iVaginalCountToday > 10) 
+						Debug.Notification("My pussy feels so good and wet.")
+					ElseIf (iVaginalCountToday > 5) 
+						Debug.Notification("I love when semen runs down my leg.")
+					Else
+						Debug.Notification("My pussy is tingly!")
+					EndIf
 				EndIf
-			EndIf
-			If (iAnalCountToday > 0) 
-				If (iAnalCountToday > 10) 
-					Debug.Notification("Your ass is a painful reminder of your fate.")
-				ElseIf (iAnalCountToday > 5) 
-					Debug.Notification("Your ass feels wet and sticky.")
-				Else
-					Debug.Notification("Your ass is still sore.")
+				If (iAnalCountToday > 0) 
+					If (iAnalCountToday > 10) 
+						Debug.Notification("My ass is burning so good!")
+					ElseIf (iAnalCountToday > 5) 
+						Debug.Notification("I love how my ass is wet and sticky.")
+					Else
+						Debug.Notification("My ass needs to be filled.")
+					EndIf
 				EndIf
-			EndIf
-			If (iOralCountToday > 0)
-				If (iOralCountToday > 10) 
-					Debug.Notification("The after taste of cum makes you feel dizzy.")
-				ElseIf (iOralCountToday > 5) 
-					Debug.Notification("Your cleavage is still sticky from dripping cum.")
-				Else
-					Debug.Notification("Saltiness still coats your lips.")
+				If (iOralCountToday > 0)
+					If (iOralCountToday > 10) 
+						Debug.Notification("Cum in mouth is so yummy!")
+					ElseIf (iOralCountToday > 5) 
+						Debug.Notification("I can feel cum between my boobs!")
+					Else
+						Debug.Notification("I love the taste of cum on my lips.")
+					EndIf
 				EndIf
-			EndIf
-			If (StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkLevel") > 5)
-				If (StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkLevel") > 8) 
-					Debug.Notification("Your tits are dripping with milk and ache for release.")
-				ElseIf (StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkLevel") > 6) 
-					Debug.Notification("Your breasts are swollen with milk.")
-				Else
-					Debug.Notification("Your nipples are moist and tingling.")
+				If (StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkLevel") > 5)
+					If (StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkLevel") > 8) 
+						Debug.Notification("My boobies need to be milked so bad!")
+					ElseIf (StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkLevel") > 6) 
+						Debug.Notification("My boobies are so full and bouncy!")
+					Else
+						Debug.Notification("My titties are moist and tingling.")
+					EndIf
 				EndIf
-			EndIf
+			else
+				; Third person thought
+				If (iVaginalCountToday > 0) 
+					If (iVaginalCountToday > 10) 
+						Debug.Notification("Your pussy feels sore and slippery.")
+					ElseIf (iVaginalCountToday > 5) 
+						Debug.Notification("Semen runs down your leg slowly.")
+					Else
+						Debug.Notification("Your pussy is moist and throbbing softly.")
+					EndIf
+				EndIf
+				If (iAnalCountToday > 0) 
+					If (iAnalCountToday > 10) 
+						Debug.Notification("Your ass is a painful reminder of your fate.")
+					ElseIf (iAnalCountToday > 5) 
+						Debug.Notification("Your ass feels wet and sticky.")
+					Else
+						Debug.Notification("Your ass is still sore.")
+					EndIf
+				EndIf
+				If (iOralCountToday > 0)
+					If (iOralCountToday > 10) 
+						Debug.Notification("The after taste of cum makes you feel dizzy.")
+					ElseIf (iOralCountToday > 5) 
+						Debug.Notification("Your cleavage is still sticky from dripping cum.")
+					Else
+						Debug.Notification("Saltiness still coats your lips.")
+					EndIf
+				EndIf
+				If (StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkLevel") > 5)
+					If (StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkLevel") > 8) 
+						Debug.Notification("Your tits are dripping with milk and ache for release.")
+					ElseIf (StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkLevel") > 6) 
+						Debug.Notification("Your breasts are swollen with milk.")
+					Else
+						Debug.Notification("Your nipples are moist and tingling.")
+					EndIf
+				EndIf
+			endIf
 			
 			NextAllowed = 0.0 ;  GameDaysPassed.GetValue() + DaysUntilNextAllowed
 
