@@ -1,5 +1,8 @@
 Scriptname FT_growthhandlerscript extends ReferenceAlias  
 
+
+MusicType Property MUSReward  Auto  
+
 FormList Property VanillaHairRaceList  Auto  
 FormList Property CustomHairRaceList  Auto  
 FormList Property CustomEyesRaceList  Auto  
@@ -202,6 +205,7 @@ Function celebrateAnniversary()
 		Debug.Messagebox("[Anniversary perks skipped because current race "+ rPlayerCurrentRace +" is not player real race " + rPlayerRealRace+"\nPlayer Real Race: " + fPlayerRealRace.GetName()+"\nPlayer Current Race: " + fPlayerCurrentRace.GetName() + " ]")
 
 	ElseIf (rPlayerRealRace != None) && (rPlayerRealRace == rPlayerCurrentRace)
+		MUSReward.Add()
 
 		Debug.Messagebox("Anniversary update\nPlayer Level: "+ PlayerActor.getlevel() +"\nPlayer Age : " + age )
 
@@ -240,6 +244,7 @@ Function celebrateBirthday()
 		Debug.Messagebox("[Birthday perks skipped because current race "+ rPlayerCurrentRace +" is not player real race " + rPlayerRealRace+"\nPlayer Real Race: " + fPlayerRealRace.GetName()+"\nPlayer Current Race: " + fPlayerCurrentRace.GetName() + " ]")
 
 	ElseIf (rPlayerRealRace != None) && (rPlayerRealRace == rPlayerCurrentRace)
+		MUSReward.Add()
 
 		Debug.Messagebox("Birthday update\nPlayer Level: "+ PlayerActor.getlevel() +"\nPlayer Age : " + age )
 
