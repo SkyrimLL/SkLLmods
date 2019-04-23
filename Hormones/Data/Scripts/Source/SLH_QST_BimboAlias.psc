@@ -870,6 +870,7 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 	int transformCycle = transformationDays/5
 	int transformationLevel = transformationDays - (transformCycle * 5)
 	int hairLength = StorageUtil.GetIntValue(none, "YpsCurrentHairLengthStage")
+	isBimboPermanent = StorageUtil.GetIntValue(bimbo, "_SLH_bimboTransformLocked") as Bool
 
 	bool showSchlongMessage = true
 	float fButtMax
@@ -879,6 +880,7 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 	debugTrace(" bimbo transformation days: " + transformationDays)
 	debugTrace(" bimbo transformation level: " + transformationLevel)
 	debugTrace(" bimbo transformation cycle: " + transformCycle)
+	debugTrace(" bimbo hair length: " + hairLength)
 
 	;no tg = always female, never has a schlong
 	;tg:
@@ -915,12 +917,14 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 		Debug.Notification("You feel a little tingling on your face.")
 
 		If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
-			SendModEvent("yps-LipstickEvent", "Pink", 0xffc0db)  
-			SendModEvent("yps-EyeshadowEvent", "Pink", 0xffc0cb)   
+			If (!isBimboPermanent) 
+				SendModEvent("yps-LipstickEvent", "Pink", 0xffc0db)  
+				SendModEvent("yps-EyeshadowEvent", "Pink", 0xffc0cb)   
 
-			if (hairLength<5)
-				SendModEvent("yps-SetHaircutEvent", "", 5)
-			endif
+				if (hairLength<5)
+					SendModEvent("yps-SetHaircutEvent", "", 5)
+				endif
+			Endif
 		else
 			; SlaveTats.simple_add_tattoo(bimbo, "Bimbo", "Lipstick", color = 0x66FF0984, last = false, silent = true)
 			fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Lipstick", iColor = 0x66FF0984)
@@ -933,12 +937,14 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 	elseif transformationLevel == 2
 		Debug.Notification("Your body feels weak and your boobs are sizzling.")
 		If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
-			SendModEvent("yps-FingerNailsEvent", "", 29) 
-			SendModEvent("yps-ToeNailsEvent",  "", 29)
+			If (!isBimboPermanent) 
+				SendModEvent("yps-FingerNailsEvent", "", 29) 
+				SendModEvent("yps-ToeNailsEvent",  "", 29)
 
-			if (hairLength<6)
-				SendModEvent("yps-SetHaircutEvent", "", 6)
-			endif
+				if (hairLength<6)
+					SendModEvent("yps-SetHaircutEvent", "", 6)
+				endif
+			Endif
 		else
 			fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Feet Nails", iColor = 0x00FF0984 )
 			fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Hand Nails", iColor = 0x00FF0984, bRefresh = True )
@@ -1012,16 +1018,11 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 
 		fctBodyshape.alterBodyByPercent(bimbo, "Breast", 2.0)
 		isBimboFrailBody = true
-		GV_isBimboFinal.SetValue(1)
+		fctPolymorph.bimboFinalON(bimbo)
 
 	endif
 
 	if (transformationDays>15) 
-		SendModEvent("yps-LipstickEvent", "Pink", 0xffc0db)  
-		SendModEvent("yps-EyeshadowEvent", "Pink", 0xffc0cb)   
-		SendModEvent("yps-DisableSmudgingEvent")
-		SendModEvent("yps-LockMakeupEvent")
-		SendModEvent("yps-PermanentMakeupEvent")
 
 		if (StorageUtil.GetIntValue(none, "ypsPubicHairEnabled") == 1)
 			SendModEvent("yps-SetPubicHairLengthEvent", "", 0)
@@ -1034,8 +1035,14 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 		Float fBimboHormoneLevel = StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneBimbo") 
 
 		if (!isBimboPermanent) && (Utility.RandomInt(0,100)< (fBimboHormoneLevel as Int))
+			SendModEvent("yps-LipstickEvent", "Pink", 0xffc0db)  
+			SendModEvent("yps-EyeshadowEvent", "Pink", 0xffc0cb)   
+			SendModEvent("yps-DisableSmudgingEvent")
+			SendModEvent("yps-LockMakeupEvent")
+			SendModEvent("yps-PermanentMakeupEvent")
+
 			isBimboPermanent = true
-			GV_isBimboLocked.SetValue(1)
+			fctPolymorph.bimboLockedON(bimbo)
 			Debug.Messagebox("The curse has rewired your brain and transformed your body it its core. The changes are now irreversible. Enjoy your new life little Bimbo.")
 		endif
 	else

@@ -20,6 +20,9 @@ ReferenceAlias Property BimboAliasRef  Auto
 ObjectReference Property Bimbo Auto
 ObjectReference Property PolymorphChest  Auto  
 
+GlobalVariable      Property GV_isBimboFinal                 Auto
+GlobalVariable      Property GV_isBimboLocked                 Auto
+
 Race Property ActorOriginalRace auto
 Race Property PolymorphRace auto
 
@@ -583,6 +586,16 @@ function bimboTransformEffectOFF(actor kActor)
  	; kActor.RegenerateHead()
  	; kActor.QueueNiNodeUpdate()
 
+endFunction
+
+function bimboFinalON(actor kActor)
+    GV_isBimboFinal.SetValue(1)
+    StorageUtil.SetIntValue(kActor, "_SLH_bimboTransformFinal", 1)
+endFunction
+
+function bimboLockedON(actor kActor)
+    GV_isBimboLocked.SetValue(1)
+    StorageUtil.SetIntValue(kActor, "_SLH_bimboTransformLocked", 1)
 endFunction
 
 Bool function HRTEffectON(actor kActor)

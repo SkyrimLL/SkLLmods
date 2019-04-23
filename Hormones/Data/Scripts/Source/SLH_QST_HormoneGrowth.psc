@@ -2060,11 +2060,11 @@ Function startSex(Actor kSpeaker, string sexTags="Sex", string sexMsg="")
 		Thread.AddActor(akActor) ; // IsVictim = true
 		Thread.AddActor(kSpeaker ) ; // IsVictim = true
 
-		If (PlayerGender  == 1)
-			Thread.SetAnimations(SexLab.GetAnimationsByTags(2, "Lesbian," + SexTags))
-		Else
-			Thread.SetAnimations(SexLab.GetAnimationsByTags(2, "MF," + SexTags))
-		EndIf
+		; If (PlayerGender  == 1)
+		;	Thread.SetAnimations(SexLab.GetAnimationsByTags(2, "Lesbian," + SexTags))
+		; Else
+			Thread.SetAnimations(SexLab.GetAnimationsByTags(2, SexTags))
+		; EndIf
 
 		Thread.StartThread()
 
