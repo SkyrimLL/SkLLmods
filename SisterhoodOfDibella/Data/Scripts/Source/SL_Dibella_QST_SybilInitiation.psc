@@ -42,6 +42,18 @@ EndFunction
 ;BEGIN FRAGMENT Fragment_8
 Function Fragment_8()
 ;BEGIN CODE
+Actor kActor = Alias_SybilREF.GetActorRef()
+
+if (StorageUtil.GetIntValue(none, "_SD_iSanguine")==1)
+;    kActor.SendModEvent("SDClearDevice",   "Blindfold")
+    kActor.SendModEvent("SDClearDevice",   "WristRestraint")
+    kActor.SendModEvent("SDClearDevice",   "PlugVaginal")
+    kActor.SendModEvent("SDClearDevice",   "PlugAnal")
+    kActor.SendModEvent("SDClearDevice",   "Belt") 
+    kActor.SendModEvent("SDClearDevice",   "Gag")
+    kActor.SendModEvent("SDClearDevice",   "Collar")
+endif
+
 Alias_SybilREF.GetActorRef().SetOutfit( SybilNoviceOutfit)
 SetObjectiveDisplayed(10)
 ;END CODE
