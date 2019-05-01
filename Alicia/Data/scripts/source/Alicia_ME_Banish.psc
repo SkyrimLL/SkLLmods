@@ -61,6 +61,14 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
          			        if ( (akTarget == AliciaActor ) && (AliciaInWorld.GetValue() == 1))
                 				Debug.Notification("Sanguine pulls Alicia back to under his thumb")
 
+                                if (StorageUtil.GetIntValue(none, "_SD_iSanguine")==1)
+                                    AliciaActor.SendModEvent("SDClearDevice",   "Blindfold")
+                                    AliciaActor.SendModEvent("SDClearDevice",   "Plugvaginal")
+                                    AliciaActor.SendModEvent("SDClearDevice",   "Belt") 
+                                    AliciaActor.SendModEvent("SDClearDevice",   "Gag")
+                                    AliciaActor.SendModEvent("SDClearDevice",   "Collar")
+                                endif 
+
                                 If !(AliciaActor.IsInFaction(pDismissedFollower))
                                     (pDialogueFollower as DialogueFollowerScript).DismissFollower(0, 0)
                                 EndIf

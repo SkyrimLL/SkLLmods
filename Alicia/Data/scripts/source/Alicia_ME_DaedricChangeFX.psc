@@ -131,7 +131,50 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
                         (pDialogueFollower as DialogueFollowerScript).SetFollower(AliciaREF)
                         (pDialogueFollower as DialogueFollowerScript).FollowerFollow()
 
-                        If (Utility.RandomInt(0,100)> 0)
+                        ; If (Utility.RandomInt(0,100)> 0)
+                        Debug.Trace("[Alicia] Undress")
+                        AliciaActor.UnequipAll()
+                        if (StorageUtil.GetIntValue(none, "_SD_iSanguine")==1)
+                            Debug.Trace("[Alicia] SD+ detected - equip devices")
+                            If (Utility.RandomInt(0,100)> 90)
+                            ;    AliciaActor.SendModEvent("SDEquipDevice",   "Blindfold|blindfold,leather,zap")
+                            Else
+                            ;   AliciaActor.SendModEvent("SDClearDevice",   "Blindfold")
+                            endif
+                            If (Utility.RandomInt(0,100)> 90)
+                                AliciaActor.SendModEvent("SDEquipDevice",   "WristRestraints")
+                            Else
+                                AliciaActor.SendModEvent("SDClearDevice",   "WristRestraints")
+                            endif
+                            If (Utility.RandomInt(0,100)> 10)
+                                AliciaActor.SendModEvent("SDEquipDevice",   "VaginalPiercing")
+                            Else
+                                AliciaActor.SendModEvent("SDClearDevice",   "VaginalPiercing")
+                            endif
+                            If (Utility.RandomInt(0,100)> 60)
+                                AliciaActor.SendModEvent("SDEquipDevice",   "PlugAnal|plug,anal,heretic,ddx")
+                                AliciaActor.SendModEvent("SDEquipDevice",   "Plugvaginal|plug,vaginal,heretic,ddx")
+                                AliciaActor.SendModEvent("SDEquipDevice",   "Belt|belt,metal,iron") 
+                            Else
+                                AliciaActor.SendModEvent("SDClearDevice",   "Belt")
+                                AliciaActor.SendModEvent("SDClearDevice",   "Plugvaginal")
+                                AliciaActor.SendModEvent("SDClearDevice",   "PlugAnal")
+                            Endif
+                            If (Utility.RandomInt(0,100)> 30)
+                                AliciaActor.SendModEvent("SDEquipDevice",   "Gag|gag,heretic,ddx")
+                            Else
+                                AliciaActor.SendModEvent("SDClearDevice",   "Gag")
+                            endif
+                            If (Utility.RandomInt(0,100)> 70)
+                                AliciaActor.SendModEvent("SDEquipDevice",   "Collar", 1) 
+                                AliciaActor.SendModEvent("SDEquipDevice",   "LegCuffs", 1)
+                            Else
+                                AliciaActor.SendModEvent("SDClearDevice",   "Collar", 1)
+                                AliciaActor.SendModEvent("SDClearDevice",   "LegCuffs", 1)
+                            endif
+                     
+                        else
+                            Debug.Trace("[Alicia] No SD+ - equip outfits")
                             ; AliciaActor.removeallitems(AliciaChestREF)
                             ; utility.wait(0.5)
                             
@@ -143,12 +186,13 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
                             AliciaActor.equipitem(AliciaTortureDevice,False)
 
                             ; AliciaActor.QueueNiNodeUpdate()
-
-                            utility.wait(0.5)
-                        Else
-                           AliciaActor.UnequipAll()
-                        EndIf
+                        endif
                         
+                        utility.wait(0.5)
+                        ; Else
+                        ; EndIf
+                        
+                        Debug.Trace("[Alicia] Cast blood effect")
                         AliciaBloodSpell.RemoteCast(AliciaRef , AliciaActor ,AliciaRef )
 
                         AliciaActor.SetAV("WaitingForPlayer", 0)  

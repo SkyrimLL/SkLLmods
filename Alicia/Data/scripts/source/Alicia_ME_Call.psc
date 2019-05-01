@@ -69,6 +69,48 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
                         AliciaInWorld.SetValue(1)
 
                         AliciaActor.UnequipAll()
+
+                        AliciaActor.UnequipAll()
+                        if (StorageUtil.GetIntValue(none, "_SD_iSanguine")==1)
+                            Debug.Trace("[Alicia] SD+ detected - equip devices")
+                            If (Utility.RandomInt(0,100)> 90)
+                            ;    AliciaActor.SendModEvent("SDEquipDevice",   "Blindfold|blindfold,leather,zap")
+                            Else
+                            ;    AliciaActor.SendModEvent("SDClearDevice",   "Blindfold")
+                            endif
+                            If (Utility.RandomInt(0,100)> 90)
+                                AliciaActor.SendModEvent("SDEquipDevice",   "WristRestraints")
+                            Else
+                                AliciaActor.SendModEvent("SDClearDevice",   "WristRestraints")
+                            endif
+                            If (Utility.RandomInt(0,100)> 10)
+                                AliciaActor.SendModEvent("SDEquipDevice",   "VaginalPiercing")
+                            Else
+                                AliciaActor.SendModEvent("SDClearDevice",   "VaginalPiercing")
+                            endif
+                            If (Utility.RandomInt(0,100)> 60)
+                                AliciaActor.SendModEvent("SDEquipDevice",   "PlugAnal|plug,anal,heretic,ddx")
+                                AliciaActor.SendModEvent("SDEquipDevice",   "Plugvaginal|plug,vaginal,heretic,ddx")
+                                AliciaActor.SendModEvent("SDEquipDevice",   "Belt|belt,metal,iron") 
+                            Else
+                                AliciaActor.SendModEvent("SDClearDevice",   "Belt")
+                                AliciaActor.SendModEvent("SDClearDevice",   "Plugvaginal")
+                                AliciaActor.SendModEvent("SDClearDevice",   "PlugAnal")
+                            Endif
+                            If (Utility.RandomInt(0,100)> 30)
+                                AliciaActor.SendModEvent("SDEquipDevice",   "Gag|gag,heretic,ddx")
+                            Else
+                                AliciaActor.SendModEvent("SDClearDevice",   "Gag")
+                            endif
+                            If (Utility.RandomInt(0,100)> 70)
+                                AliciaActor.SendModEvent("SDEquipDevice",   "Collar", 1) 
+                                AliciaActor.SendModEvent("SDEquipDevice",   "LegCuffs", 1)
+                            Else
+                                AliciaActor.SendModEvent("SDClearDevice",   "Collar", 1)
+                                AliciaActor.SendModEvent("SDClearDevice",   "LegCuffs", 1)
+                            endif
+                         endif
+
                         AliciaBloodSpell.RemoteCast(AliciaRef , AliciaActor ,AliciaRef )
 
                         (pDialogueFollower as DialogueFollowerScript).SetFollower(AliciaREF)
