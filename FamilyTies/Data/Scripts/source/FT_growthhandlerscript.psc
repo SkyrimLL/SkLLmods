@@ -32,7 +32,6 @@ int age
 int	baseAge 
 int	anniversaryFrequency 
 int	agingFrequency 
-
 int daysPassed = 0
 int yearsCount  = 0
 int daysCount = 0
@@ -162,7 +161,7 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 	Debug.Trace("[FT] anniversaryFrequency = " + anniversaryFrequency)
 
 
-	If (daysCount > anniversaryFrequency)
+	If (daysCount > anniversaryFrequency) && (iGameDateLastCheck < daysPassed)
 
 		if (daysCount>=agingFrequency)
 			yearsCount = yearsCount + 1
