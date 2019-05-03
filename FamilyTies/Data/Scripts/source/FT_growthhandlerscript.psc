@@ -106,6 +106,8 @@ EndFunction
  
 Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 	Actor PlayerActor = Game.GetPlayer() as Actor
+	Int anniversaryCycle
+	Int agingCycle
 	; Location kLocation = PlayerActor.GetCurrentLocation()
 	; Bool bLocationAllowed = False
 
@@ -133,6 +135,8 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 	EndIf
 
  	daysPassed = Game.QueryStat("Days Passed")
+	daysCount = StorageUtil.GetIntValue(PlayerActor, "_FT_iPlayerDaysCount")
+	yearsCount = StorageUtil.GetIntValue(PlayerActor, "_FT_iPlayerYearsCount")
 
  	; Initial values
  	if (iGameDateLastCheck == -1)
@@ -143,6 +147,7 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 		yearsCount = 0
  	endIf
 
+ 	; Grant perk points based on starting age
  	If (!bGrantStartPerks) && (baseAge>16)
  		bGrantStartPerks = true
  		Game.AddPerkPoints((baseAge as Int) - 16)
@@ -150,32 +155,34 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
  
 	iDaysSinceLastCheck = (daysPassed - iGameDateLastCheck ) as Int
 
-	daysCount = daysCount + iDaysSinceLastCheck
-	StorageUtil.SetIntValue(PlayerActor, "_FT_iPlayerDaysCount", daysCount)
-	StorageUtil.SetIntValue(PlayerActor, "_FT_iPlayerYearsCount", yearsCount)
-	age = baseAge + yearsCount
- 
+	if (iDaysSinceLastCheck>0)
+		; celebrate only once a day
+		daysCount = daysCount + iDaysSinceLastCheck
+		age = baseAge + yearsCount
+
+		anniversaryCycle = (daysCount % anniversaryFrequency)
+		agingCycle = (daysCount % agingFrequency)
+	 
+		if (agingCycle == 0)
+			yearsCount = yearsCount + 1
+	 		age = baseAge + yearsCount
+	 		daysCount = 0
+			celebrateBirthday()
+
+		ElseIf (anniversaryCycle == 0)  
+			celebrateAnniversary()
+		EndIf
+	Endif
+
+	iGameDateLastCheck = daysPassed  
+
 	Debug.Trace("[FT] age = " + age)
 	Debug.Trace("[FT] yearsCount = " + yearsCount) 
 	Debug.Trace("[FT] daysCount = " + daysCount)
 	Debug.Trace("[FT] anniversaryFrequency = " + anniversaryFrequency)
 
-
-	If (daysCount > anniversaryFrequency) && (iGameDateLastCheck < daysPassed)
-
-		if (daysCount>=agingFrequency)
-			yearsCount = yearsCount + 1
-	 		age = baseAge + yearsCount
-	 		daysCount = daysCount - agingFrequency
-			celebrateBirthday()
-		Else
-			celebrateAnniversary()
-		Endif
-
-	EndIf
-
-	iGameDateLastCheck = daysPassed  
-
+	StorageUtil.SetIntValue(PlayerActor, "_FT_iPlayerDaysCount", daysCount)
+	StorageUtil.SetIntValue(PlayerActor, "_FT_iPlayerYearsCount", yearsCount)
 	StorageUtil.SetIntValue(PlayerActor, "_FT_iPlayerAge", age)
 EndEvent
 

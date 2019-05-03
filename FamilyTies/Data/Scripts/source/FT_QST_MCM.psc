@@ -91,7 +91,7 @@ event OnPageReset(string a_page)
  	_pauseAging = StorageUtil.GetIntValue(none, "_FT_pauseAging" )
  	_resetRace = false ; StorageUtil.GetIntValue(none, "_FT_resetRace" )
 
- 	playerAgeDays = 364 - (StorageUtil.GetIntValue(kPlayer, "_FT_iPlayerDaysCount") as Int)
+ 	playerAgeDays = (_agingFrequency as Int) - (StorageUtil.GetIntValue(kPlayer, "_FT_iPlayerDaysCount") as Int)
 
 	baseAge = StorageUtil.GetFloatValue(kPlayer, "_FT_baseAge" ) as Int
 	yearsCount = StorageUtil.GetIntValue(kPlayer, "_FT_iPlayerYearsCount") as Int
