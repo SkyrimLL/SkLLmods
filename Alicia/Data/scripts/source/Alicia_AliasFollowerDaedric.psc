@@ -108,7 +108,7 @@ Function CheckAliciaLust()
 			
 		ElseIf (randomNum >90)
 			If  (SexLab.ValidateActor( SexLab.PlayerRef ) > 0) &&  (SexLab.ValidateActor(AliciaActor) > 0) 
-				Debug.Notification( "Ali pins you down..." )
+				Debug.Notification( "Alicia pins you down..." )
 
 				SexLab.QuickStart(SexLab.PlayerRef, AliciaActor, Victim = SexLab.PlayerRef, AnimationTags = "Aggressive")
 
@@ -119,7 +119,7 @@ Function CheckAliciaLust()
 			AliciaActor.IgnoreFriendlyHits(true)
 
 		ElseIf (randomNum >80) && (AliciaActor.IsInCombat())
-			Debug.Notification( "Ali cries out and goes on a rampage..." )
+			Debug.Notification( "Alicia cries out and goes on a rampage..." )
 			RaceOrcBerserk.RemoteCast(AliciaRef , AliciaActor ,AliciaRef )
 
 			; Release
@@ -127,7 +127,7 @@ Function CheckAliciaLust()
 			AliciaActor.IgnoreFriendlyHits(true)
 
 		ElseIf (randomNum >70) && (AliciaActor.IsInCombat())
-			Debug.Notification( "Ali's screams are terrifying" )
+			Debug.Notification( "Alicia's screams are terrifying" )
 			Hysteria.RemoteCast(AliciaRef , AliciaActor ,AliciaRef )
 
 			; Release
@@ -135,7 +135,7 @@ Function CheckAliciaLust()
 			AliciaActor.IgnoreFriendlyHits(true)
 
 		ElseIf (randomNum >60) && (AliciaActor.IsInCombat())
-			Debug.Notification( "Ali's screams cause confusion and chaos around her" )
+			Debug.Notification( "Alicia's screams cause confusion and chaos around her" )
 			Mayhem.RemoteCast(AliciaRef , AliciaActor ,AliciaRef )
 
 			; Release
@@ -143,7 +143,7 @@ Function CheckAliciaLust()
 			AliciaActor.IgnoreFriendlyHits(true)
 
 		ElseIf (randomNum >50) && (AliciaActor.IsInCombat())
-			Debug.Notification( "Ali's moans are awe inspiring..." )
+			Debug.Notification( "Alicia's moans are awe inspiring..." )
 			Rally.RemoteCast(AliciaRef , AliciaActor ,AliciaRef )
 
 			; Release
@@ -154,7 +154,7 @@ Function CheckAliciaLust()
 
 			if (Utility.RandomInt(0,100)>90)
 				If  (SexLab.ValidateActor(AliciaActor) > 0) 
-					Debug.Notification( "Ali screams in ecstasy..." )
+					Debug.Notification( "Alicia screams in ecstasy..." )
 
 					sslThreadModel Thread = SexLab.NewThread()
 					Thread.AddActor(AliciaActor) ; // IsVictim = true
@@ -162,7 +162,7 @@ Function CheckAliciaLust()
 					Thread.StartThread()
 				EndIf
 			Else
-				Debug.Notification( "Ali moans..." )
+				Debug.Notification( "Alicia moans..." )
 			EndIf
 
 			; Release
@@ -170,7 +170,7 @@ Function CheckAliciaLust()
 			AliciaActor.IgnoreFriendlyHits(true)
 
 		Else
-			Debug.Notification( "Ali shakes and cries out..." )
+			Debug.Notification( "Alicia shakes and cries out..." )
 			; Calm.RemoteCast(AliciaRef , AliciaActor ,AliciaRef )
 
 			; AliciaActor.StopCombat()
@@ -439,7 +439,7 @@ Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile,
 		;  Debug.Trace("We were hit by " + akAggressor)
 
 		If (Utility.RandomInt(0,100)>60)
-			Debug.Notification( "Ali moans in pain")
+			Debug.Notification( "Alicia moans in pain")
 			; Variable increase in lust
 
 			; Progression of Lust is slower when she wears armor
