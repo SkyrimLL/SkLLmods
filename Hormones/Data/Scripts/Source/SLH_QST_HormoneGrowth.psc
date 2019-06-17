@@ -1470,6 +1470,8 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 						debugTrace("	 Lucky you - sex with Dremora left you unchanged")
 					endIf
 				endIf
+			Else
+				kPervert = SexLab.FindAvailableActor(PlayerActor as ObjectReference, 200.0)  
 			Endif
 		Else
 			kPervert = SexLab.FindAvailableActor(PlayerActor as ObjectReference, 200.0)  
