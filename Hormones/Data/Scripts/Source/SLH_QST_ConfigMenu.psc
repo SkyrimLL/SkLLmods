@@ -1,18 +1,9 @@
 scriptname SLH_QST_ConfigMenu extends SKI_ConfigBase
 
 ; SCRIPT VERSION ----------------------------------------------------------------------------------
-;
-; NOTE:
-; This is an example to show you how to update scripts after they have been deployed.
-;
-; History
-;
-; 1 - Initial version
-; 2 - Added color option
-; 3 - Added keymap option
 
 int function GetVersion()
-	return 3 ; Default version
+	return 2019 ; Default version
 endFunction
 
 ;--------------------------------------
@@ -183,13 +174,16 @@ bool		_enableNiNodeUpdate 	= false
 bool		_enableNiNodeOverride	= true
 
 bool		_useColors				= true
-bool		_useHairColors			= true
 int			_defaultColor 			= 0
 int			_redShiftColor 			= 0
 float		_redShiftColorMod 		= 1.0
 int			_blueShiftColor 		= 0
 float		_blueShiftColorMod 		= 1.0
-int			_bimboHairColor 		= 0
+
+bool		_useHairColors			= true
+bool		_useHair				= true
+bool		_useHairLoss			= true
+int	 		_bimboHairColor 		= 0
 float		_bimboHairColorMod 	= 1.0
 int			_succubusHairColor 	= 0
 float		_succubusHairColorMod 	= 1.0
@@ -269,16 +263,15 @@ endEvent
 event OnVersionUpdate(int a_version)
 	{Called when a version update of this script has been detected}
 
-	; Version 2 specific updating code
-	if (a_version >= 2 && CurrentVersion < 2)
-	;	Debug.Trace(self + ": Updating script to version 2")
-	;	_color = Utility.RandomInt(0x000000, 0xFFFFFF) ; Set a random color
-	endIf
-
-	; Version 3 specific updating code
-	if (a_version >= 3 && CurrentVersion < 3)
-	;	Debug.Trace(self + ": Updating script to version 3")
-	;	_myKey = Input.GetMappedKey("Jump")
+	; Version 4 specific updating code
+	if (a_version >= 2019 && CurrentVersion < 2019)
+		Debug.Trace(self + ": Updating script to version 2019")
+		Pages = new string[5]
+		Pages[0] = "Hormone levels"
+		Pages[1] = "Body changes"
+		Pages[2] = "Triggers"
+		Pages[3] = "Curses"
+		Pages[4] = "Debug"
 	endIf
 endEvent
 
@@ -358,6 +351,9 @@ event OnPageReset(string a_page)
 	_useSchlongNode = GV_useSchlongNode.GetValue()  as Int
 	_useWeight = GV_useWeight.GetValue()  as Int
 
+	_useHair = StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseHair") as Bool  
+	_useHairLoss = StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseHairloss") as Bool  
+
 	_useColors = StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseColors") as Bool  
 	_useHairColors = StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseHairColors") as Bool
 
@@ -399,10 +395,10 @@ event OnPageReset(string a_page)
 	_allowBimboRace = GV_allowBimboRace.GetValue()  as Int
 	_allowSuccubus = GV_allowSuccubus.GetValue()  as Int
 
-	; _setTG = StorageUtil.GetIntValue(PlayerActor, "_SLH_iTG")
-	; _setHRT = StorageUtil.GetIntValue(PlayerActor, "_SLH_iHRT")
-	; _setBimbo = StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo")
-	; _setSuccubus = StorageUtil.GetIntValue(PlayerActor, "_SLH_iSuccubus")
+	_setTG = StorageUtil.GetIntValue(PlayerActor, "_SLH_iTG")
+	_setHRT = StorageUtil.GetIntValue(PlayerActor, "_SLH_iHRT")
+	_setBimbo = StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo")
+	_setSuccubus = StorageUtil.GetIntValue(PlayerActor, "_SLH_iSuccubus")
 
 	_changeOverrideToggle = GV_changeOverrideToggle.GetValue()  as Int
 	_shapeUpdateOnCellChange = GV_shapeUpdateOnCellChange.GetValue()  as Int
@@ -427,14 +423,8 @@ event OnPageReset(string a_page)
 	Bool bBellyEnabled      = ( bEnableBelly  as bool )
 	Bool bSchlongEnabled    = ( bEnableSchlong as bool )
 
-
-	If (a_page == "Customization")
+	If (a_page == "Hormone levels")
 		SetCursorFillMode(TOP_TO_BOTTOM)
-
-		AddHeaderOption(" Sexual activity trigger")
-		; AddSliderOptionST("STATE_LIBIDO","Starting libido", _startingLibido as Float) 
-		AddSliderOptionST("STATE_SEX_TRIGGER","High Sex Activity trigger", _sexActivityThreshold as Float)		
-		AddSliderOptionST("STATE_SEX_BUFFER","Low Sex Activity buffer", _sexActivityBuffer as Float)
 
 		AddHeaderOption(" Hormones Levels")
 		AddSliderOptionST("STATE_PIGMENTATION","Pigmentation hormone", _pigmentationMod as Float,"{1}") 
@@ -454,8 +444,10 @@ event OnPageReset(string a_page)
 		AddSliderOptionST("STATE_SUCCUBUS_HORMONE","Succubus hormone", _succubusMod as Float,"{1}") 
 
 		AddEmptyOption()
+		SetCursorPosition(1)
+
 		AddHeaderOption("Hormone Levels Modifiers") 
-		AddTextOption("      (not used before v3.0)", "", OPTION_FLAG_DISABLED) 
+		; AddTextOption("      (not used before v3.0)", "", OPTION_FLAG_DISABLED) 
 
 		AddTextOption("     Pigmentation: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormonePigmentation") as Int, "", OPTION_FLAG_DISABLED)
 		AddTextOption("     Growth: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneGrowth") as Int, "", OPTION_FLAG_DISABLED)
@@ -473,19 +465,16 @@ event OnPageReset(string a_page)
 		AddTextOption("     Bimbo: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneBimbo") as Int, "", OPTION_FLAG_DISABLED)
 		AddTextOption("     Succubus: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneSuccubus") as Int, "", OPTION_FLAG_DISABLED)
 
-		AddEmptyOption()
-		AddToggleOptionST("STATE_RESET_HORMONES","Reset hormone levels", _resetHormonesToggle as Float)
-		AddToggleOptionST("STATE_RESET_COLORS","Reset colors", _resetColorsToggle as Float)
 
-		SetCursorPosition(1)
+	elseIf (a_page == "Body changes")
+		SetCursorFillMode(TOP_TO_BOTTOM)
 
 		AddHeaderOption(" Weight")
 		AddToggleOptionST("STATE_CHANGE_WEIGHT","Change Weight scale", _useWeight as Float)
 		AddSliderOptionST("STATE_WEIGHT_SWELL","Weight swell mod", _weightSwellMod as Float,"{1}")
 
-		AddHeaderOption(" Color")
+		AddHeaderOption(" Skin")
 		AddToggleOptionST("STATE_CHANGE_COLOR","Change skin color", _useColors as Float)
-		AddToggleOptionST("STATE_CHANGE_HAIRCOLOR","Change hair color", _useHairColors as Float)
 
 		AddColorOptionST("STATE_DEFAULT_COLOR","Default color", _defaultColor as Int)
 		AddColorOptionST("STATE_RED_COLOR_SHIFT","Red color shift", _redShiftColor as Int)
@@ -494,31 +483,25 @@ event OnPageReset(string a_page)
 		AddColorOptionST("STATE_BLUE_COLOR_SHIFT","Blue color shift", _blueShiftColor as Int)
 		AddSliderOptionST("STATE_BLUE_COLOR_SHIFT_MOD","Blue color shift mod", _blueShiftColorMod as Float,"{1}")
 
+		AddHeaderOption(" Hair")
+		AddToggleOptionST("STATE_CHANGE_HAIR","Changes to Hair", _useHair as Float)
+		AddToggleOptionST("STATE_CHANGE_HAIRLOSS","Enable hair loss", _useHairLoss as Float)
+
+		AddToggleOptionST("STATE_CHANGE_HAIRCOLOR","Change hair color", _useHairColors as Float)
 		AddColorOptionST("STATE_BIMBO_HAIR_COLOR_SHIFT","Bimbo Hair color shift", _bimboHairColor as Int)
 		AddSliderOptionST("STATE_BIMBO_HAIR_COLOR_SHIFT_MOD","Bimbo Hair color shift mod", _bimboHairColorMod as Float,"{1}")
 
 		AddColorOptionST("STATE_SUCCUBUS_HAIR_COLOR_SHIFT","Succubus Hair color shift", _succubusHairColor as Int)
 		AddSliderOptionST("STATE_SUCCUBUS_HAIR_COLOR_SHIFT_MOD","Succubus Hair color shift mod", _succubusHairColorMod as Float,"{1}")
 
-		AddHeaderOption(" Shape refresh controls")
+		SetCursorPosition(1)
+
+		AddHeaderOption(" Shape")
 		AddToggleOptionST("STATE_CHANGE_OVERRIDE","Shape change override", _changeOverrideToggle as Float)
-		AddToggleOptionST("STATE_UPDATE_ON_CELL","Update on cell change", _shapeUpdateOnCellChange as Float)
-		AddToggleOptionST("STATE_UPDATE_ON_SEX","Update after sex", _shapeUpdateAfterSex as Float)
-		AddToggleOptionST("STATE_UPDATE_ON_TIMER","Update on timer", _shapeUpdateOnTimer as Float)
-		AddToggleOptionST("STATE_ENABLE_NODE_UPDATE","Enable QueueNodeUpdate", _enableNiNodeUpdate as Float)
-
-		If CheckXPMSERequirements(PlayerActor, PlayerGender as Bool)
-			AddToggleOptionST("STATE_ENABLE_NODE_OVERRIDE","Enable NiOverride", StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON") as Float)
-		else
-			AddToggleOptionST("STATE_ENABLE_NODE_OVERRIDE","Enable NiOverride", StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON") as Float, OPTION_FLAG_DISABLED)
-		endif
-		AddToggleOptionST("STATE_BALANCE","NiO Node Balancing", _applyNodeBalancing  as Float)
-
-		AddHeaderOption(" NetImmerse Nodes")
-		AddToggleOptionST("STATE_CHANGE_NODES","Change NetImmerse Nodes", _useNodes as Float)
 		AddSliderOptionST("STATE_SWELL_FACTOR","Base swell factor", _baseSwellFactor as Float,"{0} %")
 		AddSliderOptionST("STATE_SHRINK_FACTOR","Base shrink factor", _baseShrinkFactor as Float,"{0} %")
 
+		AddHeaderOption(" Cloth compression")
 		AddSliderOptionST("STATE_ARMOR_MOD","Armor shrink", _armorMod as Float,"{1}")
 		AddSliderOptionST("STATE_CLOTH_MOD","Cloth shrink", _clothMod as Float,"{1}")
 
@@ -570,7 +553,36 @@ event OnPageReset(string a_page)
 			; AddSliderOptionST("STATE_SCHLONG_MAX","Schlong swell max", _schlongMax as Float,"{1}", OPTION_FLAG_DISABLED)
 		EndIf
 
-	elseIf (a_page == "Add-ons")
+	elseIf (a_page == "Triggers")
+		SetCursorFillMode(TOP_TO_BOTTOM)
+		AddHeaderOption(" Sexual activity trigger")
+		; AddSliderOptionST("STATE_LIBIDO","Starting libido", _startingLibido as Float) 
+		AddSliderOptionST("STATE_SEX_TRIGGER","High Sex Activity trigger", _sexActivityThreshold as Float)		
+		AddSliderOptionST("STATE_SEX_BUFFER","Low Sex Activity buffer", _sexActivityBuffer as Float)
+		AddToggleOptionST("STATE_HORNY_BEG","Beg for sex", _hornyBegON   as Bool)
+		AddSliderOptionST("STATE_BEG_TRIGGER","Beg arousal trigger", _hornyBegArousal  as Float,"{1}")
+		AddSliderOptionST("STATE_GRAB_TRIGGER","Public sex attack", _hornyGrab  as Float,"{1}")
+		AddToggleOptionST("STATE_EXHIBITIONIST","Allow Exhibitionist", _allowExhibitionist as Float)
+		AddSliderOptionST("STATE_COMMENTS_FREQUENCY","NPC Comments Frequency ", _commentsFrequency as Float,"{1} %")
+
+		AddEmptyOption()
+		SetCursorPosition(1)
+		AddHeaderOption(" Shape change triggers ")
+		AddToggleOptionST("STATE_UPDATE_ON_CELL","Update on cell change", _shapeUpdateOnCellChange as Float)
+		AddToggleOptionST("STATE_UPDATE_ON_SEX","Update after sex", _shapeUpdateAfterSex as Float)
+		AddToggleOptionST("STATE_UPDATE_ON_TIMER","Update on timer", _shapeUpdateOnTimer as Float)
+		AddToggleOptionST("STATE_ENABLE_NODE_UPDATE","Enable QueueNodeUpdate", _enableNiNodeUpdate as Float)
+		AddToggleOptionST("STATE_CHANGE_NODES","Change NetImmerse Nodes", _useNodes as Float)
+
+		If CheckXPMSERequirements(PlayerActor, PlayerGender as Bool)
+			AddToggleOptionST("STATE_ENABLE_NODE_OVERRIDE","Enable NiOverride", StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON") as Float)
+		else
+			AddToggleOptionST("STATE_ENABLE_NODE_OVERRIDE","Enable NiOverride", StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON") as Float, OPTION_FLAG_DISABLED)
+		endif
+		AddToggleOptionST("STATE_BALANCE","NiO Node Balancing", _applyNodeBalancing  as Float)
+
+
+	elseIf (a_page == "Curses")
 		SetCursorFillMode(TOP_TO_BOTTOM)
 
 		AddHeaderOption(" Succubus Curse")
@@ -586,24 +598,24 @@ event OnPageReset(string a_page)
 		AddSliderOptionST("STATE_BIMBO_CLUMSINESS","Clumsiness factor", _bimboClumsinessMod as Float,"{1}")
 		AddToggleOptionST("STATE_BIMBO_DROP","Drop items when aroused", _bimboClumsinessDrop  as Bool)
 
-		AddHeaderOption(" General behaviors ")
-		AddToggleOptionST("STATE_HORNY_BEG","Beg for sex", _hornyBegON   as Bool)
-		AddSliderOptionST("STATE_BEG_TRIGGER","Beg arousal trigger", _hornyBegArousal  as Float,"{1}")
-		AddSliderOptionST("STATE_GRAB_TRIGGER","Public sex attack", _hornyGrab  as Float,"{1}")
-		AddSliderOptionST("STATE_COMMENTS_FREQUENCY","NPC Comments Frequency ", _commentsFrequency as Float,"{1} %")
-		AddToggleOptionST("STATE_EXHIBITIONIST","Allow Exhibitionist", _allowExhibitionist as Float)
-		AddToggleOptionST("STATE_SELF_SPELLS","Allow Self Spells", _allowSelfSpells as Float)
-		AddToggleOptionST("STATE_SHOW_STATUS","Show Status messages", _showStatus as Bool)
 
 		AddEmptyOption()
 		SetCursorPosition(1)
 		AddHeaderOption(" Curses manual triggers ")
-		AddToggleOptionST("STATE_SET_SUCCUBUS","Set Succubus Curse now", _setSuccubus as Float)
-		AddToggleOptionST("STATE_SET_SEX_CHANGE","Set Sex Change Curse now", _setHRT as Float)
-		AddToggleOptionST("STATE_SET_TG","Set Transgender Curse now", _setTG as Float)
-		AddToggleOptionST("STATE_SET_BIMBO","Set Bimbo Curse now", _setBimbo as Float)
+		AddToggleOptionST("STATE_SET_SUCCUBUS","Trigger Succubus Curse now", _setSuccubus as Float)
+		AddToggleOptionST("STATE_SET_SEX_CHANGE","Trigger Sex Change Curse now", _setHRT as Float)
+		AddToggleOptionST("STATE_SET_TG","Trigger Transgender Curse now", _setTG as Float)
+		AddToggleOptionST("STATE_SET_BIMBO","Trigger Bimbo Curse now", _setBimbo as Float)
+
+
+
+	elseIf (a_page == "Debug")
+		SetCursorFillMode(TOP_TO_BOTTOM)
 
 		AddHeaderOption(" Status")
+		AddToggleOptionST("STATE_SELF_SPELLS","Allow Self Spells", _allowSelfSpells as Float)
+		AddToggleOptionST("STATE_SHOW_STATUS","Show Status messages", _showStatus as Bool)
+
 		AddToggleOptionST("STATE_STATUS","Display current status", _statusToggle as Float)
 
 		AddHeaderOption(" Change shape values")
@@ -617,7 +629,11 @@ event OnPageReset(string a_page)
 		AddToggleOptionST("STATE_REFRESH","Apply changes", _refreshToggle as Float)
  
 		AddEmptyOption()
+		SetCursorPosition(1)
+
 		AddToggleOptionST("STATE_SETSHAPE","Set default shape", _setshapeToggle as Float)
+		AddToggleOptionST("STATE_RESET_HORMONES","Reset hormone levels", _resetHormonesToggle as Float)
+		AddToggleOptionST("STATE_RESET_COLORS","Reset colors", _resetColorsToggle as Float)
 		AddToggleOptionST("STATE_RESET","Reset changes", _resetToggle as Float)
 		AddToggleOptionST("STATE_DEBUG","Debug messages", _showDebug as Float)
 
@@ -1713,6 +1729,46 @@ state STATE_CHANGE_COLOR ; TOGGLE
 	endEvent
 endState
 
+; AddToggleOptionST("STATE_CHANGE_Hair","Change hair", _useHair)
+state STATE_CHANGE_HAIR ; TOGGLE
+	event OnSelectST()
+		_useHair = Math.LogicalXor( 1, _useHair as Int )
+		SetToggleOptionValueST( _useHair as Bool )
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iUseHair", _useHair as Int)
+		ForcePageReset()
+	endEvent
+
+	event OnDefaultST()
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iUseHair", 1)
+		SetToggleOptionValueST( false )
+		ForcePageReset()
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Allow changes to hair")
+	endEvent
+endState
+
+; AddToggleOptionST("STATE_CHANGE_HairLoss","Change hair", _useHairLoss)
+state STATE_CHANGE_HAIRLOSS ; TOGGLE
+	event OnSelectST()
+		_useHairLoss = Math.LogicalXor( 1, _useHairLoss as Int )
+		SetToggleOptionValueST( _useHairLoss as Bool )
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iUseHairLoss", _useHair as Int)
+		ForcePageReset()
+	endEvent
+
+	event OnDefaultST()
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iUseHairLoss", 1)
+		SetToggleOptionValueST( false )
+		ForcePageReset()
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Allow hair loss")
+	endEvent
+endState
+
 ; AddToggleOptionST("STATE_CHANGE_HairCOLOR","Change colors", _useHairColors)
 state STATE_CHANGE_HAIRCOLOR ; TOGGLE
 	event OnSelectST()
@@ -1732,6 +1788,7 @@ state STATE_CHANGE_HAIRCOLOR ; TOGGLE
 		SetInfoText("Allow change to hair color")
 	endEvent
 endState
+
 
 ; AddColorOptionST("STATE_DEFAULT_COLOR","Default color", _defaultColor as Int)
 state STATE_DEFAULT_COLOR ; COLOR
@@ -2136,14 +2193,17 @@ state STATE_SUCCUBUS ; TOGGLE
 endState
 state STATE_SET_SUCCUBUS ; TOGGLE
 	event OnSelectST()
-		_setSuccubus = Math.LogicalXor( 1, _setSuccubus ) 
-		SetToggleOptionValueST( _setSuccubus as Bool )
+		SetToggleOptionValueST( StorageUtil.GetIntValue(PlayerActor, "_SLH_iSuccubus") as Bool )
+
 		GV_allowSuccubus.SetValueInt( 1 )
 		StorageUtil.SetIntValue(PlayerActor, "_SLH_allowSuccubus", GV_allowSuccubus.GetValue() as Int)
+
 		If (StorageUtil.GetIntValue(PlayerActor, "_SLH_iSuccubus") == 0)
+			Debug.MessageBox("Casting the Succubus curse. Leave the menu to view the effects.")
 			PlayerActor.SendModEvent("SLHCastSuccubusCurse")
 		else
 			; Debug.MessageBox("Unfortunately.. there is no cure for a Succubus")
+			Debug.MessageBox("Curing the Succubus curse. Leave the menu to view the effects.")
 			PlayerActor.SendModEvent("SLHCureSuccubusCurse")
 		EndIf
 		ForcePageReset()
@@ -2180,13 +2240,18 @@ state STATE_BIMBO ; TOGGLE
 endState
 state STATE_SET_BIMBO ; TOGGLE
 	event OnSelectST()
-		_setBimbo = Math.LogicalXor( 1, _setBimbo ) 
-		SetToggleOptionValueST( _setBimbo as Bool )
+		SetToggleOptionValueST( StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo") as Bool )
+
+		GV_allowHRT.SetValueInt( 1 )
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_allowHRT", GV_allowHRT.GetValue() as Int)
 		GV_allowBimbo.SetValueInt( 1 )
 		StorageUtil.SetIntValue(PlayerActor, "_SLH_allowBimbo", GV_allowBimbo.GetValue() as Int)
+
 		If (StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo") == 0)
+			Debug.MessageBox("Casting the Bimbo curse and forcing curse options if necessary. Leave the menu to view the effects.")
 			PlayerActor.SendModEvent("SLHCastBimboCurse")
 		else
+			Debug.MessageBox("Curing the Bimbo curse. Leave the menu to view the effects.")
 			PlayerActor.SendModEvent("SLHCureBimboCurse")
 		endIf
 
@@ -2355,13 +2420,16 @@ state STATE_SEX_CHANGE ; TOGGLE
 endState
 state STATE_SET_SEX_CHANGE ; TOGGLE
 	event OnSelectST()
-		_setHRT = Math.LogicalXor( 1, _setHRT ) 
-		SetToggleOptionValueST( _setHRT as Bool )
+		SetToggleOptionValueST( StorageUtil.GetIntValue(PlayerActor, "_SLH_iHRT") as Bool )
+
 		GV_allowHRT.SetValueInt( 1 )
 		StorageUtil.SetIntValue(PlayerActor, "_SLH_allowHRT", GV_allowHRT.GetValue() as Int)
+
 		If (StorageUtil.GetIntValue(PlayerActor, "_SLH_iHRT") == 0)
+			Debug.MessageBox("Casting the Sex Change curse and forcing curse options if necessary. Leave the menu to view the effects.")
 			PlayerActor.SendModEvent("SLHCastHRTCurse")
 		else
+			Debug.MessageBox("Curing the Sex Change curse. Leave the menu to view the effects.")
 			PlayerActor.SendModEvent("SLHCureHRTCurse")
 		endIf
 		ForcePageReset()
@@ -2398,13 +2466,18 @@ state STATE_TG ; TOGGLE
 endState
 state STATE_SET_TG ; TOGGLE
 	event OnSelectST()
-		_setTG = Math.LogicalXor( 1, _setTG ) 
-		SetToggleOptionValueST( _setTG as Bool )
+		SetToggleOptionValueST( StorageUtil.GetIntValue(PlayerActor, "_SLH_iTG") as Bool )
+
+		GV_allowHRT.SetValueInt( 1 )
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_allowHRT", GV_allowHRT.GetValue() as Int)
 		GV_allowTG.SetValueInt( 1 )
 		StorageUtil.SetIntValue(PlayerActor, "_SLH_allowTG", GV_allowTG.GetValue() as Int)
+
 		If (StorageUtil.GetIntValue(PlayerActor, "_SLH_iTG") == 0)
+			Debug.MessageBox("Casting the Transgender curse and forcing curse options if necessary. Leave the menu to view the effects.")
 			PlayerActor.SendModEvent("SLHCastTGCurse")
 		else
+			Debug.MessageBox("Curing the Transgender curse. Leave the menu to view the effects.")
 			PlayerActor.SendModEvent("SLHCureTGCurse")
 		endIf
 		ForcePageReset()

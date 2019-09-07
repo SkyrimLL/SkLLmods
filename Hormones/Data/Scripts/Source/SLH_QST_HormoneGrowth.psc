@@ -999,25 +999,30 @@ Event OnRefreshHairColorEvent(String _eventName, String _args, Float _argc = 1.0
  	EndIf
 	debugTrace(" Receiving 'refresh hair color' event. Actor: " + kActor )
 
-	If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
-		; YPS Fashion override if detected
-		; See - http://www.loverslab.com/topic/56627-immersive-hair-growth-and-styling-yps-devious-immersive-fashion-v5/
-		debugTrace("       -> YPS Fashion override")
+	If (StorageUtil.GetIntValue(kActor, "_SLH_iUseHair") == 1) && (StorageUtil.GetIntValue(kActor, "_SLH_iUseHairColor") == 1)
 
-		If ((StorageUtil.HasStringValue(kActor, "_SLH_sHairColorName" )) && (StorageUtil.HasIntValue(kActor, "_SLH_iHairColor" )))
-			if (_args == "Dye")
-				StorageUtil.SetIntValue(kActor, "_SLH_iHairColorDye", 1 ) 
-				SendModEvent("yps-HairColorDyeEvent", StorageUtil.GetStringValue(kActor, "_SLH_sHairColorName" ), StorageUtil.GetIntValue(kActor, "_SLH_iHairColor" ) )
+		If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
+			; YPS Fashion override if detected
+			; See - http://www.loverslab.com/topic/56627-immersive-hair-growth-and-styling-yps-devious-immersive-fashion-v5/
+			debugTrace("       -> YPS Fashion override")
+
+			If ((StorageUtil.HasStringValue(kActor, "_SLH_sHairColorName" )) && (StorageUtil.HasIntValue(kActor, "_SLH_iHairColor" )))
+				if (_args == "Dye")
+					StorageUtil.SetIntValue(kActor, "_SLH_iHairColorDye", 1 ) 
+					SendModEvent("yps-HairColorDyeEvent", StorageUtil.GetStringValue(kActor, "_SLH_sHairColorName" ), StorageUtil.GetIntValue(kActor, "_SLH_iHairColor" ) )
+				else
+					StorageUtil.SetIntValue(kActor, "_SLH_iHairColorDye", 0 ) 
+					SendModEvent("yps-HairColorBaseEvent", StorageUtil.GetStringValue(kActor, "_SLH_sHairColorName" ), StorageUtil.GetIntValue(kActor, "_SLH_iHairColor" ) )
+				endif
 			else
-				StorageUtil.SetIntValue(kActor, "_SLH_iHairColorDye", 0 ) 
-				SendModEvent("yps-HairColorBaseEvent", StorageUtil.GetStringValue(kActor, "_SLH_sHairColorName" ), StorageUtil.GetIntValue(kActor, "_SLH_iHairColor" ) )
+				debugTrace("       -> YPS Fashion hair color parameters missing - hair color change skipped")
 			endif
-		else
-			debugTrace("       -> YPS Fashion hair color parameters missing - hair color change skipped")
-		endif
 
+		Else
+			debugTrace("       -> YPS Fashion missing - hair color change skipped")
+		Endif
 	Else
-		debugTrace("       -> YPS Fashion missing - hair color change skipped")
+		debugTrace("       -> Skipped - hair color change disabled")
 	Endif
 EndEvent
 

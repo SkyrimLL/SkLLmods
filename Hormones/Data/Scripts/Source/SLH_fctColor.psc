@@ -354,7 +354,8 @@ Int function alterHairColor(Actor kActor, int rgbacolor, HeadPart thisHair)
 	ActorBase pActorBase = kActor.GetActorBase()
 	ActorBase pLeveledActorBase = kActor.GetLeveledActorBase()
 
-	if (StorageUtil.GetIntValue(kPlayer, "_SLH_iUseHairColors") == 1)
+	if (StorageUtil.GetIntValue(kPlayer, "_SLH_iUseHairColors") == 1) && (StorageUtil.GetIntValue(kPlayer, "_SLH_iUseHair") == 1)
+
 		kActor.ChangeHeadPart(thisHair)
 
 		thisHairColor.SetColor(rgbacolor)
@@ -596,7 +597,7 @@ function initColorState(Actor kActor)
 		iEyelinerColor = iOrigEyelinerColor
 	Endif
 
-	if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseHairColors") == 1)
+	if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseHairColors") == 1)  && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseHair") == 1)
 		color = pLeveledActorBase.GetHairColor()
 		iOrigHairColor = colorFormtoRGBA (color)
 		iHairColor = iOrigHairColor
@@ -624,7 +625,7 @@ function setColorStateDefault(Actor kActor)
 		iEyelinerColor = iOrigEyelinerColor
 	endIf
 
-	if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseHairColors") == 1)
+	if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseHairColors") == 1) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseHair") == 1)
 		color = pLeveledActorBase.GetHairColor()
 		iOrigHairColor = colorFormtoRGBA (color)
 		iHairColor = iOrigHairColor
@@ -650,7 +651,7 @@ function resetColorState(Actor kActor)
 		iEyelinerColor = iOrigEyelinerColor
 	Endif
 
-	if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseHairColors") == 1)
+	if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseHairColors") == 1) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseHair") == 1)
 		iHairColor = iOrigHairColor
 
 		iHairColorSuccubus = Math.LeftShift(255, 16) + Math.LeftShift(255, 8) + 255
@@ -695,7 +696,7 @@ function setColorState(Actor kActor)
 		StorageUtil.SetIntValue(kActor, "_SLH_iEyesColor", iEyesColor) 
 	endIf
 
-	if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseHairColors") == 1)
+	if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseHairColors") == 1) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseHair") == 1)
 		StorageUtil.SetIntValue(kActor, "_SLH_iOrigHairColor", iOrigHairColor) 
 		StorageUtil.SetIntValue(kActor, "_SLH_iHairColor", iHairColor) 
 	EndIf
@@ -721,7 +722,7 @@ function getColorState(Actor kActor)
 		iEyesColor = StorageUtil.GetIntValue(kActor, "_SLH_iEyesColor") 
 	Endif
 
-	if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseHairColors") == 1)
+	if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseHairColors") == 1) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseHair") == 1)
 		iOrigHairColor = StorageUtil.GetIntValue(kActor, "_SLH_iOrigHairColor") 
 		iHairColor = StorageUtil.GetIntValue(kActor, "_SLH_iHairColor") 
 	Endif
@@ -765,7 +766,7 @@ function refreshColors(Actor kActor)
 	Endif
 
 
-	if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseHairColors") == 1)
+	if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseHairColors") == 1) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseHair") == 1)
 		if (iHairColor == 0)
 			; thisHairColor =  pLeveledActorBase.GetHairColor()
 			iHairColor = iOrigHairColor ; colorFormtoRGBA (thisHairColor)
@@ -814,7 +815,7 @@ function getColorFromSkin(Actor kActor)
 		; setTintMask(3,iEyelinerColor)
 	endIf
 
-	if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseHairColors") == 1)
+	if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseHairColors") == 1) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseHair") == 1)
 		color = pLeveledActorBase.GetHairColor()
 		iHairColor = colorFormtoRGBA (color)
 
@@ -837,7 +838,7 @@ function applyColorChanges(Actor kActor)
 	 	;	- Issues with tint Mask colors 'bleeding' into other areas (skin color -> hair)
 	endIf
 
-	if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseHairColors") == 1)
+	if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseHairColors") == 1) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseHair") == 1)
 		Game.UpdateHairColor()
 		; debugTrace("  Updating TintMaskColors")
 		; Game.UpdateTintMaskColors()
