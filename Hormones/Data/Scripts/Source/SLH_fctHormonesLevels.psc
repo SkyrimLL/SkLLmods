@@ -8,7 +8,7 @@ SLH_fctUtil Property fctUtil Auto
 
 ; Pigmentation 	- _SLH_fHormonePigmentation 	- speed of skin color change
 ; Growth 		- _SLH_fHormoneGrowth 			- speed of weight change
-; Metabolism 	- _SLH_fHormoneMetabolism 		- gain / burn fat / resistance to heat loss
+; Metabolism 	- _SLH_fHormoneMetabolism 		- gain / burn fat / resistance to heat loss / used as switch for body transformation
 ; Sleep 		- _SLH_fHormoneSleep 			- need to sleep / stamina
 ; Hunger 		- _SLH_fHormoneHunger 			- need to eat
 ; Immunity 		- _SLH_fHormoneImmunity 		- resistance to disease
@@ -231,13 +231,20 @@ function modHormoneLevel(Actor kActor, String sHormoneLevel, Float fModValue)
 
 	fHormoneLevel = fctUtil.fRange( fHormoneLevel + fModValue , 0.0, 100.0)
 
+	; minimum level to always keep a residue of hormone in body
+	if (fHormoneLevel<2.0)
+		fHormoneLevel=2.0
+	endif
+
 	StorageUtil.SetFloatValue(kActor, "_SLH_fHormone" + sHormoneLevel, fHormoneLevel)
 	debugTrace("    :: Hormone Mod " + sHormoneLevel + " : New Value = " + fHormoneLevel)
 
 	If (fModValue > 0)
-		debugTrace(" Hormone Mod UP - " + sHormoneLevel)
+		; debug.Notification(sHormoneLevel + " Hormone Mod +" + fModValue)
+		debugTrace(sHormoneLevel + " Hormone Mod +" + fModValue)
 	Else
-		debugTrace(" Hormone Mod DOWN - " + sHormoneLevel)
+		; debug.Notification(sHormoneLevel + " Hormone Mod " + fModValue)
+		debugTrace(sHormoneLevel + " Hormone Mod " + fModValue)
 	endIf
 EndFunction
 
@@ -245,18 +252,26 @@ function modHormoneLevelPercent(Actor kActor, String sHormoneLevel, Float fModVa
 	Float fHormoneLevel  = StorageUtil.GetFloatValue(kActor, "_SLH_fHormone" + sHormoneLevel)
 	; Racial adjustment of mod value
 	fModValue = fModValue * StorageUtil.GetFloatValue(kActor, "_SLH_fHormone" + sHormoneLevel + "Mod")
+	fModValue = (fModValue / 100.0 ) * fHormoneLevel
+
+	; minimum level to prevent finding a percent of 0
+	if (fHormoneLevel<5.0)
+		fHormoneLevel=5.0
+	endif
 
 	debugTrace("    :: Hormone Mod Percent " + sHormoneLevel + " : Value = " + fHormoneLevel)
 
-	fHormoneLevel = fctUtil.fRange( fHormoneLevel + ((fModValue / 100.0 ) * fHormoneLevel) , 0.0, 100.0)
+	fHormoneLevel = fctUtil.fRange( fHormoneLevel + fModValue , 0.0, 100.0)
 
 	StorageUtil.SetFloatValue(kActor, "_SLH_fHormone" + sHormoneLevel, fHormoneLevel)
 	debugTrace("    :: Hormone Mod Percente " + sHormoneLevel + " : New Value = " + fHormoneLevel)
 
 	If (fModValue > 0)
-		debugTrace(" Hormone Mod UP - " + sHormoneLevel)
+		; debug.Notification(sHormoneLevel + " Hormone Mod +" + fModValue)
+		debugTrace(sHormoneLevel + " Hormone Mod +" + fModValue)
 	Else
-		debugTrace(" Hormone Mod DOWN - " + sHormoneLevel)
+		; debug.Notification(sHormoneLevel + " Hormone Mod " + fModValue)
+		debugTrace(sHormoneLevel + " Hormone Mod " + fModValue)
 	endIf
 EndFunction
 
@@ -270,7 +285,7 @@ Float function updateActorLibido(Actor kActor)
 	Int iOrgasmsCountToday = StorageUtil.GetIntValue(kActor, "_SLH_iOrgasmsCountToday") 
 	Int iSuccubus = StorageUtil.GetIntValue(kActor, "_SLH_iSuccubus") 
 	Int iBimbo = StorageUtil.GetIntValue(kActor, "_SLH_iBimbo") 
-	Int iDaedricInfluence = StorageUtil.GetIntValue(kActor, "_SLH_iDaedricInfluence") 
+	Int iDaedricInfluence = StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneSuccubus") as Int
 
 	Int sexActivityThreshold = StorageUtil.GetIntValue(kActor, "_SLH_iSexActivityThreshold") 
 	Int sexActivityBuffer = StorageUtil.GetIntValue(kActor, "_SLH_iSexActivityBuffer") 
@@ -310,7 +325,7 @@ Float function updateActorLibido(Actor kActor)
 		fLibido =  fctUtil.fRange( fLibido + 5.0, 50.0, 100.0)
 	EndIf
 
-	StorageUtil.SetIntValue(kActor, "_SLH_iDaedricInfluence", iDaedricInfluence)
+	StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneSuccubus", iDaedricInfluence as Float ) 
 	StorageUtil.SetFloatValue(kActor, "_SLH_fLibido",  fLibido) 
 
 	debugTrace("  Set Libido to " + fLibido )

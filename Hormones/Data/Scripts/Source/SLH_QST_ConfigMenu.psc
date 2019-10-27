@@ -245,6 +245,8 @@ Actor PlayerActor
 ActorBase pActorBase 
 Int PlayerGender
 
+String tmpText
+
 bool Function CheckXPMSERequirements(Actor akActor, bool isFemale)
 	return XPMSELib.CheckXPMSEVersion(akActor, isFemale, XPMSE_VERSION, true) && XPMSELib.CheckXPMSELibVersion(XPMSELIB_VERSION) && SKSE.GetPluginVersion("NiOverride") >= NIOVERRIDE_VERSION && NiOverride.GetScriptVersion() >= NIOVERRIDE_SCRIPT_VERSION
 EndFunction
@@ -389,11 +391,11 @@ event OnPageReset(string a_page)
 	_allowExhibitionist = GV_allowExhibitionist.GetValue()  as Int
 	_allowSelfSpells = GV_allowSelfSpells.GetValue()  as Int
 
-	_allowTG = GV_allowTG.GetValue()  as Int
-	_allowHRT = GV_allowHRT.GetValue()  as Int
-	_allowBimbo = GV_allowBimbo.GetValue()  as Int
-	_allowBimboRace = GV_allowBimboRace.GetValue()  as Int
-	_allowSuccubus = GV_allowSuccubus.GetValue()  as Int
+	_allowTG = StorageUtil.GetIntValue(PlayerActor, "_SLH_allowTG")
+	_allowHRT = StorageUtil.GetIntValue(PlayerActor, "_SLH_allowHRT")
+	_allowBimbo = StorageUtil.GetIntValue(PlayerActor, "_SLH_allowBimbo")
+	_allowBimboRace = StorageUtil.GetIntValue(PlayerActor, "_SLH_allowBimboRace")
+	_allowSuccubus = StorageUtil.GetIntValue(PlayerActor, "_SLH_allowSuccubus")
 
 	_setTG = StorageUtil.GetIntValue(PlayerActor, "_SLH_iTG")
 	_setHRT = StorageUtil.GetIntValue(PlayerActor, "_SLH_iHRT")
@@ -426,7 +428,7 @@ event OnPageReset(string a_page)
 	If (a_page == "Hormone levels")
 		SetCursorFillMode(TOP_TO_BOTTOM)
 
-		AddHeaderOption(" Hormones Levels")
+		AddHeaderOption(" Hormones Levels Modifiers")
 		AddSliderOptionST("STATE_PIGMENTATION","Pigmentation hormone", _pigmentationMod as Float,"{1}") 
 		AddSliderOptionST("STATE_GROWTH","Growth hormone", _growthMod as Float,"{1}") 
 		AddSliderOptionST("STATE_METABOLISM","Metabolism hormone", _metabolismMod as Float,"{1}") 
@@ -446,7 +448,7 @@ event OnPageReset(string a_page)
 		AddEmptyOption()
 		SetCursorPosition(1)
 
-		AddHeaderOption("Hormone Levels Modifiers") 
+		AddHeaderOption("Hormone Levels") 
 		; AddTextOption("      (not used before v3.0)", "", OPTION_FLAG_DISABLED) 
 
 		AddTextOption("     Pigmentation: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormonePigmentation") as Int, "", OPTION_FLAG_DISABLED)
@@ -477,10 +479,14 @@ event OnPageReset(string a_page)
 		AddToggleOptionST("STATE_CHANGE_COLOR","Change skin color", _useColors as Float)
 
 		AddColorOptionST("STATE_DEFAULT_COLOR","Default color", _defaultColor as Int)
+		AddInputOptionST("STATE_DEFAULT_COLOR_TXT","Default color value", IntToHex(_defaultColor) as String)
+
 		AddColorOptionST("STATE_RED_COLOR_SHIFT","Red color shift", _redShiftColor as Int)
+		AddInputOptionST("STATE_RED_COLOR_TXT","Red color shift value", IntToHex(_redShiftColor) as String)
 		AddSliderOptionST("STATE_RED_COLOR_SHIFT_MOD","Red color shift mod", _redShiftColorMod as Float,"{1}")
 
 		AddColorOptionST("STATE_BLUE_COLOR_SHIFT","Blue color shift", _blueShiftColor as Int)
+		AddInputOptionST("STATE_BLUE_COLOR_TXT","Blue color shift value", IntToHex(_blueShiftColor) as String)
 		AddSliderOptionST("STATE_BLUE_COLOR_SHIFT_MOD","Blue color shift mod", _blueShiftColorMod as Float,"{1}")
 
 		AddHeaderOption(" Hair")
@@ -489,9 +495,11 @@ event OnPageReset(string a_page)
 
 		AddToggleOptionST("STATE_CHANGE_HAIRCOLOR","Change hair color", _useHairColors as Float)
 		AddColorOptionST("STATE_BIMBO_HAIR_COLOR_SHIFT","Bimbo Hair color shift", _bimboHairColor as Int)
+		AddInputOptionST("STATE_BIMBO_HAIR_COLOR_TXT","Bimbo Hair color shift value", IntToHex(_bimboHairColor) as String)
 		AddSliderOptionST("STATE_BIMBO_HAIR_COLOR_SHIFT_MOD","Bimbo Hair color shift mod", _bimboHairColorMod as Float,"{1}")
 
 		AddColorOptionST("STATE_SUCCUBUS_HAIR_COLOR_SHIFT","Succubus Hair color shift", _succubusHairColor as Int)
+		AddInputOptionST("STATE_SUCCUBUS_HAIR_COLOR_TXT","Succubus Hair color shift value", IntToHex(_succubusHairColor) as String)
 		AddSliderOptionST("STATE_SUCCUBUS_HAIR_COLOR_SHIFT_MOD","Succubus Hair color shift mod", _succubusHairColorMod as Float,"{1}")
 
 		SetCursorPosition(1)
@@ -1255,7 +1263,7 @@ state STATE_SWELL_FACTOR ; SLIDER
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Base swell factor - Rate of growth applied to breasts, belly and butt (in % of current shape value).")
+		SetInfoText("Base swell factor - Rate of growth applied to breasts, belly and butt (in % of calculated amount of growth - 0 means no change at all - 100 means full amount of growth applied).")
 	endEvent
 endState
 ; AddSliderOptionST("STATE_SHRINK_FACTOR","Base shrink factor", _baseShrinkFactor)
@@ -1801,6 +1809,7 @@ state STATE_DEFAULT_COLOR ; COLOR
 		_defaultColor = value
 		StorageUtil.SetIntValue(PlayerActor, "_SLH_iDefaultColor", _defaultColor)
 		SetColorOptionValueST( _defaultColor )
+		ForcePageReset()
 	endEvent
 
 	event OnDefaultST()
@@ -1810,7 +1819,30 @@ state STATE_DEFAULT_COLOR ; COLOR
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Red shift color - Color for 'red' shift from current color (blushing after sex)")
+		SetInfoText("Default skin color - Base color for the skin in a default state")
+	endEvent
+endState
+; AddColorOptionST("STATE_DEFAULT_COLOR_TXT","Default color text", IntToHex(_defaultColor) as String)
+state STATE_DEFAULT_COLOR_TXT ; COLOR
+	event OnInputOpenST()
+		SetInputDialogStartText( IntToHex(_defaultColor)) 
+	endEvent
+
+	event OnInputAcceptST(string inputstr)
+		_defaultColor = HexToInt(inputstr)
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iDefaultColor", _defaultColor)
+		SetInputOptionValueST( inputstr )
+		ForcePageReset()
+	endEvent
+
+	event OnDefaultST()
+		_defaultColor =  Math.LeftShift(255, 16) + Math.LeftShift(255, 8) + 255
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iDefaultColor", _defaultColor)
+		SetInputOptionValueST( IntToHex(_defaultColor) )
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Base color for the skin in a default state, as a six digit hex value (RRGGBB) with leading zeroes.\nExamples: FF0000 = red, 00FF00 = green, 0000FF = blue")
 	endEvent
 endState
 ; AddColorOptionST("STATE_RED_COLOR_SHIFT","Red color shift", _redShiftColor as Int)
@@ -1824,6 +1856,7 @@ state STATE_RED_COLOR_SHIFT ; COLOR
 		_redShiftColor = value
 		StorageUtil.SetIntValue(PlayerActor, "_SLH_iRedShiftColor", _redShiftColor)
 		SetColorOptionValueST( _redShiftColor )
+		ForcePageReset()
 	endEvent
 
 	event OnDefaultST()
@@ -1834,6 +1867,29 @@ state STATE_RED_COLOR_SHIFT ; COLOR
 
 	event OnHighlightST()
 		SetInfoText("Red shift color - Color for 'red' shift from current color (blushing after sex)")
+	endEvent
+endState
+; AddColorOptionST("STATE_RED_COLOR_TXT","Red color text", IntToHex(_redShiftColor) as String)
+state STATE_RED_COLOR_TXT ; COLOR
+	event OnInputOpenST()
+		SetInputDialogStartText( IntToHex(_redShiftColor)) 
+	endEvent
+
+	event OnInputAcceptST(string inputstr)
+		_redShiftColor = HexToInt(inputstr)
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iRedShiftColor", _redShiftColor)
+		SetInputOptionValueST( inputstr )
+		ForcePageReset()
+	endEvent
+
+	event OnDefaultST()
+		_defaultColor =  Math.LeftShift(255, 16) + Math.LeftShift(255, 8) + 255
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iRedShiftColor", _redShiftColor)
+		SetInputOptionValueST( IntToHex(_redShiftColor) )
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Red shift color - as a six digit hex value (RRGGBB) with leading zeroes.\nExamples: FF0000 = red, 00FF00 = green, 0000FF = blue")
 	endEvent
 endState
 ; AddSliderOptionST("STATE_RED_COLOR_SHIFT_MOD","Red color shift mod", _redShiftColorMod as Float,"{1}")
@@ -1873,6 +1929,7 @@ state STATE_BLUE_COLOR_SHIFT ; COLOR
 		_blueShiftColor = value 
 		StorageUtil.SetIntValue(PlayerActor, "_SLH_iBlueShiftColor", _blueShiftColor)  
 		SetColorOptionValueST( _blueShiftColor )
+		ForcePageReset()
 	endEvent
 
 	event OnDefaultST()
@@ -1885,7 +1942,29 @@ state STATE_BLUE_COLOR_SHIFT ; COLOR
 		SetInfoText("Blue shift color - Color for 'blue' shift from current color (sex withdrawal)")
 	endEvent
 endState
+; AddColorOptionST("STATE_BLUE_COLOR_TXT","Blue color text", IntToHex(_blueShiftColor) as String)
+state STATE_BLUE_COLOR_TXT ; COLOR
+	event OnInputOpenST()
+		SetInputDialogStartText( IntToHex(_blueShiftColor)) 
+	endEvent
 
+	event OnInputAcceptST(string inputstr)
+		_blueShiftColor = HexToInt(inputstr)
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iBlueShiftColor", _blueShiftColor)
+		SetInputOptionValueST( inputstr )
+		ForcePageReset()
+	endEvent
+
+	event OnDefaultST()
+		_defaultColor =  Math.LeftShift(255, 16) + Math.LeftShift(255, 8) + 255
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iBlueShiftColor", _blueShiftColor)
+		SetInputOptionValueST( IntToHex(_blueShiftColor) )
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Blue shift color - as a six digit hex value (RRGGBB) with leading zeroes.\nExamples: FF0000 = red, 00FF00 = green, 0000FF = blue")
+	endEvent
+endState
 ; AddSliderOptionST("STATE_BLUE_COLOR_SHIFT_MOD","Blue color shift mod", _blueShiftColorMod as Float,"{1}")
 state STATE_BLUE_COLOR_SHIFT_MOD ; SLIDER
 	event OnSliderOpenST()
@@ -1923,6 +2002,7 @@ state STATE_BIMBO_HAIR_COLOR_SHIFT ; COLOR
 		_bimboHairColor = value 
 		StorageUtil.SetIntValue(PlayerActor, "_SLH_iBimboHairColor", _bimboHairColor)  
 		SetColorOptionValueST( _bimboHairColor )
+		ForcePageReset()
 	endEvent
 
 	event OnDefaultST()
@@ -1935,7 +2015,29 @@ state STATE_BIMBO_HAIR_COLOR_SHIFT ; COLOR
 		SetInfoText("Bimbo Hair color - Hair Color for 'Bimbo' curse")
 	endEvent
 endState
+; AddColorOptionST("STATE_BIMBO_HAIR_COLOR_TXT","Bimbo color text", IntToHex(_bimboHairColor) as String)
+state STATE_BIMBO_HAIR_COLOR_TXT ; COLOR
+	event OnInputOpenST()
+		SetInputDialogStartText( IntToHex(_bimboHairColor)) 
+	endEvent
 
+	event OnInputAcceptST(string inputstr)
+		_bimboHairColor = HexToInt(inputstr)
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iBimboHairColor", _bimboHairColor)
+		SetInputOptionValueST( inputstr )
+		ForcePageReset()
+	endEvent
+
+	event OnDefaultST()
+		_defaultColor =  Math.LeftShift(255, 16) + Math.LeftShift(255, 8) + 255
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iBimboHairColor", _bimboHairColor)
+		SetInputOptionValueST( IntToHex(_bimboHairColor) )
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Bimbo Hair color - as a six digit hex value (RRGGBB) with leading zeroes.\nExamples: FF0000 = red, 00FF00 = green, 0000FF = blue")
+	endEvent
+endState
 ; AddSliderOptionST("STATE_BIMBO_HAIR_COLOR_SHIFT_MOD","Bimbo Hair shift mod", _bimboHairColorMod as Float,"{1}")
 state STATE_BIMBO_HAIR_COLOR_SHIFT_MOD ; SLIDER
 	event OnSliderOpenST()
@@ -1973,6 +2075,7 @@ state STATE_SUCCUBUS_HAIR_COLOR_SHIFT ; COLOR
 		_succubusHairColor = value 
 		StorageUtil.SetIntValue(PlayerActor, "_SLH_iSuccubusHairColor", _succubusHairColor)  
 		SetColorOptionValueST( _succubusHairColor )
+		ForcePageReset()
 	endEvent
 
 	event OnDefaultST()
@@ -1985,7 +2088,29 @@ state STATE_SUCCUBUS_HAIR_COLOR_SHIFT ; COLOR
 		SetInfoText("Succubus Hair color - Hair Color for 'Succubus' curse")
 	endEvent
 endState
+; AddColorOptionST("STATE_SUCCUBUS_HAIR_COLOR_TXT","Succubus color text", IntToHex(_succubusHairColor) as String)
+state STATE_SUCCUBUS_HAIR_COLOR_TXT ; COLOR
+	event OnInputOpenST()
+		SetInputDialogStartText( IntToHex(_succubusHairColor)) 
+	endEvent
 
+	event OnInputAcceptST(string inputstr)
+		_succubusHairColor = HexToInt(inputstr)
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iSuccubusHairColor", _succubusHairColor)
+		SetInputOptionValueST( inputstr )
+		ForcePageReset()
+	endEvent
+
+	event OnDefaultST()
+		_defaultColor =  Math.LeftShift(255, 16) + Math.LeftShift(255, 8) + 255
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iSuccubusHairColor", _succubusHairColor)
+		SetInputOptionValueST( IntToHex(_succubusHairColor) )
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Succubus Hair color - as a six digit hex value (RRGGBB) with leading zeroes.\nExamples: FF0000 = red, 00FF00 = green, 0000FF = blue")
+	endEvent
+endState
 ; AddSliderOptionST("STATE_SUCCUBUS_HAIR_COLOR_SHIFT_MOD","Succubus Hair shift mod", _succubusHairColorMod as Float,"{1}")
 state STATE_SUCCUBUS_HAIR_COLOR_SHIFT_MOD ; SLIDER
 	event OnSliderOpenST()
@@ -2844,7 +2969,72 @@ Function refreshStorageFromGlobals()
 
 EndFunction
 
+int Function HexToInt(string HexVal)  ; converts a 6 digit ascii hex string to integer; returns -1 in case of error
+	int count=0
+	int sum=0
+	int DigitVal
+	int SingleVal
+	while (count<=5)
+		DigitVal = StringUtil.AsOrd(StringUtil.GetNthChar(Hexval,count))
+		if DigitVal>= 97
+			DigitVal -= 32  ; switch to capitals
+		endif
+		if (DigitVal>=65) && (DigitVal<=70) ; A..F
+			SingleVal = DigitVal - 55
+		elseif (DigitVal>=48) && (DigitVal<=57) ; 0..9
+			SingleVal = DigitVal - 48
+		else		
+			return -1
+		endif
+		sum = SingleVal+16*sum
+		count += 1
+	endwhile
+	return sum
+endFunction
 
-
+String function IntToHex (int dec)
+	String hex = ""
+	int rest = dec
+	while (rest > 0)
+		int m16 = rest % 16
+		rest = rest / 16
+		String temp = ""
+		if (m16 == 1)
+			temp = "1"
+		elseif (m16 == 2)
+			temp = "2"
+		elseif (m16 == 3)
+			temp = "3"
+		elseif (m16 == 4)
+			temp = "4"
+		elseif (m16 == 5)
+			temp = "5"
+		elseif (m16 == 6)
+			temp = "6"
+		elseif (m16 == 7)
+			temp = "7"
+		elseif (m16 == 8)
+			temp = "8"
+		elseif (m16 == 9)
+			temp = "9"
+		elseif (m16 == 10)
+			temp = "A"
+		elseif (m16 == 11)
+			temp = "B"
+		elseif (m16 == 12)
+			temp = "C"
+		elseif (m16 == 13)
+			temp = "D"
+		elseif (m16 == 14)
+			temp = "E"
+		elseif (m16 == 15)
+			temp = "F"
+		else
+			temp = "0"
+		endif
+		hex = temp + hex
+	endWhile
+	return hex
+endFunction
 
 

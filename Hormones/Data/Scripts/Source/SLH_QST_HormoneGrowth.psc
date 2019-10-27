@@ -19,7 +19,7 @@ ObjectReference PlayerREF
 Actor PlayerActor
 ActorBase pActorBase 
 
-Int iVersionNumber = 20181201 
+Int iVersionNumber = 20191019
 
 Bool	 bInit 
 String[] skillList
@@ -264,8 +264,9 @@ Function maintenanceVersionEvents()
 	PlayerREF= PlayerAlias.GetReference()
 	PlayerActor= PlayerREF as Actor
 	pActorBase = PlayerActor.GetActorBase()
+	Int iBimbo = StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo") 
 
-	; iVersionNumber = 20181214 
+	iVersionNumber = 20191026
 	
 	If (StorageUtil.GetIntValue(none, "_SLH_iHormonesVersion") != iVersionNumber)
 		StorageUtil.SetIntValue(none, "_SLH_iHormonesVersion", iVersionNumber)	
@@ -280,6 +281,13 @@ Function maintenanceVersionEvents()
 			StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBaseShrinkFactor",GV_baseShrinkFactor.GetValue() as Float) 
 			StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBaseSwellFactor",GV_baseSwellFactor.GetValue() as Float) 
 		Endif
+		If (iVersionNumber <= 20191019)
+			StorageUtil.SetFloatValue(PlayerActor, "_SLH_fHormoneSuccubus", StorageUtil.GetIntValue(PlayerActor, "_SLH_iDaedricInfluence") as Float ) 
+		Endif
+		If (iVersionNumber <= 20191026)
+			StorageUtil.SetIntValue(PlayerActor, "_SLH_iAllowBimboThoughts", iBimbo)
+		endif
+
 	Endif
 
 	debugTrace(" Hormones " + iVersionNumber)
@@ -293,6 +301,7 @@ Function maintenanceVersionEvents()
 
 	RegisterForModEvent("SLHShaveHead",   "OnShaveHead")
 	RegisterForModEvent("SLHModHormone",    "OnModHormoneEvent")
+	RegisterForModEvent("SLHModHormoneRandom",    "OnModHormoneRandomEvent")
 	RegisterForModEvent("SLHResetHormones",    "OnResetHormonesEvent")
 	RegisterForModEvent("SLHRefresh",    "OnRefreshShapeEvent")
 	RegisterForModEvent("SLHRefreshColor",    "OnRefreshColorsEvent")
@@ -311,6 +320,7 @@ Function maintenanceVersionEvents()
 	RegisterForModEvent("SLHCureHRTCurse",    "OnCureHRTCurseEvent")
 	RegisterForModEvent("SLHCastTGCurse",    "OnCastTGCurseEvent")
 	RegisterForModEvent("SLHCureTGCurse",    "OnCureTGCurseEvent") 
+	RegisterForModEvent("SLHBimboThoughts",    "OnBimboThoughts") 
 
 	if (GV_allowSelfSpells.GetValue() == 1)
 		debugTrace("  Add spells")
@@ -365,7 +375,7 @@ function initHormones()
  	debugTrace("  Initialization of body / MCM values")
 
 	StorageUtil.SetIntValue(PlayerActor, "_SLH_iUseColors", 0)
-	StorageUtil.SetIntValue(PlayerActor, "_SLH_iUseColors", 0)
+	StorageUtil.SetIntValue(PlayerActor, "_SLH_iUseHairColors", 0)
 	StorageUtil.SetIntValue(PlayerActor, "_SLH_iDefaultColor", -1) 
 	StorageUtil.SetIntValue(PlayerActor, "_SLH_iRedShiftColor", -1) ; GV_redShiftColor.GetValue() as Int
 	StorageUtil.SetIntValue(PlayerActor, "_SLH_iBlueShiftColor", -1); GV_blueShiftColor.GetValue() as Int
@@ -415,9 +425,21 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 endEvent
  
 Event OnSleepStop(bool abInterrupted)
+	Bool bShapeChangeEvent = False
 	fHoursSleep = (Utility.GetCurrentGameTime() - fDateSleep) * 24.0
 	debugTrace("Player woke up at: " + Utility.GameTimeToString(Utility.GetCurrentGameTime()))
 	debugTrace("Time slept: " + fHoursSleep)
+
+	bShapeChangeEvent = fctBodyShape.tryTGEvent(PlayerActor)
+
+	if (!bShapeChangeEvent)
+		bShapeChangeEvent = fctBodyShape.tryHRTEvent(PlayerActor)
+	Endif
+
+	if (!bShapeChangeEvent)
+		bShapeChangeEvent = fctBodyShape.tryBimboEvent(PlayerActor)
+	Endif
+
 	If abInterrupted
 		; sleep interrupted
 	EndIf
@@ -710,6 +732,12 @@ Event OnUpdate()
 
 			NextAllowed = 0.0 ;  GameDaysPassed.GetValue() + DaysUntilNextAllowed
 
+		else
+			; Moved random thoughts in main update loop to be enabled outside of bimbo curse
+			If (StorageUtil.GetIntValue(PlayerActor, "_SLH_iAllowBimboThoughts") == 1) 
+				fctUtil.tryRandomBimboThoughts()
+			endif
+
 		EndIf
 
 		; Detect pregnancy ==================================================
@@ -944,6 +972,18 @@ Event OnCureTGCurseEvent(String _eventName, String _args, Float _argc = 1.0, For
  	
 endEvent
 
+Event OnBimboThoughts(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+
+ 	if (kActor == None)
+ 		kActor = Game.GetPlayer()
+ 	EndIf
+
+ 	debugTrace(" Receiving 'Bimbo thought' event" )	
+ 	fctUtil.tryRandomBimboThoughts()
+
+endEvent
+
 Event OnResetHormonesEvent(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
 
@@ -965,8 +1005,49 @@ Event OnModHormoneEvent(String _eventName, String _args, Float _argc = 1.0, Form
 	debugTrace(" Receiving 'mod hormone level' event. Actor: " + kActor )
 
 	fctHormones.modHormoneLevel(PlayerActor, _args, _argc)
+
+EndEvent
+
+Event OnModHormoneRandomEvent(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+
+ 	if (kActor == None)
+ 		kActor = Game.GetPlayer()
+ 	EndIf
+	debugTrace(" Receiving 'mod hormone random level' event. Actor: " + kActor )
+
+	fctHormones.modHormoneLevel(PlayerActor, "Pigmentation", Utility.RandomFloat(-1.0,2.0) * _argc )
+	fctHormones.modHormoneLevel(PlayerActor, "Growth", Utility.RandomFloat(5.0,10.0) * _argc )
+	fctHormones.modHormoneLevel(PlayerActor, "Metabolism", Utility.RandomFloat(5.0,20.0) * _argc )
+	fctHormones.modHormoneLevel(PlayerActor, "Sleep", Utility.RandomFloat(-1.0,2.0) * _argc )
+	fctHormones.modHormoneLevel(PlayerActor, "Hunger", Utility.RandomFloat(-1.0,2.0) * _argc )
+	fctHormones.modHormoneLevel(PlayerActor, "Immunity", Utility.RandomFloat(-1.0,2.0) * _argc )
+	fctHormones.modHormoneLevel(PlayerActor, "Stress", Utility.RandomFloat(-10.0,20.0) * _argc )
+	fctHormones.modHormoneLevel(PlayerActor, "SexDrive", Utility.RandomFloat(-10.0,20.0) * _argc )
+	fctHormones.modHormoneLevel(PlayerActor, "Pheromones", Utility.RandomFloat(-0.5,1.0) * _argc )
+	fctHormones.modHormoneLevel(PlayerActor, "Lactation", Utility.RandomFloat(-1.0,2.0) * _argc )
+
+
+	if (_args == "Succubus") || (_args == "Bimbo")
+		fctHormones.modHormoneLevel(PlayerActor, "Mood", Utility.RandomFloat(-5.0,10.0) * _argc )
+		fctHormones.modHormoneLevel(PlayerActor, "Female", Utility.RandomFloat(5.0,10.0) * _argc )
+		fctHormones.modHormoneLevel(PlayerActor, "Male", Utility.RandomFloat(-5.0,-10.0) * _argc )
+	Else
+		fctHormones.modHormoneLevel(PlayerActor, "Mood", Utility.RandomFloat(-1.0,2.0) * _argc )
+		fctHormones.modHormoneLevel(PlayerActor, "Female", Utility.RandomFloat(-5.0,10.0) * _argc )
+		fctHormones.modHormoneLevel(PlayerActor, "Male", Utility.RandomFloat(-5.0,-10.0) * _argc )
+	endif
+
+	if (_args == "Succubus") || (_args == "Bimbo")
+		fctHormones.modHormoneLevel(PlayerActor, "Bimbo", Utility.RandomFloat(20.0,40.0) * _argc )
+	Endif
+
+	if (_args == "Succubus")
+		fctHormones.modHormoneLevel(PlayerActor, "Succubus", Utility.RandomFloat(5.0,15.0) * _argc )
+	endif
 	
 EndEvent
+
 
 Event OnRefreshShapeEvent(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
@@ -1259,7 +1340,7 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 
 
 		fctHormones.modHormoneLevel(PlayerActor, "Pigmentation", 0.5)
-		fctHormones.modHormoneLevelPercent(PlayerActor, "SexDrive", 10.0)
+		fctHormones.modHormoneLevel(PlayerActor, "SexDrive", 10.0)
 
 		if (StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormonePheromones")>0)
 			fctHormones.modHormoneLevel(PlayerActor, "Pheromones", 0.2)
@@ -1284,7 +1365,7 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 
 		endIf
 
-		iDaedricInfluence = StorageUtil.GetIntValue(PlayerActor, "_SLH_iDaedricInfluence")
+		iDaedricInfluence = StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneSuccubus" ) as Int
 
 		if  animation.HasTag("Daedra") || fctUtil.hasFormKeyword(actors, ActorTypeDaedra) || fctUtil.hasRace(actors, _SLH_DremoraRace) || fctUtil.hasRace(actors, _SLH_DremoraOutcastRace)
 			iSexDaedraAll   	= iSexDaedraAll + 1
@@ -1301,6 +1382,7 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 			_SLH_DaedricInfluence.Cast(PlayerActor,PlayerActor)
 			StorageUtil.SetFloatValue(PlayerActor, "_SLH_fTempGrowthMod",  2.0) 
 
+			SendModEvent("SLHModHormoneRandom","Succubus", 1.0)
 			SendModEvent("SDSanguineBlessingMod", "", 1)  
 
 			; modify succubus influence based on other daedric exposure
@@ -1360,7 +1442,7 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 			EndIf
 			; _showStatus()
 
-			StorageUtil.SetIntValue(PlayerActor, "_SLH_iDaedricInfluence", iDaedricInfluence)
+			StorageUtil.SetFloatValue(PlayerActor, "_SLH_fHormoneSuccubus", iDaedricInfluence as Float ) 
 		EndIf
 
 		setHormonesSexualState( PlayerActor)
@@ -1370,7 +1452,8 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 			fctBodyShape.getShapeState(PlayerActor)
 			fctColor.getColorState(PlayerActor)
 
-	    	fctBodyShape.alterBodyAfterSex(PlayerActor, bOral, bVaginal, bAnal )
+			; Update after sex disabled during testing of influence of new hormone levels
+	    	; fctBodyShape.alterBodyAfterSex(PlayerActor, bOral, bVaginal, bAnal )
 	    	fctColor.alterColorAfterSex(PlayerActor )
 
 			setHormonesState(PlayerActor)	
@@ -1400,6 +1483,7 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 		actor kPervert = none
 
 		If (GV_allowBimbo.GetValue()==1) || (GV_allowHRT.GetValue()==1) || (GV_allowTG.GetValue()==1) 
+
 			If fctUtil.hasRace(actors, _SLH_BimboRace)
 				debugTrace(" Sex with Bimbo - risk of bimbo/sex change curse")
 				actor kBimbo = fctUtil.getRaceActor(actors, _SLH_BimboRace)
@@ -1410,71 +1494,8 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 
 				; _SLH_QST_Bimbo.SetStage(10)
 				iDaedricInfluence   = iDaedricInfluence   + 5
+				SendModEvent("SLHModHormoneRandom","Bimbo", 1.0)
 
-				if fctUtil.isSameSex(PlayerActor,kBimbo)
-					if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo") == 0) && (GV_allowBimbo.GetValue()==1)						
-						debugTrace("	 Casting Bimbo curse")
-						PlayerActor.SendModEvent("SLHCastBimboCurse","Bimbo")
-					endIf
-				else
-					if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo") == 0) && (GV_allowBimbo.GetValue()==1)													
-						debugTrace("	 Casting Bimbo curse")
-						PlayerActor.SendModEvent("SLHCastBimboCurse","Bimbo")
-
-					elseif (StorageUtil.GetIntValue(PlayerActor, "_SLH_iTG") == 0) && (GV_allowTG.GetValue()==1)									
-						debugTrace("	 Casting TG curse")
-						PlayerActor.SendModEvent("SLHCastTGCurse","Bimbo")
-					endIf
-				endIf
-
-			elseIf fctUtil.hasRace(actors, _SLH_DremoraOutcastRace) && (Utility.RandomInt(0,100)>60)
-				actor kDremora = fctUtil.getRaceActor(actors, _SLH_DremoraOutcastRace)
-				kPervert = None ; Disable pervert when transformation occurs
-				debugTrace(" Sex with Dremora - risk of bimbo/sex change curse")
-
-				; PolymorphBimbo.Cast(PlayerActor,PlayerActor)
-				; PlayerActor.DoCombatSpellApply(_SLH_PolymorphBimbo, PlayerActor)
-
-				; _SLH_QST_Bimbo.SetStage(11)
-
-				if fctUtil.isSameSex(PlayerActor,kDremora) && fctUtil.isFemale(kDremora)
-					; Dremora and player are both female - small chance of bimbo curse
-					if (Utility.RandomInt(0,100)>90) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo") == 0) && (GV_allowBimbo.GetValue()==1)						
-						debugTrace("	 Casting Bimbo curse")
-						PlayerActor.SendModEvent("SLHCastBimboCurse", "Dremora")
-					else
-						debugTrace("	 Lucky you - sex with Dremora left you unchanged")
-					endIf
-				elseif !fctUtil.isSameSex(PlayerActor,kDremora) && fctUtil.isFemale(kDremora)
-					; Dremora is female and player is male - small chance of bimbo or sex change curse
-					if (Utility.RandomInt(0,100)>60) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo") == 0)	 && (GV_allowBimbo.GetValue()==1)					
-						debugTrace("	 Casting Bimbo curse")
-						PlayerActor.SendModEvent("SLHCastBimboCurse", "Dremora")
-
-					elseif (Utility.RandomInt(0,100)>40)  && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iHRT") == 0) && (GV_allowHRT.GetValue()==1)						
-						debugTrace("	 Casting Sex change curse")
-						PlayerActor.SendModEvent("SLHCastHRTCurse", "Dremora")
-					else
-						debugTrace("	 Lucky you - sex with Dremora left you unchanged")
-					endIf
-				else
-					; Dremora is male and player female - small chance of all 3 curses
-					if (Utility.RandomInt(0,100)>60) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo") == 0)	 && (GV_allowBimbo.GetValue()==1)					
-						debugTrace("	 Casting Bimbo curse")
-						PlayerActor.SendModEvent("SLHCastBimboCurse", "Dremora")
-
-					elseif (Utility.RandomInt(0,100)>80)  && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iTG") == 0) && (GV_allowTG.GetValue()==1)									
-						debugTrace("	 Casting Transgender curse")
-						PlayerActor.SendModEvent("SLHCastTGCurse", "Dremora")
-
-					elseif (Utility.RandomInt(0,100)>50) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iHRT") == 0) && (GV_allowHRT.GetValue()==1)	&& (StorageUtil.GetIntValue(PlayerActor, "_SLH_isPregnant")!= 1) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iLactating") != 1)							
-						; no sex change while lactating or pregnant
-						debugTrace("	 Casting Sex change curse")
-						PlayerActor.SendModEvent("SLHCastHRTCurse", "Dremora")
-					else
-						debugTrace("	 Lucky you - sex with Dremora left you unchanged")
-					endIf
-				endIf
 			Else
 				kPervert = SexLab.FindAvailableActor(PlayerActor as ObjectReference, 200.0)  
 			Endif
@@ -1561,11 +1582,17 @@ Event OnSexLabOrgasm(String _eventName, String _args, Float _argc, Form _sender)
 		fctHormones.modHormoneLevel(PlayerActor, "Pigmentation", 0.5)
 
 		If (fctUtil.IsMale(PlayerActor))
-			; Male - massive drop of sex drive after orgasm, small chance of multiple orgasms
-			fctHormones.modHormoneLevelPercent(PlayerActor, "SexDrive", -30.0 - 10.0 * (Utility.RandomInt(0,3)))
+			; Male - larger drop of sex drive after orgasm, small chance of multiple orgasms
+			If (Utility.RandomInt(0,100) < (StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneSexDrive") as Int))
+				fctHormones.modHormoneLevel(PlayerActor, "SexDrive", -30.0 - 10.0 * (Utility.RandomInt(0,3)))
+			Endif
 		Else
 			; Female - chance of increased sex drive after orgasm, possibility of multiple orgasms
-			fctHormones.modHormoneLevelPercent(PlayerActor, "SexDrive", -10.0 * (Utility.RandomInt(0,2)))
+			If (Utility.RandomInt(0,100) < ((StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneSexDrive") as Int) / 2))
+				fctHormones.modHormoneLevel(PlayerActor, "SexDrive", -20.0 * (Utility.RandomInt(0,2)))
+			else
+				fctHormones.modHormoneLevel(PlayerActor, "SexDrive", 10.0 * (Utility.RandomInt(0,2)))
+			endif
 		Endif
 
 		if (StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormonePheromones")>0)
@@ -1759,7 +1786,7 @@ Event OnStoryIncreaseSkill(string asSkill)
 		; PumpingIronSleep.train(0.5)
 	endif 
 		  
-	Debug.Notification("[SLH] Learning a new skill: " + asSkill)
+	DebugTrace(" Learning a new skill: " + asSkill)
 	; Stop()
 EndEvent
 
