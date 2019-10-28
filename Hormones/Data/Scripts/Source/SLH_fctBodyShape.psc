@@ -380,9 +380,9 @@ function alterBodyAfterRest(Actor kActor)
 		fWeight = fCurrentWeight + (fWeightGrowth * ( fSwellFactor/ 100.0 ) * fWeightSwellMod)
 		fWeight = fctUtil.fRange( fWeight  , fWeightMin, fWeightMax)
 
-		debug.notification("[SLH]   Weight growth: " + fWeightGrowth)
+		; debug.notification("[SLH]   Weight growth: " + fWeightGrowth)
 		debug.trace("[SLH]   Weight growth: " + fWeightGrowth)
-		debug.notification("[SLH]   Set weight to " + fWeight + " from " + fCurrentWeight )
+		; debug.notification("[SLH]   Set weight to " + fWeight + " from " + fCurrentWeight )
 		debug.trace("[SLH]   Set weight to " + fWeight + " from " + fCurrentWeight)
 		alterWeight(kActor, fWeight  )
 
@@ -413,8 +413,8 @@ function alterBodyAfterRest(Actor kActor)
 
 				debugTrace("  	fCurrentBreast:  " + fCurrentBreast)
 				debugTrace("  		fBreastSwellMod:  " + fBreastSwellMod)
-				debug.notification("[SLH]  		fBreastGrowth:  " + fBreastGrowth)
-				debug.trace("[SLH]  		fBreastGrowth:  " + fBreastGrowth)
+				; debug.notification("[SLH]  		fBreastGrowth:  " + fBreastGrowth)
+				debugTrace("  		fBreastGrowth:  " + fBreastGrowth)
 				debugTrace("  		fSwellFactor:  " + fSwellFactor)
 				debugTrace("  		fNodeMax:  " + fNodeMax)
 				debugTrace("  	fBreast:  " + fBreast)
@@ -449,8 +449,8 @@ function alterBodyAfterRest(Actor kActor)
 					fNodeMax = fBellyMax
 					fBellyGrowth = ( (StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneGrowth") + StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneMale") ) / 600.0) * (StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneMetabolism") / 200.0) ; (fNodeMax + fBellyMin - fCurrentBelly)  
 					fBelly = fCurrentBelly + ( fBellyGrowth * ( fSwellFactor/ 100.0 ) * fBellySwellMod ) 
-					debug.notification("[SLH]  		fBellyGrowth:  " + fBellyGrowth)
-					debug.trace("[SLH]  		fBellyGrowth:  " + fBellyGrowth)
+					; debug.notification("[SLH]  		fBellyGrowth:  " + fBellyGrowth)
+					debugTrace("  		fBellyGrowth:  " + fBellyGrowth)
 				EndIf
 				
 				alterBellyNode(kActor, fBelly )
@@ -474,8 +474,8 @@ function alterBodyAfterRest(Actor kActor)
 				Else
 					fNodeMax = fButtMax
 					fButtGrowth = ( (StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneGrowth") + StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneFemale") ) / 200.0) * (StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneMetabolism") / 200.0) ; (fNodeMax + fButtMin  - fCurrentButt)  
-					debug.notification("[SLH]  		fButtGrowth:  " + fButtGrowth)
-					debug.trace("[SLH]  		fButtGrowth:  " + fButtGrowth)
+					; debug.notification("[SLH]  		fButtGrowth:  " + fButtGrowth)
+					debugTrace("  		fButtGrowth:  " + fButtGrowth)
 					fButt = fCurrentButt + ( fButtGrowth * ( fSwellFactor/ 100.0 ) * fButtSwellMod )   
 				EndIf
 				
@@ -499,8 +499,8 @@ function alterBodyAfterRest(Actor kActor)
 				endIf
 
 				fSchlongGrowth = ( (StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneGrowth") + StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneMale") ) / 200.0) * (StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneMetabolism") / 200.0) ; (fSchlongMax + fSchlongMin  - fCurrentSchlong)  
-				debug.notification("[SLH]  		fSchlongGrowth:  " + fSchlongGrowth)
-				debug.trace("[SLH]  		fSchlongGrowth:  " + fSchlongGrowth)
+				; debug.notification("[SLH]  		fSchlongGrowth:  " + fSchlongGrowth)
+				debugTrace("  		fSchlongGrowth:  " + fSchlongGrowth)
 				fSchlong = fCurrentSchlong + ( fSchlongGrowth*  ( fSwellFactor/ 100.0 ) *  fSchlongSwellMod )
 
 				alterSchlongNode(kActor,  fSchlong )
@@ -1443,60 +1443,6 @@ EndFunction
 
 ; -------------------------------------------------------------------
 
-Bool function tryTGEvent(Actor kActor) ; trans gender
-	Bool bEventTriggered = False
-	Int iSuccubus = StorageUtil.GetIntValue(kActor, "_SLH_iSuccubus") 
-	Int iBimbo = StorageUtil.GetIntValue(kActor, "_SLH_iBimbo") 
-	Int _allowTG = StorageUtil.GetIntValue(kActor, "_SLH_allowTG")
-
-	; --------
-	; Male
-	; If (female hormone > 50) and (male hormone > 50) and (metabolism > 50)
-		; Reduce weight, increase metabolism
-		; when weight is close to 0 and metabolism is close to 100
-			; reduce schlong size
-			; set metabolism to 0
-			; when schlong size is minimal, increase chance of male vagina
-
-	; --------
-	; Female
-	; If (female hormone > 50) and (male hormone > 50) and (metabolism > 50)
-		; Reduce weight, increase metabolism
-		; When weight is close to 0 and metabolism is close to 100
-			; reduce breast + butt size
-			; set metabolism to 0
-			; when breast + butt size is minimal, increase chance of small penis
-
-	return 	bEventTriggered 
-EndFunction
-
-Bool function tryHRTEvent(Actor kActor) ; sex change
-	Bool bEventTriggered = False
-	Int iSuccubus = StorageUtil.GetIntValue(kActor, "_SLH_iSuccubus") 
-	Int iBimbo = StorageUtil.GetIntValue(kActor, "_SLH_iBimbo") 
-	Int _allowHRT = StorageUtil.GetIntValue(kActor, "_SLH_allowHRT")
-
-	; --------
-	; Male
-	; If (female hormone > 50) and (male hormone < 50) and (metabolism > 50)
-		; Reduce weight, increase metabolism
-		; when weight is close to 0 and metabolism is close to 100
-			; reduce schlong size
-			; set metabolism to 0
-			; when schlong size is minimal, increase chance of switch to Female
-
-	; --------
-	; Female
-	; If (female hormone < 50) and (male hormone > 50) and (metabolism > 50)
-		; Reduce weight, increase metabolism
-		; When weight is close to 0 and metabolism is close to 100
-			; reduce breast + butt size
-			; set metabolism to 0
-			; when breast + butt size is minimal, increase chance of switch to Male
-
-	return 	bEventTriggered 
-EndFunction
-
 Bool function trySuccubusEvent(Actor kActor) ; succubus corruption
 	Bool bEventTriggered = False
 	Int iSuccubus = StorageUtil.GetIntValue(kActor, "_SLH_iSuccubus") 
@@ -1512,9 +1458,244 @@ Bool function trySuccubusEvent(Actor kActor) ; succubus corruption
 	return 	bEventTriggered 
 EndFunction
 
+Bool function tryTGEvent(Actor kActor) ; trans gender
+	Bool bEventTriggered = False
+	ActorBase pActorBase = kActor.GetActorBase()
+	String sMessage = ""
+	Int iSuccubus = StorageUtil.GetIntValue(kActor, "_SLH_iSuccubus") 
+	Int iBimbo = StorageUtil.GetIntValue(kActor, "_SLH_iBimbo") 
+	Int _allowTG = StorageUtil.GetIntValue(kActor, "_SLH_allowTG")
+	Float fHormoneBimbo = StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneBimbo" ) 	
+	Float fHormoneMetabolism = StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneMetabolism" ) 	
+	Float fHormoneSexDrive = StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneSexDrive" ) 	
+	Float fHormoneFemale = StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneFemale" ) 	
+	Float fHormoneMale = StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneMale" ) 	
+	Float fWeight = StorageUtil.GetFloatValue(kActor, "_SLH_fWeight")
+	Float fBreast = StorageUtil.GetFloatValue(kActor, "_SLH_fBreast")
+	Float fBreastMax 		= StorageUtil.GetFloatValue(kActor, "_SLH_fBreastMax")
+	Float fBreastMin 		= StorageUtil.GetFloatValue(kActor, "_SLH_fBreastMin")
+	Float fSchlong = StorageUtil.GetFloatValue(kActor, "_SLH_fSchlong")
+	Float fSchlongMax 		= StorageUtil.GetFloatValue(kActor, "_SLH_fSchlongMax")
+	Float fSchlongMin 		= StorageUtil.GetFloatValue(kActor, "_SLH_fSchlongMin")
+
+	Int rollFirstPerson = Utility.RandomInt(0,100)
+
+	if (_allowTG==0)	
+		; Transformation disabled
+		Return False
+	endIf
+	; --------
+	; Male
+	if (fctUtil.isMale(kActor))
+		if (fHormoneFemale>=50.0) && (fHormoneMale>=50.0) && (fHormoneMetabolism>=50)
+			If (rollFirstPerson <= (fHormoneBimbo as Int))
+				sMessage = "I could swear I am losing weight!"
+			else
+				sMessage = "Hey.. your a losing weight!"
+			Endif
+
+			fctHormones.modHormoneLevel(kActor, "Metabolism", 2.0) ; accelerate path to transformation
+			fctHormones.modHormoneLevel(kActor, "Growth", -10.0) ; make actor lose weight
+			alterBodyByPercent(kActor, "Weight", -10.0)
+		endif
+
+		if (fHormoneFemale>=80.0) && (fHormoneMale>=80.0) && (fHormoneMetabolism>=80)
+			if (fWeight < 10) && (fHormoneMetabolism>=90) 
+				If (rollFirstPerson <= (fHormoneBimbo as Int))
+					sMessage = "My cock! it's shrinking!"
+				else
+					sMessage = "Your cock is getting smaller every day."
+				Endif
+				alterBodyByPercent(kActor, "Schlong", -25.0)
+				
+				fSchlong = StorageUtil.GetFloatValue(kActor, "_SLH_fSchlong")
+				if (fSchlong <= (fSchlongMin + 0.1) )
+					If (rollFirstPerson <= (fHormoneBimbo as Int))
+						sMessage = "My cock turned into a clit!"
+					else
+						sMessage = "Your features have become decidedly female."
+					Endif
+
+					bEventTriggered = True
+					fctHormones.modHormoneLevel(kActor, "Metabolism", -100.0) ; 
+
+					; No TG option for male yet - will try later with SoS compatible vagina
+
+					; debugTrace("	 Casting HRT curse")
+					; kActor.SendModEvent("SLHCastTGCurse", "Bimbo")
+				endif
+			endif
+		endif
+
+	else
+	; --------
+	; Female 
+		if (fHormoneFemale>=50.0) && (fHormoneMale>=50.0) && (fHormoneMetabolism>=50)
+			If (rollFirstPerson <= (fHormoneBimbo as Int))
+				sMessage = "Why am I feeling so hot!"
+			else
+				sMessage = "Your body is feverish and aching."
+			Endif
+
+			fctHormones.modHormoneLevel(kActor, "Metabolism", 2.0) ; accelerate path to transformation
+		endIf
+
+		if (fHormoneFemale<20.0) && (fHormoneMale>=80.0) && (fHormoneMetabolism>=80)
+			if (fWeight < 10) && (fHormoneMetabolism>=90) 
+				If (rollFirstPerson <= (fHormoneBimbo as Int))
+					sMessage = "Are my boobs shrinking?"
+				else
+					sMessage = "Your shape is getting flatter every day."
+				Endif
+				alterBodyByPercent(kActor, "Breast", -25.0)
+				alterBodyByPercent(kActor, "Butt", -25.0)
+				
+				fBreast = StorageUtil.GetFloatValue(kActor, "_SLH_fBreast") 
+				if (fBreast <= (fBreastMin + 1.0) )
+					If (rollFirstPerson <= (fHormoneBimbo as Int))
+						sMessage = "My Clit! It's growing into..."
+					else
+						sMessage = "Your clit has grown into a small size cock."
+					Endif
+
+					bEventTriggered = True
+					fctHormones.modHormoneLevel(kActor, "Metabolism", -100.0) ; 
+					debugTrace("	 Casting TG curse")
+					kActor.SendModEvent("SLHCastTGCurse", "Bimbo")
+				endif
+			endif
+		Endif
+	endif
+
+	If (sMessage != "")
+		debug.notification(sMessage + " (TG)")
+	Endif
+
+	return 	bEventTriggered 
+
+EndFunction
+
+Bool function tryHRTEvent(Actor kActor) ; sex change
+	Bool bEventTriggered = False
+	ActorBase pActorBase = kActor.GetActorBase()
+	String sMessage = ""
+	Int iSuccubus = StorageUtil.GetIntValue(kActor, "_SLH_iSuccubus") 
+	Int iBimbo = StorageUtil.GetIntValue(kActor, "_SLH_iBimbo") 
+	Int _allowHRT = StorageUtil.GetIntValue(kActor, "_SLH_allowHRT")
+	Float fHormoneBimbo = StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneBimbo" ) 	
+	Float fHormoneMetabolism = StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneMetabolism" ) 	
+	Float fHormoneSexDrive = StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneSexDrive" ) 	
+	Float fHormoneFemale = StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneFemale" ) 	
+	Float fHormoneMale = StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneMale" ) 	
+	Float fWeight = StorageUtil.GetFloatValue(kActor, "_SLH_fWeight")
+	Float fBreast = StorageUtil.GetFloatValue(kActor, "_SLH_fBreast")
+	Float fBreastMax 		= StorageUtil.GetFloatValue(kActor, "_SLH_fBreastMax")
+	Float fBreastMin 		= StorageUtil.GetFloatValue(kActor, "_SLH_fBreastMin")
+	Float fSchlong = StorageUtil.GetFloatValue(kActor, "_SLH_fSchlong")
+	Float fSchlongMax 		= StorageUtil.GetFloatValue(kActor, "_SLH_fSchlongMax")
+	Float fSchlongMin 		= StorageUtil.GetFloatValue(kActor, "_SLH_fSchlongMin")
+
+
+	Int rollFirstPerson = Utility.RandomInt(0,100)
+
+	if (_allowHRT==0)	
+		; Transformation disabled
+		Return False
+	endIf
+
+	; --------
+	; Male
+	if (fctUtil.isMale(kActor))
+		if (fHormoneFemale>=50.0) && (fHormoneMale<50.0) && (fHormoneMetabolism>=50)
+			If (rollFirstPerson <= (fHormoneBimbo as Int))
+				sMessage = "I could swear I am losing weight!"
+			else
+				sMessage = "Hey.. your a losing weight!"
+			Endif
+
+			fctHormones.modHormoneLevel(kActor, "Metabolism", 2.0) ; accelerate path to transformation
+			fctHormones.modHormoneLevel(kActor, "Growth", -10.0) ; make actor lose weight
+			alterBodyByPercent(kActor, "Weight", -10.0)
+		endif
+
+		if (fHormoneFemale>=80.0) && (fHormoneMale<20.0) && (fHormoneMetabolism>=80)
+			if (fWeight < 10) && (fHormoneMetabolism>=90) 
+				If (rollFirstPerson <= (fHormoneBimbo as Int))
+					sMessage = "My cock! it's shrinking!"
+				else
+					sMessage = "Your cock is getting smaller every day."
+				Endif
+				alterBodyByPercent(kActor, "Schlong", -25.0)
+				
+				fSchlong = StorageUtil.GetFloatValue(kActor, "_SLH_fSchlong")
+				if (fSchlong <= (fSchlongMin + 0.1) )
+					If (rollFirstPerson <= (fHormoneBimbo as Int))
+						sMessage = "Boobs? Clit! I turned into a woman!"
+					else
+						sMessage = "Your features have become decidedly female."
+					Endif
+
+					bEventTriggered = True
+					fctHormones.modHormoneLevel(kActor, "Metabolism", -100.0) ; 
+					debugTrace("	 Casting HRT curse")
+					kActor.SendModEvent("SLHCastHRTCurse", "Bimbo")
+				endif
+			endif
+		endif
+
+	else
+	; --------
+	; Female
+		if (fHormoneFemale<50.0) && (fHormoneMale>=50.0) && (fHormoneMetabolism>=50)
+			If (rollFirstPerson <= (fHormoneBimbo as Int))
+				sMessage = "I could swear I am losing weight!"
+			else
+				sMessage = "Hey.. your a losing weight!"
+			Endif
+
+			fctHormones.modHormoneLevel(kActor, "Metabolism", 2.0) ; accelerate path to transformation
+			fctHormones.modHormoneLevel(kActor, "Growth", -10.0) ; make actor lose weight
+			alterBodyByPercent(kActor, "Weight", -10.0)
+		endIf
+
+		if (fHormoneFemale<20.0) && (fHormoneMale>=80.0) && (fHormoneMetabolism>=80)
+			if (fWeight < 10) && (fHormoneMetabolism>=90) 
+				If (rollFirstPerson <= (fHormoneBimbo as Int))
+					sMessage = "Are my boobs shrinking?"
+				else
+					sMessage = "Your shape is getting flatter every day."
+				Endif
+				alterBodyByPercent(kActor, "Breast", -25.0)
+				alterBodyByPercent(kActor, "Butt", -25.0)
+				
+				fBreast = StorageUtil.GetFloatValue(kActor, "_SLH_fBreast") 
+				if (fBreast <= (fBreastMin + 0.1) ) && (iBimbo == 0 ) ; no transformation to male if already a bimbo
+					If (rollFirstPerson <= (fHormoneBimbo as Int))
+						sMessage = "My Boobs! My Clit! I turned into a man!"
+					else
+						sMessage = "Your features have become decidedly male."
+					Endif
+
+					bEventTriggered = True
+					fctHormones.modHormoneLevel(kActor, "Metabolism", -100.0) ; 
+					debugTrace("	 Casting HRT curse")
+					kActor.SendModEvent("SLHCastHRTCurse", "Bimbo")
+				endif
+			endif
+		Endif
+	endif
+
+	If (sMessage != "")
+		debug.notification(sMessage + " (HRT)")
+	Endif
+
+	return 	bEventTriggered 
+EndFunction
+
 Bool function tryBimboEvent(Actor kActor) ; bimbo curse
 	Bool bEventTriggered = False
 	ActorBase pActorBase = kActor.GetActorBase()
+	String sMessage = ""
 	Int iSuccubus = StorageUtil.GetIntValue(kActor, "_SLH_iSuccubus") 
 	Int iBimbo = StorageUtil.GetIntValue(kActor, "_SLH_iBimbo") 
 	Int _allowBimbo = StorageUtil.GetIntValue(kActor, "_SLH_allowBimbo")
@@ -1535,20 +1716,21 @@ Bool function tryBimboEvent(Actor kActor) ; bimbo curse
 	endIf
 
 	if (fHormoneBimbo>=30.0) && (fHormoneMetabolism>=70)
-		If (rollFirstPerson <= (StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneBimbo") as Int))
-			debug.notification("I'm so horny today.")
+		If (rollFirstPerson <= (fHormoneBimbo as Int))
+			sMessage = "I'm so horny today."
 		else
-			debug.notification("You wake up horny.")
+			sMessage = "You wake up horny."
 		Endif
 
+		fctHormones.modHormoneLevel(kActor, "Metabolism", 2.0) ; accelerate path to transformation
 		fctHormones.modHormoneLevel(kActor, "SexDrive", 10.0) ; make actor hornier
 	endif
 
 	if (fHormoneBimbo>=50.0) && (fHormoneMetabolism>=70)
-		If (rollFirstPerson <= (StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneBimbo") as Int))
-			debug.notification("Mmm.. I feel so soft and sexy.")
+		If (rollFirstPerson <= (fHormoneBimbo as Int))
+			sMessage = "Mmm.. I feel so soft and sexy."
 		else
-			debug.notification("You feel soft and sexy.")
+			sMessage = "You feel soft and sexy."
 		Endif
 
 		fctHormones.modHormoneLevel(kActor, "Female", 10.0) ; make actor more feminine
@@ -1556,25 +1738,30 @@ Bool function tryBimboEvent(Actor kActor) ; bimbo curse
 	endIf
 	
 	if (fHormoneBimbo>=70.0) && (fHormoneMetabolism>=80)
-		If (rollFirstPerson <= (StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneBimbo") as Int))
-			debug.notification("I could swear I am losing weight!")
+		If (rollFirstPerson <= (fHormoneBimbo as Int))
+			sMessage = "I could swear I am losing weight!"
 		else
-			debug.notification("Hey.. your a losing weight!")
+			sMessage = "Hey.. your a losing weight!"
 		Endif
 
 		fctHormones.modHormoneLevel(kActor, "Growth", -10.0) ; make actor lose weight
+		alterBodyByPercent(kActor, "Weight", -10.0)
 	endIf
 	
 	if (fHormoneBimbo>=80.0) && (fHormoneMetabolism>=80)
-		If (rollFirstPerson <= (StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneBimbo") as Int))
-			debug.notification("Something is definitely happening to me.")
+		If (rollFirstPerson <= (fHormoneBimbo as Int))
+			sMessage = "Something is definitely happening to me."
 		else
-			debug.notification("Something is changing.. you can feel it.")
+			sMessage = "Something is changing.. you can feel it."
 		Endif
 
 		if (fctUtil.isMale(kActor))
 			if (fWeight < 20)
-				debug.notification("Your schlong is getting smaller every day.")
+				If (rollFirstPerson <= (fHormoneBimbo as Int))
+					sMessage = "My cock! it's shrinking!"
+				else
+					sMessage = "Your cock is getting smaller every day."
+				Endif
 				alterBodyByPercent(kActor, "Schlong", -25.0)
 			endif
 		endif
@@ -1588,10 +1775,10 @@ Bool function tryBimboEvent(Actor kActor) ; bimbo curse
 		if (fctUtil.isMale(kActor))
 			fSchlong = StorageUtil.GetFloatValue(kActor, "_SLH_fSchlong")
 			if (fSchlong <= (fSchlongMin + 0.1) )
-				If (rollFirstPerson <= (StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneBimbo") as Int))
-					debug.notification("Oh My Gods! What happened?")
+				If (rollFirstPerson <= (fHormoneBimbo as Int))
+					sMessage = "Oh My Gods! What happened?"
 				else
-					debug.notification("Your body cis going through deep changes.")
+					sMessage = "Your body is going through deep changes."
 				Endif
 
 				bEventTriggered = True
@@ -1601,10 +1788,10 @@ Bool function tryBimboEvent(Actor kActor) ; bimbo curse
 			endif
 		else
 			if (Utility.RandomInt(0,100)<fHormoneBimbo)
-				If (rollFirstPerson <= (StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneBimbo") as Int))
-					debug.notification("Oh My Gods! What happened?")
+				If (rollFirstPerson <= (fHormoneBimbo as Int))
+					sMessage = "Oh My Gods! What happened?"
 				else
-					debug.notification("Your body cis going through deep changes.")
+					sMessage = "Your body is going through deep changes."
 				Endif
 				
 				bEventTriggered = True
@@ -1614,6 +1801,10 @@ Bool function tryBimboEvent(Actor kActor) ; bimbo curse
 			endif
 		endif
 	endif
+
+	If (sMessage != "")
+		debug.notification(sMessage + " (Bimbo)")
+	Endif
 
 	return 	bEventTriggered 
 EndFunction

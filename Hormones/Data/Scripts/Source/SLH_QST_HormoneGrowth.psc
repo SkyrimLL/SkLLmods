@@ -297,6 +297,7 @@ Function maintenanceVersionEvents()
 	; RegisterForModEvent("AnimationStart", "OnSexLabStart")
 	RegisterForModEvent("AnimationEnd",   "OnSexLabEnd")
 	RegisterForModEvent("OrgasmStart",    "OnSexLabOrgasm")
+	RegisterForModEvent("SexLabOrgasmSeparate",    "OnSexLabOrgasmSeparate")
 
 
 	RegisterForModEvent("SLHShaveHead",   "OnShaveHead")
@@ -498,10 +499,10 @@ Function _updatePlayerState()
 		iPlugCount += 1
 	endif
 
-	if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo") == 1)
+	; if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo") == 1)
 		fBimboClumsyMod = StorageUtil.GetFloatValue(PlayerActor, "_SLH_fBimboClumsyMod") 
 		; debug.notification("[SLH] Player is bimbo")
-		If (iPlugCount>0) && (iLastPlugCount != iPlugCount); && (fBimboClumsyMod==1.0)
+		If (iPlugCount>0) ; && (iLastPlugCount != iPlugCount); && (fBimboClumsyMod==1.0)
 			; If Bimbo and plugged, severely decrease chance of clumsy event
 			StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBimboClumsyMod", 1.0 / ((iPlugCount as Float) * 2.0) ) 
 			iLastPlugCount = iPlugCount
@@ -511,9 +512,9 @@ Function _updatePlayerState()
 			StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBimboClumsyMod", 1.0 ) 
 			; debug.notification("[SLH] Setting bimbo clumsiness to 1.0")
 		Endif
-	Else
+	; Else
 		; debug.notification("[SLH] Player is NOT bimbo")
-	EndIf
+	; EndIf
 
 EndFunction
 
@@ -734,6 +735,7 @@ Event OnUpdate()
 
 		else
 			; Moved random thoughts in main update loop to be enabled outside of bimbo curse
+
 			If (StorageUtil.GetIntValue(PlayerActor, "_SLH_iAllowBimboThoughts") == 1) 
 				fctUtil.tryRandomBimboThoughts()
 			endif
@@ -1531,6 +1533,22 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 EndEvent
 
 Event OnSexLabOrgasm(String _eventName, String _args, Float _argc, Form _sender)
+	doOrgasm(_args)
+EndEvent
+
+Event OnSexLabOrgasmSeparate(Form ActorRef, Int Thread)
+	string _args = Thread as string
+	actor kActor = ActorRef as actor
+	PlayerREF= PlayerAlias.GetReference()
+	PlayerActor= PlayerREF as Actor
+
+	if (kActor==PlayerActor)
+		doOrgasm(_args)
+	endIf
+	
+EndEvent
+
+Function doOrgasm(String _args)
 	int iDaedricInfluence = StorageUtil.GetIntValue(PlayerActor, "_SLH_iDaedricInfluence")
 	Int iSuccubus = StorageUtil.GetIntValue(PlayerActor, "_SLH_iSuccubus")
 	Int isPregnant = StorageUtil.GetIntValue(PlayerActor, "_SLH_isPregnant")
@@ -1635,7 +1653,7 @@ Event OnSexLabOrgasm(String _eventName, String _args, Float _argc, Form _sender)
 
 	EndIf
 	
-EndEvent
+EndFunction
 
 Function doSoulDevour(Actor[] _actors)
 	PlayerREF= PlayerAlias.GetReference()

@@ -323,8 +323,15 @@ function tryRandomBimboThoughts()
  	Actor PlayerActor = Game.GetPlayer()
 	Float fClumsyMod = StorageUtil.GetFloatValue(PlayerActor, "_SLH_fBimboClumsyMod" ) 
 	float bimboArousal = slaUtil.GetActorArousal(PlayerActor) as float
+	Int iBimboThreshold = (100 - (((bimboArousal * fClumsyMod) as Int)/2))
 
-	if ( (iCommentThrottle > 100) && (Utility.RandomInt(0,100) > (100 - (((bimboArousal * fClumsyMod) as Int)/5)) ) )
+	; Debug.Notification("[SLH] Bimbo Thoughts:")
+	; Debug.Notification("[SLH] fClumsyMod:" + fClumsyMod)
+	; Debug.Notification("[SLH] bimboArousal:" + bimboArousal)
+	; Debug.Notification("[SLH] iBimboThreshold:" + iBimboThreshold)
+	; Debug.Notification("[SLH] iCommentThrottle:" + iCommentThrottle)
+
+	if ( (iCommentThrottle > 100) && (Utility.RandomInt(0,100) > iBimboThreshold ) )
 		bimboRandomThoughts(PlayerActor)
 		iCommentThrottle = 0   	
 	else
