@@ -724,21 +724,22 @@ function alterBodyByPercent(Actor kActor, String sBodyPart, Float modFactor)
 	EndIf
 
 	if (GV_useWeight.GetValue() == 1) && (sBodyPart=="Weight")
-		debugTrace( "[SLH] alterBodyByPercent Weight")
-		debugTrace( "[SLH] Actorbase weight: " + pActorBase.GetWeight())
-		debugTrace( "[SLH] Weight factor: " + modFactor)
-		debugTrace( "[SLH] StorageUtil: " + StorageUtil.GetFloatValue(kActor, "_SLH_fWeight") )
-		debugTrace( "[SLH] Global Value: " + GV_weightValue.GetValue() )
+		debugTrace( "alterBodyByPercent Weight")
+		debugTrace( "pActorBase.GetWeight(): " + pActorBase.GetWeight())
+		debugTrace( "modFactor: " + modFactor)
+		debugTrace( "fWeightSwellMod: " + fWeightSwellMod)
+		debugTrace( "StorageUtil _SLH_fWeight: " + StorageUtil.GetFloatValue(kActor, "_SLH_fWeight") )
+		debugTrace( "Global Value: " + GV_weightValue.GetValue() )
 
 		; WEIGHT CHANGE ====================================================
 		fCurrentWeight = pActorBase.GetWeight()
-		fWeight = fCurrentWeight + ( modFactor * (110 - fCurrentWeight) / 100.0 ) * fWeightSwellMod
+		fWeight = fCurrentWeight + ( modFactor * (110.0 - fCurrentWeight) / 100.0 ) * fWeightSwellMod
 		fWeight = fctUtil.fRange( fWeight  , fWeightMin, fWeightMax)
 
 		debugTrace("  Set weight to " + fWeight + " from " + fCurrentWeight)
 		alterWeight(kActor, fWeight  )
 
-		; Debug.Notification("[SLH]  Set weight to " + fWeight + " from " + fCurrentWeight)
+		; Debug.Notification(" Set weight to " + fWeight + " from " + fCurrentWeight)
 
 	EndIf
 
@@ -1331,10 +1332,10 @@ function refreshBodyShape(Actor kActor)
 	; _getShapeState() needs to be called separately
 
 	if (GV_useWeight.GetValue() == 1)
-		debugTrace( "[SLH] refreshBodyShape Weight")
-		debugTrace( "[SLH] 	Actorbase weight: " + pActorBase.GetWeight())
-		debugTrace( "[SLH] 	Current weight: " + fWeight)
-		debugTrace( "[SLH] 	StorageUtil: " + StorageUtil.GetFloatValue(kActor, "_SLH_fWeight") )
+		debugTrace( "refreshBodyShape Weight")
+		debugTrace( "	Actorbase weight: " + pActorBase.GetWeight())
+		debugTrace( "	Current weight: " + fWeight)
+		debugTrace( "	StorageUtil: " + StorageUtil.GetFloatValue(kActor, "_SLH_fWeight") )
 
 		alterWeight(kActor,  fWeight  )
 	EndIf
@@ -1735,6 +1736,9 @@ Bool function tryBimboEvent(Actor kActor) ; bimbo curse
 
 		fctHormones.modHormoneLevel(kActor, "Female", 10.0) ; make actor more feminine
 		fctHormones.modHormoneLevel(kActor, "Male", -10.0) ; 
+
+		; Enable bimbo thoughts
+		StorageUtil.SetIntValue(kActor, "_SLH_iAllowBimboThoughts", 1)
 	endIf
 	
 	if (fHormoneBimbo>=70.0) && (fHormoneMetabolism>=80)
@@ -1765,9 +1769,6 @@ Bool function tryBimboEvent(Actor kActor) ; bimbo curse
 				alterBodyByPercent(kActor, "Schlong", -25.0)
 			endif
 		endif
-
-		; Enable bimbo thoughts
-		StorageUtil.SetIntValue(kActor, "_SLH_iAllowBimboThoughts", 1)
 
 	endIf
 	
@@ -1980,7 +1981,7 @@ function initShapeState(Actor kActor)
 	StorageUtil.SetFormValue(kActor, "_SLH_fOrigRace",  pActorBase.GetRace()) 
 
 	debugTrace(" Init race: " + pActorBase.GetRace().getName())
-	; Debug.Messagebox("[SLH] Init race: " + pActorBase.GetRace().getName())
+	; Debug.Messagebox("Init race: " + pActorBase.GetRace().getName())
 
 	setShapeState(kActor)
 
@@ -2323,6 +2324,6 @@ EndFunction
 Function debugTrace(string traceMsg)
 	if (StorageUtil.GetIntValue(none, "_SLH_debugTraceON")==1)
 		; Disabled for body shape feedback
-		; Debug.Trace("[SLH_fctBodyShape]" + traceMsg)
+		Debug.Trace("[SLH_fctBodyShape] " + traceMsg)
 	endif
 endFunction

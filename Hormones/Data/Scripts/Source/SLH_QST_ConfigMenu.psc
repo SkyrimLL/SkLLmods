@@ -2825,6 +2825,7 @@ state STATE_ENABLE_NODE_OVERRIDE ; TOGGLE
 		; NiOverride and QueueNodeUpdates are mutually exclusive
 		_enableNiNodeOverride = StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON")
 		_enableNiNodeOverride = Math.LogicalXor( 1, _enableNiNodeOverride as Int ) 
+		StorageUtil.SetIntValue(none, "_SLH_NiNodeOverrideON", _enableNiNodeOverride as Int)
 		GV_enableNiNodeUpdate.SetValueInt( 0)
 		SetToggleOptionValueST( _enableNiNodeOverride as Bool )
 		refreshStorageFromGlobals()

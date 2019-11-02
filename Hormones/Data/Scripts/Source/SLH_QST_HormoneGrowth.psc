@@ -1785,6 +1785,9 @@ Function doSoulDevour(Actor[] _actors)
 		
 	endif
 
+	; SexLab Warm Bodies effect from draining victim after orgasm (extra heat)
+	SendModEvent("SLFFModExposure", "A burst of heat rushes through your body.", 2.0)
+
 	; debugTrace(" Beeing Female - Healing baby event" )
 	; PlayerActor.SendModEvent("BeeingFemale", "HealBaby", 100)
 
