@@ -1761,7 +1761,7 @@ EndFunction
 ;------------------------------------------------------------------------------
 bool function isPregnantByEstrusChaurus(actor kActor)
   spell  ChaurusBreeder 
-  if (StorageUtil.GetIntValue(none, "_SLS_isCagedFollowerON") ==  1) 
+  if (StorageUtil.GetIntValue(none, "_SLS_isEstrusChaurusON") ==  1) 
   	ChaurusBreeder = StorageUtil.GetFormValue(none, "_SLS_getEstrusChaurusBreederSpell") as Spell
   	if (ChaurusBreeder != none)
     	return kActor.HasSpell(ChaurusBreeder)
