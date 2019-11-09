@@ -123,6 +123,9 @@ FormList Property VanillaHairRaceList  Auto
 FormList Property CustomHairRaceList  Auto  
 FormList Property HumanRaceList  Auto  
 
+Sound Property BimboChuckleSound Auto
+Sound Property BimboMoanSound Auto
+Sound Property BimboGiggleSound Auto
 
 Event OnInit()
 	doInit()
@@ -1814,14 +1817,36 @@ EndEvent
 ;===========================================================================
 ;moan sound
 ;===========================================================================
+
+
+function playRandomSound(actor akActor)
+	Int rollMessage = Utility.RandomInt(0,100)
+
+	if (rollMessage > 80) ;if dropped anything, play a moan sound
+		playMoan(akActor)
+	elseif (rollMessage > 20) 
+		playGiggle(akActor)
+	else
+		playChuckle(akActor)
+	endif
+endfunction
+
 function playMoan(actor akActor)
-	sslBaseVoice voice = SexLab.GetVoice(akActor)
-	voice.Moan(akActor, 30, true)
+	; sslBaseVoice voice = SexLab.GetVoice(akActor)
+	; voice.Moan(akActor, 10 + (Utility.RandomInt(0,8) * 10 ), false)
+	BimboMoanSound.play(akActor) 
 endFunction
 
 function playGiggle(actor akActor)
-	sslBaseVoice voice = SexLab.GetVoice(akActor)
-	voice.Moan(akActor, 10 + (Utility.RandomInt(0,8) * 10 ), false)
+	; sslBaseVoice voice = SexLab.GetVoice(akActor)
+	; voice.Moan(akActor, 10 + (Utility.RandomInt(0,8) * 10 ), false)
+	BimboGiggleSound.play(akActor) 
+endFunction
+
+function playChuckle(actor akActor)
+	; sslBaseVoice voice = SexLab.GetVoice(akActor)
+	; voice.Moan(akActor, 10 + (Utility.RandomInt(0,8) * 10 ), false)
+	BimboChuckleSound.play(akActor) 
 endFunction
 
 

@@ -1489,6 +1489,7 @@ Bool function tryTGEvent(Actor kActor) ; trans gender
 	; Male
 	if (fctUtil.isMale(kActor))
 		if (fHormoneFemale>=50.0) && (fHormoneMale>=50.0) && (fHormoneMetabolism>=50)
+			debugTrace("	 TG transformation - stage 1 passed")
 			If (rollFirstPerson <= (fHormoneBimbo as Int))
 				sMessage = "I could swear I am losing weight!"
 			else
@@ -1500,38 +1501,42 @@ Bool function tryTGEvent(Actor kActor) ; trans gender
 			alterBodyByPercent(kActor, "Weight", -10.0)
 		endif
 
-		if (fHormoneFemale>=80.0) && (fHormoneMale>=80.0) && (fHormoneMetabolism>=80)
-			if (fWeight < 10) && (fHormoneMetabolism>=90) 
+		if (fHormoneFemale>=80.0) && (fHormoneMale>=80.0) && (fHormoneMetabolism>=80) && (fWeight < 10)  
+			debugTrace("	 TG transformation - stage 2 passed")
+			If (rollFirstPerson <= (fHormoneBimbo as Int))
+				sMessage = "My cock! it's shrinking!"
+			else
+				sMessage = "Your cock is getting smaller every day."
+			Endif
+			alterBodyByPercent(kActor, "Schlong", -25.0)
+			
+			fSchlong = StorageUtil.GetFloatValue(kActor, "_SLH_fSchlong")
+			if (fSchlong <= (fSchlongMin + 0.1) )
+				debugTrace("	 TG transformation - stage 3 passed")
 				If (rollFirstPerson <= (fHormoneBimbo as Int))
-					sMessage = "My cock! it's shrinking!"
+					sMessage = "My cock turned into a clit!"
 				else
-					sMessage = "Your cock is getting smaller every day."
+					sMessage = "Your features have become decidedly female."
 				Endif
-				alterBodyByPercent(kActor, "Schlong", -25.0)
-				
-				fSchlong = StorageUtil.GetFloatValue(kActor, "_SLH_fSchlong")
-				if (fSchlong <= (fSchlongMin + 0.1) )
-					If (rollFirstPerson <= (fHormoneBimbo as Int))
-						sMessage = "My cock turned into a clit!"
-					else
-						sMessage = "Your features have become decidedly female."
-					Endif
 
-					bEventTriggered = True
-					fctHormones.modHormoneLevel(kActor, "Metabolism", -100.0) ; 
+				bEventTriggered = True
+				fctHormones.modHormoneLevel(kActor, "Metabolism", -100.0) ; 
 
-					; No TG option for male yet - will try later with SoS compatible vagina
+				; No TG option for male yet - will try later with SoS compatible vagina
 
-					; debugTrace("	 Casting HRT curse")
-					; kActor.SendModEvent("SLHCastTGCurse", "Bimbo")
-				endif
+				; debugTrace("	 Casting HRT curse")
+				; kActor.SendModEvent("SLHCastTGCurse", "Bimbo")
+			else
+				debugTrace("	 Casting Sex change curse failed - Sclong not small enough")
 			endif
+			 
 		endif
 
 	else
 	; --------
 	; Female 
 		if (fHormoneFemale>=50.0) && (fHormoneMale>=50.0) && (fHormoneMetabolism>=50)
+			debugTrace("	 TG transformation - stage 1 passed")
 			If (rollFirstPerson <= (fHormoneBimbo as Int))
 				sMessage = "Why am I feeling so hot!"
 			else
@@ -1539,32 +1544,37 @@ Bool function tryTGEvent(Actor kActor) ; trans gender
 			Endif
 
 			fctHormones.modHormoneLevel(kActor, "Metabolism", 2.0) ; accelerate path to transformation
+			fctHormones.modHormoneLevel(kActor, "Growth", -10.0) ; make actor lose weight
+			alterBodyByPercent(kActor, "Weight", -10.0)		
 		endIf
 
-		if (fHormoneFemale<20.0) && (fHormoneMale>=80.0) && (fHormoneMetabolism>=80)
-			if (fWeight < 10) && (fHormoneMetabolism>=90) 
+		if (fHormoneFemale<20.0) && (fHormoneMale>=80.0) && (fHormoneMetabolism>=80) && (fWeight < 10)  
+			debugTrace("	 TG transformation - stage 2 passed")
+			If (rollFirstPerson <= (fHormoneBimbo as Int))
+				sMessage = "Are my boobs shrinking?"
+			else
+				sMessage = "Your shape is getting flatter every day."
+			Endif
+			alterBodyByPercent(kActor, "Breast", -25.0)
+			alterBodyByPercent(kActor, "Butt", -25.0)
+			
+			fBreast = StorageUtil.GetFloatValue(kActor, "_SLH_fBreast") 
+			if (fBreast <= (fBreastMin + 1.0) )
+				debugTrace("	 TG transformation - stage 3 passed")
 				If (rollFirstPerson <= (fHormoneBimbo as Int))
-					sMessage = "Are my boobs shrinking?"
+					sMessage = "My Clit! It's growing into..."
 				else
-					sMessage = "Your shape is getting flatter every day."
+					sMessage = "Your clit has grown into a small size cock."
 				Endif
-				alterBodyByPercent(kActor, "Breast", -25.0)
-				alterBodyByPercent(kActor, "Butt", -25.0)
-				
-				fBreast = StorageUtil.GetFloatValue(kActor, "_SLH_fBreast") 
-				if (fBreast <= (fBreastMin + 1.0) )
-					If (rollFirstPerson <= (fHormoneBimbo as Int))
-						sMessage = "My Clit! It's growing into..."
-					else
-						sMessage = "Your clit has grown into a small size cock."
-					Endif
 
-					bEventTriggered = True
-					fctHormones.modHormoneLevel(kActor, "Metabolism", -100.0) ; 
-					debugTrace("	 Casting TG curse")
-					kActor.SendModEvent("SLHCastTGCurse", "Bimbo")
-				endif
+				bEventTriggered = True
+				fctHormones.modHormoneLevel(kActor, "Metabolism", -100.0) ; 
+				debugTrace("	 Casting TG curse")
+				kActor.SendModEvent("SLHCastTGCurse", "Bimbo")
+			else
+				debugTrace("	 Casting TG curse failed - Breast not small enough")
 			endif
+			 
 		Endif
 	endif
 
@@ -1608,6 +1618,7 @@ Bool function tryHRTEvent(Actor kActor) ; sex change
 	; Male
 	if (fctUtil.isMale(kActor))
 		if (fHormoneFemale>=50.0) && (fHormoneMale<50.0) && (fHormoneMetabolism>=50)
+			debugTrace("	 HRT (sex change) transformation - stage 1 passed")
 			If (rollFirstPerson <= (fHormoneBimbo as Int))
 				sMessage = "I could swear I am losing weight!"
 			else
@@ -1619,35 +1630,39 @@ Bool function tryHRTEvent(Actor kActor) ; sex change
 			alterBodyByPercent(kActor, "Weight", -10.0)
 		endif
 
-		if (fHormoneFemale>=80.0) && (fHormoneMale<20.0) && (fHormoneMetabolism>=80)
-			if (fWeight < 10) && (fHormoneMetabolism>=90) 
+		if (fHormoneFemale>=80.0) && (fHormoneMale<20.0) && (fHormoneMetabolism>=80) && (fWeight < 10)  
+			debugTrace("	 HRT (sex change) transformation - stage 2 passed")
+			If (rollFirstPerson <= (fHormoneBimbo as Int))
+				sMessage = "My cock! it's shrinking!"
+			else
+				sMessage = "Your cock is getting smaller every day."
+			Endif
+			alterBodyByPercent(kActor, "Schlong", -25.0)
+			
+			fSchlong = StorageUtil.GetFloatValue(kActor, "_SLH_fSchlong")
+			if (fSchlong <= (fSchlongMin + 0.1) )
+				debugTrace("	 HRT (sex change) transformation - stage 3 passed")
 				If (rollFirstPerson <= (fHormoneBimbo as Int))
-					sMessage = "My cock! it's shrinking!"
+					sMessage = "Boobs? Clit! I turned into a woman!"
 				else
-					sMessage = "Your cock is getting smaller every day."
+					sMessage = "Your features have become decidedly female."
 				Endif
-				alterBodyByPercent(kActor, "Schlong", -25.0)
-				
-				fSchlong = StorageUtil.GetFloatValue(kActor, "_SLH_fSchlong")
-				if (fSchlong <= (fSchlongMin + 0.1) )
-					If (rollFirstPerson <= (fHormoneBimbo as Int))
-						sMessage = "Boobs? Clit! I turned into a woman!"
-					else
-						sMessage = "Your features have become decidedly female."
-					Endif
 
-					bEventTriggered = True
-					fctHormones.modHormoneLevel(kActor, "Metabolism", -100.0) ; 
-					debugTrace("	 Casting HRT curse")
-					kActor.SendModEvent("SLHCastHRTCurse", "Bimbo")
-				endif
+				bEventTriggered = True
+				fctHormones.modHormoneLevel(kActor, "Metabolism", -100.0) ; 
+				debugTrace("	 Casting HRT curse")
+				kActor.SendModEvent("SLHCastHRTCurse", "Bimbo")
+			else
+				debugTrace("	 Casting Sex change curse failed - Schlong not small enough")
 			endif
+			 
 		endif
 
 	else
 	; --------
 	; Female
 		if (fHormoneFemale<50.0) && (fHormoneMale>=50.0) && (fHormoneMetabolism>=50)
+			debugTrace("	 HRT (sex change) transformation - stage 1 passed")
 			If (rollFirstPerson <= (fHormoneBimbo as Int))
 				sMessage = "I could swear I am losing weight!"
 			else
@@ -1659,30 +1674,34 @@ Bool function tryHRTEvent(Actor kActor) ; sex change
 			alterBodyByPercent(kActor, "Weight", -10.0)
 		endIf
 
-		if (fHormoneFemale<20.0) && (fHormoneMale>=80.0) && (fHormoneMetabolism>=80)
-			if (fWeight < 10) && (fHormoneMetabolism>=90) 
-				If (rollFirstPerson <= (fHormoneBimbo as Int))
-					sMessage = "Are my boobs shrinking?"
-				else
-					sMessage = "Your shape is getting flatter every day."
-				Endif
-				alterBodyByPercent(kActor, "Breast", -25.0)
-				alterBodyByPercent(kActor, "Butt", -25.0)
-				
-				fBreast = StorageUtil.GetFloatValue(kActor, "_SLH_fBreast") 
-				if (fBreast <= (fBreastMin + 0.1) ) && (iBimbo == 0 ) ; no transformation to male if already a bimbo
-					If (rollFirstPerson <= (fHormoneBimbo as Int))
-						sMessage = "My Boobs! My Clit! I turned into a man!"
-					else
-						sMessage = "Your features have become decidedly male."
-					Endif
+		if (fHormoneFemale<20.0) && (fHormoneMale>=80.0) && (fHormoneMetabolism>=80) && (fWeight < 10)  
+			debugTrace("	 HRT (sex change) transformation - stage 2 passed")
+			If (rollFirstPerson <= (fHormoneBimbo as Int))
+				sMessage = "Are my boobs shrinking?"
+			else
+				sMessage = "Your shape is getting flatter every day."
+			Endif
+			alterBodyByPercent(kActor, "Breast", -25.0)
+			alterBodyByPercent(kActor, "Butt", -25.0)
+			
+			fBreast = StorageUtil.GetFloatValue(kActor, "_SLH_fBreast") 
 
-					bEventTriggered = True
-					fctHormones.modHormoneLevel(kActor, "Metabolism", -100.0) ; 
-					debugTrace("	 Casting HRT curse")
-					kActor.SendModEvent("SLHCastHRTCurse", "Bimbo")
-				endif
+			if (fBreast <= (fBreastMin + 0.1) ) && (iBimbo == 0 ) ; no transformation to male if already a bimbo
+				debugTrace("	 HRT (sex change) transformation - stage 3 passed")
+				If (rollFirstPerson <= (fHormoneBimbo as Int))
+					sMessage = "My Boobs! My Clit! I turned into a man!"
+				else
+					sMessage = "Your features have become decidedly male."
+				Endif
+
+				bEventTriggered = True
+				fctHormones.modHormoneLevel(kActor, "Metabolism", -100.0) ; 
+				debugTrace("	 Casting HRT curse")
+				kActor.SendModEvent("SLHCastHRTCurse", "Bimbo")
+			else
+				debugTrace("	 Casting Sex change curse failed - Breast not small enough")
 			endif
+			 
 		Endif
 	endif
 
@@ -1717,6 +1736,7 @@ Bool function tryBimboEvent(Actor kActor) ; bimbo curse
 	endIf
 
 	if (fHormoneBimbo>=30.0) && (fHormoneMetabolism>=70)
+		debugTrace("	 Bimbo transformation - stage 1 passed")
 		If (rollFirstPerson <= (fHormoneBimbo as Int))
 			sMessage = "I'm so horny today."
 		else
@@ -1728,6 +1748,7 @@ Bool function tryBimboEvent(Actor kActor) ; bimbo curse
 	endif
 
 	if (fHormoneBimbo>=50.0) && (fHormoneMetabolism>=70)
+		debugTrace("	 Bimbo transformation - stage 2 passed")
 		If (rollFirstPerson <= (fHormoneBimbo as Int))
 			sMessage = "Mmm.. I feel so soft and sexy."
 		else
@@ -1742,6 +1763,7 @@ Bool function tryBimboEvent(Actor kActor) ; bimbo curse
 	endIf
 	
 	if (fHormoneBimbo>=70.0) && (fHormoneMetabolism>=80)
+		debugTrace("	 Bimbo transformation - stage 3 passed")
 		If (rollFirstPerson <= (fHormoneBimbo as Int))
 			sMessage = "I could swear I am losing weight!"
 		else
@@ -1753,6 +1775,7 @@ Bool function tryBimboEvent(Actor kActor) ; bimbo curse
 	endIf
 	
 	if (fHormoneBimbo>=80.0) && (fHormoneMetabolism>=80)
+		debugTrace("	 Bimbo transformation - stage 4 passed")
 		If (rollFirstPerson <= (fHormoneBimbo as Int))
 			sMessage = "Something is definitely happening to me."
 		else
@@ -1773,6 +1796,7 @@ Bool function tryBimboEvent(Actor kActor) ; bimbo curse
 	endIf
 	
 	if (fHormoneBimbo>=90.0) && (fHormoneMetabolism>=90)
+		debugTrace("	 Bimbo transformation - stage 5 passed")
 		if (fctUtil.isMale(kActor))
 			fSchlong = StorageUtil.GetFloatValue(kActor, "_SLH_fSchlong")
 			if (fSchlong <= (fSchlongMin + 0.1) )
@@ -1786,9 +1810,11 @@ Bool function tryBimboEvent(Actor kActor) ; bimbo curse
 				fctHormones.modHormoneLevel(kActor, "Metabolism", -100.0) ; 
 				debugTrace("	 Casting Bimbo curse")
 				kActor.SendModEvent("SLHCastBimboCurse","Bimbo")
+			else
+				debugTrace("	 Casting Bimbo curse failed - schlong not ready")
 			endif
 		else
-			if (Utility.RandomInt(0,100)<fHormoneBimbo)
+			if (Utility.RandomInt(0,100)<= (fHormoneBimbo as Int))
 				If (rollFirstPerson <= (fHormoneBimbo as Int))
 					sMessage = "Oh My Gods! What happened?"
 				else
@@ -1799,6 +1825,8 @@ Bool function tryBimboEvent(Actor kActor) ; bimbo curse
 				fctHormones.modHormoneLevel(kActor, "Metabolism", -100.0) ; 
 				debugTrace("	 Casting Bimbo curse")
 				kActor.SendModEvent("SLHCastBimboCurse","Bimbo")
+			else
+				debugTrace("	 Casting Bimbo curse failed - better luck next time")
 			endif
 		endif
 	endif

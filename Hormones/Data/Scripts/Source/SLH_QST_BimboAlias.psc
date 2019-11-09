@@ -685,7 +685,7 @@ function clumsyBimboHands(int actionType, Actor bimbo, Form source, int slot)
 		If (StorageUtil.GetIntValue(bimbo, "_SLH_iShowStatus")!=0)
 			Debug.Notification(handMessage)
 		Endif
-		SLH_Control.playMoan(bimbo)
+		SLH_Control.playRandomSound(bimbo)
 	endif
 
 
@@ -772,7 +772,7 @@ function clumsyBimboLegs(Actor bimbo)
 
 					int[] drop = dropWeapons(bimbo, both = true, chanceMult = 0.1)
 					if drop[0] > 0 ;if dropped anything, play a moan sound
-						SLH_Control.playMoan(bimbo)
+						SLH_Control.playRandomSound(bimbo)
 					endif
 
 					;wait a little to show the messages, because on ragdoll the hud is hidden
@@ -835,7 +835,7 @@ function clumsyBimboLegs(Actor bimbo)
 					Debug.Notification("You squeeze your legs with arousal.")
 				endif
 
-				SLH_Control.playMoan(bimbo)
+				SLH_Control.playRandomSound(bimbo)
 				bimbo.CreateDetectionEvent(bimbo, 10)
 			endif
 
@@ -908,6 +908,7 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 	;level 1: makeup
 	if (transformationLevel == 1)  
 		Debug.Notification("You feel a little tingling on your face.")
+	    SLH_Control.playChuckle(bimbo)
 
 		If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
 			If (!isBimboPermanent) 
@@ -929,6 +930,8 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 	;level 2, nails, weak body (can drop weapons when hit)
 	elseif transformationLevel == 2
 		Debug.Notification("Your body feels weak and your boobs are sizzling.")
+	    SLH_Control.playGiggle(bimbo)
+
 		If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
 			If (!isBimboPermanent) 
 				SendModEvent("yps-FingerNailsEvent", "", 29) 
@@ -950,6 +953,7 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 	elseif transformationLevel == 3
 		Debug.Notification("A naughty shiver runs down your back.")
 		fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Tramp Stamp", bRefresh = True )
+	    SLH_Control.playMoan(bimbo)
 
 		If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
 			if (hairLength<8)
@@ -978,7 +982,7 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 		fButtActual = StorageUtil.GetFloatValue(bimbo, "_SLH_fButt")
 		if (fButtActual < fButtMax )
 			Debug.SendAnimationEvent(bimbo, "BleedOutStart")
-			SLH_Control.playMoan(bimbo)
+			SLH_Control.playRandomSound(bimbo)
 
 			fButtActual = 0.1 + fButtActual * 1.5 ;now with 50% more butt!
 			if fButtActual > fButtMax

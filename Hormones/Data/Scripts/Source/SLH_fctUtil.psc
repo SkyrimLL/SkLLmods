@@ -340,22 +340,19 @@ function tryRandomBimboThoughts()
 	endif
 endfunction
 
+
 function bimboRandomThoughts(actor bimbo)
 	Int rollMessage 
 	Int rollFirstPerson 
 	String bimboMessage = ""
 
-	if (rollMessage > 60) ;if dropped anything, play a moan sound
-		SLH_Control.playMoan(bimbo)
-	else
-		SLH_Control.playGiggle(bimbo)
-	endif
+	rollMessage = Utility.RandomInt(0,140)
+	rollFirstPerson = Utility.RandomInt(0,100)
+
+	SLH_Control.playRandomSound(bimbo)
 
 	;wait a little to show the messages, because on ragdoll the hud is hidden
 	Utility.Wait(2.0)
-
-	rollMessage = Utility.RandomInt(0,140)
-	rollFirstPerson = Utility.RandomInt(0,100)
 
 	If (StorageUtil.GetIntValue(bimbo, "_SLH_iShowStatus")==0)
 		Return
