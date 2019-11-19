@@ -323,19 +323,29 @@ function tryRandomBimboThoughts()
  	Actor PlayerActor = Game.GetPlayer()
 	Float fClumsyMod = StorageUtil.GetFloatValue(PlayerActor, "_SLH_fBimboClumsyMod" ) 
 	float bimboArousal = slaUtil.GetActorArousal(PlayerActor) as float
-	Int iBimboThreshold = (100 - (((bimboArousal * fClumsyMod) as Int)/2))
+	Int iBimboThreshold = ((bimboArousal * fClumsyMod) as Int)
+	Int iBimboThrottle = StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimboThoughtsDelay")
 
-	; Debug.Notification("[SLH] Bimbo Thoughts:")
-	; Debug.Notification("[SLH] fClumsyMod:" + fClumsyMod)
-	; Debug.Notification("[SLH] bimboArousal:" + bimboArousal)
-	; Debug.Notification("[SLH] iBimboThreshold:" + iBimboThreshold)
-	; Debug.Notification("[SLH] iCommentThrottle:" + iCommentThrottle)
+	if (iBimboThreshold < 10)
+		iBimboThreshold = 10
+	endif
 
-	if ( (iCommentThrottle > 100) && (Utility.RandomInt(0,100) > iBimboThreshold ) )
-		bimboRandomThoughts(PlayerActor)
-		iCommentThrottle = 0   	
+	if (iCommentThrottle > iBimboThrottle) 
+		if (Utility.RandomInt(0,100) < iBimboThreshold ) 
+			Debug.Trace("[SLH] Bimbo Thoughts:")
+			Debug.Trace("[SLH] fClumsyMod:" + fClumsyMod)
+			Debug.Trace("[SLH] bimboArousal:" + bimboArousal)
+			Debug.Trace("[SLH] iBimboThreshold:" + iBimboThreshold)
+			; Debug.Notification("[SLH] iCommentThrottle:" + iCommentThrottle)
+
+			bimboRandomThoughts(PlayerActor)
+			iCommentThrottle = 0   
+		else
+			; debug.notification("X")	
+		endif
 	else
-    	; debug.notification("Bimbo arousal:" + bimboArousal)
+	    ; debug.notification("Bimbo arousal:" + bimboArousal)
+	    ; debug.notification(".")
 		iCommentThrottle = iCommentThrottle + 1
 	endif
 endfunction
@@ -352,7 +362,7 @@ function bimboRandomThoughts(actor bimbo)
 	SLH_Control.playRandomSound(bimbo)
 
 	;wait a little to show the messages, because on ragdoll the hud is hidden
-	Utility.Wait(2.0)
+	; Utility.Wait(2.0)
 
 	If (StorageUtil.GetIntValue(bimbo, "_SLH_iShowStatus")==0)
 		Return

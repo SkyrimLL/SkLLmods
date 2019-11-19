@@ -165,7 +165,7 @@ Function doInit()
 EndFunction
 
 Function Maintenance()
-	PlayerREF= PlayerAlias.GetReference()
+	PlayerREF= Game.GetPlayer() ; PlayerAlias.GetReference()
 	PlayerActor= PlayerREF as Actor
 	pActorBase = PlayerActor.GetActorBase()
 
@@ -264,7 +264,7 @@ Function Maintenance()
 EndFunction
 
 Function maintenanceVersionEvents()
-	PlayerREF= PlayerAlias.GetReference()
+	PlayerREF= Game.GetPlayer() ; PlayerAlias.GetReference()
 	PlayerActor= PlayerREF as Actor
 	pActorBase = PlayerActor.GetActorBase()
 	Int iBimbo = StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo") 
@@ -278,7 +278,7 @@ Function maintenanceVersionEvents()
 		If (iVersionNumber <= 20181214)
 			debug.MessageBox("[Hormones] This is a major update. Check your menu settings for changes to color swatches and NiNode updates options.")
 			StorageUtil.SetIntValue(none, "_SLH_NiNodeOverrideON", 1)
-			StorageUtil.SetIntValue(PlayerActor, "_SLH_iDefaultColor", -1)
+			StorageUtil.SetIntValue(PlayerActor, "_SLH_iDefaultSkinColor", -1)
 			StorageUtil.SetIntValue(PlayerActor, "_SLH_iSexActivityThreshold",GV_sexActivityThreshold.GetValue() as Int)
 			StorageUtil.SetIntValue(PlayerActor, "_SLH_iSexActivityBuffer",GV_sexActivityBuffer.GetValue() as Int)
 			StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBaseShrinkFactor",GV_baseShrinkFactor.GetValue() as Float) 
@@ -356,7 +356,7 @@ EndFunction
 
 
 function initHormones()
-	PlayerREF= PlayerAlias.GetReference()
+	PlayerREF= Game.GetPlayer() ; PlayerAlias.GetReference()
 	PlayerActor= PlayerREF as Actor
 	pActorBase = PlayerActor.GetActorBase()
 
@@ -380,7 +380,7 @@ function initHormones()
 
 	StorageUtil.SetIntValue(PlayerActor, "_SLH_iUseColors", 0)
 	StorageUtil.SetIntValue(PlayerActor, "_SLH_iUseHairColors", 0)
-	StorageUtil.SetIntValue(PlayerActor, "_SLH_iDefaultColor", -1) 
+	StorageUtil.SetIntValue(PlayerActor, "_SLH_iDefaultSkinColor", -1) 
 	StorageUtil.SetIntValue(PlayerActor, "_SLH_iRedShiftColor", -1) ; GV_redShiftColor.GetValue() as Int
 	StorageUtil.SetIntValue(PlayerActor, "_SLH_iBlueShiftColor", -1); GV_blueShiftColor.GetValue() as Int
 	StorageUtil.SetIntValue(PlayerActor, "_SLH_iBimboHairColor", -1); GV_blueShiftColor.GetValue() as Int
@@ -450,7 +450,7 @@ Event OnSleepStop(bool abInterrupted)
 EndEvent
 
 Function _updatePlayerState()
-	PlayerREF= PlayerAlias.GetReference()
+	PlayerREF= Game.GetPlayer() ; PlayerAlias.GetReference()
 	PlayerActor= PlayerREF as Actor
 	pActorBase = PlayerActor.GetActorBase()
 	Form kFormGag
@@ -522,7 +522,7 @@ Function _updatePlayerState()
 EndFunction
 
 Event OnUpdate()
-	PlayerREF= PlayerAlias.GetReference()
+	PlayerREF= Game.GetPlayer() ; PlayerAlias.GetReference()
 	PlayerActor= PlayerREF as Actor
 	pActorBase = PlayerActor.GetActorBase()
 	Int RandomNum = 0
@@ -641,11 +641,12 @@ Event OnUpdate()
 		; Debug.Notification("[Hormones] RandomNum: " + RandomNum)
 
 
-		If (RandomNum>50) && (fctUtil.isFemale(PlayerActor))  && (iSexCountToday > 0) && (NextAllowed > 15) && (GV_showStatus.GetValue() == 1)
+		If (RandomNum>80) && (fctUtil.isFemale(PlayerActor))  && (iSexCountToday > 0) && (NextAllowed > 15) && (GV_showStatus.GetValue() == 1)
 			; Debug.Notification("[Hormones] s:" + iSexCountToday + " - v:" + iVaginalCountToday + " - a:" + iAnalCountToday + " - o:" + iOralCountToday)
 
 			If (rollFirstPerson <= (StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneBimbo") as Int))
 				; First person thought
+				playMoan(PlayerActor)
 				If (iVaginalCountToday > 0) 
 					If (iVaginalCountToday > 10) 
 						Debug.Notification("My pussy feels so good and wet.")
@@ -1188,7 +1189,7 @@ EndEvent
 
 
 Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
-	PlayerREF= PlayerAlias.GetReference()
+	PlayerREF= Game.GetPlayer() ; PlayerAlias.GetReference()
 	PlayerActor= PlayerREF as Actor
     sslBaseAnimation animation = SexLab.HookAnimation(_args)
 
@@ -1446,8 +1447,6 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 
 			EndIf
 			; _showStatus()
-
-			StorageUtil.SetFloatValue(PlayerActor, "_SLH_fHormoneSuccubus", iDaedricInfluence as Float ) 
 		EndIf
 
 		setHormonesSexualState( PlayerActor)
@@ -1531,6 +1530,9 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 		EndIf
 
 
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fHormoneSuccubus", iDaedricInfluence as Float ) 
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iDaedricInfluence", iDaedricInfluence as Int ) 
+
 	EndIf
 
 EndEvent
@@ -1542,7 +1544,7 @@ EndEvent
 Event OnSexLabOrgasmSeparate(Form ActorRef, Int Thread)
 	string _args = Thread as string
 	actor kActor = ActorRef as actor
-	PlayerREF= PlayerAlias.GetReference()
+	PlayerREF= Game.GetPlayer() ; PlayerAlias.GetReference()
 	PlayerActor= PlayerREF as Actor
 
 	if (kActor==PlayerActor)
@@ -1552,14 +1554,14 @@ Event OnSexLabOrgasmSeparate(Form ActorRef, Int Thread)
 EndEvent
 
 Function doOrgasm(String _args)
-	int iDaedricInfluence = StorageUtil.GetIntValue(PlayerActor, "_SLH_iDaedricInfluence")
+	Int iDaedricInfluence = StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneSuccubus" ) as Int
 	Int iSuccubus = StorageUtil.GetIntValue(PlayerActor, "_SLH_iSuccubus")
 	Int isPregnant = StorageUtil.GetIntValue(PlayerActor, "_SLH_isPregnant")
 	Int isSuccubus = StorageUtil.GetIntValue(PlayerActor, "_SLH_isSuccubus")
 	Int isLactating = StorageUtil.GetIntValue(PlayerActor, "_SLH_iLactating")
 	Int isBimbo = StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo")
   
-	PlayerREF= PlayerAlias.GetReference()
+	PlayerREF= Game.GetPlayer() ; PlayerAlias.GetReference()
 	PlayerActor= PlayerREF as Actor
 
 	if !Self || !SexLab 
@@ -1659,7 +1661,7 @@ Function doOrgasm(String _args)
 EndFunction
 
 Function doSoulDevour(Actor[] _actors)
-	PlayerREF= PlayerAlias.GetReference()
+	PlayerREF= Game.GetPlayer() ; PlayerAlias.GetReference()
 	PlayerActor= PlayerAlias.GetReference() as Actor
 
 	if _actors.Length < 2
@@ -2152,7 +2154,7 @@ Function startSex(Actor kSpeaker, string sexTags="Sex", string sexMsg="")
 endFunction
 
 Function _nodeBalancing()
-	PlayerREF= PlayerAlias.GetReference() 
+	PlayerREF= Game.GetPlayer() ; PlayerAlias.GetReference() 
 	PlayerActor = PlayerREF as Actor
 	pActorBase = PlayerActor.GetActorBase()
 	Float fNumModBreast = 1.0
@@ -2264,7 +2266,7 @@ endFunction
 ;===========================================================================
 
 function showStatus()
-	PlayerREF= PlayerAlias.GetReference() 
+	PlayerREF= Game.GetPlayer() ; PlayerAlias.GetReference() 
 	PlayerActor = PlayerREF as Actor
 	pActorBase = PlayerActor.GetActorBase()
 
@@ -2275,7 +2277,7 @@ function showStatus()
 EndFunction
 
 function traceStatus()
-	PlayerREF= PlayerAlias.GetReference() 
+	PlayerREF= Game.GetPlayer() ; PlayerAlias.GetReference() 
 	PlayerActor = PlayerREF as Actor
 
 	debugTrace("  Status ---------------------------------" )

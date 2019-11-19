@@ -143,12 +143,13 @@ float 		_weightSwellMod 		= 1.0; 0.1
 
 float 		_armorMod 				= 0.5; 0.1  
 float 		_clothMod 				= 0.8; 0.1  
-float 		_bimboClumsinessMod		= 1.0; 0.1  
 
 bool 		_hornyBegON     		= false
 float 		_hornyBegArousal      	= 60.0
 float 		_hornyGrab      		= -1.0
 bool 		_bimboClumsinessDrop    = true
+float 		_bimboClumsinessMod		= 1.0; 0.1  
+float 		_bimboThoughtsDelay	= 1.0; 0.1  
 
 float 		_breastMax      		= 4.0
 float 		_bellyMax       		= 8.0
@@ -320,6 +321,10 @@ event OnPageReset(string a_page)
 	_armorMod = GV_armorMod.GetValue()    as Float  
 	_clothMod = GV_clothMod.GetValue()    as Float   
 	_bimboClumsinessMod = GV_bimboClumsinessMod.GetValue()    as Float   
+	if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimboThoughtsDelay")==0)
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iBimboThoughtsDelay", 100)
+	endIf
+	_bimboThoughtsDelay = StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimboThoughtsDelay")
 
 	If (_hornyGrab==-1.0)
 		StorageUtil.SetFloatValue(none, "_SLH_fHornyGrab", 30.0)
@@ -359,7 +364,7 @@ event OnPageReset(string a_page)
 	_useColors = StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseColors") as Bool  
 	_useHairColors = StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseHairColors") as Bool
 
-	_defaultColor 		= StorageUtil.GetIntValue(PlayerActor, "_SLH_iDefaultColor")  
+	_defaultColor 		= StorageUtil.GetIntValue(PlayerActor, "_SLH_iDefaultSkinColor")  
 	_redShiftColor 		= StorageUtil.GetIntValue(PlayerActor, "_SLH_iRedShiftColor") 
 	_redShiftColorMod 	= StorageUtil.GetFloatValue(PlayerActor, "_SLH_fRedShiftColorMod")
 	_blueShiftColor 	= StorageUtil.GetIntValue(PlayerActor, "_SLH_iBlueShiftColor")
@@ -606,6 +611,7 @@ event OnPageReset(string a_page)
 		AddToggleOptionST("STATE_BIMBO_RACE","Bimbo Race", _allowBimboRace as Float)
 		AddSliderOptionST("STATE_BIMBO_CLUMSINESS","Clumsiness factor", _bimboClumsinessMod as Float,"{1}")
 		AddToggleOptionST("STATE_BIMBO_DROP","Drop items when aroused", _bimboClumsinessDrop  as Bool)
+		AddSliderOptionST("STATE_BIMBO_THOUGHTS","Bimbo Thoughts Delay", _bimboThoughtsDelay,"{1}")
 
 
 		AddEmptyOption()
@@ -1808,14 +1814,14 @@ state STATE_DEFAULT_COLOR ; COLOR
 
 	event OnColorAcceptST(int value) 
 		_defaultColor = value
-		StorageUtil.SetIntValue(PlayerActor, "_SLH_iDefaultColor", _defaultColor)
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iDefaultSkinColor", _defaultColor)
 		SetColorOptionValueST( _defaultColor )
 		ForcePageReset()
 	endEvent
 
 	event OnDefaultST()
 		_defaultColor =  Math.LeftShift(255, 16) + Math.LeftShift(255, 8) + 255
-		StorageUtil.SetIntValue(PlayerActor, "_SLH_iDefaultColor", _defaultColor)
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iDefaultSkinColor", _defaultColor)
 		SetColorOptionValueST( _defaultColor )
 	endEvent
 
@@ -1831,14 +1837,14 @@ state STATE_DEFAULT_COLOR_TXT ; COLOR
 
 	event OnInputAcceptST(string inputstr)
 		_defaultColor = HexToInt(inputstr)
-		StorageUtil.SetIntValue(PlayerActor, "_SLH_iDefaultColor", _defaultColor)
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iDefaultSkinColor", _defaultColor)
 		SetInputOptionValueST( inputstr )
 		ForcePageReset()
 	endEvent
 
 	event OnDefaultST()
 		_defaultColor =  Math.LeftShift(255, 16) + Math.LeftShift(255, 8) + 255
-		StorageUtil.SetIntValue(PlayerActor, "_SLH_iDefaultColor", _defaultColor)
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iDefaultSkinColor", _defaultColor)
 		SetInputOptionValueST( IntToHex(_defaultColor) )
 	endEvent
 
@@ -2435,6 +2441,32 @@ state STATE_BIMBO_CLUMSINESS ; SLIDER
 
 	event OnHighlightST()
 		SetInfoText("Bimbo clumsiness factor - To throttle dropping weapons or stumbling to the ground from 0 (no effect) to 1.0 (default range of clumsiness)")
+	endEvent
+endState
+
+; AddSliderOptionST("STATE_BIMBO_THOUGHTS","Bimbo thougths delay", _bimboThoughtsDelay)
+state STATE_BIMBO_THOUGHTS ; SLIDER
+	event OnSliderOpenST()
+		SetSliderDialogStartValue( _bimboThoughtsDelay  )
+		SetSliderDialogDefaultValue( 1 )
+		SetSliderDialogRange( 1, 200 )
+		SetSliderDialogInterval( 1 )
+	endEvent
+
+	event OnSliderAcceptST(float value)
+		Int thisValue = value as Int
+		_bimboThoughtsDelay = thisValue 
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iBimboThoughtsDelay", thisValue)
+		SetSliderOptionValueST( thisValue ,"{1}") 
+	endEvent
+
+	event OnDefaultST()
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iBimboThoughtsDelay", 1)
+		SetSliderOptionValueST( 1,"{1}" )
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Bimbo Thoughts Delay - Timer to throttle the occurence of bimbo thoughts. This base value is altered by arousal and the Bimbo hormone.")
 	endEvent
 endState
 

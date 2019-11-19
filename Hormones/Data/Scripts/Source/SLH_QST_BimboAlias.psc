@@ -237,15 +237,18 @@ Event OnUpdate()
 
 			If (rollFirstPerson <= (StorageUtil.GetFloatValue(BimboActor, "_SLH_fHormoneBimbo") as Int))
 				; First person thought
-
 	            ; Male to female bimbo
 	            if (daysSinceEnslavement==1)
+					SLH_Control.playChuckle(BimboActor)
 	            	debug.messagebox("I have boobs now and they are growing larger every day. It feels so good cupping them and feeling their weight. If they grow any larger, they will make using bows and armors a lot more difficult. That's alright though.. I guess I can find someone to fight for me. That's kind of hot actually.")
 	            elseif (daysSinceEnslavement==2)
-	            	debug.messagebox("My lips are full and feel parched if they are not frequently coated with semen. Oh my gods.. who knew semen tasted so good! I just can't get enough of the stuff. I need to feel it on my skin, inside me and down my throat.")
+					SLH_Control.playGiggle(BimboActor)
+	            	debug.messagebox("My lips are full and feel parched if they are not frequently coated with semen. Oh my gods.. who knew semen tasted so good! I just can't get enough of the stuff. I need to feel it on my skin, inside me and down my throat. Did you hear that giggle?")
 	            elseif (daysSinceEnslavement==3)
-	            	debug.messagebox("My cock is shrinking and getting more sensitive every day. Squeezing my legs and rubbing it frequently only provide temporary relief. And my balls.. I can feel them sink into a deep, wet slit. That's okay I suppose, as long as I can find big fat cocks to fill me.")
+	            	SLH_Control.playMoan(BimboActor)
+	            	debug.messagebox("My cock is shrinking and getting more sensitive every day. Squeezing my legs and rubbing it frequently only provide temporary relief. And my balls.. I can feel them sink into a deep, wet slit. That's okay I suppose, as long as I can find big fat cocks to fill me. And that giggle in my head... oh my Gods!")
 	            elseif (daysSinceEnslavement==4)
+	            	SLH_Control.playRandomSound(BimboActor)
 	            	debug.messagebox("Everything now looks so confusing and difficult. Except for sex. Sex is easy and fun. Being horny makes my hands shake and my legs weak with anticipation. Being a slut is one of the many perks of being a bimbo.")
 	            endif
 	        else
@@ -288,6 +291,7 @@ Event OnUpdate()
 
 			If (rollFirstPerson <= (StorageUtil.GetFloatValue(BimboActor, "_SLH_fHormoneBimbo") as Int))
 				; First person thought
+				SLH_Control.playGiggle(BimboActor)
 	            ; Female to female bimbo
 	            if (daysSinceEnslavement==1)
 	            	debug.messagebox("My boobs are growing larger every day and my hair is definitely blonde now. Armors and weapons are like, so heavy now. I need to find me a strong buy to carry all my stuff and fight for mw. Maybe he will give me a good fuck too. That would be totally worth it.")
@@ -523,18 +527,21 @@ endFunction
 ;===========================================================================
 function updateClumsyBimbo()
 	int rollFirstPerson  = Utility.RandomInt(0,100)
+	BimboActor= BimboAliasRef.GetReference() as Actor
 	If (rollFirstPerson <= (StorageUtil.GetFloatValue(Game.GetPlayer(), "_SLH_fHormoneBimbo") as Int))
 		; First person thought
 	    if (isBimboClumsyHands && !isClumsyHandsRegistered)
 	    	isClumsyHandsRegistered = True
 			RegisterForActorAction(0) ; Weapon Swing
 			RegisterForActorAction(5) ; Bow Draw
+			SLH_Control.playMoan(BimboActor)
 			Debug.Notification("I'm so horny I can't carry a thing.")
 		endif
 
 		if (isBimboClumsyLegs && !isClumsyLegsRegistered)
 	    	isClumsyLegsRegistered = True
 	    	RegisterForSingleUpdateGameTime(0.015) ;walking
+			SLH_Control.playRandomSound(BimboActor)
 			Debug.Notification("I need to fuck. Now!")
 	    endif
 	else
@@ -562,9 +569,11 @@ string Function randomBimboHandsMessage(float bimboArousal, int actionType)
 	int chance = Utility.RandomInt(0, 5)
 	int rollFirstPerson  = Utility.RandomInt(0,100)
 	String handMessage
+	BimboActor= BimboAliasRef.GetReference() as Actor
 
 	If (rollFirstPerson <= (StorageUtil.GetFloatValue(Game.GetPlayer(), "_SLH_fHormoneBimbo") as Int))
 		; First person thought
+		SLH_Control.playRandomSound(BimboActor)
 		if bimboArousal > 40
 			if chance < 1
 				handMessage = "My tits feel so full and soft."
@@ -748,10 +757,10 @@ function clumsyBimboLegs(Actor bimbo)
 
 			tumbleChance *= fClumsyMod
 
-			int roll = Utility.RandomInt()
+			int roll = Utility.RandomInt(0,100)
 			Int rollFirstPerson = Utility.RandomInt(0,100)
 			; debugTrace(" ------- stumble [" + roll + " < " + tumbleChance + "]?")
-			if (roll <= tumbleChance) && (GV_bimboClumsinessMod.GetValue()!=0)
+			if (roll <= (tumbleChance as Int)) && (GV_bimboClumsinessMod.GetValue()!=0)
 				If (bimboClumsyBuffer < ( 7 - (GV_bimboClumsinessMod.GetValue() as Int) * 6) )
 					bimboClumsyBuffer = bimboClumsyBuffer + 1
 				else
@@ -782,6 +791,7 @@ function clumsyBimboLegs(Actor bimbo)
 
 					If (rollFirstPerson <= (StorageUtil.GetFloatValue(bimbo, "_SLH_fHormoneBimbo") as Int))
 						; First person thought
+						SLH_Control.playMoan(bimbo)
 						if (rollMessage >= 80)
 							bimboTripMessage = "Oh My Gods.. is that a chipped nail?!"
 						elseif (rollMessage >= 60)
@@ -811,6 +821,7 @@ function clumsyBimboLegs(Actor bimbo)
 					if drop[0] > 0
 						If (rollFirstPerson <= (StorageUtil.GetFloatValue(bimbo, "_SLH_fHormoneBimbo") as Int))
 							Debug.Notification("Oopsies... that weapon is so heavy.") ;temp messages
+							SLH_Control.playGiggle(bimbo)
 						Else
 							Debug.Notification("You got distracted and dropped your weapons!") ;temp messages
 						Endif
@@ -827,15 +838,15 @@ function clumsyBimboLegs(Actor bimbo)
 					;Debug.SendAnimationEvent(bimbo, "BleedOutStop")
 				endIf
 
-			elseif bimboArousal > 80 && roll <= 20 ;warn the player
+			elseif bimboArousal > 90 && roll <= 20 ;warn the player
 				If (rollFirstPerson <= (StorageUtil.GetFloatValue(bimbo, "_SLH_fHormoneBimbo") as Int))
 					; First person thought
+					SLH_Control.playMoan(bimbo)
 					Debug.Notification("I'm so horny.")
 				else
 					Debug.Notification("You squeeze your legs with arousal.")
 				endif
 
-				SLH_Control.playRandomSound(bimbo)
 				bimbo.CreateDetectionEvent(bimbo, 10)
 			endif
 

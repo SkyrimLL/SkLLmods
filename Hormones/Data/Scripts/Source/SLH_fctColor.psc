@@ -84,10 +84,10 @@ ColorForm Property thisHairColor Auto
 function alterColorFromHormone(Actor kActor)				
  	Actor PlayerActor = Game.GetPlayer()
 	int iSuccubus = StorageUtil.GetIntValue(kActor, "_SLH_iSuccubus") 
-	int iDaedricInfluence = StorageUtil.GetIntValue(kActor, "_SLH_iDaedricInfluence") 
+	Int iDaedricInfluence = StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneSuccubus" ) as Int
 
-	Float fSwellFactor =  StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormonePigmentationMod") 
-	Float fPigmentationFactor = (StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormonePigmentation") / 100.0 ) * 255.0
+	Float fSwellFactor =  StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneSexDrive") 
+	Float fPigmentationFactor = (StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormonePigmentation") / 100.0 ) 
 
 	if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseColors") == 1)
 		debugTrace("  Set color from hormone"  )
@@ -97,16 +97,16 @@ function alterColorFromHormone(Actor kActor)
 		; skin
 		iOrigSkinColor = StorageUtil.GetIntValue(PlayerActor, "_SLH_iDefaultSkinColor")
 
-		iRedSkinColor = SetAlpha((fPigmentationFactor as Int), StorageUtil.GetIntValue(PlayerActor, "_SLH_iRedShiftColor")) 
-		fRedSkinColorMod = StorageUtil.GetFloatValue(PlayerActor, "_SLH_fRedShiftColorMod") * fSwellFactor
+		iRedSkinColor = SetAlpha(((fPigmentationFactor* 255.0) as Int), StorageUtil.GetIntValue(PlayerActor, "_SLH_iRedShiftColor")) 
+		fRedSkinColorMod = StorageUtil.GetFloatValue(PlayerActor, "_SLH_fRedShiftColorMod") * fPigmentationFactor
 
-		iBlueSkinColor = SetAlpha((fPigmentationFactor as Int), StorageUtil.GetIntValue(PlayerActor, "_SLH_iBlueShiftColor"))  
-		fBlueSkinColorMod = StorageUtil.GetFloatValue(PlayerActor, "_SLH_fBlueShiftColorMod") * fSwellFactor
+		iBlueSkinColor = SetAlpha(((fPigmentationFactor* 255.0) as Int), StorageUtil.GetIntValue(PlayerActor, "_SLH_iBlueShiftColor"))  
+		fBlueSkinColorMod = StorageUtil.GetFloatValue(PlayerActor, "_SLH_fBlueShiftColorMod") * fPigmentationFactor
 
 		iSuccubusRedSkinColor = SetAlpha(255, StorageUtil.GetIntValue(PlayerActor, "_SLH_iRedShiftColor"))
 		iSuccubusBlueSkinColor =  SetAlpha(255, StorageUtil.GetIntValue(PlayerActor, "_SLH_iBlueShiftColor"))
 
-		if (fSwellFactor > 0) 
+		if (fSwellFactor >= 40) 
 			; Aroused
 			If ((iSuccubus == 1) && (iDaedricInfluence>=20))
 				iSkinColor = alterTintMaskTarget(colorBase = iSkinColor, maskType = 6, maskIndex = 0, colorTarget = iSuccubusRedSkinColor, colorMod = 2.0 * fRedSkinColorMod )
@@ -114,7 +114,7 @@ function alterColorFromHormone(Actor kActor)
 				iSkinColor = alterTintMaskTarget(colorBase = iSkinColor, maskType = 6, maskIndex = 0, colorTarget = iRedSkinColor, colorMod = fRedSkinColorMod)
 			EndIf
 
-		ElseIf (fSwellFactor == 0) ; Healthy
+		ElseIf (fSwellFactor >= 10) && (fSwellFactor < 40) ; Healthy
 			; Coverge back to default skin color
 			iSkinColor = alterTintMaskTarget(colorBase = iSkinColor, maskType = 6, maskIndex = 0, colorTarget = iOrigSkinColor, colorMod = 1.0/3.0 )
 		Else ; Pale
