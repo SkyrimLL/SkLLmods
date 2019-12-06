@@ -2272,7 +2272,25 @@ function showStatus()
 
 	string shapeMessageStatus = fctBodyShape.getMessageStatus(PlayerActor)
 
-	Debug.MessageBox("SexLab Hormones \n Sex acts today: " + iSexCountToday + " - Total: " + iSexCountAll + " \n v: " + iVaginalCountToday  + " a: " + iAnalCountToday  + " o: " + iOralCountToday  + " \n Orgasms today: " + iOrgasmsCountToday + " - Total: " + iOrgasmsCountAll + " \n Libido: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fLibido")  + " \n Daedric: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_iDaedricInfluence") + " Succubus: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_iSuccubus") +" \n Bimbo: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo") +" \n Sex change: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_iHRT") +" TransGender: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_iTG") +" \n Pregnant: " + fctUtil.isPregnantByBeeingFemale(PlayerActor) +" Chaurus: " + fctUtil.isPregnantByEstrusChaurus(PlayerActor) + " \n Lactating: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_iLactating") + " Lvl: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkLevel")+ " Prl: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_iProlactinLevel")+ shapeMessageStatus )
+	Debug.MessageBox("SexLab Hormones \n Sex acts today: " + iSexCountToday + \
+	" - Total: " + iSexCountAll + \
+	" \n v: " + iVaginalCountToday  + \
+	" a: " + iAnalCountToday  + \
+	" o: " + iOralCountToday  + \
+	" \n Orgasms today: " + iOrgasmsCountToday + \
+	" - Total: " + iOrgasmsCountAll + \
+	" \n Libido: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fLibido") + \
+	" \n Daedric: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_iDaedricInfluence") + \
+	" Succubus: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_iSuccubus") + \
+	" \n Bimbo: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo") + \
+	" Days: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_bimboTransformGameDays") + \
+	" \n Sex change: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_iHRT") + \
+	" TransGender: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_iTG") + \
+	" \n Pregnant: " + fctUtil.isPregnantByBeeingFemale(PlayerActor) + \
+	" Chaurus: " + fctUtil.isPregnantByEstrusChaurus(PlayerActor) + \
+	" \n Lactating: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_iLactating") + \
+	" Lvl: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkLevel") + \
+	" Prl: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_iProlactinLevel") + shapeMessageStatus)
 
 EndFunction
 
