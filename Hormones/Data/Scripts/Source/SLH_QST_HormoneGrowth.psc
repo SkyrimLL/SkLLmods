@@ -181,8 +181,6 @@ Function Maintenance()
 	; Debug.Notification("[SLH] PlayerActor: " + PlayerActor)
 	; Debug.Notification("[SLH] pActorBase: " + pActorBase)
 
-	StorageUtil.SetIntValue(none, "_SLH_debugTraceON", 1)
-
 	fctUtil.checkGender(PlayerActor)
 
 	; If (!StorageUtil.HasIntValue(none, "_SLH_iHormones"))
@@ -195,36 +193,24 @@ Function Maintenance()
 
 	; Loading shape and hormone state
 	fctBodyShape.initShapeConstants(PlayerActor)
-	fctColor.initColorConstants(PlayerActor)
-
-	If (iGameDateLastSex  == -1)  ; Variable never set - initialize state
-		; Debug.Notification("SexLab Hormones: iGameDateLastSex: " + iGameDateLastSex)
-		initHormonesState(PlayerActor)
-	EndIf
+	; fctColor.initColorConstants(PlayerActor)
 
 	registerNewRacesForHair( VanillaHairRaceList  )
 	registerNewRacesForHair( CustomHairRaceList  )
 	registerNewRacesForHair( HumanRaceList  )
 
 	; setHormonesState(PlayerActor)	
-	fctBodyShape.getShapeState(PlayerActor)
-	fctColor.getColorState(PlayerActor)
+	fctBodyShape.getShapeState(PlayerActor) 
 
-	fctColor.alterSkinToOrigin(PlayerActor)
-
-	fctBodyShape.refreshBodyShape(PlayerActor)
-	fctColor.refreshColors(PlayerActor)
-	setHormonesState(PlayerActor)
-
-	If 	(StorageUtil.GetIntValue(PlayerActor, "_SLH_iHormoneLevelsInit") != 1) 
-		fctHormones.initHormonesLevels(PlayerActor)
-	EndIf
+	; fctColor.alterSkinToOrigin(PlayerActor)
+	fctBodyShape.refreshBodyShape(PlayerActor) 
+	fctColor.applyColorChanges(PlayerActor)
 
 	If (GV_shapeUpdateOnCellChange.GetValue()==1)
-		fctColor.applyColorChanges(PlayerActor)
 		fctBodyShape.applyBodyShapeChanges(PlayerActor)
 	EndIf
 
+	setHormonesState(PlayerActor)
 	; Debug.Notification("[Hormones] s:" + iSexCountToday + " - v:" + iVaginalCountToday + " - a:" + iAnalCountToday + " - o:" + iOralCountToday)
 
 
@@ -269,7 +255,7 @@ Function maintenanceVersionEvents()
 	pActorBase = PlayerActor.GetActorBase()
 	Int iBimbo = StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo") 
 
-	iVersionNumber = 20191026
+	iVersionNumber = 20191213
 	
 	If (StorageUtil.GetIntValue(none, "_SLH_iHormonesVersion") != iVersionNumber)
 		StorageUtil.SetIntValue(none, "_SLH_iHormonesVersion", iVersionNumber)	
@@ -283,6 +269,7 @@ Function maintenanceVersionEvents()
 			StorageUtil.SetIntValue(PlayerActor, "_SLH_iSexActivityBuffer",GV_sexActivityBuffer.GetValue() as Int)
 			StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBaseShrinkFactor",GV_baseShrinkFactor.GetValue() as Float) 
 			StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBaseSwellFactor",GV_baseSwellFactor.GetValue() as Float) 
+			StorageUtil.SetIntValue(none, "_SLH_debugTraceON", 1)
 		Endif
 		If (iVersionNumber <= 20191019)
 			StorageUtil.SetFloatValue(PlayerActor, "_SLH_fHormoneSuccubus", StorageUtil.GetIntValue(PlayerActor, "_SLH_iDaedricInfluence") as Float ) 
@@ -290,7 +277,9 @@ Function maintenanceVersionEvents()
 		If (iVersionNumber <= 20191026)
 			StorageUtil.SetIntValue(PlayerActor, "_SLH_iAllowBimboThoughts", iBimbo)
 		endif
-
+		If 	(StorageUtil.GetIntValue(PlayerActor, "_SLH_iHormoneLevelsInit") != 1) 
+			fctHormones.initHormonesLevels(PlayerActor)
+		EndIf
 	Endif
 
 	debugTrace(" Hormones " + iVersionNumber)
@@ -565,8 +554,7 @@ Event OnUpdate()
 		debugTrace("  Forced refresh of local and global variables")	
 
 		; PlayerActor.SendModEvent("SLHRefresh")
-		fctBodyShape.getShapeState(PlayerActor)
-		fctColor.getColorState(PlayerActor)
+		fctBodyShape.getShapeState(PlayerActor) 
 
 		GV_forcedRefresh.SetValue(0.0) 
 		StorageUtil.SetIntValue(none, "_SLH_iForcedRefresh",0)
@@ -605,8 +593,7 @@ Event OnUpdate()
 			_nodeBalancing()
 		endIf
 
-		fctBodyShape.getShapeState(PlayerActor)
-		fctColor.getColorState(PlayerActor)
+		fctBodyShape.getShapeState(PlayerActor) 
 
 		If bExternalChangeModActive
 			fctBodyShape.getShapeFromNodes(PlayerActor)
@@ -784,19 +771,17 @@ Event OnUpdate()
 
 				; Refreshing values in case of any external change from other mods
 				; fctBodyShape.getShapeState(bUseNodes = True)
-				fctBodyShape.getShapeState(PlayerActor)
-				fctColor.getColorState(PlayerActor)
-
-				fctColor.alterSkinToOrigin(PlayerActor)
-
 				fctBodyShape.refreshBodyShape(PlayerActor)
-				fctColor.refreshColors(PlayerActor)
-				setHormonesState(PlayerActor)
+				fctColor.applyColorChanges(PlayerActor)
+				fctBodyShape.getShapeState(PlayerActor) 
 
-				If (GV_shapeUpdateOnCellChange.GetValue()==1)
-					fctColor.applyColorChanges(PlayerActor)
+				; fctColor.alterSkinToOrigin(PlayerActor)
+
+				; If (GV_shapeUpdateOnCellChange.GetValue()==1)
 				;	fctBodyShape.applyBodyShapeChanges(PlayerActor)
-				EndIf
+				; EndIf
+
+				setHormonesState(PlayerActor)
 
 				; Debug.Notification("SexLab Hormones: After: " + fBelly + " from " + NetImmerse.GetNodeScale(PlayerActor, NINODE_BELLY, false) )
 			EndIf
@@ -812,6 +797,17 @@ Event OnUpdate()
 	RegisterForSingleUpdate(10)
 EndEvent
 
+Event OnLocationChange(Location akOldLoc, Location akNewLoc)
+  	If (GV_shapeUpdateOnCellChange.GetValue()==1)
+		PlayerREF= Game.GetPlayer() ; PlayerAlias.GetReference()
+		PlayerActor= PlayerREF as Actor
+
+		fctColor.applyColorChanges(PlayerActor)
+		fctBodyShape.getShapeState(PlayerActor) 
+
+		; fctBodyShape.applyBodyShapeChanges(PlayerActor)
+	EndIf
+endEvent
  
 Event OnCastSuccubusCurseEvent(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
@@ -1159,7 +1155,7 @@ Event OnResetColorsEvent(String _eventName, String _args, Float _argc = 1.0, For
 	debugTrace(" Receiving 'reset colors' event" )
 
 	fctColor.resetColorState( kActor)
-	refreshColor(kActor)
+	fctColor.applyColorChanges(kActor)
 	
 EndEvent
 
@@ -1345,7 +1341,7 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 		; fctHormones.modHormoneLevel(PlayerActor, "Succubus", 1.0)
 
 
-		fctHormones.modHormoneLevel(PlayerActor, "Pigmentation", 0.5)
+		fctHormones.modHormoneLevel(PlayerActor, "Pigmentation", 1.5)
 		fctHormones.modHormoneLevel(PlayerActor, "SexDrive", 10.0)
 
 		if (StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormonePheromones")>0)
@@ -1453,8 +1449,7 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 
 		If (bOral || bVaginal || bAnal)
 			; Refreshing values in case of any external change from other mods
-			fctBodyShape.getShapeState(PlayerActor)
-			fctColor.getColorState(PlayerActor)
+			fctBodyShape.getShapeState(PlayerActor) 
 
 			; Update after sex disabled during testing of influence of new hormone levels
 	    	; fctBodyShape.alterBodyAfterSex(PlayerActor, bOral, bVaginal, bAnal )
@@ -1465,7 +1460,8 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 
 			If !( fctUtil.isExternalChangeModActive(PlayerActor) ) && (GV_shapeUpdateAfterSex.GetVAlue() == 1)
 				fctColor.applyColorChanges(PlayerActor)
-				fctBodyShape.applyBodyShapeChanges(PlayerActor)
+				fctBodyShape.getShapeState(PlayerActor) 
+				; fctBodyShape.applyBodyShapeChanges(PlayerActor)
 			EndIf
 		Else
 			setHormonesState(PlayerActor)	
@@ -1602,7 +1598,7 @@ Function doOrgasm(String _args)
  		StorageUtil.SetIntValue(PlayerActor, "_SLH_iGameDateLastSex", iGameDateLastSex) 
 		StorageUtil.SetIntValue(PlayerActor, "_SLH_iDaysSinceLastSex", iDaysSinceLastSex) 
 
-		fctHormones.modHormoneLevel(PlayerActor, "Pigmentation", 0.5)
+		fctHormones.modHormoneLevel(PlayerActor, "Pigmentation", 2.5)
 
 		If (fctUtil.IsMale(PlayerActor))
 			; Male - larger drop of sex drive after orgasm, small chance of multiple orgasms
@@ -1894,10 +1890,12 @@ EndFunction
 Function refreshColor(Actor kActor)
 
 	debugTrace(" Updating colors only" )
-
-	fctColor.getColorState(kActor)
-	fctColor.refreshColors(kActor)
-	; fctColor.setColorState(kActor) - included in refreshColors()
+  
+	; fctBodyShape.refreshBodyShape(kActor) 
+	fctColor.applyColorChanges(kActor)
+	If !( bExternalChangeModActive ) && (NextAllowed!= -1)
+		fctBodyShape.applyBodyShapeChanges(kActor)
+	EndIf
 	
 EndFunction
 
@@ -1928,7 +1926,7 @@ function setHormonesStateDefault(Actor kActor)
 	debugTrace("  Set hormones state to default")
 
 	fctBodyShape.setShapeStateDefault(kActor)
-	fctColor.setColorStateDefault(kActor)
+	fctColor.initColorState(kActor)
 
 	Float fLibido = Utility.RandomInt(15,30) as Float
 	; SLH_Libido.SetValue( fLibido )
@@ -1981,8 +1979,7 @@ function setHormonesState(Actor kActor)
 
 	debugTrace("    :: Writing Hormones state to storage")
  
-	fctBodyShape.setShapeState(kActor)
-	fctColor.setColorState(kActor)
+	fctBodyShape.setShapeState(kActor) 
 	setHormonesSexualState( kActor)
 
 endFunction
@@ -2116,8 +2113,7 @@ function getHormonesState(Actor kActor)
 	; Debug.Notification("SexLab Hormones: Reading state from storage")
 	debugTrace("    :: Reading Hormones state from storage")
  
- 	fctBodyShape.getShapeState(kActor)
-	fctColor.getColorState(kActor)
+ 	fctBodyShape.getShapeState(kActor) 
 	getHormonesSexualState( kActor)
 
 endFunction

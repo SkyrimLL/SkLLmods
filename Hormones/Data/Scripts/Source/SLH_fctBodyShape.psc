@@ -1390,7 +1390,18 @@ function applyBodyShapeChanges(Actor kActor)
 	; 3d will not be loaded in some situations, such as werewolf transformations.
 	; Skip body update if 3d not loaded or player is on mount or in combat
 
-	If ( !kActor.Is3DLoaded() || kActor.IsOnMount() || (kActor.GetActorValue("Variable01")!= 0) || kActor.IsInCombat() || (kActorREF.GetCurrentScene()!=None) || kActor.IsWeaponDrawn() )
+	; This should be set by carts and horses but the value is not properly cleared
+	; (kActor.GetActorValue("Variable01")!= 0) ||  
+	
+	If ( !kActor.Is3DLoaded() || kActor.IsOnMount() || kActor.IsInCombat() || (kActorREF.GetCurrentScene()!=None) || kActor.IsWeaponDrawn() )
+			debugTrace("  QueueNiNodeUpdate - bad conditions - aborting")
+			debugTrace("             kActor: " + kActor)
+			debugTrace("             kActor.Is3DLoaded(): " + kActor.Is3DLoaded())
+			debugTrace("             kActor.IsOnMount(): " + kActor.IsOnMount())
+			debugTrace("             kActor.GetActorValue('Variable01'): " + kActor.GetActorValue("Variable01"))
+			debugTrace("             kActor.IsInCombat(): " + kActor.IsInCombat())
+			debugTrace("             kActorREF.GetCurrentScene(): " + kActorREF.GetCurrentScene())
+			debugTrace("             kActor.IsWeaponDrawn(): " + kActor.IsWeaponDrawn())
 		return
 	EndIf
 
@@ -1400,16 +1411,19 @@ function applyBodyShapeChanges(Actor kActor)
 	
 	If (kOrigRace != None) 
 		If (thisRace != kOrigRace)
-			debugTrace("  Race change detected - aborting")
+			debugTrace("  QueueNiNodeUpdate - Race change detected - aborting")
 			return
 		EndIf
 	Else
 		StorageUtil.SetFormValue(kActor, "_SLH_fOrigRace",thisRace) 
 	EndIf
 
- 	If (GV_enableNiNodeUpdate.GetValue() == 1)
-		If ((GV_useNodes.GetValue() == 1) || (GV_useWeight.GetValue() == 1))
+ 	; If (GV_enableNiNodeUpdate.GetValue() == 1)
+	;	If ((GV_useNodes.GetValue() == 1) || (GV_useWeight.GetValue() == 1))
+
+	; 2019-12-13 - Testing a forced QueueNiNodeUpdate to fully refresh shape and colors
 			debugTrace("  QueueNiNodeUpdate")
+			debug.Notification("[SLH] QueueNiNodeUpdate")
 			Utility.Wait(1.0)
 			string facegen = "bUseFaceGenPreprocessedHeads:General"
 			Utility.SetINIBool(facegen, false)
@@ -1418,10 +1432,10 @@ function applyBodyShapeChanges(Actor kActor)
 			Utility.SetINIBool(facegen, true)
 			Utility.Wait(1.0)
 
-		Else
-			debugTrace("  QueueNiNodeUpdate aborted - " + GV_useNodes.GetValue() + " - " +GV_useWeight.GetValue() )
-		Endif	
-	EndIf
+	;	Else
+	;		debugTrace("  QueueNiNodeUpdate aborted - " + GV_useNodes.GetValue() + " - " +GV_useWeight.GetValue() )
+	;	Endif	
+	;EndIf
  
 	; If (StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON")==1)
 		; If (GV_useWeight.GetValue() == 1)
@@ -1924,6 +1938,7 @@ function initShapeConstants(Actor kActor)
 
 	isNiOInstalled =  CheckXPMSERequirements(kActor, fctUtil.isFemale(kActor))
 	debugTrace("  NiOverride detection: " + isNiOInstalled)
+	StorageUtil.SetIntValue(none, "_SLH_NiNodeOverrideON", isNiOInstalled as Int)
 
 	isSlifInstalled = Game.GetModbyName("SexLab Inflation Framework.esp") != 255
 

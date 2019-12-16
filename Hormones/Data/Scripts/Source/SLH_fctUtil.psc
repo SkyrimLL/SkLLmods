@@ -60,6 +60,76 @@ float function fRange(float val, float minVal, float maxVal)
 	return fMin( fMax( val, minVal), maxVal)
 endFunction
 
+
+int Function HexToInt(string HexVal)  ; converts a 6 digit ascii hex string to integer; returns -1 in case of error
+	int count=0
+	int sum=0
+	int DigitVal
+	int SingleVal
+	while (count<=5)
+		DigitVal = StringUtil.AsOrd(StringUtil.GetNthChar(Hexval,count))
+		if DigitVal>= 97
+			DigitVal -= 32  ; switch to capitals
+		endif
+		if (DigitVal>=65) && (DigitVal<=70) ; A..F
+			SingleVal = DigitVal - 55
+		elseif (DigitVal>=48) && (DigitVal<=57) ; 0..9
+			SingleVal = DigitVal - 48
+		else		
+			return -1
+		endif
+		sum = SingleVal+16*sum
+		count += 1
+	endwhile
+	return sum
+endFunction
+
+String function IntToHex (int dec)
+	String hex = ""
+	int rest = dec
+	while (rest > 0)
+		int m16 = rest % 16
+		rest = rest / 16
+		String temp = ""
+		if (m16 == 1)
+			temp = "1"
+		elseif (m16 == 2)
+			temp = "2"
+		elseif (m16 == 3)
+			temp = "3"
+		elseif (m16 == 4)
+			temp = "4"
+		elseif (m16 == 5)
+			temp = "5"
+		elseif (m16 == 6)
+			temp = "6"
+		elseif (m16 == 7)
+			temp = "7"
+		elseif (m16 == 8)
+			temp = "8"
+		elseif (m16 == 9)
+			temp = "9"
+		elseif (m16 == 10)
+			temp = "A"
+		elseif (m16 == 11)
+			temp = "B"
+		elseif (m16 == 12)
+			temp = "C"
+		elseif (m16 == 13)
+			temp = "D"
+		elseif (m16 == 14)
+			temp = "E"
+		elseif (m16 == 15)
+			temp = "F"
+		else
+			temp = "0"
+		endif
+		hex = temp + hex
+	endWhile
+	return hex
+endFunction
+
+
 String Function actorName(Actor _person)
 	return _person.GetLeveledActorBase().GetName()
 EndFunction
@@ -373,7 +443,36 @@ function bimboRandomThoughts(actor bimbo)
 
 	If (rollFirstPerson <= (StorageUtil.GetFloatValue(bimbo, "_SLH_fHormoneBimbo") as Int))
 		; First person thought
-		If (SexLab.ValidateActor( bimbo) <= 0)
+		if bimbo.IsOnMount() 
+			if (rollMessage >= 120)
+				bimboMessage = "My tits are so bouncy!"
+			elseif (rollMessage >= 110)
+				bimboMessage = "Riding is making me jiggle!"
+			elseif (rollMessage >= 100)
+				bimboMessage = "All this riding is making me horny..."
+			elseif (rollMessage >= 90)
+				bimboMessage = "I wish my tits were even bigger..."
+			elseif (rollMessage >= 80)
+				bimboMessage = "Gotta keep my tits out, and my legs open!"
+			elseif (rollMessage >= 70)
+				bimboMessage = "I'd love to be riding someone's cock right now."
+			elseif (rollMessage >= 60)
+				bimboMessage = "My boobies are bouncing! *Giggle*"
+			elseif (rollMessage >= 50)
+				bimboMessage = "Riding is making me tingle!"
+			elseif (rollMessage >= 40)
+				bimboMessage = "Rub myself"
+			elseif (rollMessage >= 30)
+				bimboMessage = "Bounce more"
+			elseif (rollMessage >= 20)
+				bimboMessage = "Tits out, legs open. Good girl."
+			elseif (rollMessage >= 10)
+				bimboMessage = "I wanna ride a cock."
+			else 
+				bimboMessage = "*Giggle*"
+			endIf
+
+		elseif (SexLab.ValidateActor( bimbo) <= 0)
 			if (rollMessage >= 120)
 				bimboMessage = "I, like, love being a slut!"
 			elseif (rollMessage >= 115)
@@ -404,34 +503,6 @@ function bimboRandomThoughts(actor bimbo)
 				bimboMessage = "I totally love being a fuck puppet."
 			endIf
 
-		elseif bimbo.IsOnMount() 
-			if (rollMessage >= 120)
-				bimboMessage = "My tits are so bouncy!"
-			elseif (rollMessage >= 110)
-				bimboMessage = "Riding is making me jiggle!"
-			elseif (rollMessage >= 100)
-				bimboMessage = "All this riding is making me horny..."
-			elseif (rollMessage >= 90)
-				bimboMessage = "I wish my tits were even bigger..."
-			elseif (rollMessage >= 80)
-				bimboMessage = "Gotta keep my tits out, and my legs open!"
-			elseif (rollMessage >= 70)
-				bimboMessage = "I'd love to be riding someone's cock right now."
-			elseif (rollMessage >= 60)
-				bimboMessage = "My boobies are bouncing! *Giggle*"
-			elseif (rollMessage >= 50)
-				bimboMessage = "Riding is making me tingle!"
-			elseif (rollMessage >= 40)
-				bimboMessage = "Rub myself"
-			elseif (rollMessage >= 30)
-				bimboMessage = "Bounce more"
-			elseif (rollMessage >= 20)
-				bimboMessage = "Tits out, legs open. Good girl."
-			elseif (rollMessage >= 10)
-				bimboMessage = "I wanna ride a cock."
-			else 
-				bimboMessage = "*Giggle*"
-			endIf
 
 		elseif	bimbo.IsRunning() || bimbo.IsSprinting() 
 			if (rollMessage >= 90)

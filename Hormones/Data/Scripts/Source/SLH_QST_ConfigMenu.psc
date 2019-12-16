@@ -1730,6 +1730,7 @@ state STATE_CHANGE_COLOR ; TOGGLE
 		_useColors = Math.LogicalXor( 1, _useColors as Int )
 		SetToggleOptionValueST( _useColors as Bool )
 		StorageUtil.SetIntValue(PlayerActor, "_SLH_iUseColors", _useColors as Int)
+		SLH_Control.refreshColor(PlayerActor)
 		ForcePageReset()
 	endEvent
 
@@ -1815,13 +1816,16 @@ state STATE_DEFAULT_COLOR ; COLOR
 	event OnColorAcceptST(int value) 
 		_defaultColor = value
 		StorageUtil.SetIntValue(PlayerActor, "_SLH_iDefaultSkinColor", _defaultColor)
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iSkinColor", _defaultColor)
 		SetColorOptionValueST( _defaultColor )
+		SLH_Control.refreshColor(PlayerActor)
 		ForcePageReset()
 	endEvent
 
 	event OnDefaultST()
 		_defaultColor =  Math.LeftShift(255, 16) + Math.LeftShift(255, 8) + 255
 		StorageUtil.SetIntValue(PlayerActor, "_SLH_iDefaultSkinColor", _defaultColor)
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iSkinColor", _defaultColor)
 		SetColorOptionValueST( _defaultColor )
 	endEvent
 
@@ -1838,13 +1842,16 @@ state STATE_DEFAULT_COLOR_TXT ; COLOR
 	event OnInputAcceptST(string inputstr)
 		_defaultColor = HexToInt(inputstr)
 		StorageUtil.SetIntValue(PlayerActor, "_SLH_iDefaultSkinColor", _defaultColor)
-		SetInputOptionValueST( inputstr )
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iSkinColor", _defaultColor)
+		SetInputOptionValueST( _defaultColor )
+		SLH_Control.refreshColor(PlayerActor)
 		ForcePageReset()
 	endEvent
 
 	event OnDefaultST()
 		_defaultColor =  Math.LeftShift(255, 16) + Math.LeftShift(255, 8) + 255
 		StorageUtil.SetIntValue(PlayerActor, "_SLH_iDefaultSkinColor", _defaultColor)
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iSkinColor", _defaultColor)
 		SetInputOptionValueST( IntToHex(_defaultColor) )
 	endEvent
 
@@ -1863,6 +1870,7 @@ state STATE_RED_COLOR_SHIFT ; COLOR
 		_redShiftColor = value
 		StorageUtil.SetIntValue(PlayerActor, "_SLH_iRedShiftColor", _redShiftColor)
 		SetColorOptionValueST( _redShiftColor )
+		SLH_Control.refreshColor(PlayerActor)
 		ForcePageReset()
 	endEvent
 
@@ -1886,6 +1894,7 @@ state STATE_RED_COLOR_TXT ; COLOR
 		_redShiftColor = HexToInt(inputstr)
 		StorageUtil.SetIntValue(PlayerActor, "_SLH_iRedShiftColor", _redShiftColor)
 		SetInputOptionValueST( inputstr )
+		SLH_Control.refreshColor(PlayerActor)
 		ForcePageReset()
 	endEvent
 
@@ -1936,6 +1945,8 @@ state STATE_BLUE_COLOR_SHIFT ; COLOR
 		_blueShiftColor = value 
 		StorageUtil.SetIntValue(PlayerActor, "_SLH_iBlueShiftColor", _blueShiftColor)  
 		SetColorOptionValueST( _blueShiftColor )
+		SLH_Control.refreshColor(PlayerActor)
+		SLH_Control.refreshColor(PlayerActor)
 		ForcePageReset()
 	endEvent
 
@@ -1959,6 +1970,7 @@ state STATE_BLUE_COLOR_TXT ; COLOR
 		_blueShiftColor = HexToInt(inputstr)
 		StorageUtil.SetIntValue(PlayerActor, "_SLH_iBlueShiftColor", _blueShiftColor)
 		SetInputOptionValueST( inputstr )
+		SLH_Control.refreshColor(PlayerActor)
 		ForcePageReset()
 	endEvent
 
@@ -2009,6 +2021,7 @@ state STATE_BIMBO_HAIR_COLOR_SHIFT ; COLOR
 		_bimboHairColor = value 
 		StorageUtil.SetIntValue(PlayerActor, "_SLH_iBimboHairColor", _bimboHairColor)  
 		SetColorOptionValueST( _bimboHairColor )
+		SLH_Control.refreshColor(PlayerActor)
 		ForcePageReset()
 	endEvent
 
@@ -2032,6 +2045,7 @@ state STATE_BIMBO_HAIR_COLOR_TXT ; COLOR
 		_bimboHairColor = HexToInt(inputstr)
 		StorageUtil.SetIntValue(PlayerActor, "_SLH_iBimboHairColor", _bimboHairColor)
 		SetInputOptionValueST( inputstr )
+		SLH_Control.refreshColor(PlayerActor)
 		ForcePageReset()
 	endEvent
 
@@ -2082,6 +2096,7 @@ state STATE_SUCCUBUS_HAIR_COLOR_SHIFT ; COLOR
 		_succubusHairColor = value 
 		StorageUtil.SetIntValue(PlayerActor, "_SLH_iSuccubusHairColor", _succubusHairColor)  
 		SetColorOptionValueST( _succubusHairColor )
+		SLH_Control.refreshColor(PlayerActor)
 		ForcePageReset()
 	endEvent
 
@@ -2105,6 +2120,7 @@ state STATE_SUCCUBUS_HAIR_COLOR_TXT ; COLOR
 		_succubusHairColor = HexToInt(inputstr)
 		StorageUtil.SetIntValue(PlayerActor, "_SLH_iSuccubusHairColor", _succubusHairColor)
 		SetInputOptionValueST( inputstr )
+		SLH_Control.refreshColor(PlayerActor)
 		ForcePageReset()
 	endEvent
 

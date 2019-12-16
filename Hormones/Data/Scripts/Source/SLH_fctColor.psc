@@ -6,33 +6,6 @@ Import ColorComponent
 
 SLH_fctUtil Property fctUtil Auto
 
-Int iDefaultSkinColor = -1
-Int iBlueSkinColor = -1
-Float fBlueSkinColorMod = 0.0
-Int iRedSkinColor = -1
-Float fRedSkinColorMod = 0.0
-Int iSuccubusBlueSkinColor = 0
-Int iSuccubusRedSkinColor = 0
-Int iOrigSkinColor = 0
-Int iOrigCheeksColor = 0
-Int iOrigLipsColor = 0
-Int iOrigEyelinerColor = 0
-
-Int iSkinColor 			= 0
-Int iCheeksColor 		= 0
-Int iLipsColor 			= 0
-Int iEyelinerColor 		= 0
-
-Int iEyesIndexOrig = 0
-Int iHairIndexOrig = 0
-Int iHairColorOrig = 0
-Int iOrigEyesColor = 0
-Int iOrigHairColor = 0
-Int iEyesColor = 0
-Int iHairColor = 0
-Int iHairColorSuccubus = 0
-Int iHairColorBimbo = 0
-
 ColorForm Property thisHairColor Auto
 
 ; ====================================================
@@ -46,6 +19,32 @@ ColorForm Property thisHairColor Auto
 ; GlobalVariable      Property GV_blueShiftColorMod 		Auto
 ; GlobalVariable      Property GV_enableNiNodeOverride	Auto
 
+; Int iDefaultSkinColor = -1
+; Int iBlueSkinColor = -1
+; Float fBlueSkinColorMod = 0.0
+; Int iRedSkinColor = -1
+; Float fRedSkinColorMod = 0.0
+; Int iSuccubusBlueSkinColor = 0
+; Int iSuccubusRedSkinColor = 0
+; Int iOrigSkinColor = 0
+; Int iOrigCheeksColor = 0
+; Int iOrigLipsColor = 0
+; Int iOrigEyelinerColor = 0
+
+; Int iSkinColor 			= 0
+; Int iCheeksColor 		= 0
+; Int iLipsColor 			= 0
+; Int iEyelinerColor 		= 0
+
+; Int iEyesIndexOrig = 0
+; Int iHairIndexOrig = 0
+; Int iHairColorOrig = 0
+; Int iOrigEyesColor = 0
+; Int iOrigHairColor = 0
+; Int iEyesColor = 0
+; Int iHairColor = 0
+; Int iHairColorSuccubus = 0
+; Int iHairColorBimbo = 0
 
 ; SKIN TONE =======================================================
 
@@ -86,47 +85,59 @@ function alterColorFromHormone(Actor kActor)
 	int iSuccubus = StorageUtil.GetIntValue(kActor, "_SLH_iSuccubus") 
 	Int iDaedricInfluence = StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneSuccubus" ) as Int
 
+	Int iOrigSkinColor = StorageUtil.GetIntValue(PlayerActor, "_SLH_iDefaultSkinColor")
+	Int iSkinColor = StorageUtil.GetIntValue(PlayerActor, "_SLH_iSkinColor")
+
+	Int iRedSkinColor = StorageUtil.GetIntValue(PlayerActor, "_SLH_iRedShiftColor")
+	Float fRedSkinColorMod = StorageUtil.GetFloatValue(PlayerActor, "_SLH_fRedShiftColorMod") * fPigmentationFactor
+
+	Int iBlueSkinColor = StorageUtil.GetIntValue(PlayerActor, "_SLH_iBlueShiftColor") 
+	Float fBlueSkinColorMod = StorageUtil.GetFloatValue(PlayerActor, "_SLH_fBlueShiftColorMod") * fPigmentationFactor
+
+	Int iSuccubusRedSkinColor = StorageUtil.GetIntValue(PlayerActor, "_SLH_iRedShiftColor")
+	Int iSuccubusBlueSkinColor =  StorageUtil.GetIntValue(PlayerActor, "_SLH_iBlueShiftColor")
+
 	Float fSwellFactor =  StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneSexDrive") 
 	Float fPigmentationFactor = (StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormonePigmentation") / 100.0 ) 
+	Int iPigmentationLevel = (StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormonePigmentation" ) * 255.0 / 100.0) as Int
 
 	if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseColors") == 1)
-		debugTrace("  Set color from hormone"  )
-
-		debugTrace("  fPigmentationFactor: " + (fPigmentationFactor as Int) )
-
 		; skin
-		iOrigSkinColor = StorageUtil.GetIntValue(PlayerActor, "_SLH_iDefaultSkinColor")
+		
+		debugTrace("  Set color from hormone: "  )
+		debugTrace("     iSkinColor BEFORE: " + fctUtil.IntToHex(iSkinColor) )
+		debugTrace("     iOrigSkinColor: " + fctUtil.IntToHex(iOrigSkinColor)  )
 
-		iRedSkinColor = SetAlpha(((fPigmentationFactor* 255.0) as Int), StorageUtil.GetIntValue(PlayerActor, "_SLH_iRedShiftColor")) 
-		fRedSkinColorMod = StorageUtil.GetFloatValue(PlayerActor, "_SLH_fRedShiftColorMod") * fPigmentationFactor
-
-		iBlueSkinColor = SetAlpha(((fPigmentationFactor* 255.0) as Int), StorageUtil.GetIntValue(PlayerActor, "_SLH_iBlueShiftColor"))  
-		fBlueSkinColorMod = StorageUtil.GetFloatValue(PlayerActor, "_SLH_fBlueShiftColorMod") * fPigmentationFactor
-
-		iSuccubusRedSkinColor = SetAlpha(255, StorageUtil.GetIntValue(PlayerActor, "_SLH_iRedShiftColor"))
-		iSuccubusBlueSkinColor =  SetAlpha(255, StorageUtil.GetIntValue(PlayerActor, "_SLH_iBlueShiftColor"))
+		debugTrace("  fPigmentationFactor: " + fPigmentationFactor  )
 
 		if (fSwellFactor >= 40) 
 			; Aroused
 			If ((iSuccubus == 1) && (iDaedricInfluence>=20))
-				iSkinColor = alterTintMaskTarget(colorBase = iSkinColor, maskType = 6, maskIndex = 0, colorTarget = iSuccubusRedSkinColor, colorMod = 2.0 * fRedSkinColorMod )
+				debugTrace("  Target color: Red Succubus - iRedSkinColor: " + fctUtil.IntToHex(iRedSkinColor) )
+				iSkinColor = alterTintMaskTarget(colorBase =  iSkinColor, maskType = 6, maskIndex = 0, colorTarget = iSuccubusRedSkinColor, colorMod = 2.0 * fRedSkinColorMod , alphaLevel = iPigmentationLevel)
 			Else
-				iSkinColor = alterTintMaskTarget(colorBase = iSkinColor, maskType = 6, maskIndex = 0, colorTarget = iRedSkinColor, colorMod = fRedSkinColorMod)
+				debugTrace("  Target color: Red skin - iRedSkinColor: " + fctUtil.IntToHex(iRedSkinColor)   )
+				iSkinColor = alterTintMaskTarget(colorBase =  iSkinColor, maskType = 6, maskIndex = 0, colorTarget = iRedSkinColor, colorMod = fRedSkinColorMod, alphaLevel = iPigmentationLevel)
 			EndIf
 
 		ElseIf (fSwellFactor >= 10) && (fSwellFactor < 40) ; Healthy
 			; Coverge back to default skin color
-			iSkinColor = alterTintMaskTarget(colorBase = iSkinColor, maskType = 6, maskIndex = 0, colorTarget = iOrigSkinColor, colorMod = 1.0/3.0 )
+			debugTrace("  Target color: Origin skin color"  )
+			iSkinColor = alterTintMaskTarget(colorBase =  iSkinColor, maskType = 6, maskIndex = 0, colorTarget = iOrigSkinColor, colorMod = 1.0/3.0, alphaLevel = iPigmentationLevel )
 		Else ; Pale
 			; skin
 
 			If ((iSuccubus == 1) && (iDaedricInfluence>=20))
-				iSkinColor = alterTintMaskTarget(colorBase = iSkinColor, maskType = 6, maskIndex = 0, colorTarget = iSuccubusBlueSkinColor, colorMod = 2.0 * fBlueSkinColorMod )
+				debugTrace("  Target color: Blue Succubus - iBlueSkinColor: " + fctUtil.IntToHex(iBlueSkinColor) )
+				iSkinColor = alterTintMaskTarget(colorBase =  iSkinColor, maskType = 6, maskIndex = 0, colorTarget = iSuccubusBlueSkinColor, colorMod = 2.0 * fBlueSkinColorMod, alphaLevel = iPigmentationLevel )
 			Else
-				iSkinColor = alterTintMaskTarget(colorBase = iSkinColor, maskType = 6, maskIndex = 0, colorTarget = iBlueSkinColor, colorMod = fBlueSkinColorMod)
+				debugTrace("  Target color: Blue skin - iBlueSkinColor: " + fctUtil.IntToHex(iBlueSkinColor)  )
+				iSkinColor = alterTintMaskTarget(colorBase = iSkinColor, maskType = 6, maskIndex = 0, colorTarget = iBlueSkinColor, colorMod = fBlueSkinColorMod, alphaLevel = iPigmentationLevel)
 			EndIf
 
 		EndIf
+
+		debugTrace("     iSkinColor AFTER: " + fctUtil.IntToHex(iSkinColor) )
 
 	EndIf
 endfunction
@@ -143,10 +154,242 @@ endfunction
 
 function alterSkinToOrigin(Actor kActor = None, float fSwellFactor = 0.125)		
 	Actor PlayerActor = Game.GetPlayer()
+	Int iPigmentationLevel = (StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormonePigmentation" ) * 255.0 / 100.0) as Int
 
-	iOrigSkinColor = StorageUtil.GetIntValue(PlayerActor, "_SLH_iDefaultSkinColor")
-	iSkinColor = alterTintMaskTarget(colorBase = iSkinColor, maskType = 6, maskIndex = 0, colorTarget = iOrigSkinColor, colorMod =  fSwellFactor)		
+	Int iOrigSkinColor = StorageUtil.GetIntValue(PlayerActor, "_SLH_iDefaultSkinColor")
+	Int iSkinColor = StorageUtil.GetIntValue(PlayerActor, "_SLH_iSkinColor")
+
+	Int iNewSkinColor = alterTintMaskTarget(colorBase = iSkinColor, maskType = 6, maskIndex = 0, colorTarget = iOrigSkinColor, colorMod =  fSwellFactor, alphaLevel = iPigmentationLevel)	
+	StorageUtil.SetIntValue(PlayerActor, "_SLH_iSkinColor", iNewSkinColor)
+
 endfunction
+
+Int function alterTintMaskTarget(int colorBase, int maskType = 6, int maskIndex = 0, int colorTarget, float colorMod = 0.5, int alphaLevel = 255)
+	; color input assumed to be RBG only
+	; alpha level provided separately in parameters
+	int rOffset = 0
+	int gOffset = 0
+	int bOffset = 0
+
+ 	; int colorBase = Game.GetTintMaskColor(maskType, maskIndex)
+	int rBase = GetRed(colorBase) ; Math.LogicalAnd( Math.RightShift( colorBase, 16), 0x00FF) 
+	int gBase = GetGreen(colorBase) ; Math.LogicalAnd( Math.RightShift( colorBase, 8), 0x0000FF) 
+	int bBase = GetBlue(colorBase) ; Math.LogicalAnd( colorBase, 0x000000FF) 
+
+	int rTarget = GetRed(colorTarget) ; Math.LogicalAnd( Math.RightShift( colorTarget, 16), 0x00FF) 
+	int gTarget = GetGreen(colorTarget) ; Math.LogicalAnd( Math.RightShift( colorTarget, 8), 0x0000FF) 
+	int bTarget = GetBlue(colorTarget) ; Math.LogicalAnd( colorTarget, 0x000000FF) 
+
+	rOffset = -1 * ((( (rBase - rTarget) as Float) * colorMod) as Int)
+	gOffset = -1 * ((( (gBase - gTarget) as Float) * colorMod) as Int)
+	bOffset = -1 * ((( (bBase - bTarget) as Float) * colorMod) as Int)
+
+	debugTrace( ":::: SexLab Hormones: Alter tint mask to color target - " +  maskType )
+	debugTrace("  ColorMod - " + colorMod )
+	debugTrace("  Orig color - R:" + rBase + " - G:" + gBase + " - B:" + bBase  )
+	debugTrace("  Offsets - R:" + rOffset + " - G:" + gOffset + " - B:" + bOffset  )
+	debugTrace("  Target color - R:" + rTarget + " - G:" + gTarget + " - B:" + bTarget  )
+
+	int rNew = fctUtil.iMin(fctUtil.iMax(rBase + rOffset, 0), 255)
+	int gNew = fctUtil.iMin(fctUtil.iMax(gBase + gOffset, 0), 255)
+	int bNew = fctUtil.iMin(fctUtil.iMax(bBase + bOffset, 0), 255)
+
+	alphaLevel = 255 ; 2019-12-13 - forcing 255 alpha until a good mix of color levels is found
+
+	debugTrace("  New color - A: " + alphaLevel + " - R:" + rNew + " - G:" + gNew + " - B:" + bNew  )
+    alterTintMask(type = maskType, alpha = alphaLevel, red = rNew, green = gNew, blue = bNew)
+
+    ; int color = Math.LeftShift(aNew, 24) + Math.LeftShift(rNew, 16) + Math.LeftShift(gNew, 8) + bNew
+    int color = setRGB ( rNew, gNew, bNew)
+    return color
+EndFunction
+
+
+
+
+function initColorConstants(Actor kActor)
+	; Used to reset colors to default
+ 	Actor PlayerActor = Game.GetPlayer()
+
+	int iHairColorSuccubus = setRGB(255,255,255)  
+	int iHairColorBimbo = setRGB(243,236,216)  
+ 
+	int iDefaultSkinColor =  setRGB(255,255,255) 
+	int iRedSkinColor =  setRGB(155,118,100)
+	int iBlueSkinColor = setRGB(215,234,245)
+
+	StorageUtil.SetIntValue(PlayerActor, "_SLH_iDefaultSkinColor", iDefaultSkinColor)  
+
+	StorageUtil.SetIntValue(PlayerActor, "_SLH_iRedShiftColor", iRedSkinColor) 
+	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fRedShiftColorMod", 1.0)
+
+	StorageUtil.SetIntValue(PlayerActor, "_SLH_iBlueShiftColor", iBlueSkinColor)
+	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBlueShiftColorMod", 1.0)
+
+	StorageUtil.SetIntValue(PlayerActor, "_SLH_iBimboHairColor", iHairColorBimbo)
+	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBimboHairColorMod", 1.0)
+
+	StorageUtil.SetIntValue(PlayerActor, "_SLH_iSuccubusHairColor", iHairColorSuccubus)
+	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fSuccubusHairColorMod", 1.0)
+
+endFunction
+
+function initColorState(Actor kActor)
+	; Used to initialize Hormones from Player color values
+	; Player by default  - kActor ignored 
+	Actor PlayerActor = Game.GetPlayer()
+	ActorBase pLeveledActorBase = PlayerActor.GetLeveledActorBase()
+	Int iOrigSkinColor = Game.GetTintMaskColor(6,0)
+	Int iOrigCheeksColor = Game.GetTintMaskColor(9,0)
+	Int iOrigLipsColor = Game.GetTintMaskColor(1,0)
+	Int iOrigEyelinerColor = Game.GetTintMaskColor(3,0)
+	Int iOrigHairColor
+	ColorForm color
+
+	if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseColors") == 1)
+		; 
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iDefaultSkinColor", getRGBfromRGBA(iOrigSkinColor) )
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iSkinColor", getRGBfromRGBA(iOrigSkinColor) )
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iDefaultCheeksColor", getRGBfromRGBA(iOrigCheeksColor) )
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iDefaultLipsColor", getRGBfromRGBA(iOrigLipsColor) )
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iDefaultEyelinerColor", getRGBfromRGBA(iOrigEyelinerColor) )
+
+	Endif
+
+	if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseHairColors") == 1)  && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseHair") == 1)
+		color = pLeveledActorBase.GetHairColor()
+		iOrigHairColor = colorFormtoRGBA (color)
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iDefaultHairColor", getRGBfromRGBA(iOrigHairColor) )
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iHairColor", getRGBfromRGBA(iOrigHairColor) )
+	Endif
+
+endFunction
+
+function resetColorState(Actor kActor)
+	Actor PlayerActor = Game.GetPlayer()
+	; Player by default  - kActor ignored
+
+	initColorConstants(kActor)
+	initColorState(kActor)
+
+endFunction
+
+
+function getColorFromSkin(Actor kActor)
+	; Override color from skin - in case of external changes to this mod
+	Actor PlayerActor = Game.GetPlayer()
+	ActorBase pLeveledActorBase = PlayerActor.GetLeveledActorBase()
+	Int iOrigSkinColor = Game.GetTintMaskColor(6,0)
+	Int iOrigCheeksColor = Game.GetTintMaskColor(9,0)
+	Int iOrigLipsColor = Game.GetTintMaskColor(1,0)
+	Int iOrigEyelinerColor = Game.GetTintMaskColor(3,0)
+	Int iOrigHairColor
+	ColorForm color
+
+	if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseColors") == 1)
+		; 
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iSkinColor", getRGBfromRGBA(iOrigSkinColor) )
+		; StorageUtil.SetIntValue(PlayerActor, "_SLH_iCheeksColor", getRGBfromRGBA(iOrigCheeksColor) )
+		; StorageUtil.SetIntValue(PlayerActor, "_SLH_iLipsColor", getRGBfromRGBA(iOrigLipsColor) )
+		; StorageUtil.SetIntValue(PlayerActor, "_SLH_iEyelinerColor", getRGBfromRGBA(iOrigEyelinerColor) )
+
+	Endif
+
+	if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseHairColors") == 1)  && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseHair") == 1)
+		color = pLeveledActorBase.GetHairColor()
+		iOrigHairColor = colorFormtoRGBA (color)
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iHairColor", getRGBfromRGBA(iOrigHairColor) )
+	Endif
+
+endFunction
+
+function applyColorChanges(Actor kActor)
+	Actor PlayerActor = Game.GetPlayer()
+	int iHairColor
+	if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseColors") == 1)
+		alterColorFromHormone(PlayerActor)
+
+	 	If (SKSE.GetPluginVersion("NiOverride") >= 1) && (StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON")==1)
+	 		debugTrace("  Applying NiOverride")
+		 	NiOverride.ApplyOverrides(kActor)
+	 		NiOverride.ApplyNodeOverrides(kActor)
+	 	Endif
+
+	endIf
+
+	if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseHairColors") == 1) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseHair") == 1)
+		Game.UpdateHairColor()
+		; debugTrace("  Updating TintMaskColors")
+		; Game.UpdateTintMaskColors()
+
+		iHairColor = StorageUtil.GetIntValue(kActor, "_SLH_iHairColor") 
+		If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
+			; YPS Fashion override if detected
+			; See - http://www.loverslab.com/topic/56627-immersive-hair-growth-and-styling-yps-devious-immersive-fashion-v5/
+
+ 			If 	(StorageUtil.GetIntValue(kActor, "_SLH_iHairColorDye") ==  1 ) 
+	 			debugTrace(" - Sending dye YPS hair color event: " + 	fctUtil.IntToHex(iHairColor) )
+				SendModEvent("yps-HairColorDyeEvent", StorageUtil.GetStringValue(kActor, "_SLH_sHairColorName"), iHairColor)  
+			else
+	 			debugTrace(" - Sending base YPS hair color event: " + 	fctUtil.IntToHex(iHairColor) )
+				SendModEvent("yps-HairColorBaseEvent", StorageUtil.GetStringValue(kActor, "_SLH_sHairColorName"), iHairColor)  
+			endIf
+
+		Endif
+	EndIf
+endFunction
+
+
+;-------------
+;-------------
+
+
+
+; STRemoveAllSectionTattoo(Form _form, String _section, bool _ignoreLock, bool _silent): remove all tattoos from determined section (ie, the folder name on disk, like "Bimbo")
+
+; STAddTattoo(Form _form, String _section, String _name, int _color, bool _last, bool _silent, int _glowColor, bool _gloss, bool _lock): add a tattoo with more parameters, including glow, gloss (use it to apply makeup, looks much better) and locked tattoos.
+
+function sendSlaveTatModEvent(actor akActor, string sType, string sTatooName, int iColor = 0x99000000, bool bRefresh = False)
+	; SlaveTats.simple_add_tattoo(bimbo, "Bimbo", "Tramp Stamp", last = false, silent = true)
+  	int STevent = ModEvent.Create("STSimpleAddTattoo")  
+
+  	if (STevent) 
+        ModEvent.PushForm(STevent, akActor)      	; Form - actor
+        ModEvent.PushString(STevent, sType)    	; String - type of tattoo?
+        ModEvent.PushString(STevent, sTatooName)  	; String - name of tattoo
+        ModEvent.PushInt(STevent, iColor)  			; Int - color
+        ModEvent.PushBool(STevent, bRefresh)        	; Bool - last = false
+        ModEvent.PushBool(STevent, true)         	; Bool - silent = true
+
+        ModEvent.Send(STevent)
+  	else
+  		debugTrace(" SLH_fctColor: Send slave tat event failed.")
+	endIf
+endfunction
+
+
+Int function alterHairColor(Actor kActor, int rgbacolor, HeadPart thisHair)
+	Actor kPlayer = Game.GetPlayer()
+	ActorBase pActorBase = kActor.GetActorBase()
+	ActorBase pLeveledActorBase = kActor.GetLeveledActorBase()
+
+	if (StorageUtil.GetIntValue(kPlayer, "_SLH_iUseHairColors") == 1) && (StorageUtil.GetIntValue(kPlayer, "_SLH_iUseHair") == 1)
+
+		kActor.ChangeHeadPart(thisHair)
+
+		thisHairColor.SetColor(rgbacolor)
+		pLeveledActorBase.SetHairColor(thisHairColor)
+	Endif
+
+EndFunction
+
+Int function alterEyesColor(Actor kActor, int rgbacolor, HeadPart thisEyes)
+ 
+	; Find out how to change eyes color
+
+	kActor.ChangeHeadPart(thisEyes)
+
+EndFunction
 
 function alterTintMask(int type = 6, int alpha = 0, int red = 125, int green = 90, int blue = 70, int setIndex = 0, Bool setAll = False)
 
@@ -172,13 +415,13 @@ function alterTintMask(int type = 6, int alpha = 0, int red = 125, int green = 9
 
 	; int color = Math.LeftShift(alpha, 24) + Math.LeftShift(red, 16) + Math.LeftShift(green, 8) + blue
 	; int color = Math.LogicalOr(Math.LogicalAnd(rgb, 0xFFFFFF), Math.LeftShift((alpha * 255) as Int, 24))
-	Int color = setARGB(alpha, red, green, blue)
+	Int color = setRGBA(alpha, red, green, blue)
 
-	setTintMaskColor(itype = type, irgbacolor = color, isetIndex = setIndex, bsetAll = setAll)
+	setTintMask(itype = type, irgbacolor = color, isetIndex = setIndex, bsetAll = setAll)
 
 EndFunction
 
-function setTintMask(int type = 6, int rgbacolor = 0, int setIndex = 0, Bool setAll = False)
+function setTintMask(int itype = 6, int irgbacolor = 0, int isetIndex = 0, Bool bsetAll = False)
   	Int slotMask
   	Actor kPlayer = Game.GetPlayer()
 	; Sets the tintMask color for the particular type and index
@@ -189,17 +432,20 @@ function setTintMask(int type = 6, int rgbacolor = 0, int setIndex = 0, Bool set
 		; int color = Math.LeftShift(alpha, 24) + Math.LeftShift(red, 16) + Math.LeftShift(green, 8) + blue
 		; int color = Math.LogicalOr(Math.LogicalAnd(rgb, 0xFFFFFF), Math.LeftShift((alpha * 255) as Int, 24))
 
-		if (type == 6) ; Skin
+		if (itype == 6) ; Skin
 			; Function AddSkinOverrideInt(ObjectReference ref, bool isFemale, bool firstPerson, int slotMask, int key, int index, int value, bool persist) native global
 
-			NiOverride.AddSkinOverrideInt(kPlayer as ObjectReference, fctUtil.isFemale(kPlayer), True, 0, 0, 7, rgbacolor, True)
-			NiOverride.AddSkinOverrideInt(kPlayer as ObjectReference, fctUtil.isFemale(kPlayer), True, 0, 0, 8, rgbacolor, True)
-			NiOverride.AddSkinOverrideInt(kPlayer as ObjectReference, fctUtil.isFemale(kPlayer), True, 0, 0, 9, rgbacolor, True)
-			NiOverride.AddSkinOverrideInt(kPlayer as ObjectReference, fctUtil.isFemale(kPlayer), True, 0, 0, 10, rgbacolor, True)
-			; Game.SetTintMaskColor(rgbacolor, 6, 0)
+			NiOverride.AddSkinOverrideInt(kPlayer as ObjectReference, fctUtil.isFemale(kPlayer), True, 0, 0, 7, irgbacolor, True)
+			NiOverride.AddSkinOverrideInt(kPlayer as ObjectReference, fctUtil.isFemale(kPlayer), True, 0, 0, 8, irgbacolor, True)
+			NiOverride.AddSkinOverrideInt(kPlayer as ObjectReference, fctUtil.isFemale(kPlayer), True, 0, 0, 9, irgbacolor, True)
+			NiOverride.AddSkinOverrideInt(kPlayer as ObjectReference, fctUtil.isFemale(kPlayer), True, 0, 0, 10, irgbacolor, True)
+			
+			; 2019-12-13 - troubleshoot use of NiOverride.AddSkinOverrideInt - doesn't seem to be working
+			; 				reverting back to Game.SetTintMaskColor for now.
+			Game.SetTintMaskColor(irgbacolor, 6, 0)
 		else
 
-			setTintMaskColor(itype = type, irgbacolor = rgbacolor, isetIndex = setIndex, bsetAll = setAll)
+			setTintMaskColor(itype , irgbacolor , isetIndex , bsetAll )
 		endif
 
 	Endif
@@ -218,6 +464,7 @@ function setTintMaskColor(int itype = 6, int irgbacolor = 0, int isetIndex = 0, 
 	 	while(index < index_count)
 	 		if (index == isetIndex) || (bsetAll)
 	 			debugTrace("  		    Layer : " + index  )
+	 			debugTrace("       		Color : " + fctUtil.IntToHex(irgbacolor) )
 	 			Game.SetTintMaskColor(irgbacolor, itype, index)
 	 		EndIf
 	 		index = index + 1
@@ -302,74 +549,9 @@ Int function alterTintMaskRelativeHSL(int colorOrig, int colorBase, int maskType
     alterTintMask(type = maskType, alpha = aNew, red = rNew, green = gNew, blue = bNew)
 
     ; int color = Math.LeftShift(aNew, 24) + Math.LeftShift(rNew, 16) + Math.LeftShift(gNew, 8) + bNew
-    int color = setARGB ( aNew, rNew, gNew, bNew)
+    int color = setRGBA ( aNew, rNew, gNew, bNew)
 
     return color
-EndFunction
-
-
-Int function alterTintMaskTarget(int colorBase, int maskType = 6, int maskIndex = 0, int colorTarget, float colorMod = 0.5)
-	int aOffset = 0
-	int rOffset = 0
-	int gOffset = 0
-	int bOffset = 0
-
- 	; int colorBase = Game.GetTintMaskColor(maskType, maskIndex)
-	int aBase = GetAlpha(colorBase) ; Math.RightShift( colorBase, 24)
-	int rBase = GetRed(colorBase) ; Math.LogicalAnd( Math.RightShift( colorBase, 16), 0x00FF) 
-	int gBase = GetGreen(colorBase) ; Math.LogicalAnd( Math.RightShift( colorBase, 8), 0x0000FF) 
-	int bBase = GetBlue(colorBase) ; Math.LogicalAnd( colorBase, 0x000000FF) 
-
-	int aTarget = GetAlpha(colorTarget) ; Math.RightShift( colorTarget, 24)
-	int rTarget = GetRed(colorTarget) ; Math.LogicalAnd( Math.RightShift( colorTarget, 16), 0x00FF) 
-	int gTarget = GetGreen(colorTarget) ; Math.LogicalAnd( Math.RightShift( colorTarget, 8), 0x0000FF) 
-	int bTarget = GetBlue(colorTarget) ; Math.LogicalAnd( colorTarget, 0x000000FF) 
-
-	aOffset = -1 * ((( (aBase - aTarget) as Float) * colorMod) as Int)
-	rOffset = -1 * ((( (rBase - rTarget) as Float) * colorMod) as Int)
-	gOffset = -1 * ((( (gBase - gTarget) as Float) * colorMod) as Int)
-	bOffset = -1 * ((( (bBase - bTarget) as Float) * colorMod) as Int)
-
-	debugTrace( ":::: SexLab Hormones: Alter tint mask to color target - " +  maskType )
-	debugTrace("  ColorMod - " + colorMod )
-	debugTrace("  Orig color - " + aBase + " - " + rBase + " - " + gBase + " - " + bBase  )
-	debugTrace("  Offsets - " + aOffset + " - " + rOffset + " - " + gOffset + " - " + bOffset  )
-	debugTrace("  Target color - " + aTarget + " - " + rTarget + " - " + gTarget + " - " + bTarget  )
-
-	int aNew = fctUtil.iMin(fctUtil.iMax(aBase + aOffset, 0), 255)
-	int rNew = fctUtil.iMin(fctUtil.iMax(rBase + rOffset, 0), 255)
-	int gNew = fctUtil.iMin(fctUtil.iMax(gBase + gOffset, 0), 255)
-	int bNew = fctUtil.iMin(fctUtil.iMax(bBase + bOffset, 0), 255)
-
-	debugTrace("  New color - " + aNew + " - " + rNew + " - " + gNew + " - " + bNew  )
-    alterTintMask(type = maskType, alpha = aNew, red = rNew, green = gNew, blue = bNew)
-
-    ; int color = Math.LeftShift(aNew, 24) + Math.LeftShift(rNew, 16) + Math.LeftShift(gNew, 8) + bNew
-    int color = setARGB ( aNew, rNew, gNew, bNew)
-    return color
-EndFunction
-
-Int function alterHairColor(Actor kActor, int rgbacolor, HeadPart thisHair)
-	Actor kPlayer = Game.GetPlayer()
-	ActorBase pActorBase = kActor.GetActorBase()
-	ActorBase pLeveledActorBase = kActor.GetLeveledActorBase()
-
-	if (StorageUtil.GetIntValue(kPlayer, "_SLH_iUseHairColors") == 1) && (StorageUtil.GetIntValue(kPlayer, "_SLH_iUseHair") == 1)
-
-		kActor.ChangeHeadPart(thisHair)
-
-		thisHairColor.SetColor(rgbacolor)
-		pLeveledActorBase.SetHairColor(thisHairColor)
-	Endif
-
-EndFunction
-
-Int function alterEyesColor(Actor kActor, int rgbacolor, HeadPart thisEyes)
- 
-	; Find out how to change eyes color
-
-	kActor.ChangeHeadPart(thisEyes)
-
 EndFunction
 
 Int function setRGB(Int iRed, Int iGreen, Int iBlue)
@@ -382,7 +564,7 @@ Int function setRGB(Int iRed, Int iGreen, Int iBlue)
 	Return iColor
 EndFunction
 
-Int function setARGB(Int iAlpha, Int iRed, Int iGreen, Int iBlue)
+Int function setRGBA(Int iAlpha, Int iRed, Int iGreen, Int iBlue)
 	; https://www.creationkit.com/index.php?title=ColorComponent_Script
 	Int iColor
 	; The value to set the alpha component to, should only be set to a value in between 0 and 255
@@ -407,14 +589,23 @@ Int function setAHLS(Int iAlpha, Int iHue, Int iSaturation, Int iValue)
 	Return iColor
 EndFunction
 
+Int function getRGBfromRGBA(Int iRGBAColor)
+	int aColor = GetAlpha(iRGBAColor) ; Math.LogicalAnd( Math.RightShift( colorBase, 24), 0x00FF) 
+	int rColor = GetRed(iRGBAColor) ; Math.LogicalAnd( Math.RightShift( colorBase, 16), 0x00FF) 
+	int gColor = GetGreen(iRGBAColor) ; Math.LogicalAnd( Math.RightShift( colorBase, 8), 0x0000FF) 
+	int bColor = GetBlue(iRGBAColor) ; Math.LogicalAnd( colorBase, 0x000000FF)
+    return setRGB ( rColor, gColor, bColor) 
+endFunction
+
 Int function colorFormtoRGBA (ColorForm color)
 	int red = color.GetRed() 
 	int green = color.GetGreen() 
 	int blue = color.GetBlue() 
-    int iColor = setARGB(255, red, green, blue)
+    int iColor = setRGBA(255, red, green, blue)
     return iColor
 
 endFunction
+
 
 ; HSL to RGB conversion - see: http://stackoverflow.com/questions/2353211/hsl-to-rgb-color-conversion
 
@@ -508,349 +699,6 @@ float[] function RGBtoHSL(int r, int g, int b)
     return hsl
 EndFunction
 
-; STRemoveAllSectionTattoo(Form _form, String _section, bool _ignoreLock, bool _silent): remove all tattoos from determined section (ie, the folder name on disk, like "Bimbo")
-
-; STAddTattoo(Form _form, String _section, String _name, int _color, bool _last, bool _silent, int _glowColor, bool _gloss, bool _lock): add a tattoo with more parameters, including glow, gloss (use it to apply makeup, looks much better) and locked tattoos.
-
-function sendSlaveTatModEvent(actor akActor, string sType, string sTatooName, int iColor = 0x99000000, bool bRefresh = False)
-	; SlaveTats.simple_add_tattoo(bimbo, "Bimbo", "Tramp Stamp", last = false, silent = true)
-  	int STevent = ModEvent.Create("STSimpleAddTattoo")  
-
-  	if (STevent) 
-        ModEvent.PushForm(STevent, akActor)      	; Form - actor
-        ModEvent.PushString(STevent, sType)    	; String - type of tattoo?
-        ModEvent.PushString(STevent, sTatooName)  	; String - name of tattoo
-        ModEvent.PushInt(STevent, iColor)  			; Int - color
-        ModEvent.PushBool(STevent, bRefresh)        	; Bool - last = false
-        ModEvent.PushBool(STevent, true)         	; Bool - silent = true
-
-        ModEvent.Send(STevent)
-  	else
-  		debugTrace(" SLH_fctColor: Send slave tat event failed.")
-	endIf
-endfunction
-
-function initColorConstants(Actor kActor)
- 	Actor PlayerActor = Game.GetPlayer()
-
-	iHairColorSuccubus = setRGB(255,255,255)  
-	iHairColorBimbo = setRGB(243,236,216)  
- 
-	iDefaultSkinColor =  setRGB(255,255,255) 
-	iRedSkinColor =  setRGB(155,118,100)
-	iBlueSkinColor =setRGB(215,234,245)
-
-	; StorageUtil.SetIntValue(PlayerActor, "_SLH_iUseColors", 1)  ; GV_useColors.GetValue()  as Int
-	; StorageUtil.SetIntValue(PlayerActor, "_SLH_iUseHairColors", 1) ; GV_useHairColors.GetValue()  as Int
-
-	; catch upgrade path
-	if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iDefaultSkinColor") == -1)  
-		StorageUtil.SetIntValue(PlayerActor, "_SLH_iRedShiftColor", -1) 
-		StorageUtil.SetIntValue(PlayerActor, "_SLH_iBlueShiftColor", -1)
-		StorageUtil.SetIntValue(PlayerActor, "_SLH_iBimboHairColor", -1)
-		StorageUtil.SetIntValue(PlayerActor, "_SLH_iSuccubusHairColor", -1)
-	Endif
-
-	if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iDefaultSkinColor") == -1)
-		StorageUtil.SetIntValue(PlayerActor, "_SLH_iDefaultSkinColor", iDefaultSkinColor)  
-	Endif
-	if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iRedShiftColor") == -1)
-		StorageUtil.SetIntValue(PlayerActor, "_SLH_iRedShiftColor", iRedSkinColor) 
-		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fRedShiftColorMod", 1.0)
-	Endif
-	if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iBlueShiftColor") == -1)
-		StorageUtil.SetIntValue(PlayerActor, "_SLH_iBlueShiftColor", iBlueSkinColor)
-		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBlueShiftColorMod", 1.0)
-	Endif
-	if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimboHairColor") == -1)
-		StorageUtil.SetIntValue(PlayerActor, "_SLH_iBimboHairColor", iHairColorBimbo)
-		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBimboHairColorMod", 1.0)
-	Endif
-	if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iSuccubusHairColor") == -1)
-		StorageUtil.SetIntValue(PlayerActor, "_SLH_iSuccubusHairColor", iHairColorSuccubus)
-		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fSuccubusHairColorMod", 1.0)
-	Endif
-
-
-	iRedSkinColor = StorageUtil.GetIntValue(PlayerActor, "_SLH_iRedShiftColor")
-	iBlueSkinColor = StorageUtil.GetIntValue(PlayerActor, "_SLH_iBlueShiftColor")
-	iSuccubusRedSkinColor = StorageUtil.GetIntValue(PlayerActor, "_SLH_iRedShiftColor")
-	iSuccubusBlueSkinColor = StorageUtil.GetIntValue(PlayerActor, "_SLH_iBlueShiftColor")
-
-endFunction
-
-function initColorState(Actor kActor)
-	Actor PlayerActor = Game.GetPlayer()
-	; Player by default  - kActor ignored 
-	ActorBase pLeveledActorBase = PlayerActor.GetLeveledActorBase()
-	ColorForm color
-
-	if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseColors") == 1)
-		; iOrigSkinColor = Game.GetTintMaskColor(6,0)
-		iOrigSkinColor = StorageUtil.GetIntValue(PlayerActor, "_SLH_iDefaultSkinColor")
-		iSkinColor = iOrigSkinColor
-		iOrigCheeksColor = Game.GetTintMaskColor(9,0)
-		iCheeksColor = iOrigCheeksColor
-		iOrigLipsColor = Game.GetTintMaskColor(1,0)
-		iLipsColor = iOrigLipsColor
-		iOrigEyelinerColor = Game.GetTintMaskColor(3,0)
-		iEyelinerColor = iOrigEyelinerColor
-	Endif
-
-	if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseHairColors") == 1)  && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseHair") == 1)
-		color = pLeveledActorBase.GetHairColor()
-		iOrigHairColor = colorFormtoRGBA (color)
-		iHairColor = iOrigHairColor
-	Endif
-
-	setColorState(kActor)
-
-endFunction
-
-function setColorStateDefault(Actor kActor)
-	Actor PlayerActor = Game.GetPlayer()
-	; Player by default  - kActor ignored
-	ActorBase pLeveledActorBase = PlayerActor.GetLeveledActorBase()
-	ColorForm color
-
-	if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseColors") == 1)
-		; iOrigSkinColor = Game.GetTintMaskColor(6,0)
-		iOrigSkinColor = StorageUtil.GetIntValue(PlayerActor, "_SLH_iDefaultSkinColor")
-		iSkinColor = iOrigSkinColor
-		iOrigCheeksColor = Game.GetTintMaskColor(9,0)
-		iCheeksColor = iOrigCheeksColor
-		iOrigLipsColor = Game.GetTintMaskColor(1,0)
-		iLipsColor = iOrigLipsColor
-		iOrigEyelinerColor = Game.GetTintMaskColor(3,0)
-		iEyelinerColor = iOrigEyelinerColor
-	endIf
-
-	if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseHairColors") == 1) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseHair") == 1)
-		color = pLeveledActorBase.GetHairColor()
-		iOrigHairColor = colorFormtoRGBA (color)
-		iHairColor = iOrigHairColor
-	endIf
-
-	setColorState(kActor)
-
-endFunction
-
-function resetColorState(Actor kActor)
-	Actor PlayerActor = Game.GetPlayer()
-	; Player by default  - kActor ignored
-
-	if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseColors") == 1)
-		; iOrigSkinColor = Game.GetTintMaskColor(6,0)
-		iOrigSkinColor = StorageUtil.GetIntValue(PlayerActor, "_SLH_iDefaultSkinColor")
-		iSkinColor = iOrigSkinColor
-		; iOrigCheeksColor = Game.GetTintMaskColor(9,0)
-		iCheeksColor = iOrigCheeksColor
-		; iOrigLipsColor = Game.GetTintMaskColor(1,0)
-		iLipsColor = iOrigLipsColor
-		; iOrigEyelinerColor = Game.GetTintMaskColor(3,0)
-		iEyelinerColor = iOrigEyelinerColor
-	Endif
-
-	if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseHairColors") == 1) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseHair") == 1)
-		iHairColor = iOrigHairColor
-
-		iHairColorSuccubus = Math.LeftShift(255, 16) + Math.LeftShift(255, 8) + 255
-		iHairColorBimbo = Math.LeftShift(243, 16) + Math.LeftShift(236, 8) + 216
-	 
-		iDefaultSkinColor =  Math.LeftShift(255, 16) + Math.LeftShift(255, 8) + 255
-		iRedSkinColor =  Math.LeftShift(200, 16) + Math.LeftShift(0, 8) + 0
-		iBlueSkinColor = Math.LeftShift(50, 16) + Math.LeftShift(0, 8) + 255
-
-		; StorageUtil.SetIntValue(PlayerActor, "_SLH_iUseColors", 1)  ; GV_useColors.GetValue()  as Int
-		; StorageUtil.SetIntValue(PlayerActor, "_SLH_iUseHairColors", 1) ; GV_useHairColors.GetValue()  as Int
-
-		; catch upgrade path
-		StorageUtil.SetIntValue(PlayerActor, "_SLH_iDefaultSkinColor", iDefaultSkinColor)  
-		StorageUtil.SetIntValue(PlayerActor, "_SLH_iRedShiftColor", iRedSkinColor) 
-		StorageUtil.SetIntValue(PlayerActor, "_SLH_iBlueShiftColor", iBlueSkinColor)
-		StorageUtil.SetIntValue(PlayerActor, "_SLH_iBimboHairColor", iHairColorBimbo)
-		StorageUtil.SetIntValue(PlayerActor, "_SLH_iSuccubusHairColor", iHairColorSuccubus)
-	Endif
-
-
-	setColorState(kActor)
-
-endFunction
-
-
-function setColorState(Actor kActor)
-	Actor PlayerActor = Game.GetPlayer()
-	debugTrace("  Writing color state to storage")
-
-	if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseColors") == 1)
-		iOrigSkinColor = StorageUtil.GetIntValue(PlayerActor, "_SLH_iDefaultSkinColor")
-		StorageUtil.SetIntValue(kActor, "_SLH_iOrigSkinColor", iOrigSkinColor) 
-		StorageUtil.SetIntValue(kActor, "_SLH_iOrigCheeksColor", iOrigCheeksColor) 
-		StorageUtil.SetIntValue(kActor, "_SLH_iOrigLipsColor", iOrigLipsColor) 
-		StorageUtil.SetIntValue(kActor, "_SLH_iOrigEyelinerColor", iOrigEyelinerColor) 
-		StorageUtil.SetIntValue(kActor, "_SLH_iOrigEyesColor", iOrigEyesColor) 
-		StorageUtil.SetIntValue(kActor, "_SLH_iSkinColor", iSkinColor) 
-		StorageUtil.SetIntValue(kActor, "_SLH_iCheeksColor", iCheeksColor) 
-		StorageUtil.SetIntValue(kActor, "_SLH_iLipsColor", iLipsColor) 
-		StorageUtil.SetIntValue(kActor, "_SLH_iEyelinerColor", iEyelinerColor) 
-		StorageUtil.SetIntValue(kActor, "_SLH_iEyesColor", iEyesColor) 
-	endIf
-
-	if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseHairColors") == 1) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseHair") == 1)
-		StorageUtil.SetIntValue(kActor, "_SLH_iOrigHairColor", iOrigHairColor) 
-		StorageUtil.SetIntValue(kActor, "_SLH_iHairColor", iHairColor) 
-	EndIf
-
-endFunction
-
-
-function getColorState(Actor kActor)
-	Actor PlayerActor = Game.GetPlayer()
-	debugTrace("  Reading color state from storage")
-
-	if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseColors") == 1)
-		iOrigSkinColor = StorageUtil.GetIntValue(kActor, "_SLH_iOrigSkinColor") 
-		iOrigCheeksColor = StorageUtil.GetIntValue(kActor, "_SLH_iOrigCheeksColor") 
-		iOrigLipsColor = StorageUtil.GetIntValue(kActor, "_SLH_iOrigLipsColor") 
-		iOrigEyelinerColor = StorageUtil.GetIntValue(kActor, "_SLH_iOrigEyelinerColor") 
-		iOrigEyesColor = StorageUtil.GetIntValue(kActor, "_SLH_iOrigEyesColor") 
-		
-		iSkinColor = StorageUtil.GetIntValue(kActor, "_SLH_iSkinColor") 
-		iCheeksColor = StorageUtil.GetIntValue(kActor, "_SLH_iCheeksColor") 
-		iLipsColor = StorageUtil.GetIntValue(kActor, "_SLH_iLipsColor") 
-		iEyelinerColor = StorageUtil.GetIntValue(kActor, "_SLH_iEyelinerColor") 
-		iEyesColor = StorageUtil.GetIntValue(kActor, "_SLH_iEyesColor") 
-	Endif
-
-	if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseHairColors") == 1) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseHair") == 1)
-		iOrigHairColor = StorageUtil.GetIntValue(kActor, "_SLH_iOrigHairColor") 
-		iHairColor = StorageUtil.GetIntValue(kActor, "_SLH_iHairColor") 
-	Endif
-
-
-endFunction
-
-function refreshColors(Actor kActor)
-	Actor PlayerActor = Game.GetPlayer()
-	ActorBase pActorBase = kActor.GetActorBase()
-	ActorBase pLeveledActorBase = kActor.GetLeveledActorBase()
- 	ColorForm color
-
-
- 	debugTrace(" Hair Color in storage: " + 	StorageUtil.GetIntValue(kActor, "_SLH_iHairColor") )
- 	debugTrace(" - Original Hair Color in storage: " + 	StorageUtil.GetIntValue(kActor, "_SLH_iOrigHairColor") )
- 	debugTrace(" - Current Hair Color: " + 	colorFormtoRGBA (pLeveledActorBase.GetHairColor()))
-
-	if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseColors") == 1)
-		getColorState(kActor)
-
-		If (iSkinColor == 0)
-			iSkinColor = iOrigSkinColor ; Game.GetTintMaskColor(6,0)
-		EndIf
-			setTintMask(6,iSkinColor)
-
-		If (iCheeksColor == 0)
-			iCheeksColor = iOrigCheeksColor ; Game.GetTintMaskColor(9,0)
-		EndIf
-		;	setTintMask(9,iCheeksColor)
-
-		If (iLipsColor == 0)
-			iLipsColor = iOrigLipsColor ; Game.GetTintMaskColor(1,0)
-		EndIf
-		;	setTintMask(1,iLipsColor)
- 
-		If (iEyelinerColor  == 0)
-			iEyelinerColor = iOrigEyelinerColor ; Game.GetTintMaskColor(3,0)
-		EndIf
-		;	setTintMask(3,iEyelinerColor)
-	Endif
-
-
-	if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseHairColors") == 1) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseHair") == 1)
-		if (iHairColor == 0)
-			; thisHairColor =  pLeveledActorBase.GetHairColor()
-			iHairColor = iOrigHairColor ; colorFormtoRGBA (thisHairColor)
-		endIf
-
-		If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
-			; YPS Fashion override if detected
-			; See - http://www.loverslab.com/topic/56627-immersive-hair-growth-and-styling-yps-devious-immersive-fashion-v5/
-
- 			If 	(StorageUtil.GetIntValue(kActor, "_SLH_iHairColorDye") ==  1 ) 
-	 			debugTrace(" - Sending dye YPS hair color event: " + 	iHairColor)
-				SendModEvent("yps-HairColorDyeEvent", StorageUtil.GetStringValue(kActor, "_SLH_sHairColorName"), iHairColor)  
-			else
-	 			debugTrace(" - Sending base YPS hair color event: " + 	iHairColor)
-				SendModEvent("yps-HairColorBaseEvent", StorageUtil.GetStringValue(kActor, "_SLH_sHairColorName"), iHairColor)  
-			endIf
-		else 			
-			thisHairColor.SetColor(iHairColor)
-			pLeveledActorBase.SetHairColor(thisHairColor)
-			iHairColor = colorFormtoRGBA (thisHairColor)
-		EndIf
-	endif
-
-	setColorState( kActor)
-
-
-endFunction
-
-function getColorFromSkin(Actor kActor)
-	Actor PlayerActor = Game.GetPlayer()
-	ActorBase pLeveledActorBase = Game.GetPlayer().GetLeveledActorBase()
-	ColorForm color
-
-	if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseColors") == 1)
-		iSkinColor = Game.GetTintMaskColor(6,0)
-		StorageUtil.SetIntValue(PlayerActor, "_SLH_iDefaultSkinColor", iSkinColor)
-		; setTintMask(6,iSkinColor)
-
-		iCheeksColor = Game.GetTintMaskColor(9,0)
-		; setTintMask(9,iCheeksColor)
-
-		iLipsColor = Game.GetTintMaskColor(1,0)
-		; setTintMask(1,iLipsColor)
-
-		iEyelinerColor = Game.GetTintMaskColor(3,0)
-		; setTintMask(3,iEyelinerColor)
-	endIf
-
-	if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseHairColors") == 1) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseHair") == 1)
-		color = pLeveledActorBase.GetHairColor()
-		iHairColor = colorFormtoRGBA (color)
-
-	EndIf
-	
-	setColorState( kActor)
-
-endFunction
-
-function applyColorChanges(Actor kActor)
-	Actor PlayerActor = Game.GetPlayer()
-	if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseColors") == 1)
-	 	If (SKSE.GetPluginVersion("NiOverride") >= 1) && (StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON")==1)
-	 		debugTrace("  Applying NiOverride")
-		 	NiOverride.ApplyOverrides(kActor)
-	 		NiOverride.ApplyNodeOverrides(kActor)
-	 	Endif
-
-	 	; Deprecated? Trying NiO functions as alternative for Tint Masks
-	 	;	- Issues with tint Mask colors 'bleeding' into other areas (skin color -> hair)
-	endIf
-
-	if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseHairColors") == 1) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseHair") == 1)
-		Game.UpdateHairColor()
-		; debugTrace("  Updating TintMaskColors")
-		; Game.UpdateTintMaskColors()
-
-		iHairColor = StorageUtil.GetIntValue(kActor, "_SLH_iHairColor") 
-		If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
-			; YPS Fashion override if detected
-			; See - http://www.loverslab.com/topic/56627-immersive-hair-growth-and-styling-yps-devious-immersive-fashion-v5/
-			; SendModEvent("yps-OnHaircutEvent", "", 1) ; change hair color not yet implemented 
-		Endif
-	EndIf
-endFunction
 
 Function debugTrace(string traceMsg)
 	if (StorageUtil.GetIntValue(none, "_SLH_debugTraceON")==1)
