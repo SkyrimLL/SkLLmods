@@ -9,7 +9,7 @@ Actor akSpeaker = akSpeakerRef as Actor
 Actor kPlayer = Game.GetPlayer()
  int ECTrap = ModEvent.Create("ECStartAnimation")  ; Int  Does not have to be named "ECTrap" any name would do
 
-  if (ECTrap) 
+  if (ECTrap) && (Utility.RandomInt(0,100) > 80)
         ModEvent.PushForm(ECTrap, self)             ; Form (Some SendModEvent scripting "black magic" - required)
         ModEvent.PushForm(ECTrap, Game.GetPlayer())          ; Form The animation target
         ModEvent.PushInt(ECTrap, 1)    ; Int  The animation required    0 = Tentacles, 1 = Machine

@@ -30,3 +30,6 @@ ReferenceAlias Property SexBotAlias  Auto
 SexLabFramework Property SexLab  Auto  
 
 GlobalVariable Property SLS_SexBotOnOff  Auto  
+GlobalVariable Property SLS_SexBotMemory  Auto  
+
+GlobalVariable Property SLS_SexBotBody  Auto  

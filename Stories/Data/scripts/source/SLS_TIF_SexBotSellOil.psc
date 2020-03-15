@@ -6,13 +6,13 @@ Scriptname SLS_TIF_SexBotSellOil Extends TopicInfo Hidden
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
-int oilCount = 1 ; Game.GetPlayer().GetItemCount( DwemerOil ) 
+int oilCount = 1; Game.GetPlayer().GetItemCount( DwemerOil ) 
 
 if (oilCount > 0)
 	Game.GetPlayer().RemoveItem( DwemerOil , oilCount )
 	Game.GetPlayer().AddItem( Gold , oilCount * 50 )
 
-Self.GetOwningQuest().SetObjectiveDisplayed(10,0)
+Self.GetOwningQuest().SetStage(15)
 EndIf
 ;END CODE
 EndFunction

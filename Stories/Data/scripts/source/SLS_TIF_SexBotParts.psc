@@ -1,50 +1,12 @@
 ;BEGIN FRAGMENT CODE - Do not edit anything between this and the end comment
-;NEXT FRAGMENT INDEX 1
+;NEXT FRAGMENT INDEX 2
 Scriptname SLS_TIF_SexBotParts Extends TopicInfo Hidden
 
-;BEGIN FRAGMENT Fragment_0
-Function Fragment_0(ObjectReference akSpeakerRef)
+;BEGIN FRAGMENT Fragment_1
+Function Fragment_1(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
-ObjectReference SexBotREF= _SLS_SexBotAlias.GetReference()
-Actor SexBotActor= _SLS_SexBotAlias.GetReference() as Actor
-ActorBase pSexBotActorBase = SexBotActor.GetActorBase()
-Outfit newSexBotOutfit
-
-int bodyPartsCount = Game.GetPlayer().GetItemCount( _SLS_ImbuedFlesh ) 
-int outfitID
-
-if (bodyPartsCount > 0)
-	Game.GetPlayer().RemoveItem(_SLS_ImbuedFlesh, bodyPartsCount )
-
-	if (_SLS_SexBotRepairLevel.GetValue()<0)
-		_SLS_SexBotRepairLevel.SetValue( 0 )
-	endif
-
-	_SLS_SexBotRepairLevel.SetValue( _SLS_SexBotRepairLevel.GetValue() + bodyPartsCount   )
-
-
-	if ( _SLS_SexBotRepairLevel.GetValue() >= 6)
-		_SLS_SexBotRepairLevel.SetValue( 6 )
-
-		if (Self.GetOwningQuest().GetStage() != 30)
-
-			Self.GetOwningQuest().SetObjectiveDisplayed(20,0)
-			Self.GetOwningQuest().SetStage(30)
-
-		EndIf
-	EndIf
-
-    outfitID = _SLS_SexBotRepairLevel.GetValue() as Int
-	
-	newSexBotOutfit  = _SLS_SexBotRepairStates[outfitID]
-
-	Debug.Notification("SexBot: index = " + _SLS_SexBotRepairLevel.GetValue() as Int + " - Outfit: " + outfitID )
-
-	SexBotActor.SetOutfit( newSexBotOutfit )
-	SexBotActor.SetOutfit( newSexBotOutfit, True )
-	_SLS_SexBotUpgradeFX.Cast( SexBotActor )
-EndIf
+;
 ;END CODE
 EndFunction
 ;END FRAGMENT

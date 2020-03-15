@@ -1,12 +1,13 @@
 ;BEGIN FRAGMENT CODE - Do not edit anything between this and the end comment
-;NEXT FRAGMENT INDEX 0
-Scriptname SLS_TIF_SexBotQuest_1 Extends TopicInfo Hidden
+;NEXT FRAGMENT INDEX 1
+Scriptname SLS_TIF_SexBot20 Extends TopicInfo Hidden
 
-;BEGIN FRAGMENT Fragment_1
-Function Fragment_1(ObjectReference akSpeakerRef)
+;BEGIN FRAGMENT Fragment_0
+Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
-self.GetOwningQuest().SetStage(10)
+self.GetOwningQuest().SetObjectiveDisplayed(20)
+self.GetOwningQuest().SetStage(20)
 ;END CODE
 EndFunction
 ;END FRAGMENT
