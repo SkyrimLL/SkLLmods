@@ -84,6 +84,16 @@ function alterColorFromHormone(Actor kActor)
  	Actor PlayerActor = Game.GetPlayer()
 	int iSuccubus = StorageUtil.GetIntValue(kActor, "_SLH_iSuccubus") 
 	Int iDaedricInfluence = StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneSuccubus" ) as Int
+	Int iSexActivityBuffer = StorageUtil.GetIntValue(PlayerActor, "_SLH_iSexActivityBuffer")
+	Int iSexActivityThreshold = StorageUtil.GetIntValue(PlayerActor, "_SLH_iSexActivityThreshold")
+	Int iSexCountToday = StorageUtil.GetIntValue(kActor, "_SLH_iSexCountToday") 
+	Int iGameDateLastSex = StorageUtil.GetIntValue(kActor, "_SLH_iGameDateLastSex") 
+	Int iDaysSinceLastSex = (Game.QueryStat("Days Passed") - iGameDateLastSex ) as Int
+	StorageUtil.SetIntValue(kActor, "_SLH_iDaysSinceLastSex", iDaysSinceLastSex)
+
+	Float fSwellFactor =  StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneSexDrive") 
+	Float fPigmentationFactor = (StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormonePigmentation") / 100.0 ) 
+	Int iPigmentationLevel = (StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneSexDrive" ) * 255.0 / 200.0) as Int
 
 	Int iOrigSkinColor = StorageUtil.GetIntValue(PlayerActor, "_SLH_iDefaultSkinColor")
 	Int iSkinColor = StorageUtil.GetIntValue(PlayerActor, "_SLH_iSkinColor")
@@ -97,35 +107,22 @@ function alterColorFromHormone(Actor kActor)
 	Int iSuccubusRedSkinColor = StorageUtil.GetIntValue(PlayerActor, "_SLH_iRedShiftColor")
 	Int iSuccubusBlueSkinColor =  StorageUtil.GetIntValue(PlayerActor, "_SLH_iBlueShiftColor")
 
-	Float fSwellFactor =  StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneSexDrive") 
-	Float fPigmentationFactor = (StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormonePigmentation") / 100.0 ) 
-	Int iPigmentationLevel = (StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormonePigmentation" ) * 255.0 / 100.0) as Int
 
 	if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseColors") == 1)
 		; skin
 		
-		debugTrace("  Set color from hormone: "  )
-		debugTrace("     iSkinColor BEFORE: " + fctUtil.IntToHex(iSkinColor) )
+		debugTrace("  alterColorFromHormone: iSkinColor BEFORE: " + fctUtil.IntToHex(iSkinColor) )
+		debugTrace("     iSkinColor: " + iSkinColor ) 
 		debugTrace("     iOrigSkinColor: " + fctUtil.IntToHex(iOrigSkinColor)  )
 
-		debugTrace("  fPigmentationFactor: " + fPigmentationFactor  )
+		debugTrace("     fSwellFactor: " + fSwellFactor  )
+		debugTrace("     fPigmentationFactor: " + fPigmentationFactor  )
 
-		if (fSwellFactor >= 40) 
-			; Aroused
-			If ((iSuccubus == 1) && (iDaedricInfluence>=20))
-				debugTrace("  Target color: Red Succubus - iRedSkinColor: " + fctUtil.IntToHex(iRedSkinColor) )
-				iSkinColor = alterTintMaskTarget(colorBase =  iSkinColor, maskType = 6, maskIndex = 0, colorTarget = iSuccubusRedSkinColor, colorMod = 2.0 * fRedSkinColorMod , alphaLevel = iPigmentationLevel)
-			Else
-				debugTrace("  Target color: Red skin - iRedSkinColor: " + fctUtil.IntToHex(iRedSkinColor)   )
-				iSkinColor = alterTintMaskTarget(colorBase =  iSkinColor, maskType = 6, maskIndex = 0, colorTarget = iRedSkinColor, colorMod = fRedSkinColorMod, alphaLevel = iPigmentationLevel)
-			EndIf
-
-		ElseIf (fSwellFactor >= 10) && (fSwellFactor < 40) ; Healthy
-			; Coverge back to default skin color
-			debugTrace("  Target color: Origin skin color"  )
-			iSkinColor = alterTintMaskTarget(colorBase =  iSkinColor, maskType = 6, maskIndex = 0, colorTarget = iOrigSkinColor, colorMod = 1.0/3.0, alphaLevel = iPigmentationLevel )
-		Else ; Pale
+		if (iDaysSinceLastSex >= iSexActivityThreshold ) 
+			; Pale if no sex for more than threshold days
 			; skin
+			debugTrace("     Pale - no sex for more than threshold days"  )
+			debugTrace("     fBlueSkinColorMod: " + fBlueSkinColorMod  )
 
 			If ((iSuccubus == 1) && (iDaedricInfluence>=20))
 				debugTrace("  Target color: Blue Succubus - iBlueSkinColor: " + fctUtil.IntToHex(iBlueSkinColor) )
@@ -135,9 +132,30 @@ function alterColorFromHormone(Actor kActor)
 				iSkinColor = alterTintMaskTarget(colorBase = iSkinColor, maskType = 6, maskIndex = 0, colorTarget = iBlueSkinColor, colorMod = fBlueSkinColorMod, alphaLevel = iPigmentationLevel)
 			EndIf
 
+		Elseif ((fSwellFactor >= 40) || (iSexCountToday >= iSexActivityBuffer))
+			; Red if high sex drive
+			; Aroused
+			debugTrace("     Red - high sex drive"  )
+			debugTrace("     fRedSkinColorMod: " + fRedSkinColorMod  )
+			If ((iSuccubus == 1) && (iDaedricInfluence>=20))
+				debugTrace("  Target color: Red Succubus - iRedSkinColor: " + fctUtil.IntToHex(iRedSkinColor) )
+				iSkinColor = alterTintMaskTarget(colorBase =  iSkinColor, maskType = 6, maskIndex = 0, colorTarget = iSuccubusRedSkinColor, colorMod = 2.0 * fRedSkinColorMod , alphaLevel = iPigmentationLevel)
+			Else
+				debugTrace("  Target color: Red skin - iRedSkinColor: " + fctUtil.IntToHex(iRedSkinColor)   )
+				iSkinColor = alterTintMaskTarget(colorBase =  iSkinColor, maskType = 6, maskIndex = 0, colorTarget = iRedSkinColor, colorMod = fRedSkinColorMod, alphaLevel = iPigmentationLevel)
+			EndIf
+
+		Else ; Healthy
+			; Coverge back to default skin color
+			debugTrace("  Coverge back to default skin color"  )
+			debugTrace("  Target color: Origin skin color"  )
+			; iSkinColor = alterTintMaskTarget(colorBase =  iSkinColor, maskType = 6, maskIndex = 0, colorTarget = iOrigSkinColor, colorMod = 1.0/3.0, alphaLevel = iPigmentationLevel )
+			alterSkinToOrigin(PlayerActor)
+ 
 		EndIf
 
-		debugTrace("     iSkinColor AFTER: " + fctUtil.IntToHex(iSkinColor) )
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iSkinColor", iSkinColor)
+		debugTrace("  alterColorFromHormone: iSkinColor AFTER: " + fctUtil.IntToHex(iSkinColor) )
 
 	EndIf
 endfunction
@@ -158,54 +176,15 @@ function alterSkinToOrigin(Actor kActor = None, float fSwellFactor = 0.125)
 
 	Int iOrigSkinColor = StorageUtil.GetIntValue(PlayerActor, "_SLH_iDefaultSkinColor")
 	Int iSkinColor = StorageUtil.GetIntValue(PlayerActor, "_SLH_iSkinColor")
+		
+	debugTrace("  alterSkinToOrigin: iSkinColor BEFORE: " + fctUtil.IntToHex(iSkinColor) )
 
 	Int iNewSkinColor = alterTintMaskTarget(colorBase = iSkinColor, maskType = 6, maskIndex = 0, colorTarget = iOrigSkinColor, colorMod =  fSwellFactor, alphaLevel = iPigmentationLevel)	
 	StorageUtil.SetIntValue(PlayerActor, "_SLH_iSkinColor", iNewSkinColor)
 
+	debugTrace("  alterSkinToOrigin: iSkinColor AFTER: " + fctUtil.IntToHex(iNewSkinColor) )
+
 endfunction
-
-Int function alterTintMaskTarget(int colorBase, int maskType = 6, int maskIndex = 0, int colorTarget, float colorMod = 0.5, int alphaLevel = 255)
-	; color input assumed to be RBG only
-	; alpha level provided separately in parameters
-	int rOffset = 0
-	int gOffset = 0
-	int bOffset = 0
-
- 	; int colorBase = Game.GetTintMaskColor(maskType, maskIndex)
-	int rBase = GetRed(colorBase) ; Math.LogicalAnd( Math.RightShift( colorBase, 16), 0x00FF) 
-	int gBase = GetGreen(colorBase) ; Math.LogicalAnd( Math.RightShift( colorBase, 8), 0x0000FF) 
-	int bBase = GetBlue(colorBase) ; Math.LogicalAnd( colorBase, 0x000000FF) 
-
-	int rTarget = GetRed(colorTarget) ; Math.LogicalAnd( Math.RightShift( colorTarget, 16), 0x00FF) 
-	int gTarget = GetGreen(colorTarget) ; Math.LogicalAnd( Math.RightShift( colorTarget, 8), 0x0000FF) 
-	int bTarget = GetBlue(colorTarget) ; Math.LogicalAnd( colorTarget, 0x000000FF) 
-
-	rOffset = -1 * ((( (rBase - rTarget) as Float) * colorMod) as Int)
-	gOffset = -1 * ((( (gBase - gTarget) as Float) * colorMod) as Int)
-	bOffset = -1 * ((( (bBase - bTarget) as Float) * colorMod) as Int)
-
-	debugTrace( ":::: SexLab Hormones: Alter tint mask to color target - " +  maskType )
-	debugTrace("  ColorMod - " + colorMod )
-	debugTrace("  Orig color - R:" + rBase + " - G:" + gBase + " - B:" + bBase  )
-	debugTrace("  Offsets - R:" + rOffset + " - G:" + gOffset + " - B:" + bOffset  )
-	debugTrace("  Target color - R:" + rTarget + " - G:" + gTarget + " - B:" + bTarget  )
-
-	int rNew = fctUtil.iMin(fctUtil.iMax(rBase + rOffset, 0), 255)
-	int gNew = fctUtil.iMin(fctUtil.iMax(gBase + gOffset, 0), 255)
-	int bNew = fctUtil.iMin(fctUtil.iMax(bBase + bOffset, 0), 255)
-
-	alphaLevel = 255 ; 2019-12-13 - forcing 255 alpha until a good mix of color levels is found
-
-	debugTrace("  New color - A: " + alphaLevel + " - R:" + rNew + " - G:" + gNew + " - B:" + bNew  )
-    alterTintMask(type = maskType, alpha = alphaLevel, red = rNew, green = gNew, blue = bNew)
-
-    ; int color = Math.LeftShift(aNew, 24) + Math.LeftShift(rNew, 16) + Math.LeftShift(gNew, 8) + bNew
-    int color = setRGB ( rNew, gNew, bNew)
-    return color
-EndFunction
-
-
-
 
 function initColorConstants(Actor kActor)
 	; Used to reset colors to default
@@ -305,9 +284,13 @@ endFunction
 
 function applyColorChanges(Actor kActor)
 	Actor PlayerActor = Game.GetPlayer()
+	Int iSkinColor = StorageUtil.GetIntValue(PlayerActor, "_SLH_iSkinColor")
 	int iHairColor
+
 	if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseColors") == 1)
-		alterColorFromHormone(PlayerActor)
+		; alterColorFromHormone(PlayerActor)
+
+		setTintMaskTarget(colorBase =  iSkinColor, maskType = 6, maskIndex = 0, colorTarget = iSkinColor, alphaLevel = 255)
 
 	 	If (SKSE.GetPluginVersion("NiOverride") >= 1) && (StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON")==1)
 	 		debugTrace("  Applying NiOverride")
@@ -389,6 +372,72 @@ Int function alterEyesColor(Actor kActor, int rgbacolor, HeadPart thisEyes)
 
 	kActor.ChangeHeadPart(thisEyes)
 
+EndFunction
+
+Int function setTintMaskTarget(int colorBase, int maskType = 6, int maskIndex = 0, int colorTarget, int alphaLevel = 255)
+	; color input assumed to be RBG only
+	; alpha level provided separately in parameters
+	int rOffset = 0
+	int gOffset = 0
+	int bOffset = 0
+
+ 	; int colorBase = Game.GetTintMaskColor(maskType, maskIndex)
+	int rBase = GetRed(colorBase) ; Math.LogicalAnd( Math.RightShift( colorBase, 16), 0x00FF) 
+	int gBase = GetGreen(colorBase) ; Math.LogicalAnd( Math.RightShift( colorBase, 8), 0x0000FF) 
+	int bBase = GetBlue(colorBase) ; Math.LogicalAnd( colorBase, 0x000000FF) 
+
+	int rNew = GetRed(colorTarget) ; Math.LogicalAnd( Math.RightShift( colorTarget, 16), 0x00FF) 
+	int gNew = GetGreen(colorTarget) ; Math.LogicalAnd( Math.RightShift( colorTarget, 8), 0x0000FF) 
+	int bNew = GetBlue(colorTarget) ; Math.LogicalAnd( colorTarget, 0x000000FF) 
+
+	; alphaLevel = 255 ; 2019-12-13 - forcing 255 alpha until a good mix of color levels is found
+
+	debugTrace("setTintMaskTarget:  New color - A: " + alphaLevel + " - R:" + rNew + " - G:" + gNew + " - B:" + bNew  )
+    alterTintMask(type = maskType, alpha = alphaLevel, red = rNew, green = gNew, blue = bNew)
+
+    ; int color = Math.LeftShift(aNew, 24) + Math.LeftShift(rNew, 16) + Math.LeftShift(gNew, 8) + bNew
+    int color = setRGB ( rNew, gNew, bNew)
+    return color
+EndFunction
+
+Int function alterTintMaskTarget(int colorBase, int maskType = 6, int maskIndex = 0, int colorTarget, float colorMod = 0.5, int alphaLevel = 255)
+	; color input assumed to be RBG only
+	; alpha level provided separately in parameters
+	int rOffset = 0
+	int gOffset = 0
+	int bOffset = 0
+
+ 	; int colorBase = Game.GetTintMaskColor(maskType, maskIndex)
+	int rBase = GetRed(colorBase) ; Math.LogicalAnd( Math.RightShift( colorBase, 16), 0x00FF) 
+	int gBase = GetGreen(colorBase) ; Math.LogicalAnd( Math.RightShift( colorBase, 8), 0x0000FF) 
+	int bBase = GetBlue(colorBase) ; Math.LogicalAnd( colorBase, 0x000000FF) 
+
+	int rTarget = GetRed(colorTarget) ; Math.LogicalAnd( Math.RightShift( colorTarget, 16), 0x00FF) 
+	int gTarget = GetGreen(colorTarget) ; Math.LogicalAnd( Math.RightShift( colorTarget, 8), 0x0000FF) 
+	int bTarget = GetBlue(colorTarget) ; Math.LogicalAnd( colorTarget, 0x000000FF) 
+
+	rOffset = -1 * ((( (rBase - rTarget) as Float) * colorMod) as Int)
+	gOffset = -1 * ((( (gBase - gTarget) as Float) * colorMod) as Int)
+	bOffset = -1 * ((( (bBase - bTarget) as Float) * colorMod) as Int)
+
+	debugTrace( ":::: SexLab Hormones: Alter tint mask to color target - " +  maskType )
+	debugTrace("  ColorMod - " + colorMod )
+	debugTrace("  Orig color - R:" + rBase + " - G:" + gBase + " - B:" + bBase  )
+	debugTrace("  Offsets - R:" + rOffset + " - G:" + gOffset + " - B:" + bOffset  )
+	debugTrace("  Target color - R:" + rTarget + " - G:" + gTarget + " - B:" + bTarget  )
+
+	int rNew = fctUtil.iMin(fctUtil.iMax(rBase + rOffset, 0), 255)
+	int gNew = fctUtil.iMin(fctUtil.iMax(gBase + gOffset, 0), 255)
+	int bNew = fctUtil.iMin(fctUtil.iMax(bBase + bOffset, 0), 255)
+
+	; alphaLevel = 255 ; 2019-12-13 - forcing 255 alpha until a good mix of color levels is found
+
+	debugTrace("alterTintMaskTarget:  New color - A: " + alphaLevel + " - R:" + rNew + " - G:" + gNew + " - B:" + bNew  )
+    alterTintMask(type = maskType, alpha = alphaLevel, red = rNew, green = gNew, blue = bNew)
+
+    ; int color = Math.LeftShift(aNew, 24) + Math.LeftShift(rNew, 16) + Math.LeftShift(gNew, 8) + bNew
+    int color = setRGB ( rNew, gNew, bNew)
+    return color
 EndFunction
 
 function alterTintMask(int type = 6, int alpha = 0, int red = 125, int green = 90, int blue = 70, int setIndex = 0, Bool setAll = False)

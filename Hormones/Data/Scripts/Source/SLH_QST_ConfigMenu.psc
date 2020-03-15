@@ -238,6 +238,7 @@ float 		_schlongSetValue		= 1.0
 bool 		_refreshToggle 			= false
 bool 		_resetHormonesToggle 	= false
 bool 		_resetColorsToggle 		= false
+bool 		_resetSkinColorToggle 	= false
 int 		_applyNodeBalancing     = 0
 
 
@@ -648,7 +649,8 @@ event OnPageReset(string a_page)
 
 		AddToggleOptionST("STATE_SETSHAPE","Set default shape", _setshapeToggle as Float)
 		AddToggleOptionST("STATE_RESET_HORMONES","Reset hormone levels", _resetHormonesToggle as Float)
-		AddToggleOptionST("STATE_RESET_COLORS","Reset colors", _resetColorsToggle as Float)
+		AddToggleOptionST("STATE_RESET_SKIN_COLOR","Reset skin color", _resetSkinColorToggle as Float)
+		AddToggleOptionST("STATE_RESET_COLORS","Reset color settings", _resetColorsToggle as Float)
 		AddToggleOptionST("STATE_RESET","Reset changes", _resetToggle as Float)
 		AddToggleOptionST("STATE_DEBUG","Debug messages", _showDebug as Float)
 
@@ -1064,14 +1066,34 @@ state STATE_RESET_HORMONES ; TOGGLE
 	endEvent
 endState
 
+; AddToggleOptionST("STATE_RESET_SKIN_COLOR","Reset skin color", _resetSkinColorToggle as Float)
+state STATE_RESET_SKIN_COLOR ; TOGGLE
+	event OnSelectST()
+		; SLH_Control._refreshBodyShape()
+		
+		Debug.MessageBox("Hormone skin color reset")
+
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iSkinColor", StorageUtil.GetIntValue(PlayerActor, "_SLH_iDefaultSkinColor"))
+		SLH_Control.refreshColor(PlayerActor)
+	endEvent
+
+	event OnDefaultST()
+		; Simple button - no default state
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Reset skin color to default settings.")
+	endEvent
+endState
+
 ; AddToggleOptionST("STATE_RESET_COLORS","Reset colors", _resetColorsToggle as Float)
 state STATE_RESET_COLORS ; TOGGLE
 	event OnSelectST()
 		; SLH_Control._refreshBodyShape()
+		Debug.MessageBox("Hormone colors reset")
 
 		SendModEvent("SLHResetColors")
 		
-		Debug.MessageBox("Hormone colors reset")
 	endEvent
 
 	event OnDefaultST()
@@ -1137,7 +1159,7 @@ state STATE_SEX_BUFFER ; SLIDER
 	event OnSliderOpenST()
 		SetSliderDialogStartValue( StorageUtil.GetIntValue(PlayerActor, "_SLH_iSexActivityBuffer") )
 		SetSliderDialogDefaultValue( 7 )
-		SetSliderDialogRange( 1, 10 )
+		SetSliderDialogRange( 0, 10 )
 		SetSliderDialogInterval( 1 )
 	endEvent
 
@@ -1816,7 +1838,7 @@ state STATE_DEFAULT_COLOR ; COLOR
 	event OnColorAcceptST(int value) 
 		_defaultColor = value
 		StorageUtil.SetIntValue(PlayerActor, "_SLH_iDefaultSkinColor", _defaultColor)
-		StorageUtil.SetIntValue(PlayerActor, "_SLH_iSkinColor", _defaultColor)
+		; StorageUtil.SetIntValue(PlayerActor, "_SLH_iSkinColor", _defaultColor)
 		SetColorOptionValueST( _defaultColor )
 		SLH_Control.refreshColor(PlayerActor)
 		ForcePageReset()
@@ -1825,7 +1847,7 @@ state STATE_DEFAULT_COLOR ; COLOR
 	event OnDefaultST()
 		_defaultColor =  Math.LeftShift(255, 16) + Math.LeftShift(255, 8) + 255
 		StorageUtil.SetIntValue(PlayerActor, "_SLH_iDefaultSkinColor", _defaultColor)
-		StorageUtil.SetIntValue(PlayerActor, "_SLH_iSkinColor", _defaultColor)
+		; StorageUtil.SetIntValue(PlayerActor, "_SLH_iSkinColor", _defaultColor)
 		SetColorOptionValueST( _defaultColor )
 	endEvent
 
@@ -1842,7 +1864,7 @@ state STATE_DEFAULT_COLOR_TXT ; COLOR
 	event OnInputAcceptST(string inputstr)
 		_defaultColor = HexToInt(inputstr)
 		StorageUtil.SetIntValue(PlayerActor, "_SLH_iDefaultSkinColor", _defaultColor)
-		StorageUtil.SetIntValue(PlayerActor, "_SLH_iSkinColor", _defaultColor)
+		; StorageUtil.SetIntValue(PlayerActor, "_SLH_iSkinColor", _defaultColor)
 		SetInputOptionValueST( _defaultColor )
 		SLH_Control.refreshColor(PlayerActor)
 		ForcePageReset()
@@ -1851,7 +1873,7 @@ state STATE_DEFAULT_COLOR_TXT ; COLOR
 	event OnDefaultST()
 		_defaultColor =  Math.LeftShift(255, 16) + Math.LeftShift(255, 8) + 255
 		StorageUtil.SetIntValue(PlayerActor, "_SLH_iDefaultSkinColor", _defaultColor)
-		StorageUtil.SetIntValue(PlayerActor, "_SLH_iSkinColor", _defaultColor)
+		; StorageUtil.SetIntValue(PlayerActor, "_SLH_iSkinColor", _defaultColor)
 		SetInputOptionValueST( IntToHex(_defaultColor) )
 	endEvent
 
@@ -1913,7 +1935,7 @@ state STATE_RED_COLOR_SHIFT_MOD ; SLIDER
 	event OnSliderOpenST()
 		SetSliderDialogStartValue( _redShiftColorMod )
 		SetSliderDialogDefaultValue( 1.0 )  
-		SetSliderDialogRange( 0.0, 1.0 )
+		SetSliderDialogRange( 0.0, 2.0 )
 		SetSliderDialogInterval( 0.1 )
 	endEvent
 
@@ -1989,7 +2011,7 @@ state STATE_BLUE_COLOR_SHIFT_MOD ; SLIDER
 	event OnSliderOpenST()
 		SetSliderDialogStartValue( _blueShiftColorMod )
 		SetSliderDialogDefaultValue( 1.0 )  
-		SetSliderDialogRange( 0.0, 1.0 )
+		SetSliderDialogRange( 0.0, 2.0 )
 		SetSliderDialogInterval( 0.1 )
 	endEvent
 

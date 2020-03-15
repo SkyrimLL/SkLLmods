@@ -310,6 +310,10 @@ function alterBodyAfterRest(Actor kActor)
 	Float fNodeMax
 	Bool bExternalChangeModActive = fctUtil.isExternalChangeModActive(kActor)
 	Float fLibido = StorageUtil.GetFloatValue(kActor, "_SLH_fLibido")
+	Int iSexActivityBuffer = StorageUtil.GetIntValue(kActor, "_SLH_iSexActivityBuffer")
+	Int iSexActivityThreshold = StorageUtil.GetIntValue(kActor, "_SLH_iSexActivityThreshold")
+
+
 	Float fBreastSwellMod   = StorageUtil.GetFloatValue(kActor, "_SLH_fBreastSwellMod")
 	Float fButtSwellMod     = StorageUtil.GetFloatValue(kActor, "_SLH_fButtSwellMod")
 	Float fBellySwellMod    = StorageUtil.GetFloatValue(kActor, "_SLH_fBellySwellMod")
@@ -355,17 +359,36 @@ function alterBodyAfterRest(Actor kActor)
 	
 	iSexCountToday = StorageUtil.GetIntValue(kActor, "_SLH_iSexCountToday") 
 	iGameDateLastSex = StorageUtil.GetIntValue(kActor, "_SLH_iGameDateLastSex") 
+
 	iOrgasmsCountToday = StorageUtil.GetIntValue(kActor, "_SLH_iOrgasmsCountToday") 
 	iOrgasmsCountAll = StorageUtil.GetIntValue(kActor, "_SLH_iOrgasmsCountAll") 
 	iSexCountAll = StorageUtil.GetIntValue(kActor, "_SLH_iSexCountAll") 
  	iOralCountToday = StorageUtil.GetIntValue(kActor, "_SLH_iOralCountToday") 
 	iAnalCountToday = StorageUtil.GetIntValue(kActor, "_SLH_iAnalCountToday") 
 	iVaginalCountToday = StorageUtil.GetIntValue(kActor, "_SLH_iVaginalCountToday") 
-	iSuccubus = StorageUtil.GetIntValue(kActor, "_SLH_iSuccubus") 
-	iDaedricInfluence = StorageUtil.GetIntValue(kActor, "_SLH_iDaedricInfluence") 
 
 	iDaysSinceLastSex = (Game.QueryStat("Days Passed") - iGameDateLastSex ) as Int
 	StorageUtil.SetIntValue(kActor, "_SLH_iDaysSinceLastSex", iDaysSinceLastSex)
+
+	iSuccubus = StorageUtil.GetIntValue(kActor, "_SLH_iSuccubus") 
+	iDaedricInfluence = StorageUtil.GetIntValue(kActor, "_SLH_iDaedricInfluence") 
+
+
+	if (iSexCountToday < iSexActivityBuffer)
+		; no body change if sex activity below buffer
+		debugTrace("  no body change - sex activity below buffer")
+		return
+	endif
+
+	if (iDaysSinceLastSex >= iSexActivityThreshold )
+		; invert body changes if sex activity below threshold
+		debugTrace("  invert body changes - sex activity below threshold")
+		fWeightSwellMod = -1.0 * fWeightSwellMod
+		fBreastSwellMod = -1.0 * fBreastSwellMod
+		fButtSwellMod = -1.0 * fButtSwellMod
+		fBellySwellMod = -1.0 * fBellySwellMod
+		fSchlongSwellMod = -1.0 * fSchlongSwellMod
+	endif
 
 	if (GV_useWeight.GetValue() == 1)
 		debug.trace( "[SLH] alterBodyAfterRest Weight")
@@ -501,6 +524,11 @@ function alterBodyAfterRest(Actor kActor)
 				fSchlongGrowth = ( (StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneGrowth") + StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneMale") ) / 200.0) * (StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneMetabolism") / 200.0) ; (fSchlongMax + fSchlongMin  - fCurrentSchlong)  
 				; debug.notification("[SLH]  		fSchlongGrowth:  " + fSchlongGrowth)
 				debugTrace("  		fSchlongGrowth:  " + fSchlongGrowth)
+
+				if (StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneMale") < StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneFemale"))
+					fSchlongGrowth = -1.0 * fSchlongGrowth
+				endIf
+
 				fSchlong = fCurrentSchlong + ( fSchlongGrowth*  ( fSwellFactor/ 100.0 ) *  fSchlongSwellMod )
 
 				alterSchlongNode(kActor,  fSchlong )
@@ -520,165 +548,13 @@ function alterBodyAfterRest(Actor kActor)
 EndFunction
 
 function alterBodyAfterSex(Actor kActor, Bool bOral = False, Bool bVaginal = False, Bool bAnal = False)
-	ObjectReference kActorREF= kActor as ObjectReference
-	ActorBase pActorBase = kActor.GetActorBase()
-	Race thisRace = pActorBase.GetRace()
-	Float fNodeMax
-	Bool bExternalChangeModActive = fctUtil.isExternalChangeModActive(kActor)
-	Float fLibido = StorageUtil.GetFloatValue(kActor, "_SLH_fLibido")
-	Float fBreastSwellMod    = StorageUtil.GetFloatValue(kActor, "_SLH_fBreastSwellMod")
-	Float fButtSwellMod      = StorageUtil.GetFloatValue(kActor, "_SLH_fButtSwellMod")
-	Float fBellySwellMod      = StorageUtil.GetFloatValue(kActor, "_SLH_fBellySwellMod")
-	Float fWeightSwellMod    = StorageUtil.GetFloatValue(kActor, "_SLH_fWeightSwellMod")
-	Float fSchlongSwellMod = StorageUtil.GetFloatValue(kActor, "_SLH_fSchlongSwellMod")
-	Float fBreastMax      	= StorageUtil.GetFloatValue(kActor, "_SLH_fBreastMax")
-	Float fBellyMax       	= StorageUtil.GetFloatValue(kActor, "_SLH_fBellyMax")
-	Float fButtMax       	= StorageUtil.GetFloatValue(kActor, "_SLH_fButtMax")
-	Float fSchlongMax 		= StorageUtil.GetFloatValue(kActor, "_SLH_fSchlongMax")
-	Float fWeightMax 		= StorageUtil.GetFloatValue(kActor, "_SLH_fWeightMax")
-	Float fBreastMin      	= StorageUtil.GetFloatValue(kActor, "_SLH_fBreastMin")
-	Float fBellyMin       	= StorageUtil.GetFloatValue(kActor, "_SLH_fBellyMin")
-	Float fButtMin       	= StorageUtil.GetFloatValue(kActor, "_SLH_fButtMin")
-	Float fSchlongMin 		= StorageUtil.GetFloatValue(kActor, "_SLH_fSchlongMin")
-	Float fWeightMin 		= StorageUtil.GetFloatValue(kActor, "_SLH_fWeightMin")
+	if (bOral) || (bVaginal) || (bAnal)
+		fctHormones.modHormoneLevel(kActor, "Pigmentation", 1.5)
+		fctHormones.modHormoneLevel(kActor, "SexDrive", 10.0)
+		fctHormones.modHormoneLevel(kActor, "Growth", 0.5)
+	endIf
 
-	Float fWeight = StorageUtil.GetFloatValue(kActor, "_SLH_fWeight")
-	Float fBreast = StorageUtil.GetFloatValue(kActor, "_SLH_fBreast")       
-	Float fButt = StorageUtil.GetFloatValue(kActor, "_SLH_fButt")       	
-	Float fBelly = StorageUtil.GetFloatValue(kActor, "_SLH_fBelly")       		
-	Float fSchlong = StorageUtil.GetFloatValue(kActor, "_SLH_fSchlong")     
-
-	Int sexActivityThreshold = StorageUtil.GetIntValue(kActor, "_SLH_iSexActivityThreshold") 
-	Int sexActivityBuffer = StorageUtil.GetIntValue(kActor, "_SLH_iSexActivityBuffer") 
-
-	Float fSwellfactor = StorageUtil.GetFloatValue(kActor, "_SLH_fSwellFactor") 
-	Float baseShrinkFactor = StorageUtil.GetFloatValue(kActor, "_SLH_fBaseShrinkFactor") 
-	Float baseSwellFactor = StorageUtil.GetFloatValue(kActor, "_SLH_fBaseSwellFactor") 
-	Float fTempGrowthMod = StorageUtil.GetFloatValue(kActor, "_SLH_fTempGrowthMod")  
-
-	if (fTempGrowthMod==0.0)		
-		fTempGrowthMod=1.0	 
-	Endif
-
-	Race kOrigRace = StorageUtil.GetFormValue(kActor, "_SLH_fOrigRace") as Race
-
-	
-	If (kOrigRace != None) 
-		If (thisRace != kOrigRace)
-			debugTrace("  Race change detected - aborting")
-			return
-		EndIf
-	Else
-		StorageUtil.SetFormValue(kActor, "_SLH_fOrigRace",thisRace) 
-	EndIf
-
-
-	fGameTime       = Utility.GetCurrentGameTime()
-
-	; StorageUtil.SetFloatValue(kActor, "_SLH_fTempGrowthMod",  1.0) 
-	fSwellFactor    = (fTempGrowthMod * baseSwellFactor) / (sexActivityThreshold as Float)
-
-	debugTrace( "[SLH] alterBodyAfterSex Weight")
-	debugTrace( "[SLH] Actorbase weight: " + pActorBase.GetWeight())
-	; debugTrace( "[SLH] Current weight: " + fWeight)
-	debugTrace( "[SLH] StorageUtil: " + StorageUtil.GetFloatValue(kActor, "_SLH_fWeight") )
-	debugTrace( "[SLH] Global Value: " + GV_weightValue.GetValue() )
-
-
-	If (GV_useNodes.GetValue() == 1)
-		; --------
-		; BREAST SWELL ====================================================
-		If (bOral) 
-			if ( bBreastEnabled )  && (GV_useBreastNode.GetValue() == 1)
-				Float fCurrentBreast 
-				If (StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON")==0)
-					fCurrentBreast = NetImmerse.GetNodeScale(kActor, NINODE_RIGHT_BREAST, false)
-				else
-					fCurrentBreast = StorageUtil.GetFloatValue(kActor, "_SLH_fBreast")
-				endIf
-
-
-				if (bExternalChangeModActive) && (StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON")==0)
-					fNodeMax = fPregBreastMax
-					fBreast = fCurrentBreast 
-				Else
-					fNodeMax = fBreastMax
-					fBreast = ( fCurrentBreast + ( fSwellFactor * (fNodeMax + fBreastMin  - fCurrentBreast) / 100.0 ) * fBreastSwellMod ) 
-				EndIf
-
-				alterBreastNode(kActor,  fBreast )				
-			endif
-		EndIf
-
-		; BELLY SWELL =====================================================
-		If  (bVaginal) 
-			if ( bBellyEnabled )   && (GV_useBellyNode.GetValue() == 1)
-				Float fCurrentBelly 
-				If (StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON")==0)
-					fCurrentBelly = NetImmerse.GetNodeScale(kActor, NINODE_BELLY, false)
-				else
-					fCurrentBelly = StorageUtil.GetFloatValue(kActor, "_SLH_fBelly")
-				endIf
-
-				if (bExternalChangeModActive) || (fctUtil.isFHUCumFilledEnabled(kActor)) && (StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON")==0)
-					fNodeMax = fPregBellyMax
-					fBelly = fCurrentBelly
-				Else
-					fNodeMax = fBellyMax
-					fBelly = ( fCurrentBelly + ( fSwellFactor * (fNodeMax + fBellyMin  - fCurrentBelly) / 100.0 ) * fBellySwellMod ) 
-				EndIf
-
-				alterBellyNode(kActor, fBelly)
-
-			endif
-		EndIf
-
-		; BUTT SWELL ======================================================
-		If  (bAnal) 
-			if ( bButtEnabled )  && (GV_useButtNode.GetValue() == 1) 
-				Float fCurrentButt 
-				If (StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON")==0)
-					fCurrentButt = NetImmerse.GetNodeScale(kActor, NINODE_RIGHT_BUTT, false)
-				else
-					fCurrentButt = StorageUtil.GetFloatValue(kActor, "_SLH_fButt")
-				endIf
-
-				if (bExternalChangeModActive) && (StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON")==0)
-					fNodeMax = fPregButtMax
-					fButt = fCurrentButt
-				Else
-					fNodeMax = fButtMax
-					fButt = ( fCurrentButt + ( fSwellFactor * (fNodeMax + fButtMin  - fCurrentButt) / 100.0 ) * fButtSwellMod ) 
-				EndIf
-
-				alterButtNode(kActor,  fButt )
-			endif
-		EndIf
-
-		; SCHLONG SWELL ======================================================
-		If  (bAnal) || (bVaginal) || (bOral) 
-
-			if ( bEnableSchlong )   && (GV_useSchlongNode.GetValue() == 1)
-				Float fCurrentSchlong 
-				If (StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON")==0)
-					fCurrentSchlong = NetImmerse.GetNodeScale(kActor, NINODE_SCHLONG, false)
-				else
-					fCurrentSchlong = StorageUtil.GetFloatValue(kActor, "_SLH_fSchlong")
-				endIf
-
-				fSchlong = fCurrentSchlong + ( fSwellFactor * (fSchlongMax  + fSchlongMin - fCurrentSchlong) / 100.0 ) * fSchlongSwellMod 
-
-				alterSchlongNode(kActor,  fSchlong )
-			endif
-		EndIf
-	EndIf
- 
-	
- 	; _refreshBodyShape()
- 	StorageUtil.SetFloatValue(kActor, "_SLH_fTempGrowthMod",  1.0) 
-	StorageUtil.SetFloatValue(kActor, "_SLH_fSwellFactor",  fSwellFactor) 
- 
-
+	alterBodyAfterRest(kActor)
 EndFunction
 
 function alterBodyByPercent(Actor kActor, String sBodyPart, Float modFactor)
@@ -723,20 +599,27 @@ function alterBodyByPercent(Actor kActor, String sBodyPart, Float modFactor)
 		StorageUtil.SetFormValue(kActor, "_SLH_fOrigRace",thisRace) 
 	EndIf
 
+	debugTrace( "alterBodyByPercent " + sBodyPart)
+	debugTrace( "modFactor: " + modFactor)
+
 	if (GV_useWeight.GetValue() == 1) && (sBodyPart=="Weight")
-		debugTrace( "alterBodyByPercent Weight")
-		debugTrace( "pActorBase.GetWeight(): " + pActorBase.GetWeight())
-		debugTrace( "modFactor: " + modFactor)
+		; 2020-03-14 - force positive value of fWeightSwellMod - losing weight always means a decrease here
+		if (fWeightSwellMod<0)
+			fWeightSwellMod = -1.0 * fWeightSwellMod
+		endif
+
+		fCurrentWeight = pActorBase.GetWeight()
+
+		debugTrace( "pActorBase.GetWeight(): " + fCurrentWeight)
 		debugTrace( "fWeightSwellMod: " + fWeightSwellMod)
 		debugTrace( "StorageUtil _SLH_fWeight: " + StorageUtil.GetFloatValue(kActor, "_SLH_fWeight") )
-		debugTrace( "Global Value: " + GV_weightValue.GetValue() )
+		; debugTrace( "Global Value: " + GV_weightValue.GetValue() )
 
 		; WEIGHT CHANGE ====================================================
-		fCurrentWeight = pActorBase.GetWeight()
-		fWeight = fCurrentWeight + ( modFactor * (110.0 - fCurrentWeight) / 100.0 ) * fWeightSwellMod
+		fWeight = fCurrentWeight + ( (modFactor * fCurrentWeight) / 100.0 ) * fWeightSwellMod
 		fWeight = fctUtil.fRange( fWeight  , fWeightMin, fWeightMax)
 
-		debugTrace("  Set weight to " + fWeight + " from " + fCurrentWeight)
+		debugTrace("  Set weight from " + fCurrentWeight + " to " + fWeight )
 		alterWeight(kActor, fWeight  )
 
 		; Debug.Notification(" Set weight to " + fWeight + " from " + fCurrentWeight)
@@ -761,7 +644,7 @@ function alterBodyByPercent(Actor kActor, String sBodyPart, Float modFactor)
 					fBreast = fCurrentBreast
 				Else
 					fNodeMax = fBreastMax
-					fBreast = ( fCurrentBreast + ( modFactor * (fNodeMax + fBreastMin  - fCurrentBreast) / 100.0 )   ) 
+					fBreast = ( fCurrentBreast + ( modFactor * fCurrentBreast) / 100.0 )    
 				EndIf
 
 				debugTrace("  	fCurrentBreast:  " + fCurrentBreast)
@@ -790,7 +673,7 @@ function alterBodyByPercent(Actor kActor, String sBodyPart, Float modFactor)
 					fBelly = fCurrentBelly
 				Else
 					fNodeMax = fBellyMax
-					fBelly = (fCurrentBelly + ( modFactor * (fNodeMax + fBellyMin - fCurrentBelly) / 100.0 )   ) 
+					fBelly = (fCurrentBelly + ( modFactor * fCurrentBelly) / 100.0 )
 				EndIf
 				
 				alterBellyNode(kActor, fBelly )
@@ -813,7 +696,7 @@ function alterBodyByPercent(Actor kActor, String sBodyPart, Float modFactor)
 					fButt = fCurrentButt
 				Else
 					fNodeMax = fButtMax
-					fButt = ( fCurrentButt + ( modFactor * (fNodeMax + fButtMin  - fCurrentButt) / 100.0 )   )  
+					fButt = ( fCurrentButt + ( modFactor * fCurrentButt) / 100.0 )  
 				EndIf
 				
 				alterButtNode(kActor,  fButt )
@@ -832,7 +715,11 @@ function alterBodyByPercent(Actor kActor, String sBodyPart, Float modFactor)
 					fCurrentSchlong = StorageUtil.GetFloatValue(kActor, "_SLH_fSchlong")
 				endIf
 
-				fSchlong = fCurrentSchlong + ( modFactor * (fSchlongMax + fSchlongMin  - fCurrentSchlong) / 100.0 )  
+				; if (StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneMale") < StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneFemale"))
+				;	modFactor = -1.0 * modFactor
+				; endIf
+				
+				fSchlong = ( fCurrentSchlong + ( modFactor * fCurrentSchlong) / 100.0 )  
 
 				alterSchlongNode(kActor,  fSchlong )
 			endif
@@ -1423,7 +1310,7 @@ function applyBodyShapeChanges(Actor kActor)
 
 	; 2019-12-13 - Testing a forced QueueNiNodeUpdate to fully refresh shape and colors
 			debugTrace("  QueueNiNodeUpdate")
-			debug.Notification("[SLH] QueueNiNodeUpdate")
+			; debug.Notification("[SLH] QueueNiNodeUpdate")
 			Utility.Wait(1.0)
 			string facegen = "bUseFaceGenPreprocessedHeads:General"
 			Utility.SetINIBool(facegen, false)
@@ -1473,7 +1360,7 @@ Bool function trySuccubusEvent(Actor kActor) ; succubus corruption
 	return 	bEventTriggered 
 EndFunction
 
-Bool function tryTGEvent(Actor kActor) ; trans gender
+Bool function tryTGEvent(Actor kActor, float fHoursSleep) ; trans gender
 	Bool bEventTriggered = False
 	ActorBase pActorBase = kActor.GetActorBase()
 	String sMessage = ""
@@ -1510,9 +1397,9 @@ Bool function tryTGEvent(Actor kActor) ; trans gender
 				sMessage = "Hey.. your a losing weight!"
 			Endif
 
-			fctHormones.modHormoneLevel(kActor, "Metabolism", 2.0) ; accelerate path to transformation
-			fctHormones.modHormoneLevel(kActor, "Growth", -10.0) ; make actor lose weight
-			alterBodyByPercent(kActor, "Weight", -10.0)
+			fctHormones.modHormoneLevel(kActor, "Metabolism", 2.0 * fHoursSleep) ; accelerate path to transformation
+			fctHormones.modHormoneLevel(kActor, "Growth", -2.0 * fHoursSleep) ; make actor lose weight
+			alterBodyByPercent(kActor, "Weight", -2.0 * fHoursSleep)
 		endif
 
 		if (fHormoneFemale>=80.0) && (fHormoneMale>=80.0) && (fHormoneMetabolism>=80) && (fWeight < 10)  
@@ -1522,7 +1409,7 @@ Bool function tryTGEvent(Actor kActor) ; trans gender
 			else
 				sMessage = "Your cock is getting smaller every day."
 			Endif
-			alterBodyByPercent(kActor, "Schlong", -25.0)
+			alterBodyByPercent(kActor, "Schlong", -4.0 * fHoursSleep)
 			
 			fSchlong = StorageUtil.GetFloatValue(kActor, "_SLH_fSchlong")
 			if (fSchlong <= (fSchlongMin + 0.1) )
@@ -1557,9 +1444,9 @@ Bool function tryTGEvent(Actor kActor) ; trans gender
 				sMessage = "Your body is feverish and aching."
 			Endif
 
-			fctHormones.modHormoneLevel(kActor, "Metabolism", 2.0) ; accelerate path to transformation
-			fctHormones.modHormoneLevel(kActor, "Growth", -10.0) ; make actor lose weight
-			alterBodyByPercent(kActor, "Weight", -10.0)		
+			fctHormones.modHormoneLevel(kActor, "Metabolism", 2.0 * fHoursSleep) ; accelerate path to transformation
+			fctHormones.modHormoneLevel(kActor, "Growth", -2.0 * fHoursSleep) ; make actor lose weight
+			alterBodyByPercent(kActor, "Weight", -2.0 * fHoursSleep)		
 		endIf
 
 		if (fHormoneFemale<20.0) && (fHormoneMale>=80.0) && (fHormoneMetabolism>=80) && (fWeight < 10)  
@@ -1569,8 +1456,8 @@ Bool function tryTGEvent(Actor kActor) ; trans gender
 			else
 				sMessage = "Your shape is getting flatter every day."
 			Endif
-			alterBodyByPercent(kActor, "Breast", -25.0)
-			alterBodyByPercent(kActor, "Butt", -25.0)
+			alterBodyByPercent(kActor, "Breast", -4.0 * fHoursSleep)
+			alterBodyByPercent(kActor, "Butt", -4.0 * fHoursSleep)
 			
 			fBreast = StorageUtil.GetFloatValue(kActor, "_SLH_fBreast") 
 			if (fBreast <= (fBreastMin + 1.0) )
@@ -1600,7 +1487,7 @@ Bool function tryTGEvent(Actor kActor) ; trans gender
 
 EndFunction
 
-Bool function tryHRTEvent(Actor kActor) ; sex change
+Bool function tryHRTEvent(Actor kActor, float fHoursSleep) ; sex change
 	Bool bEventTriggered = False
 	ActorBase pActorBase = kActor.GetActorBase()
 	String sMessage = ""
@@ -1639,9 +1526,9 @@ Bool function tryHRTEvent(Actor kActor) ; sex change
 				sMessage = "Hey.. your a losing weight!"
 			Endif
 
-			fctHormones.modHormoneLevel(kActor, "Metabolism", 2.0) ; accelerate path to transformation
-			fctHormones.modHormoneLevel(kActor, "Growth", -10.0) ; make actor lose weight
-			alterBodyByPercent(kActor, "Weight", -10.0)
+			fctHormones.modHormoneLevel(kActor, "Metabolism", 2.0 * fHoursSleep) ; accelerate path to transformation
+			fctHormones.modHormoneLevel(kActor, "Growth", -2.0 * fHoursSleep) ; make actor lose weight
+			alterBodyByPercent(kActor, "Weight", -2.0 * fHoursSleep)
 		endif
 
 		if (fHormoneFemale>=80.0) && (fHormoneMale<20.0) && (fHormoneMetabolism>=80) && (fWeight < 10)  
@@ -1651,7 +1538,7 @@ Bool function tryHRTEvent(Actor kActor) ; sex change
 			else
 				sMessage = "Your cock is getting smaller every day."
 			Endif
-			alterBodyByPercent(kActor, "Schlong", -25.0)
+			alterBodyByPercent(kActor, "Schlong", -4.0 * fHoursSleep)
 			
 			fSchlong = StorageUtil.GetFloatValue(kActor, "_SLH_fSchlong")
 			if (fSchlong <= (fSchlongMin + 0.1) )
@@ -1663,7 +1550,7 @@ Bool function tryHRTEvent(Actor kActor) ; sex change
 				Endif
 
 				bEventTriggered = True
-				fctHormones.modHormoneLevel(kActor, "Metabolism", -100.0) ; 
+				fctHormones.modHormoneLevel(kActor, "Metabolism", -100.0 * fHoursSleep) ; 
 				debugTrace("	 Casting HRT curse")
 				kActor.SendModEvent("SLHCastHRTCurse", "Bimbo")
 			else
@@ -1683,9 +1570,9 @@ Bool function tryHRTEvent(Actor kActor) ; sex change
 				sMessage = "Hey.. your a losing weight!"
 			Endif
 
-			fctHormones.modHormoneLevel(kActor, "Metabolism", 2.0) ; accelerate path to transformation
-			fctHormones.modHormoneLevel(kActor, "Growth", -10.0) ; make actor lose weight
-			alterBodyByPercent(kActor, "Weight", -10.0)
+			fctHormones.modHormoneLevel(kActor, "Metabolism", 2.0 * fHoursSleep) ; accelerate path to transformation
+			fctHormones.modHormoneLevel(kActor, "Growth", -2.0 * fHoursSleep) ; make actor lose weight
+			alterBodyByPercent(kActor, "Weight", -2.0 * fHoursSleep)
 		endIf
 
 		if (fHormoneFemale<20.0) && (fHormoneMale>=80.0) && (fHormoneMetabolism>=80) && (fWeight < 10)  
@@ -1695,8 +1582,8 @@ Bool function tryHRTEvent(Actor kActor) ; sex change
 			else
 				sMessage = "Your shape is getting flatter every day."
 			Endif
-			alterBodyByPercent(kActor, "Breast", -25.0)
-			alterBodyByPercent(kActor, "Butt", -25.0)
+			alterBodyByPercent(kActor, "Breast", -4.0 * fHoursSleep)
+			alterBodyByPercent(kActor, "Butt", -4.0 * fHoursSleep)
 			
 			fBreast = StorageUtil.GetFloatValue(kActor, "_SLH_fBreast") 
 
@@ -1726,7 +1613,7 @@ Bool function tryHRTEvent(Actor kActor) ; sex change
 	return 	bEventTriggered 
 EndFunction
 
-Bool function tryBimboEvent(Actor kActor) ; bimbo curse
+Bool function tryBimboEvent(Actor kActor, float fHoursSleep) ; bimbo curse
 	Bool bEventTriggered = False
 	ActorBase pActorBase = kActor.GetActorBase()
 	String sMessage = ""
@@ -1757,8 +1644,11 @@ Bool function tryBimboEvent(Actor kActor) ; bimbo curse
 			sMessage = "You wake up horny."
 		Endif
 
-		fctHormones.modHormoneLevel(kActor, "Metabolism", 2.0) ; accelerate path to transformation
-		fctHormones.modHormoneLevel(kActor, "SexDrive", 10.0) ; make actor hornier
+		; Enable bimbo thoughts
+		StorageUtil.SetIntValue(kActor, "_SLH_iAllowBimboThoughts", 1)
+
+		fctHormones.modHormoneLevel(kActor, "Metabolism", 2.0 * fHoursSleep) ; accelerate path to transformation
+		fctHormones.modHormoneLevel(kActor, "SexDrive", 4.0 * fHoursSleep) ; make actor hornier
 	endif
 
 	if (fHormoneBimbo>=50.0) && (fHormoneMetabolism>=70)
@@ -1769,11 +1659,8 @@ Bool function tryBimboEvent(Actor kActor) ; bimbo curse
 			sMessage = "You feel soft and sexy."
 		Endif
 
-		fctHormones.modHormoneLevel(kActor, "Female", 10.0) ; make actor more feminine
-		fctHormones.modHormoneLevel(kActor, "Male", -10.0) ; 
-
-		; Enable bimbo thoughts
-		StorageUtil.SetIntValue(kActor, "_SLH_iAllowBimboThoughts", 1)
+		fctHormones.modHormoneLevel(kActor, "Female", 2.0 * fHoursSleep) ; make actor more feminine
+		fctHormones.modHormoneLevel(kActor, "Male", -4.0 * fHoursSleep) ; 
 	endIf
 	
 	if (fHormoneBimbo>=70.0) && (fHormoneMetabolism>=80)
@@ -1784,8 +1671,8 @@ Bool function tryBimboEvent(Actor kActor) ; bimbo curse
 			sMessage = "Hey.. your a losing weight!"
 		Endif
 
-		fctHormones.modHormoneLevel(kActor, "Growth", -10.0) ; make actor lose weight
-		alterBodyByPercent(kActor, "Weight", -10.0)
+		fctHormones.modHormoneLevel(kActor, "Growth", -4.0 * fHoursSleep) ; make actor lose weight
+		alterBodyByPercent(kActor, "Weight", -4.0 * fHoursSleep)
 	endIf
 	
 	if (fHormoneBimbo>=80.0) && (fHormoneMetabolism>=80)
@@ -1803,7 +1690,7 @@ Bool function tryBimboEvent(Actor kActor) ; bimbo curse
 				else
 					sMessage = "Your cock is getting smaller every day."
 				Endif
-				alterBodyByPercent(kActor, "Schlong", -25.0)
+				alterBodyByPercent(kActor, "Schlong", -4.0 * fHoursSleep)
 			endif
 		endif
 

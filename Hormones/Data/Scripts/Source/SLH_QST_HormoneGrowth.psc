@@ -423,14 +423,14 @@ Event OnSleepStop(bool abInterrupted)
 	debugTrace("Player woke up at: " + Utility.GameTimeToString(Utility.GetCurrentGameTime()))
 	debugTrace("Time slept: " + fHoursSleep)
 
-	bShapeChangeEvent = fctBodyShape.tryTGEvent(PlayerActor)
+	bShapeChangeEvent = fctBodyShape.tryTGEvent(PlayerActor,fHoursSleep)
 
 	if (!bShapeChangeEvent)
-		bShapeChangeEvent = fctBodyShape.tryHRTEvent(PlayerActor)
+		bShapeChangeEvent = fctBodyShape.tryHRTEvent(PlayerActor,fHoursSleep)
 	Endif
 
 	if (!bShapeChangeEvent)
-		bShapeChangeEvent = fctBodyShape.tryBimboEvent(PlayerActor)
+		bShapeChangeEvent = fctBodyShape.tryBimboEvent(PlayerActor,fHoursSleep)
 	Endif
 
 	If abInterrupted
@@ -994,7 +994,7 @@ Event OnResetHormonesEvent(String _eventName, String _args, Float _argc = 1.0, F
  	EndIf
 	debugTrace(" Receiving 'reset hormones levels' event. Actor: " + kActor )
 
-	fctHormones.initHormonesLevels(PlayerActor)
+	fctHormones.initHormonesLevels(kActor)
 	
 EndEvent
 
@@ -1006,7 +1006,7 @@ Event OnModHormoneEvent(String _eventName, String _args, Float _argc = 1.0, Form
  	EndIf
 	debugTrace(" Receiving 'mod hormone level' event. Actor: " + kActor )
 
-	fctHormones.modHormoneLevel(PlayerActor, _args, _argc)
+	fctHormones.modHormoneLevel(kActor, _args, _argc)
 
 EndEvent
 
@@ -1018,34 +1018,34 @@ Event OnModHormoneRandomEvent(String _eventName, String _args, Float _argc = 1.0
  	EndIf
 	debugTrace(" Receiving 'mod hormone random level' event. Actor: " + kActor )
 
-	fctHormones.modHormoneLevel(PlayerActor, "Pigmentation", Utility.RandomFloat(-1.0,2.0) * _argc )
-	fctHormones.modHormoneLevel(PlayerActor, "Growth", Utility.RandomFloat(5.0,10.0) * _argc )
-	fctHormones.modHormoneLevel(PlayerActor, "Metabolism", Utility.RandomFloat(5.0,20.0) * _argc )
-	fctHormones.modHormoneLevel(PlayerActor, "Sleep", Utility.RandomFloat(-1.0,2.0) * _argc )
-	fctHormones.modHormoneLevel(PlayerActor, "Hunger", Utility.RandomFloat(-1.0,2.0) * _argc )
-	fctHormones.modHormoneLevel(PlayerActor, "Immunity", Utility.RandomFloat(-1.0,2.0) * _argc )
-	fctHormones.modHormoneLevel(PlayerActor, "Stress", Utility.RandomFloat(-10.0,20.0) * _argc )
-	fctHormones.modHormoneLevel(PlayerActor, "SexDrive", Utility.RandomFloat(-10.0,20.0) * _argc )
-	fctHormones.modHormoneLevel(PlayerActor, "Pheromones", Utility.RandomFloat(-0.5,1.0) * _argc )
-	fctHormones.modHormoneLevel(PlayerActor, "Lactation", Utility.RandomFloat(-1.0,2.0) * _argc )
+	fctHormones.modHormoneLevel(kActor, "Pigmentation", Utility.RandomFloat(-1.0,2.0) * _argc )
+	fctHormones.modHormoneLevel(kActor, "Growth", Utility.RandomFloat(5.0,10.0) * _argc )
+	fctHormones.modHormoneLevel(kActor, "Metabolism", Utility.RandomFloat(5.0,20.0) * _argc )
+	fctHormones.modHormoneLevel(kActor, "Sleep", Utility.RandomFloat(-1.0,2.0) * _argc )
+	fctHormones.modHormoneLevel(kActor, "Hunger", Utility.RandomFloat(-1.0,2.0) * _argc )
+	fctHormones.modHormoneLevel(kActor, "Immunity", Utility.RandomFloat(-1.0,2.0) * _argc )
+	fctHormones.modHormoneLevel(kActor, "Stress", Utility.RandomFloat(-10.0,20.0) * _argc )
+	fctHormones.modHormoneLevel(kActor, "SexDrive", Utility.RandomFloat(-10.0,20.0) * _argc )
+	fctHormones.modHormoneLevel(kActor, "Pheromones", Utility.RandomFloat(-0.5,1.0) * _argc )
+	fctHormones.modHormoneLevel(kActor, "Lactation", Utility.RandomFloat(-1.0,2.0) * _argc )
 
 
-	if (_args == "Succubus") || (_args == "Bimbo")
-		fctHormones.modHormoneLevel(PlayerActor, "Mood", Utility.RandomFloat(-5.0,10.0) * _argc )
-		fctHormones.modHormoneLevel(PlayerActor, "Female", Utility.RandomFloat(5.0,10.0) * _argc )
-		fctHormones.modHormoneLevel(PlayerActor, "Male", Utility.RandomFloat(-5.0,-10.0) * _argc )
+	if (_args == "Succubus") || (_args == "Bimbo") || (_args == "Chaurus")
+		fctHormones.modHormoneLevel(kActor, "Mood", Utility.RandomFloat(-5.0,10.0) * _argc )
+		fctHormones.modHormoneLevel(kActor, "Female", Utility.RandomFloat(5.0,10.0) * _argc )
+		fctHormones.modHormoneLevel(kActor, "Male", Utility.RandomFloat(-5.0,-10.0) * _argc )
 	Else
-		fctHormones.modHormoneLevel(PlayerActor, "Mood", Utility.RandomFloat(-1.0,2.0) * _argc )
-		fctHormones.modHormoneLevel(PlayerActor, "Female", Utility.RandomFloat(-5.0,10.0) * _argc )
-		fctHormones.modHormoneLevel(PlayerActor, "Male", Utility.RandomFloat(-5.0,-10.0) * _argc )
+		fctHormones.modHormoneLevel(kActor, "Mood", Utility.RandomFloat(-1.0,2.0) * _argc )
+		fctHormones.modHormoneLevel(kActor, "Female", Utility.RandomFloat(-5.0,10.0) * _argc )
+		fctHormones.modHormoneLevel(kActor, "Male", Utility.RandomFloat(-5.0,-10.0) * _argc )
 	endif
 
 	if (_args == "Succubus") || (_args == "Bimbo")
-		fctHormones.modHormoneLevel(PlayerActor, "Bimbo", Utility.RandomFloat(20.0,40.0) * _argc )
+		fctHormones.modHormoneLevel(kActor, "Bimbo", Utility.RandomFloat(20.0,40.0) * _argc )
 	Endif
 
 	if (_args == "Succubus")
-		fctHormones.modHormoneLevel(PlayerActor, "Succubus", Utility.RandomFloat(5.0,15.0) * _argc )
+		fctHormones.modHormoneLevel(kActor, "Succubus", Utility.RandomFloat(5.0,15.0) * _argc )
 	endif
 	
 EndEvent
@@ -1452,7 +1452,7 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 			fctBodyShape.getShapeState(PlayerActor) 
 
 			; Update after sex disabled during testing of influence of new hormone levels
-	    	; fctBodyShape.alterBodyAfterSex(PlayerActor, bOral, bVaginal, bAnal )
+	    	fctBodyShape.alterBodyAfterSex(PlayerActor, bOral, bVaginal, bAnal )
 	    	fctColor.alterColorAfterSex(PlayerActor )
 
 			setHormonesState(PlayerActor)	
@@ -1890,6 +1890,8 @@ EndFunction
 Function refreshColor(Actor kActor)
 
 	debugTrace(" Updating colors only" )
+	debugTrace("     bExternalChangeModActive:" + bExternalChangeModActive)
+	debugTrace("     NextAllowed: " + NextAllowed)
   
 	; fctBodyShape.refreshBodyShape(kActor) 
 	fctColor.applyColorChanges(kActor)

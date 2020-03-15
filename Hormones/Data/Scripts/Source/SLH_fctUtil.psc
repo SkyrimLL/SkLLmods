@@ -425,6 +425,8 @@ function bimboRandomThoughts(actor bimbo)
 	Int rollMessage 
 	Int rollFirstPerson 
 	String bimboMessage = ""
+	Float fHormoneBimbo = StorageUtil.GetFloatValue(bimbo, "_SLH_fHormoneBimbo" ) 	
+	Float fHormoneMetabolism = StorageUtil.GetFloatValue(bimbo, "_SLH_fHormoneMetabolism" ) 
 
 	rollMessage = Utility.RandomInt(0,140)
 	rollFirstPerson = Utility.RandomInt(0,100)
@@ -435,6 +437,11 @@ function bimboRandomThoughts(actor bimbo)
 	; Utility.Wait(2.0)
 
 	If (StorageUtil.GetIntValue(bimbo, "_SLH_iShowStatus")==0)
+		Return
+	Endif
+
+	; Under 50.0, only play a moaning sound
+	if (fHormoneBimbo<50.0)
 		Return
 	Endif
 
@@ -479,6 +486,10 @@ function bimboRandomThoughts(actor bimbo)
 				bimboMessage = "Pleasure is all that matters"
 			elseif (rollMessage >= 110)
 				bimboMessage = "I'm totally getting my brains fucked out."
+			elseif (rollMessage >= 109)
+				bimboMessage = "My mouth is for sucking, not for talking."
+			elseif (rollMessage >= 107)
+				bimboMessage = "My tits are for grabbing, not hiding."
 			elseif (rollMessage >= 105)
 				bimboMessage = "Always wet, always horny."
 			elseif (rollMessage >= 100)
