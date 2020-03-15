@@ -6,7 +6,7 @@ Scriptname Alicia_TIF_Rumor03 Extends TopicInfo Hidden
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
-getOwningQuest().setObjectiveDisplayed(4)
+GetOwningQuest().setStage(4)
 ;END CODE
 EndFunction
 ;END FRAGMENT

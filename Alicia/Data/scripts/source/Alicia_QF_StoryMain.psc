@@ -1,16 +1,6 @@
 ;BEGIN FRAGMENT CODE - Do not edit anything between this and the end comment
-;NEXT FRAGMENT INDEX 22
+;NEXT FRAGMENT INDEX 23
 Scriptname Alicia_QF_StoryMain Extends Quest Hidden
-
-;BEGIN ALIAS PROPERTY Alicia_GhostREF
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias_Alicia_GhostREF Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY Alicia_LuckyREF
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias_Alicia_LuckyREF Auto
-;END ALIAS PROPERTY
 
 ;BEGIN ALIAS PROPERTY AliciaRef
 ;ALIAS PROPERTY TYPE ReferenceAlias
@@ -22,9 +12,9 @@ ReferenceAlias Property Alias_AliciaRef Auto
 ReferenceAlias Property Alias_Alicia_RiverShackREF Auto
 ;END ALIAS PROPERTY
 
-;BEGIN ALIAS PROPERTY AliciaCuredRef
+;BEGIN ALIAS PROPERTY Alicia_GhostREF
 ;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias_AliciaCuredRef Auto
+ReferenceAlias Property Alias_Alicia_GhostREF Auto
 ;END ALIAS PROPERTY
 
 ;BEGIN ALIAS PROPERTY AliciaDaedricREF
@@ -32,15 +22,15 @@ ReferenceAlias Property Alias_AliciaCuredRef Auto
 ReferenceAlias Property Alias_AliciaDaedricREF Auto
 ;END ALIAS PROPERTY
 
-;BEGIN FRAGMENT Fragment_6
-Function Fragment_6()
-;BEGIN CODE
-If (!IsObjectiveDisplayed(20))
-   SetObjectiveDisplayed(20)
-EndIf
-;END CODE
-EndFunction
-;END FRAGMENT
+;BEGIN ALIAS PROPERTY Alicia_LuckyREF
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias_Alicia_LuckyREF Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY AliciaCuredRef
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias_AliciaCuredRef Auto
+;END ALIAS PROPERTY
 
 ;BEGIN FRAGMENT Fragment_8
 Function Fragment_8()
@@ -52,20 +42,38 @@ EndIf
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_9
-Function Fragment_9()
+;BEGIN FRAGMENT Fragment_22
+Function Fragment_22()
 ;BEGIN CODE
-If (!IsObjectiveDisplayed(50))
-   SetObjectiveDisplayed(50)
-EndIf
+setObjectiveDisplayed(4)
 ;END CODE
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_21
-Function Fragment_21()
+;BEGIN FRAGMENT Fragment_18
+Function Fragment_18()
 ;BEGIN CODE
-; Used to record meeting Agnes after finding Alicia but before she is cured
+setObjectiveDisplayed(2)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_16
+Function Fragment_16()
+;BEGIN CODE
+SetObjectiveDisplayed(1, false)
+SetObjectiveDisplayed(2, false)
+SetObjectiveDisplayed(3, false)
+SetObjectiveDisplayed(4, false)
+; SetObjectiveDisplayed(5)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_19
+Function Fragment_19()
+;BEGIN CODE
+setObjectiveDisplayed(3)
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -80,40 +88,10 @@ SetObjectiveDisplayed(60, false)
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_19
-Function Fragment_19()
+;BEGIN FRAGMENT Fragment_21
+Function Fragment_21()
 ;BEGIN CODE
-setObjectiveDisplayed(3)
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_14
-Function Fragment_14()
-;BEGIN CODE
-setObjectiveDisplayed(1)
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_0
-Function Fragment_0()
-;BEGIN CODE
-If (!IsObjectiveDisplayed(10))
-   SetObjectiveDisplayed(10)
-EndIf
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_16
-Function Fragment_16()
-;BEGIN CODE
-SetObjectiveDisplayed(1, false)
-SetObjectiveDisplayed(2, false)
-SetObjectiveDisplayed(3, false)
-SetObjectiveDisplayed(4, false)
-; SetObjectiveDisplayed(5)
+; Used to record meeting Agnes after finding Alicia but before she is cured
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -157,10 +135,40 @@ Function Fragment_4()
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_18
-Function Fragment_18()
+;BEGIN FRAGMENT Fragment_6
+Function Fragment_6()
 ;BEGIN CODE
-setObjectiveDisplayed(2)
+If (!IsObjectiveDisplayed(20))
+   SetObjectiveDisplayed(20)
+EndIf
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_14
+Function Fragment_14()
+;BEGIN CODE
+setObjectiveDisplayed(1)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_9
+Function Fragment_9()
+;BEGIN CODE
+If (!IsObjectiveDisplayed(50))
+   SetObjectiveDisplayed(50)
+EndIf
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_0
+Function Fragment_0()
+;BEGIN CODE
+If (!IsObjectiveDisplayed(10))
+   SetObjectiveDisplayed(10)
+EndIf
 ;END CODE
 EndFunction
 ;END FRAGMENT
