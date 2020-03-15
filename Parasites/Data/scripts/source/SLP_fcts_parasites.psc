@@ -1815,6 +1815,66 @@ Function ParasiteSex(Actor kActor, Actor kParasite)
 	EndIf
 EndFunction
 ;------------------------------------------------------------------------------
+Function FalmerBlue(Actor kActor, Actor kTarget)
+	If (StorageUtil.GetIntValue(none, "_SLH_iHormones")==1)
+		Int iFalmerSkinColor = Math.LeftShift(255, 24) + Math.LeftShift(100, 16) + Math.LeftShift(200, 8) + 255
+		Float breastMod = 0.05
+		Float weightMod = 2.0
+
+		If (Utility.RandomInt(0,100)>60)
+			Int randomNum = Utility.RandomInt(0,100)
+			If (randomNum>80)
+				Debug.MessageBox("Glowing fluids spread from the Falmer's skin across yours like quicksilver, making your nipples stiffen and tingle painfully with poisonous throbs. ")
+				breastMod = 0.5
+				weightMod = 15.0
+				StorageUtil.SetIntValue(none, "_SLH_iForcedHairLoss", 1)
+				kTarget.SendModEvent("SLHShaveHead")
+
+			ElseIf (randomNum>60)
+				Debug.MessageBox("The purpose of the glowing substance is clear to you now, fattening you up for breeding and turning you into an irresistible beacon for the Falmers and their pets.")
+				breastMod = 0.25
+				weightMod = 10.0
+				StorageUtil.SetIntValue(none, "_SLH_iForcedHairLoss", 1)
+				kTarget.SendModEvent("SLHShaveHead")
+
+			ElseIf (randomNum>40)
+				Debug.Notification("Your skin burns under glowing droplets.")
+				breastMod = 0.1
+				weightMod = 5.0
+
+			ElseIf (randomNum>20)
+				Debug.Notification("The tingling over your skin is driving you mad.")
+				breastMod = 0.25
+				weightMod = 2.0
+
+			EndIf
+
+		EndIf
+
+		StorageUtil.SetIntValue(kTarget, "_SLH_iSkinColor", iFalmerSkinColor ) 
+		StorageUtil.SetFloatValue(kTarget, "_SLH_fBreast", StorageUtil.GetFloatValue(kTarget, "_SLH_fBreast" ) + breastMod ) 
+		StorageUtil.SetFloatValue(kTarget, "_SLH_fWeight", StorageUtil.GetFloatValue(kTarget, "_SLH_fWeight" ) + weightMod ) 
+		kTarget.SendModEvent("SLHRefresh")
+		kTarget.SendModEvent("SLHRefreshColors")
+
+
+		if (Utility.RandomInt(0,100)>90)
+			SendModEvent("SLHModHormoneRandom", "Chaurus")
+		else
+			SendModEvent("SLHModHormone", "Growth", 5.0)
+			SendModEvent("SLHModHormone", "Female", 10.0)
+			SendModEvent("SLHModHormone", "Male", -5.0)
+
+			if (isFemale(kTarget))
+				SendModEvent("SLHModHormone", "Metabolism", -15.0)
+				SendModEvent("SLHModHormone", "Lactation", 5.0)
+			else
+				SendModEvent("SLHModHormone", "Metabolism", 15.0)
+			endif
+		endif
+	Endif	
+EndFunction
+;------------------------------------------------------------------------------
 
 bool Function CheckXPMSERequirements(Actor akActor, bool isFemale)
 	return XPMSELib.CheckXPMSEVersion(akActor, isFemale, XPMSE_VERSION, true) && XPMSELib.CheckXPMSELibVersion(XPMSELIB_VERSION) && SKSE.GetPluginVersion("NiOverride") >= NIOVERRIDE_VERSION && NiOverride.GetScriptVersion() >= NIOVERRIDE_SCRIPT_VERSION

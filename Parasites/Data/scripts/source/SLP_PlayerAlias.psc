@@ -89,6 +89,7 @@ Function _maintenance()
 	RegisterForModEvent("OrgasmStart",    "OnSexLabOrgasm")
  
 	RegisterForModEvent("SLPSexCure",   "OnSLPSexCure")
+	RegisterForModEvent("SLPFalmerBlue",   "OnSLPFalmerBlue")
 
 	RegisterForModEvent("SDParasiteAn",   "OnSLPInfectSpiderEgg")
 	RegisterForModEvent("SDParasiteVag",   "OnSLPInfectChaurusWorm")
@@ -977,7 +978,13 @@ Event OnSLPSexCure(String _eventName, String _args, Float _argc = 0.0, Form _sen
 	ElseIf (sParasite == "FaceHuggerGag")
 		fctParasites.cureFaceHuggerGag(kActor, bHarvestParasite)
 	Endif
+EndEvent
 
+Event OnSLPFalmerBlue(String _eventName, String _args, Float _argc = 0.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+ 	Actor kPlayer = Game.GetPlayer() as Actor
+ 
+	fctParasites.FalmerBlue(kActor,kPlayer)
 EndEvent
 
 Event OnSLPClearParasites(String _eventName, String _args, Float _argc = 1.0, Form _sender)
