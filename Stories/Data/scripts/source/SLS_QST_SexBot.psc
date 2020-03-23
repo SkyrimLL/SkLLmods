@@ -2,6 +2,13 @@ Scriptname SLS_QST_SexBot extends Quest
 
 ReferenceAlias Property SexBotAlias  Auto  
 
+Armor Property SexBotBasicSkin Auto
+Armor Property SexBotMixedSkin Auto
+Armor Property SexBotPleasureSkin Auto
+Armor Property SexBotEvolvedSkin Auto
+
+Armor Property RefreshToken Auto
+
 Event OnInit()
 	_Maintenance()
 EndEvent
@@ -9,10 +16,38 @@ EndEvent
 Function _Maintenance()
 	ObjectReference SexBotREF= SexBotAlias.GetReference()
 	Actor SexBotActor= SexBotAlias.GetReference() as Actor
+	ActorBase akActorBase = SexBotActor.GetActorBase()
+
+	String currentSkin = StorageUtil.GetStringValue(SexBotActor, "_SLS_SexBotSkin")
+
+	StorageUtil.SetFormValue(none, "_SLS_fSexBot", SexBotActor as Form)
 
 	; Debug.Notification("SexBot: init");
+	; Debug.Notification("SexBot: _SLS_SexBotSkin: " + currentSkin);
 
-		SexBotActor.EvaluatePackage()
+	if (currentSkin == "") || (currentSkin == "Basic")
+		akActorBase.SetSkin(SexBotBasicSkin)
+		StorageUtil.SetStringValue(SexBotActor, "_SLS_SexBotSkin", "Basic")
+
+	elseif (currentSkin == "Mixed")
+		akActorBase.SetSkin(SexBotMixedSkin)
+		StorageUtil.SetStringValue(SexBotActor, "_SLS_SexBotSkin", "Mixed")
+
+	elseif (currentSkin == "Pleasure")
+		akActorBase.SetSkin(SexBotPleasureSkin)
+		StorageUtil.SetStringValue(SexBotActor, "_SLS_SexBotSkin", "Pleasure")
+
+	elseif (currentSkin == "Evolved")
+		akActorBase.SetSkin(SexBotEvolvedSkin)
+		StorageUtil.SetStringValue(SexBotActor, "_SLS_SexBotSkin", "Evolved")
+
+	endif
+
+	SexBotREF.AddItem(RefreshToken, 1)
+	SexBotActor.EquipItem(RefreshToken)
+	SexBotREF.RemoveItem(RefreshToken)
+
+	SexBotActor.EvaluatePackage()
 
 	UnregisterForAllModEvents()
 	Debug.Trace("SexLab SexBot: Reset SexLab events")
@@ -90,7 +125,6 @@ Event OnSexLabOrgasm(String _eventName, String _args, Float _argc, Form _sender)
 	ObjectReference SexBotREF= SexBotAlias.GetReference()
 	Actor SexBotActor= SexBotAlias.GetReference() as Actor
     sslBaseAnimation animation = SexLab.HookAnimation(_args)
-
 	
 
 	if !Self || !SexLab 
@@ -107,9 +141,10 @@ Event OnSexLabOrgasm(String _eventName, String _args, Float _argc, Form _sender)
 		; Debug.Trace("SexLab Stories: Orgasm!")
  
 		If (SLS_SexBotOnOff.GetValue() == 0)
-			Debug.Notification("E.L.L.E is now recharged.")
 			SLS_SexBotOnOff.SetValue(1) 
             StorageUtil.SetIntValue(SexBotActor, "_SLS_LastSexDate", Game.QueryStat("Days Passed"))
+            StorageUtil.SetIntValue(SexBotActor, "_SLS_SexBotEnergyLevel", StorageUtil.GetIntValue(SexBotActor, "_SLS_SexBotEnergyLevel") + 1)
+			Debug.Notification("E.L.L.E is now recharged")
 			SexBotActor.EvaluatePackage()
 			Utility.Wait(1.0)
 		EndIf

@@ -9,6 +9,29 @@ Weapon Property setInventoryDagger Auto
 
 ; PRIVATE VARIABLES -------------------------------------------------------------------------------
 
+; String                   Property NINODE_SCHLONG	 	= "NPC Genitals01 [Gen01]" AutoReadOnly
+string                   Property SLS_KEY               = "SexLab-Stories.esp" AutoReadOnly
+String                   Property NINODE_SCHLONG	 	= "NPC GenitalsBase [GenBase]" AutoReadOnly
+String                   Property NINODE_LEFT_BREAST    = "NPC L Breast" AutoReadOnly
+String                   Property NINODE_LEFT_BREAST01  = "NPC L Breast01" AutoReadOnly
+String                   Property NINODE_LEFT_BUTT      = "NPC L Butt" AutoReadOnly
+String                   Property NINODE_RIGHT_BREAST   = "NPC R Breast" AutoReadOnly
+String                   Property NINODE_RIGHT_BREAST01 = "NPC R Breast01" AutoReadOnly
+String                   Property NINODE_RIGHT_BUTT     = "NPC R Butt" AutoReadOnly
+String                   Property NINODE_SKIRT02        = "SkirtBBone02" AutoReadOnly
+String                   Property NINODE_SKIRT03        = "SkirtBBone03" AutoReadOnly
+String                   Property NINODE_BELLY          = "NPC Belly" AutoReadOnly
+Float                    Property NINODE_MAX_SCALE      = 4.0 AutoReadOnly
+Float                    Property NINODE_MIN_SCALE      = 0.1 AutoReadOnly
+
+; NiOverride version data
+int                      Property NIOVERRIDE_VERSION    = 4 AutoReadOnly
+int                      Property NIOVERRIDE_SCRIPT_VERSION = 4 AutoReadOnly
+
+; XPMSE version data
+float                    Property XPMSE_VERSION         = 3.0 AutoReadOnly
+float                    Property XPMSELIB_VERSION      = 3.0 AutoReadOnly
+
 ; --- Version 1 ---
 
 ; State
@@ -37,6 +60,10 @@ bool		_fetishSteed
 bool		_fetishThief
 bool		_fetishTower
 bool		_fetishWarrior
+
+Float 		_breastSexBot
+Float 		_buttSexBot
+Float 		_weightSexBot
 
 Float 		_breastMaxMilkFarm
 bool 		_clearInventory
@@ -91,6 +118,9 @@ event OnPageReset(string a_page)
 		UnloadCustomContent()
 	endIf
 
+	Form SexBotForm = StorageUtil.GetFormValue(none, "_SLS_fSexBot")
+	Actor SexBotActor = SexBotForm as Actor
+
 	kPlayer = Game.GetPlayer()
 	; ObjectReference PlayerREF= PlayerAlias.GetReference()
 	; Actor PlayerActor= PlayerAlias.GetReference() as Actor
@@ -133,6 +163,10 @@ event OnPageReset(string a_page)
 	; _fetishWarrior
 
 	_breastMaxMilkFarm = StorageUtil.GetFloatValue(kPlayer, "_SLS_breastMaxMilkFarm" )
+
+	_breastSexBot = StorageUtil.GetFloatValue(kPlayer, "_SLS_breastSexBot" )
+	_buttSexBot = StorageUtil.GetFloatValue(kPlayer, "_SLS_buttSexBot" )
+	_weightSexBot = StorageUtil.GetFloatValue(kPlayer, "_SLS_weightSexBot" )
 
 	If (a_page == "Settings")
 		SetCursorFillMode(TOP_TO_BOTTOM)
@@ -209,11 +243,20 @@ event OnPageReset(string a_page)
 	ElseIf (a_page == "Stories")
 		SetCursorFillMode(TOP_TO_BOTTOM)
 	
-		AddHeaderOption(" Placeholder - No option yet")
+		; AddHeaderOption(" Placeholder - No option yet")
 		; AddHeaderOption(" The Red Wave")
 		; AddToggleOptionST("STATE_REDWAVE_START","Player starting quest", _startRedWave as Float, OPTION_FLAG_DISABLED)
 
-		; AddHeaderOption(" E.L.L.E SexBot")
+		AddHeaderOption(" E.L.L.E SexBot")
+		if (StorageUtil.GetIntValue(SexBotActor, "_SLS_iSexBotRepairLevel")>=4)
+			AddSliderOptionST("STATE_SEXBOT_BREAST","SexBot breast size", _breastSexBot,"{1}")
+			AddSliderOptionST("STATE_SEXBOT_BUTT","SexBot butt size", _buttSexBot,"{1}")
+			AddSliderOptionST("STATE_SEXBOT_WEIGHT","SexBot weight", _weightSexBot,"{1}")
+		else
+			AddSliderOptionST("STATE_SEXBOT_BREAST","SexBot breast size", _breastSexBot,"{1}", OPTION_FLAG_DISABLED)
+			AddSliderOptionST("STATE_SEXBOT_BUTT","SexBot butt size", _buttSexBot,"{1}", OPTION_FLAG_DISABLED)
+			AddSliderOptionST("STATE_SEXBOT_WEIGHT","SexBot weight", _weightSexBot,"{1}", OPTION_FLAG_DISABLED)
+		endif
 		; AddToggleOptionST("STATE_SEXBOT_START","Player starting quest", _startSexBot as Float, OPTION_FLAG_DISABLED)
 
 		; AddHeaderOption(" The Living Wonder")
@@ -310,6 +353,87 @@ state STATE_FETISH_MOD ; SLIDER
 		SetInfoText("Amplitude modifier for the effect of the Fetish on the player's arousal.")
 	endEvent
 endState
+; AddToggleOptionST("STATE_SEXBOT_BREAST","Max breast size", _breastSexBot  as Float, OPTION_FLAG_DISABLED)
+state STATE_SEXBOT_BREAST ; SLIDER
+	event OnSliderOpenST()
+		SetSliderDialogStartValue( StorageUtil.GetFloatValue(kPlayer, "_SLS_breastSexBot"  ) )
+		SetSliderDialogDefaultValue( 2.0 )
+		SetSliderDialogRange( 0.0, 4.0 )
+		SetSliderDialogInterval(0.1)
+	endEvent
+
+	event OnSliderAcceptST(float value)
+		float thisValue = value 
+		StorageUtil.SetFloatValue(kPlayer, "_SLS_breastSexBot", thisValue )
+		SetSliderOptionValueST( thisValue,"{1}" )
+		updateSexBotBreast(thisValue)
+	endEvent
+
+	event OnDefaultST()
+		StorageUtil.SetFloatValue(kPlayer, "_SLS_breastSexBot", 2.0 )
+		SetSliderOptionValueST( 2.0,"{1}" )
+		updateSexBotBreast(2.0)
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Breast size for E.L.L.E (for NiOverride compatiblity). Only available after unlocking four E.L.L.E data cubes.")
+	endEvent
+endState
+
+; AddToggleOptionST("STATE_SEXBOT_BUTT","Max breast size", _buttSexBot  as Float, OPTION_FLAG_DISABLED)
+state STATE_SEXBOT_BUTT ; SLIDER
+	event OnSliderOpenST()
+		SetSliderDialogStartValue( StorageUtil.GetFloatValue(kPlayer, "_SLS_buttSexBot"  ) )
+		SetSliderDialogDefaultValue( 2.0 )
+		SetSliderDialogRange( 0.0, 4.0 )
+		SetSliderDialogInterval(0.1)
+	endEvent
+
+	event OnSliderAcceptST(float value)
+		float thisValue = value 
+		StorageUtil.SetFloatValue(kPlayer, "_SLS_buttSexBot", thisValue )
+		SetSliderOptionValueST( thisValue,"{1}" )
+		updateSexBotButt(thisValue)
+	endEvent
+
+	event OnDefaultST()
+		StorageUtil.SetFloatValue(kPlayer, "_SLS_buttSexBot", 2.0 )
+		SetSliderOptionValueST( 2.0,"{1}" )
+		updateSexBotButt(2.0)
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Butt size for E.L.L.E (for NiOverride compatiblity). Only available after unlocking four E.L.L.E data cubes.")
+	endEvent
+endState
+
+; AddToggleOptionST("STATE_SEXBOT_BUTT","Max breast size", _buttSexBot  as Float, OPTION_FLAG_DISABLED)
+state STATE_SEXBOT_WEIGHT ; SLIDER
+	event OnSliderOpenST()
+		SetSliderDialogStartValue( StorageUtil.GetFloatValue(kPlayer, "_SLS_weightSexBot"  ) )
+		SetSliderDialogDefaultValue( 100.0 )
+		SetSliderDialogRange( 0.0, 100.0 )
+		SetSliderDialogInterval(1)
+	endEvent
+
+	event OnSliderAcceptST(float value)
+		float thisValue = value 
+		StorageUtil.SetFloatValue(kPlayer, "_SLS_weightSexBot", thisValue )
+		SetSliderOptionValueST( thisValue,"{1}" )
+		updateSexBotWeight(thisValue)
+	endEvent
+
+	event OnDefaultST()
+		StorageUtil.SetFloatValue(kPlayer, "_SLS_weightSexBot", 100.0 )
+		SetSliderOptionValueST( 100.0,"{1}" )
+		updateSexBotWeight(100.0)
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Weight for E.L.L.E. Only available after unlocking four E.L.L.E data cubes.")
+	endEvent
+endState
+
 
 ; AddToggleOptionST("STATE_MILKFARM_BREAST","Max breast size", _breastMaxMilkFarm  as Float, OPTION_FLAG_DISABLED)
 state STATE_MILKFARM_BREAST ; SLIDER
@@ -436,5 +560,62 @@ float function fMax(float a, float b)
 		return b
 	else
 		return a
+	EndIf
+EndFunction
+
+bool Function CheckXPMSERequirements(Actor akActor, bool isFemale)
+	return XPMSELib.CheckXPMSEVersion(akActor, isFemale, XPMSE_VERSION, true) && XPMSELib.CheckXPMSELibVersion(XPMSELIB_VERSION) && SKSE.GetPluginVersion("NiOverride") >= NIOVERRIDE_VERSION && NiOverride.GetScriptVersion() >= NIOVERRIDE_SCRIPT_VERSION
+EndFunction
+
+Function updateSexBotBreast(Float fBreast)
+	Form SexBotForm = StorageUtil.GetFormValue(none, "_SLS_fSexBot")
+	Actor SexBotActor = SexBotForm as Actor
+	Bool bEnableBreast  = NetImmerse.HasNode(SexBotActor, "NPC L Breast", false)
+
+	Bool bBreastEnabled     = ( bEnableBreast as bool )
+	Bool isNiOInstalled = CheckXPMSERequirements(SexBotActor, True)
+
+	if ( bBreastEnabled && isNiOInstalled  )
+
+		XPMSELib.SetNodeScale(SexBotActor, true, NINODE_LEFT_BREAST, fBreast, SLS_KEY)
+		XPMSELib.SetNodeScale(SexBotActor, true, NINODE_RIGHT_BREAST, fBreast, SLS_KEY)
+		
+	EndIf
+EndFunction
+
+Function updateSexBotButt(Float fButt)
+	Form SexBotForm = StorageUtil.GetFormValue(none, "_SLS_fSexBot")
+	Actor SexBotActor = SexBotForm as Actor
+	Bool bEnableButt  = NetImmerse.HasNode(SexBotActor, "NPC L Butt", false)
+
+	Bool bButtEnabled     = ( bButtEnabled as bool )
+	Bool isNiOInstalled = CheckXPMSERequirements(SexBotActor, True)
+
+	if ( bButtEnabled && isNiOInstalled  )
+
+		XPMSELib.SetNodeScale(SexBotActor, true, NINODE_LEFT_BUTT, fButt, SLS_KEY)
+		XPMSELib.SetNodeScale(SexBotActor, true, NINODE_RIGHT_BUTT, fButt, SLS_KEY)
+		
+	EndIf
+EndFunction
+
+Function updateSexBotWeight(Float fWeight)
+	Form SexBotForm = StorageUtil.GetFormValue(none, "_SLS_fSexBot")
+	Actor SexBotActor = SexBotForm as Actor
+	ObjectReference SexBotREF= SexBotActor as ObjectReference
+	ActorBase SexBotActorBase = SexBotActor.GetActorBase()
+ 
+	Float fWeightOrig = SexBotActorBase.GetWeight()
+
+	if (fWeightOrig != fWeight) 
+		Float NeckDelta = (fWeightOrig / 100) - (fWeight / 100) ;Work out the neckdelta.
+
+		; debug.Trace(" Old weight: " + fWeightOrig)
+		; debug.Trace(" New weight: " + fWeight)
+		; debug.Trace(" NeckDelta: " + NeckDelta)
+	 
+		SexBotActorBase.SetWeight(fWeight) 
+		SexBotActor.UpdateWeight(NeckDelta) ;Apply the changes.
+ 
 	EndIf
 EndFunction

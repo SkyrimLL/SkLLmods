@@ -6,9 +6,15 @@ Scriptname SLS_TIF_SexBotParts2 Extends TopicInfo Hidden
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
+Actor SexBotActor = SexBotRef as Actor
+Debug.Notification("Energy level - " + StorageUtil.GetIntValue(SexBotActor, "_SLS_SexBotEnergyLevel") )
+Debug.Notification("Lubrication level - " + StorageUtil.GetIntValue(SexBotActor, "_SLS_SexBotOilLevel") )
+
 self.GetOwningQuest().SetStage(20)
 ;END CODE
 EndFunction
 ;END FRAGMENT
 
 ;END FRAGMENT CODE - Do not edit anything between this and the begin comment
+
+ObjectReference Property SexBotREF  Auto  
