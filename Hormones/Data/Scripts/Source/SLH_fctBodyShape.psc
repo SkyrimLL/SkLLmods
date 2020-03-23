@@ -1527,7 +1527,7 @@ Bool function tryHRTEvent(Actor kActor, float fHoursSleep) ; sex change
 			Endif
 
 			fctHormones.modHormoneLevel(kActor, "Metabolism", 2.0 * fHoursSleep) ; accelerate path to transformation
-			fctHormones.modHormoneLevel(kActor, "Growth", -2.0 * fHoursSleep) ; make actor lose weight
+			fctHormones.modHormoneLevel(kActor, "Growth", 2.0 * fHoursSleep) ; make actor lose weight
 			alterBodyByPercent(kActor, "Weight", -2.0 * fHoursSleep)
 		endif
 
@@ -1539,6 +1539,7 @@ Bool function tryHRTEvent(Actor kActor, float fHoursSleep) ; sex change
 				sMessage = "Your cock is getting smaller every day."
 			Endif
 			alterBodyByPercent(kActor, "Schlong", -4.0 * fHoursSleep)
+			fctHormones.modHormoneLevel(kActor, "Growth", 4.0 * fHoursSleep) ; make breasts and butt larger
 			
 			fSchlong = StorageUtil.GetFloatValue(kActor, "_SLH_fSchlong")
 			if (fSchlong <= (fSchlongMin + 0.1) )
@@ -1649,6 +1650,7 @@ Bool function tryBimboEvent(Actor kActor, float fHoursSleep) ; bimbo curse
 
 		fctHormones.modHormoneLevel(kActor, "Metabolism", 2.0 * fHoursSleep) ; accelerate path to transformation
 		fctHormones.modHormoneLevel(kActor, "SexDrive", 4.0 * fHoursSleep) ; make actor hornier
+		fctHormones.modHormoneLevel(kActor, "Growth", 1.0 * fHoursSleep) ; make breasts and butt larger
 	endif
 
 	if (fHormoneBimbo>=50.0) && (fHormoneMetabolism>=70)
@@ -1661,6 +1663,7 @@ Bool function tryBimboEvent(Actor kActor, float fHoursSleep) ; bimbo curse
 
 		fctHormones.modHormoneLevel(kActor, "Female", 2.0 * fHoursSleep) ; make actor more feminine
 		fctHormones.modHormoneLevel(kActor, "Male", -4.0 * fHoursSleep) ; 
+		fctHormones.modHormoneLevel(kActor, "Growth", 2.0 * fHoursSleep) ; make breasts and butt larger
 	endIf
 	
 	if (fHormoneBimbo>=70.0) && (fHormoneMetabolism>=80)
@@ -1671,7 +1674,7 @@ Bool function tryBimboEvent(Actor kActor, float fHoursSleep) ; bimbo curse
 			sMessage = "Hey.. your a losing weight!"
 		Endif
 
-		fctHormones.modHormoneLevel(kActor, "Growth", -4.0 * fHoursSleep) ; make actor lose weight
+		fctHormones.modHormoneLevel(kActor, "Growth", 4.0 * fHoursSleep) ; make actor lose weight
 		alterBodyByPercent(kActor, "Weight", -4.0 * fHoursSleep)
 	endIf
 	

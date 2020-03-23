@@ -1,5 +1,6 @@
 Scriptname SLH_QST_BimboAlias extends ReferenceAlias  
 
+SLH_fctHormonesLevels Property fctHormones Auto
 SLH_fctPolymorph Property fctPolymorph Auto
 SLH_fctBodyshape Property fctBodyshape Auto
 SLH_fctUtil Property fctUtil Auto
@@ -871,8 +872,18 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 
 	;bimbo = Game.GetPlayer() 
 	int transformationDays = StorageUtil.GetIntValue(bimbo, "_SLH_bimboTransformGameDays")
-	int transformCycle = transformationDays/5
-	int transformationLevel = transformationDays - (transformCycle * 5)
+	int transformationCycle = transformationDays/6
+	int transformationLevel 
+
+	if (StorageUtil.GetIntValue(bimbo, "_SLH_bimboTransformLevel")<5)
+		transformationLevel= transformationDays - (transformationCycle * 6)
+		StorageUtil.SetIntValue(bimbo, "_SLH_bimboTransformLevel",transformationLevel)
+	else
+		transformationLevel= StorageUtil.GetIntValue(bimbo, "_SLH_bimboTransformLevel")
+	endif
+
+	StorageUtil.SetIntValue(bimbo, "_SLH_bimboTransformCycle",transformationCycle)
+
 	int hairLength = StorageUtil.GetIntValue(none, "YpsCurrentHairLengthStage")
 	isBimboPermanent = StorageUtil.GetIntValue(bimbo, "_SLH_bimboTransformLocked") as Bool
 
@@ -883,7 +894,7 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 
 	debugTrace(" bimbo transformation days: " + transformationDays)
 	debugTrace(" bimbo transformation level: " + transformationLevel)
-	debugTrace(" bimbo transformation cycle: " + transformCycle)
+	debugTrace(" bimbo transformation cycle: " + transformationCycle)
 	debugTrace(" bimbo hair length: " + hairLength)
 
 	;no tg = always female, never has a schlong
@@ -915,9 +926,12 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 	endif
 	; BimboActor.SendModEvent("SLHRefreshColors")
 
+	fctHormones.modHormoneLevel(BimboActor, "Growth", 5.0 ) ; make breasts and butt larger
+	fctHormones.modHormoneLevel(BimboActor, "Bimbo", 5.0 ) ; make breasts and butt larger
+	fctHormones.modHormoneLevel(BimboActor, "Metabolism", -5.0 ) ; make breasts and butt larger
 
 	;level 1: makeup
-	if (transformationLevel == 1)  
+	if (transformationLevel >= 1)  
 		Debug.Notification("You feel a little tingling on your face.")
 	    SLH_Control.playChuckle(bimbo)
 
@@ -937,9 +951,10 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 		Endif
 
 		fctBodyshape.alterBodyByPercent(bimbo, "Breast", 2.0)
+	endif
 
 	;level 2, nails, weak body (can drop weapons when hit)
-	elseif transformationLevel == 2
+	if transformationLevel >= 2
 		Debug.Notification("Your body feels weak and your boobs are sizzling.")
 	    SLH_Control.playGiggle(bimbo)
 
@@ -959,9 +974,10 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 
 		fctBodyshape.alterBodyByPercent(bimbo, "Breast", 2.0)
 		isBimboClumsyHands = true
+	endif
 
 	;level 3: back tattoo, clumsy hands
-	elseif transformationLevel == 3
+	if transformationLevel >= 3
 		Debug.Notification("A naughty shiver runs down your back.")
 		fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Tramp Stamp", bRefresh = True )
 	    SLH_Control.playMoan(bimbo)
@@ -973,9 +989,10 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 		Endif
 
 		fctBodyshape.alterBodyByPercent(bimbo, "Breast", 2.0)
+	endif
 
 	;level 4: belly tattoo, bigger butt, clumsy legs
-	elseif transformationLevel == 4
+	if transformationLevel >= 4
 		Debug.Notification("Your butt feels bloated, your belly craves cock.")
 		fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Belly", bRefresh = True )
  
@@ -1008,9 +1025,10 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 
 		fctBodyshape.alterBodyByPercent(bimbo, "Breast", 2.0)
 		isBimboClumsyLegs = true
+	endif
 
 	;level 5,  pubic tattoo
-	elseif transformationLevel == 5
+	if transformationLevel >= 5
 		if !isMale ;no schlong on the way
 			; SlaveTats.simple_add_tattoo(bimbo, "Bimbo", "Pubic Tattoo", last = true, silent = true)
 			Debug.Notification("Your pussy feels so hot and empty.")
