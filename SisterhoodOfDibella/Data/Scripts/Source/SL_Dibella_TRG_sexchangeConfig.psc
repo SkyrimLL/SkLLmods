@@ -4,7 +4,7 @@ Event OnActivate(ObjectReference akActionRef)
 	ObjectReference akActorREF= Game.GetPlayer() as ObjectReference
 	Actor akActor= Game.GetPlayer()
 
-	Int IButton = SexchangeConfigMenu  .Show()
+	Int IButton = SexchangeConfigMenu.Show()
 
 	If (IButton == 0 ) 
 		If (_SLSD_HormonesSexChange.GetValue()==0)
