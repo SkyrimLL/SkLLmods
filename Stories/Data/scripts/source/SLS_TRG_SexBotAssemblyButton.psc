@@ -84,6 +84,9 @@ Event OnActivate(ObjectReference akActionRef)
 
 		if (iDataCubeNum>=4)
 			Debug.Notification("Assembly procedure - Main Cosmetic Menu (MCM)- unlocked'")
+			If (!SexBotQuest.GetStageDone(70))
+				SexBotQuest.SetStage(70)
+			endif
 		endif
 
 		; New enslavement - changing ownership

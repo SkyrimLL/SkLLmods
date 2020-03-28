@@ -6,7 +6,7 @@ Scriptname SLS_TIF_SexBotParts Extends TopicInfo Hidden
 Function Fragment_1(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
-;
+self.GetOwningQuest().SetStage(65)
 ;END CODE
 EndFunction
 ;END FRAGMENT

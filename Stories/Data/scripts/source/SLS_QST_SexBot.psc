@@ -139,16 +139,23 @@ Event OnSexLabOrgasm(String _eventName, String _args, Float _argc, Form _sender)
 
 	If (_hasActor(actors, SexBotActor)) ; || ((_hasPlayer(actors)) && animation.HasTag("Dwemer")) )
 		; Debug.Trace("SexLab Stories: Orgasm!")
- 
+        StorageUtil.SetIntValue(SexBotActor, "_SLS_LastSexDate", Game.QueryStat("Days Passed"))
+
 		If (SLS_SexBotOnOff.GetValue() == 0)
 			SLS_SexBotOnOff.SetValue(1) 
-            StorageUtil.SetIntValue(SexBotActor, "_SLS_LastSexDate", Game.QueryStat("Days Passed"))
-            StorageUtil.SetIntValue(SexBotActor, "_SLS_SexBotEnergyLevel", StorageUtil.GetIntValue(SexBotActor, "_SLS_SexBotEnergyLevel") + 1)
+			StorageUtil.SetIntValue(SexBotActor, "_SLS_SexBotEnergyLevel", 1)
+
 			Debug.Notification("E.L.L.E is now recharged")
 			SexBotActor.EvaluatePackage()
 			Utility.Wait(1.0)
 		EndIf
 
+        StorageUtil.SetIntValue(SexBotActor, "_SLS_SexBotEnergyLevel", StorageUtil.GetIntValue(SexBotActor, "_SLS_SexBotEnergyLevel") + 1)
+        SexBotActor.ForceAV("Health", 100 + (StorageUtil.GetIntValue(SexBotActor, "_SLS_SexBotEnergyLevel") * 2) )
+        SexBotActor.ForceAV("Stamina", 10 + (StorageUtil.GetIntValue(SexBotActor, "_SLS_SexBotEnergyLevel") * 2) )
+        SexBotActor.ForceAV("Magicka", 50 + (StorageUtil.GetIntValue(SexBotActor, "_SLS_SexBotEnergyLevel") * 5) )
+
+    	Debug.notification("[SLS_QST_SexBot] _SLS_SexBotEnergyLevel: " + StorageUtil.GetIntValue(SexBotActor, "_SLS_SexBotEnergyLevel"))
 	EndIf
 	
 EndEvent
