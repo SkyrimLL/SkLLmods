@@ -8,12 +8,12 @@ Event OnLocationChange(Location akOldLoc, Location akNewLoc)
     int iGameDateLastCheck = StorageUtil.GetIntValue(SexBotActor, "_SLS_LastSexDate")
     int iDaysSinceLastCheck = (iDaysPassed - iGameDateLastCheck )  
 
-    debug.notification("[SLS_SexBotAlias] changing location")
-    Debug.notification("[SLS_SexBotAlias] Days since sex - " + iDaysSinceLastCheck)
+    ; debug.notification("[SLS_SexBotAlias] changing location")
+    ; Debug.notification("[SLS_SexBotAlias] Days since sex - " + iDaysSinceLastCheck)
 
     ; Exit conditions
     If (iDaysSinceLastCheck >= 1) && (SLS_SexBotOnOff.GetValue() == 1)
-        debug.notification("[SLS_SexBotAlias] time to update energy levels")
+        ; debug.notification("[SLS_SexBotAlias] time to update energy levels")
             StorageUtil.SetIntValue(SexBotActor, "_SLS_SexBotEnergyLevel", StorageUtil.GetIntValue(SexBotActor, "_SLS_SexBotEnergyLevel") - (iDaysSinceLastCheck * 2))
             SexBotActor.ForceAV("Health", 100 + (StorageUtil.GetIntValue(SexBotActor, "_SLS_SexBotEnergyLevel") * 2) )
             SexBotActor.ForceAV("Stamina", 10 + (StorageUtil.GetIntValue(SexBotActor, "_SLS_SexBotEnergyLevel") * 2) )
@@ -30,7 +30,7 @@ Event OnLocationChange(Location akOldLoc, Location akNewLoc)
             endif
 	EndIf
 
-    Debug.notification("[SLS_SexBotAlias] _SLS_SexBotEnergyLevel: " + StorageUtil.GetIntValue(SexBotActor, "_SLS_SexBotEnergyLevel"))
+    ; Debug.notification("[SLS_SexBotAlias] _SLS_SexBotEnergyLevel: " + StorageUtil.GetIntValue(SexBotActor, "_SLS_SexBotEnergyLevel"))
 
 EndEvent
 
