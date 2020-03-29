@@ -657,8 +657,12 @@ event OnPageReset(string a_page)
 		AddHeaderOption(" Player status")
 		AddTextOption(" Days as a Bimbo: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_bimboTransformGameDays")  as Int, "", OPTION_FLAG_DISABLED)
 		AddTextOption(" Cycles as a Bimbo: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_bimboTransformCycle")  as Int, "", OPTION_FLAG_DISABLED)
-		AddTextOption(" Bimbo Level: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_bimboTransformLevel")  as Int, "", OPTION_FLAG_DISABLED)
+		AddTextOption(" Bimbo Level: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_bimboTransformLevel")  as Int, "", OPTION_FLAG_DISABLED)		
+		AddTextOption(" Daedric Influence: " +  StorageUtil.GetIntValue(PlayerActor, "_SLH_iDaedricInfluence")   as Int, "", OPTION_FLAG_DISABLED)
+		AddTextOption(" Succubus Level: " +  StorageUtil.GetIntValue(PlayerActor, "_SLH_iSuccubusLevel")   as Int, "", OPTION_FLAG_DISABLED)
  
+
+
 		if (StorageUtil.GetFormValue(PlayerActor, "_SLH_fOrigRace") !=  (pActorBase.GetRace() as Form)) 
 			AddTextOption("Warning: Current player race doesn't match original player race. Use the Set Default Shape menu option if you are not in a temporary transformation.", "", OPTION_FLAG_DISABLED) 
 		endif

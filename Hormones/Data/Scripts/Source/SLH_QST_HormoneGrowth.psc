@@ -1372,6 +1372,7 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 		if  animation.HasTag("Daedra") || fctUtil.hasFormKeyword(actors, ActorTypeDaedra) || fctUtil.hasRace(actors, _SLH_DremoraRace) || fctUtil.hasRace(actors, _SLH_DremoraOutcastRace)
 			iSexDaedraAll   	= iSexDaedraAll + 1
 			iDaedricInfluence   = iSexDaedraAll * 3 + Game.QueryStat("Daedric Quests Completed") * 2 + Game.QueryStat("Daedra Killed") + 1
+			StorageUtil.SetIntValue(PlayerActor, "_SLH_iDaedricInfluence",  iDaedricInfluence) 
 
 			If (isBimbo)
 				fctHormones.modHormoneLevel(PlayerActor, "Bimbo", 1.0)
@@ -1392,18 +1393,22 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 				setSuccubusState(PlayerActor, TRUE)
 				; _SLH_QST_Succubus.Start()
 				_SLH_QST_Succubus.SetStage(10)
+				StorageUtil.SetIntValue(PlayerActor, "_SLH_iSuccubusLevel",  1) 
 
 			elseif (iDaedricInfluence >1) && (GV_allowSuccubus.GetValue()==1) && (GV_isSuccubus.GetValue()==1)
 				if (_SLH_QST_Succubus.GetStage()<=10) && (iDaedricInfluence >=10)
 					_SLH_QST_Succubus.SetStage(20)
+					StorageUtil.SetIntValue(PlayerActor, "_SLH_iSuccubusLevel",  2) 
 
 				elseif (_SLH_QST_Succubus.GetStage()<=20) && (iDaedricInfluence >=20)
 					_SLH_QST_Succubus.SetStage(30)
 					; ModEvent.Send(ModEvent.Create("HoSLDD_GivePlayerPowers"))
+					StorageUtil.SetIntValue(PlayerActor, "_SLH_iSuccubusLevel",  3) 
 
 				elseif (_SLH_QST_Succubus.GetStage()<=30) && (iDaedricInfluence >=30)
 					_SLH_QST_Succubus.SetStage(40)
 					ModEvent.Send(ModEvent.Create("HoSLDD_GivePlayerPowers"))
+					StorageUtil.SetIntValue(PlayerActor, "_SLH_iSuccubusLevel",  4) 
 
 			        ; Do not switch sex for female -> bimbo
 			        If fctUtil.isMale(PlayerActor)
@@ -1421,6 +1426,7 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 
 				elseif (_SLH_QST_Succubus.GetStage()<=40) && (iDaedricInfluence >=40) && !fctUtil.isMale(PlayerActor)
 					_SLH_QST_Succubus.SetStage(50)
+					StorageUtil.SetIntValue(PlayerActor, "_SLH_iSuccubusLevel",  5) 
 					SendModEvent("SLHisSuccubus")
 					SendModEvent("SLHCastSuccubusCurse")
 				    fctPolymorph.TGEffectOFF( PlayerActor)
@@ -1428,6 +1434,7 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 
 				elseif (_SLH_QST_Succubus.GetStage()>=50) && (iDaedricInfluence >=40) && !fctUtil.isMale(PlayerActor)
 					; Maintenance... grant powers again if they are missing
+					StorageUtil.SetIntValue(PlayerActor, "_SLH_iSuccubusLevel",  5) 
 
 					if (GV_isSuccubusFinal.GetValue()==0)
 						GV_isSuccubusFinal.SetValue(1)
