@@ -1,4 +1,4 @@
-### RELEASE NOTES for milestone [Sisterhood 2020-03](https://github.com/SkyrimLL/SkLLmods/milestone/65?closed=1) 
+### RELEASE NOTES for milestone [Sisterhood 2020-03-29](https://github.com/SkyrimLL/SkLLmods/milestone/65?closed=1) 
 **Enhancements:** 
 - [Add option to disable extra lights in temple of Dibella](https://github.com/SkyrimLL/SkLLmods/issues/861)
 - [Add awareness of SD+ for better devices for Fjotra as forsworn captive](https://github.com/SkyrimLL/SkLLmods/issues/738)

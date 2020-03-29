@@ -1,4 +1,4 @@
-### RELEASE NOTES for milestone [Parasites 2020-03](https://github.com/SkyrimLL/SkLLmods/milestone/62?closed=1) 
+### RELEASE NOTES for milestone [Parasites 2020-03-29](https://github.com/SkyrimLL/SkLLmods/milestone/62?closed=1) 
 **Enhancements:** 
 - [Updates to Eldergleam Sanctuary](https://github.com/SkyrimLL/SkLLmods/issues/845)
 - [Use Falmer Blue effect to control sex change for males (hormones)](https://github.com/SkyrimLL/SkLLmods/issues/841)
