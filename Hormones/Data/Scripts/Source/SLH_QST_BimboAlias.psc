@@ -222,35 +222,68 @@ Event OnUpdate()
         ; Endif
 
         ;[mod] progressive tf - start
-        ; if (daysSinceEnslavement<=5) ; !(_SLH_QST_Bimbo.IsStageDone(18) || _SLH_QST_Bimbo.IsStageDone(16) )
+        ; if (daysSinceEnslavement<=15) ; !(_SLH_QST_Bimbo.IsStageDone(18) || _SLH_QST_Bimbo.IsStageDone(16) )
         	bimboDailyProgressiveTransformation(BimboActor, GV_isTG.GetValue() == 1)
         ; endif
         ;[mod] progressive tf - end
 
-        If (isMaleToBimbo) && (daysSinceEnslavement<=6) ; !_SLH_QST_Bimbo.IsStageDone(18) 
+        If (isMaleToBimbo) && (daysSinceEnslavement<=15) ; !_SLH_QST_Bimbo.IsStageDone(18) 
  			if (StorageUtil.GetIntValue(BimboActor, "_SLH_allowBimboRace")==0)
-	            fctBodyshape.alterBodyByPercent(BimboActor, "Weight", 20.0)
-	            fctBodyshape.alterBodyByPercent(BimboActor, "Breast", 20.0)
+	            fctBodyshape.alterBodyByPercent(BimboActor, "Weight", 6.0)
+	            fctBodyshape.alterBodyByPercent(BimboActor, "Breast", 6.0)
 	        else
-	            fctBodyshape.alterBodyByPercent(BimboActor, "Weight", 10.0)
-	            fctBodyshape.alterBodyByPercent(BimboActor, "Breast", 10.0)
+	            fctBodyshape.alterBodyByPercent(BimboActor, "Weight", 3.0)
+	            fctBodyshape.alterBodyByPercent(BimboActor, "Breast", 3.0)
 	        endif
 
-			If (rollFirstPerson <= (StorageUtil.GetFloatValue(BimboActor, "_SLH_fHormoneBimbo") as Int))
+			If (rollFirstPerson <= (StorageUtil.GetFloatValue(BimboActor, "_SLH_fHormoneBimbo") as Int)) || (StorageUtil.GetIntValue(none, "_SLH_iBimboPlusON") == 1)
 				; First person thought
 	            ; Male to female bimbo
 	            if (daysSinceEnslavement==1)
 					SLH_Control.playChuckle(BimboActor)
-	            	debug.messagebox("I have boobs now and they are growing larger every day. It feels so good cupping them and feeling their weight. If they grow any larger, they will make using bows and armors a lot more difficult. That's alright though.. I guess I can find someone to fight for me. That's kind of hot actually.")
+	            	debug.messagebox("My lips feel swollen, and are somehow a bit redder than before. They also feel quite tingly and pleasant when I brush my fingers against them - accidentally of course! Maybe they're bruised somehow? I wonder if I should be worried...  ")
 	            elseif (daysSinceEnslavement==2)
-					SLH_Control.playGiggle(BimboActor)
-	            	debug.messagebox("My lips are full and feel parched if they are not frequently coated with semen. Oh my gods.. who knew semen tasted so good! I just can't get enough of the stuff. I need to feel it on my skin, inside me and down my throat. Did you hear that giggle?")
+					SLH_Control.playChuckle(BimboActor)
+	            	debug.messagebox("This is definitely getting weirder! My eyelids felt a bit numb and tingly earlier, and when I checked in a river, it seems that besides my red, swollen lips, I'm now sporting dark, slutty eyeshadow that has so far managed to thwart all my removal attempts. Oh Gods... what are the others going to think? How am I supposed command respect when I look like this?!")
 	            elseif (daysSinceEnslavement==3)
-	            	SLH_Control.playMoan(BimboActor)
-	            	debug.messagebox("My cock is shrinking and getting more sensitive every day. Squeezing my legs and rubbing it frequently only provide temporary relief. And my balls.. I can feel them sink into a deep, wet slit. That's okay I suppose, as long as I can find big fat cocks to fill me. And that giggle in my head... oh my Gods!")
+	            	SLH_Control.playChuckle(BimboActor)
+	            	debug.messagebox("This is ridiculous! My hair has lightened overnight into a shade of tacky, platinum blonde that, of course, couldn't be washed off, and seems to remain bright and shiny regardless of how dirty it gets. Worse still, I think my cock is shrinking, and getting more sensitive every day. Squeezing my legs and rubbing it frequently only provides temporary relief. I got to find a way to stop this!")
 	            elseif (daysSinceEnslavement==4)
+	            	SLH_Control.playGiggle(BimboActor)
+	            	debug.messagebox("Nonononono... Why is this happening to me?! It's not enough that I wake up every morning to find my slutty makeup perfectly re-applied without a smudge, I now find myself with gaudy, pink fingernails that feel tougher than any armor - not that I've had much use for armors lately, what with my slutty looks and all. That bastard Belethor actually commented on how good my ass looked. Me! The Dragonborn! Future hero of Skyrim! He who is born with the blood and soul of a Dragon! I almost strangeld him on the spot if not for all the scary looking guards jeering at me. Everything now looks so confusing and difficult, maybe I should find a smart, tough m..ma..companion to fight for me...")
+	            elseif (daysSinceEnslavement==5)
+					SLH_Control.playGiggle(BimboActor)
+	            	debug.messagebox("I wake up to find my toenails the same shade of glittery, girly pink that just HAPPEN to perfectly match my fingers. *sigh*... what's another thing on top of everything else... I still haven't been able to figure out what's happening to my body, and my cock is definitely shrinking, though I guess it's not such a bad thing, since it's becoming so much more pleasurable to play with, I can almost cum instantly when I pinch and squeeze my little cli..cock with those slutty nails - not that I've ever tried, Gods no!")
+	            elseif (daysSinceEnslavement==6)
+	            	SLH_Control.playGiggle(BimboActor)
+	            	debug.messagebox("I believe I've been cursed, and this curse is definitely doing something to my strength. The weapons I used to wield with ease now seem so big and unwieldy. I actually dropped my sword earlier in the middle of a Nordic ruin and couldn't be bothered to retrieve it! *pout* Why can't Skyrim's blacksmiths make smaller, daintier weapons? It's not like everyone can swing a giant claymore like those Companions... While I'm on the subject, I can't believe Farkas actually SCOFFED at me when I asked to join his guild, like I'm not manly enough for them. *hmph!* Maybe I'll join the College. Melee combat is sooo icky anyways, all that blood and gore are going to ruin my clothes!")
+	            elseif (daysSinceEnslavement==7)
+	            	SLH_Control.playMoan(BimboActor)
+	            	debug.messagebox("I woke up to sharp, stabbing pain in my ears. In my groggy state, I thought it's the bandit who I suc..handled yesterday, but when I felt around my ears, I discovered two shiny, golden studs piercing my earlobes. I mean, earrings aren't so bad, right? Lots of strong, burly men have pierced ears, though admittedly nothing so feminine and dainty as mine. B-but I think these earrings are made of solid gold, that's something, right? Like, I can totally pull off the look if I wanted to.")
+	            elseif (daysSinceEnslavement==8)
+					SLH_Control.playMoan(BimboActor)
+	            	debug.messagebox("Ouchie! I just felt a series of unpleasant, rapid pinpricks on my lower back, like I'm being stabbed by a bunch of MEAN needles. Since I can't see my behind *giggle*, I had to ask a smart, helpful man to check for me. Apparently, I now have a super slutty (his words) tattoo right above my plump butt. Hmm, so I guess that's what getting a tattoo felt like. Of course, I had to reward the helpful adventurer for his hard *giggle* work, and he's even nice enough to feed me a TASTY snack. Yum! Maybe this is what Farkas meant when he called me a milkdrinker?")
+	            elseif (daysSinceEnslavement==9)
+	            	SLH_Control.playMoan(BimboActor)
+	            	debug.messagebox("Owww... I just felt more pinpricks on my lower back, I guess my old tattoo isn't slutty enough? Boooo... I wish getting a tattoo isn't so uncomfortable! Until my new tattoos heal, I'll have to lie on my side when I sleep, and my breasts keep getting in the way. Maybe I should ask a girl for advice? I guess this minor inconvenience is the price I pay to look pretty. Speaking of pretty, my cock looks so soft and adorable now that those UGLY balls have melted into my crotch. Gods, I'm getting horny thinking about the naughty things I want to do to my cute little cock. Maybe I should tease it again tonight *giggle*")
+	            elseif (daysSinceEnslavement==10)
+	            	SLH_Control.playMoan(BimboActor)
+	            	debug.messagebox("I happen to be on my back *giggle* when I felt the familiar pinpricks on my tummy, so I moved my boobies to the side to see how the slutty tattoo is applied. So, umm... the ink like, just appeared on my skin like magic! Maybe it's con...conju-something magic? *sigh* If only I was smart enough to join the College. At least I'm like, WAAY hotter than Faralda. Maybe she's just jealous that I'm getting all the male attention. Gosh, thinking is making my head hurt. I guess the men are right, I should think less, and suck more (good girls always swallow! <3). To that end, I now have a suuuper slutty BIMBO FUCKTOY tattoo right above my boy clit! Yay!")
+	            elseif (daysSinceEnslavement==11)
+					SLH_Control.playRandomSound(BimboActor)
+	            	debug.messagebox("Ooouchie! Another stab, this time right above my navel! Why can't getting a piercing be more pleasant? I mean, I'm not complaining, since my new navel stud looks suuuper hawt, oh wait, I think I just did, I'm such a silly bimbo sometimes *giggle*. Yay! The piercing even glitters, this will definitely help me attract more cute boys. Ohhh, I think my boy clit likes it too. Mhmmm, clit. I can't believe I used to like having a big, dangly thing between my legs, this soft and cute clit is so much better - it throbs like crazy too, especially when big, strong men pinch and squeeze it. *giggle* I think I'm getting turned on again. I love how my boy clit stays nice and soft no matter what...")
+	            elseif (daysSinceEnslavement==12)
 	            	SLH_Control.playRandomSound(BimboActor)
-	            	debug.messagebox("Everything now looks so confusing and difficult. Except for sex. Sex is easy and fun. Being horny makes my hands shake and my legs weak with anticipation. Being a slut is one of the many perks of being a bimbo.")
+	            	debug.messagebox("Yay! My boy clit has shrunk so much that a warm, inviting slit has appeared underneath it. Aww, my boy clit is all grown up. Ohhh, I know! I man once told me that sluts have clitties and titties, so I'm going to call her clitty *giggle*. Now I just need to find a real man to help me pop my cherry *giggle*. As I tried to stand, my silly, clumsy feet refuse to cooperate and I fell onto my butt like the ditzy bimbo that I am. Thank Gods the said butt is super well padded! As I look down, I realize my feet are actually stuck in a slutty high-heeled position, like I'm wearing some super slutty invisible heels, and they refuse to flex, like, at all. *giggle* I guess it's only slutty heels for me from now on, not that I mind, since men seem to love it when I strut around in heels, and stilettos make my bubble butt look AMAZING.")
+	            elseif (daysSinceEnslavement==13)
+	            	SLH_Control.playRandomSound(BimboActor)
+	            	debug.messagebox("Ouchie! Those meanie tattoo needles are back again, this time right above my smooth, slutty slit. *pout* I guess I still don't look slutty enough? The new tattoo looks like a...a...mountain? Oh, *giggle* I'm such a ditzy bimbo, I'm like, reading it upside down. I think it says umm...IN-INS...INS-E.R..T COCK, with umm, an arrow? Whatever that means. Ohhh!! I think it's, like, umm, a secret message for the, um, super smart men who use my pussy? *giggle* maybe it's a treature map! I'll let the men figure it out, my job is to spread my legs and look pretty. Like, the first one to figure it out gets to breed new pussy! Actually, I should probably, like, let everyone cum in my pussy anyways since, umm...umm...a good bimbo always begs men to cum inside her. That's like, a rule!")
+	            elseif (daysSinceEnslavement==14)
+					SLH_Control.playRandomSound(BimboActor)
+	            	debug.messagebox("Ouuuchie! The evil piercing needle is back! I think I totally caught a glimpse of it when it pierced my swollen nipples. Ohhh, those golden barbells are sooo slutty, they are, like, totally the perfect accessory for my bimbo nips. Not that I've had any trouble keeping them hard, but these would definitely make sure my slutty nips stay hard *giggle* all the time. I mean, Mr. Needle is actually not evil, I'm, like, totally getting used to it. Besides, I should't complain since it's helping me make my body more fuckable. Men are so strong and dominant when they fuck me, like I'm some fucktoy to be used for THEIR pleasure. I can't believe I used to fantasize about fucking a woman, being fucked is so much better! *giggle*")
+	            elseif (daysSinceEnslavement==15)
+	            	SLH_Control.playRandomSound(BimboActor)
+	            	debug.messagebox("Yay! Mr. Needle is back! I totally felt it this time when the thick *giggle* needle slowly pierced my red, swollen clitty. My clitty was, like, sooooo sensitive, I totally came over and over on the needle like a dirty slut in heat, and I think I umm, lost count and passed out? When I woke up, I found a SUUUPER shiny and slutty barbell in my clitty. It's solid gold too! Nothing but the best for my slutty nub! The weight of the barbell also pulls my little clitty out of its hood, so men can see the extent of my modified body! This piercing is like, perfect for showing off my new clitty, and the golden barbell is so slutty and umm, fu-func...functions good! It, like, totally matches my other lewd piercings. Thank you Mr. Needle, for making my body more slutty and fuckable! <3")				
 	            endif
 	        else
 				; Third person thought
@@ -267,12 +300,12 @@ Event OnUpdate()
 	            endif	        
 	        endIf
         	
-            if (GV_isTG.GetValue() == 1) && (StorageUtil.GetFloatValue(BimboActor, "_SLH_fSchlong") >= fSchlongMin ) && ( daysSinceEnslavement < 5 )
+            if (GV_isTG.GetValue() == 1) && (StorageUtil.GetFloatValue(BimboActor, "_SLH_fSchlong") >= fSchlongMin ) && ( daysSinceEnslavement < 11 )
                 ; StorageUtil.SetFloatValue(BimboActor, "_SLH_fSchlong", StorageUtil.GetFloatValue(BimboActor, "_SLH_fSchlong") * 0.65 - 0.1) 
-                fctBodyshape.alterBodyByPercent(BimboActor, "Schlong", -30.0)
+                fctBodyshape.alterBodyByPercent(BimboActor, "Schlong", -10.0)
                 BimboActor.SendModEvent("SLHRefresh")
 
-            elseIf (GV_isTG.GetValue() == 1) && (daysSinceEnslavement >= 5 )
+            elseIf (GV_isTG.GetValue() == 1) && (daysSinceEnslavement >= 12 )
                 BimboActor.SendModEvent("SLHRemoveSchlong")
                 Sexlab.TreatAsFemale(BimboActor)
                 _SLH_QST_Bimbo.SetStage(18)
@@ -280,28 +313,65 @@ Event OnUpdate()
                 SLH_Control.setTGState(BimboActor, FALSE)
             endif
 
-        ElseIf (!isMaleToBimbo) && (daysSinceEnslavement<=6) ; !_SLH_QST_Bimbo.IsStageDone(16) 
+        ElseIf (!isMaleToBimbo) && (daysSinceEnslavement<=15) ; !_SLH_QST_Bimbo.IsStageDone(16) 
  
  			if (StorageUtil.GetIntValue(BimboActor, "_SLH_allowBimboRace")==0)
-	            fctBodyshape.alterBodyByPercent(BimboActor, "Weight", 20.0)
-	            fctBodyshape.alterBodyByPercent(BimboActor, "Breast", 20.0)
+	            fctBodyshape.alterBodyByPercent(BimboActor, "Weight", 6.0)
+	            fctBodyshape.alterBodyByPercent(BimboActor, "Breast", 6.0)
 	        else
-	            fctBodyshape.alterBodyByPercent(BimboActor, "Weight", 10.0)
-	            fctBodyshape.alterBodyByPercent(BimboActor, "Breast", 10.0)
+	            fctBodyshape.alterBodyByPercent(BimboActor, "Weight", 3.0)
+	            fctBodyshape.alterBodyByPercent(BimboActor, "Breast", 3.0)
 	        endif
 
-			If (rollFirstPerson <= (StorageUtil.GetFloatValue(BimboActor, "_SLH_fHormoneBimbo") as Int))
+			If (rollFirstPerson <= (StorageUtil.GetFloatValue(BimboActor, "_SLH_fHormoneBimbo") as Int))  || (StorageUtil.GetIntValue(none, "_SLH_iBimboPlusON") == 1)
 				; First person thought
 				SLH_Control.playGiggle(BimboActor)
 	            ; Female to female bimbo
 	            if (daysSinceEnslavement==1)
-	            	debug.messagebox("My boobs are growing larger every day and my hair is definitely blonde now. Armors and weapons are like, so heavy now. I need to find me a strong buy to carry all my stuff and fight for mw. Maybe he will give me a good fuck too. That would be totally worth it.")
+					SLH_Control.playChuckle(BimboActor)
+	            	debug.messagebox("My lips feel swollen, and are somehow a bit redder than before. They also feel quite tingly and pleasant when I brush my fingers against them - accidentally of course! Maybe they're bruised somehow? I wonder if I should be worried...  ")
 	            elseif (daysSinceEnslavement==2)
-	            	debug.messagebox("The constant tingle in your tits driving me mad. They need to be sucked on for a long time, or tweaked.. or pinched with my long pink nails. Damn.. just thinking about it made them tingle again.")
+					SLH_Control.playChuckle(BimboActor)
+	            	debug.messagebox("This is definitely getting weirder! My eyelids felt a bit numb and tingly earlier, and when I checked in a river, it seems that besides my red, swollen lips, the origin of which I still can't explain, I'm now sporting dark, slutty eyeshadow that has so far managed to thwart all my removal attempts. Oh Gods... what are the others going to think? How am I supposed command respect when I look like this?!")
 	            elseif (daysSinceEnslavement==3)
-	            	debug.messagebox("I constantly crave only one kind of sword now... the hard, curved and throbbing kind. There is nothing I wouldn't do for a good cock in her hand.. or lips.. or lodged deep inside me.")
+	            	SLH_Control.playChuckle(BimboActor)
+	            	debug.messagebox("This is ridiculous! My hair has lightened overnight into a shade of tacky, shimmering, platinum blonde that, of course, couldn't be washed off, and seems to remain bright and shiny regardless of how dirty it gets. Worse, I think my vagina is becoming really sensitive, especially my clitoris, which seems to become more sensitive with each passing day. My breeches feel too rough and restrictive, and squeezing my thighs only provides temporary reprieve to this maddening sensation. I got to find a way to stop this!")
 	            elseif (daysSinceEnslavement==4)
-	            	debug.messagebox("Sex is all that matters now.. I need it.. my tits crave it.. my lips crave it. Being horny makes my hand shake and my legs weak with anticipation. Making men hard and receiving their cum is my only purpose in life now... or and maybe doing quests too.. but mostly being fucked.")
+	            	SLH_Control.playGiggle(BimboActor)
+	            	debug.messagebox("Nonononono... Why is this happening to me?! It's not enough that I wake up every morning to find my slutty makeup perfectly re-applied without a smudge, I now find myself with gaudy, pink fingernails that seem tougher than any armor - not that I've had much use for armors lately, what with my slutty looks and all. That bastard Belethor actually asked me how much I charge to swallow. Me! The Dragonborn! Future hero of Skyrim, she who is born with the blood and soul of a Dragon! I almost attacked him on the spot if not for all the big, scary guards leering at me... Everything now looks so confusing and difficult, maybe I should find a smart, tough m..ma..companion to fight for me...")
+	            elseif (daysSinceEnslavement==5)
+					SLH_Control.playGiggle(BimboActor)
+	            	debug.messagebox("I wake up to find my toenails the same shade of glittery pink that just HAPPEN to perfectly match my fingers. *sigh*... what's another change on top of everything else... I still haven't been able to figure out what's happening to my body, and my clit is definitely far more sensitive than before, though I guess it's not such a bad thing, since my clit's becoming so much more pleasurable to play with; I can almost cum instantly when I pinch and squeeze the little nub - not that I've tried! It is however very distracting when the swollen nub rubs against my breeches with every step; how am I supposed to save Skyrim when I can't even keep my shaky legs in check?!")
+	            elseif (daysSinceEnslavement==6)
+	            	SLH_Control.playGiggle(BimboActor)
+	            	debug.messagebox("I believe I've been cursed, and this curse is definitely doing something to my strength. The weapons I used to wield with ease now seem so big and unwieldy. I actually dropped my sword earlier in the middle of a Nordic ruin and couldn't be bothered to retrieve it! *pout* Why can't Skyrim's blacksmiths make smaller, daintier weapons? It's not like everyone has the strength to wield a giant sword... While I'm on the subject, why are Skyrim's armors so heavy and bulky? I can barely lift my weapons as-is. I have, however, found a solution to all the distracting rubbings against my ever sensitive clit: I made a small, round cutout on my breeches to completely expose my swollen clit, and that seems to remove most pressures on the poor nub. It's not even that noticeable, the draugrs certainly won't care...")
+	            elseif (daysSinceEnslavement==7)
+	            	SLH_Control.playMoan(BimboActor)
+	            	debug.messagebox("I woke up to sharp, stabbing pain in my ears. In my groggy state, I thought it's the bandit who I suc..handled yesterday, but when I felt around my ears, I discovered two shiny, golden studs piercing my earlobes. I mean, earrings aren't so bad, right? Lots of people have pierced ears, even some men these days wear earrings, though admittedly nothing as dainty or glittery as mine. B-but I think these earrings are made of solid gold, that's something, right? Like, I can totally pull off the look if I wanted to. Besides, they are pretty small and easy to cover with my ever lengthening hair, and men seem to like women who subject themselves to lewd body modifications that enhance male sexual pleasure - not that I'm looking for their attention!")
+	            elseif (daysSinceEnslavement==8)
+					SLH_Control.playMoan(BimboActor)
+	            	debug.messagebox("Ouchie! I just felt a series of unpleasant, rapid pinpricks on my lower back, like I'm being stabbed by a bunch of MEAN needles. Since I can't see my behind *giggle*, I had to ask a smart, helpful man to check for me. It was pretty embarrassing to strip completely naked in front of him, but I guess it had to be done so he can be sure he didn't miss anything. Apparently, I now have a super slutty (his words) tattoo right above my plump butt. Hmm, so I guess that's what getting a tattoo felt like. Of course, I HAD to reward the helpful adventurer for his hard *giggle* work, and he's even nice enough to feed me a TASTY snack. Yum!")
+	            elseif (daysSinceEnslavement==9)
+	            	SLH_Control.playMoan(BimboActor)
+	            	debug.messagebox("Owww, I just felt more pinpricks on my lower back, I guess my old tattoo isn't slutty enough? *pout* I wish getting a tattoo isn't so uncomfortable! Sleeping on my back is completely out of the question until my new tattoos heal, so now I have to lie on my side when I rest, and my boobies keep getting in the way. Who knew having big boobies would be such a hassle, but I guess that's the price I pay to look pretty. Speaking of pretty, my clit looks so adorable all swollen and exposed like this, I wonder why I ever bothered with breeches, since they only hinder a man's access to my clit. For some reason, men seem to HATE it when I hinder their access to my clit in any way. Maybe I should let them tease it again tonight *giggle*")
+	            elseif (daysSinceEnslavement==10)
+	            	SLH_Control.playMoan(BimboActor)
+	            	debug.messagebox("I happen to be on my back *giggle* when I felt the familiar pinpricks on my tummy; since the nice, helpful man was busy using my pussy, I had to BEG him to help pull my boobies to the side so I can see how the slutty tattoo is applied. So, the ink umm, just, kind of appeared on my skin like magic! Maybe it's con..comju...cumju-something magic? I'm probably too dumb to understand how it works, and the kind man holding my boobies kept telling me that I should think less, and suck more (good girls always swallow! <3). Men are so nice to me when I smile and let them play with my big boobies. Oh and I now have a suuuper slutty BIMBO FUCKTOY tattoo on my tummy to show off to all the cute boys! Yay!")
+	            elseif (daysSinceEnslavement==11)
+					SLH_Control.playRandomSound(BimboActor)
+	            	debug.messagebox("Ooouchie! Another stab, this time right above my navel! Why can't getting a piercing be more pleasant? I mean, I'm not complaining, since my new navel stud looks suuuper hawt, oh wait, I think I just did, I'm such a silly bimbo sometimes *giggle*. Yay! The piercing even glitters, this will definitely help me attract more boys. Ohhh, I think my clit likes it too. Mhmmm, clit. I can't believe I used to call it cli-clitt...clittorius, that's like, sooo tacky, yuck! I think a nice man once told me that sluts don't have clits, they have clitties, which rhyme with boobies, wait... no, not boobies, titties. I have a clitty and two titties. I'm like, super smart!")
+	            elseif (daysSinceEnslavement==12)
+	            	SLH_Control.playRandomSound(BimboActor)
+	            	debug.messagebox("I can't believe I used to hate having random men touch my clitty, they are so kind and gentle when they pinch and squeeze my exposed nub, and I always get the BEST orgasms when someone else plays with my body! My cute, pea sized clitty is sooo sensitive, I can't even breathe on it without shuddering all over! As I tried to stand, my silly, clumsy feet refuse to cooperate and I fell onto my butt like the ditzy bimbo that I am. Thank Gods the said butt is super well padded! *giggle* As I look down, I realize my feet are actually stuck in a slutty high-heeled position, like I'm wearing a pair of suuuper slutty invisible heels! They seem to refuse to flex, like, at all. *giggle* I guess it's only super slutty heels for me from now on. Not that I mind, since I get so many compliments when I wear stilettos, and they make my bubble butt look AMAZING and super fuckable~")
+	            elseif (daysSinceEnslavement==13)
+	            	SLH_Control.playRandomSound(BimboActor)
+	            	debug.messagebox("Ouchie! Those mean tattoo needles are back again, this time right above my smooth, slutty slit. *pout* I guess I still don't look slutty enough? The new tattoo looks like a...mountain? Oh, *giggle* I'm such a ditzy bimbo, I'm like, reading it upside down. I think it says umm...IN-INS...INS-E.R..T COCK, with umm, an arrow? Whatever that means. Ohhh!! I think it's, like, umm, a secret message for the, um, super smart men who use my pussy? *giggle* maybe it's a treature map! I'll let the men figure it out, my job is to spread my legs and look pretty. Like, the first one to figure it out gets to cum in my pussy! Actually, I should probably, like, let everyone cum in my pussy anyways since, umm...umm...a good bimbo always begs men to cum inside her. That's like, a rule!")
+	            elseif (daysSinceEnslavement==14)
+					SLH_Control.playRandomSound(BimboActor)
+	            	debug.messagebox("Ouuuchie! The evil piercing needle is back! I think I totally caught a glimpse of it when it pierced my swollen nipples. Ohhh, those golden barbells are sooo slutty, they are, like, totally the perfect accessory for my bimbo nips. Not that I've been having trouble keeping my nipples hard, *giggle* but these would definitely make sure my slutty nips stay hard *giggle* all the time. I mean, Mr. Needle is actually not evil, I'm, like, totally getting used to it. Besides, I should't complain since it's helping me make my body more fuckable. Like what my men kept telling me, I should always accept modifications that make my body more enjoyable to fuck. *giggle* Men are so nice when they are fucking me. <3")
+	            elseif (daysSinceEnslavement==15)
+	            	SLH_Control.playRandomSound(BimboActor)
+	            	debug.messagebox("Yay! Mr. Needle is back! I totally felt it this time when the thick *giggle* needle slowly pierced my red, swollen clitty. My clitty was, like, sooooo sensitive, I totally came over and over on the needle like a dirty slut in heat, and I think I umm, lost count and passed out? When I woke up, I found a SUUUPER shiny and slutty barbell in my clitty. It's solid gold too! Nothing but the best for my slutty nub! The weight of the barbell also pulls my little clitty out of its hood, so men don't have to make me to peel back my hood when they abuse my clitty! I'm no good at it anyways since my bimbo nails always get in the way. This piercing is like, so slutty and umm, fu-func...functions good! It, like, totally matches my other lewd piercings. Thank you Mr. Needle, for making my body more slutty and fuckable! <3")				
 	            endif
 	        Else
                 ; Third person thought
@@ -317,12 +387,12 @@ Event OnUpdate()
 	        Endif
   
             ; bimboDailyProgressiveTransformation(BimboActor, true) ;[mod]
-            if (GV_isTG.GetValue() == 1) && (StorageUtil.GetFloatValue(BimboActor, "_SLH_fSchlong") <= fSchlongMax )  && ( daysSinceEnslavement < 5 )
+            if (GV_isTG.GetValue() == 1) && (StorageUtil.GetFloatValue(BimboActor, "_SLH_fSchlong") <= fSchlongMax )  && ( daysSinceEnslavement < 15 )
                 ; StorageUtil.SetFloatValue(BimboActor, "_SLH_fSchlong", 0.1 + StorageUtil.GetFloatValue(BimboActor, "_SLH_fSchlong") * 1.2 ) 
-                fctBodyshape.alterBodyByPercent(BimboActor, "Schlong", 30.0)
+                fctBodyshape.alterBodyByPercent(BimboActor, "Schlong", 10.0)
                 BimboActor.SendModEvent("SLHRefresh")
 
-            elseif (GV_isTG.GetValue() == 1) && (daysSinceEnslavement >= 5 )
+            elseif (GV_isTG.GetValue() == 1) && (daysSinceEnslavement >= 16 )
                 _SLH_QST_Bimbo.SetStage(16)
 
                 SLH_Control.setTGState(BimboActor, FALSE)
@@ -858,6 +928,39 @@ function clumsyBimboLegs(Actor bimbo)
 endfunction
 
 ;===========================================================================
+;===========================================================================
+;===========================================================================
+;==========================SLAVETATS SCRIPT=================================
+;===========================================================================
+;===========================================================================
+;===========================================================================
+;Basically (read: 100%) lifted wholesale from slavetats events bridge, all credits to weird
+
+
+Function BimboTattoo(Form _form, String _section, String _name, bool _last, bool _silent, bool _lock)
+	if !_form as Actor
+		debug.Trace("[SLH] ERROR: called BimboTattoo on a not-actor")
+		return
+	endIf
+
+	; Call mod event from Hormones Bimbo Add-on
+EndFunction
+
+
+Function RemoveBimboTattoo(Form _form, String _section, bool _ignoreLock, bool _silent)
+	if !_form as Actor
+		debug.Trace("[SLH] ERROR: called RemoveBimboTattoo on a not-actor")
+		return
+	endIf
+
+	; Call mod event from Hormones Bimbo Add-on
+
+EndFunction
+
+;===========================================================================
+;===========================================================================
+;===========================================================================
+;===========================================================================
 ;[mod] progressive transformation here, called every day
 ;TODO move all the stuff here, each thing with its own trigger
 ;
@@ -872,11 +975,11 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 
 	;bimbo = Game.GetPlayer() 
 	int transformationDays = StorageUtil.GetIntValue(bimbo, "_SLH_bimboTransformGameDays")
-	int transformationCycle = transformationDays/6
+	int transformationCycle = transformationDays/16
 	int transformationLevel 
 
-	if (StorageUtil.GetIntValue(bimbo, "_SLH_bimboTransformLevel")<5)
-		transformationLevel= transformationDays - (transformationCycle * 6)
+	if (StorageUtil.GetIntValue(bimbo, "_SLH_bimboTransformLevel")<16)
+		transformationLevel= transformationDays - (transformationCycle * 16)
 		StorageUtil.SetIntValue(bimbo, "_SLH_bimboTransformLevel",transformationLevel)
 	else
 		transformationLevel= StorageUtil.GetIntValue(bimbo, "_SLH_bimboTransformLevel")
@@ -920,9 +1023,7 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 	StorageUtil.SetIntValue(BimboActor, "_SLH_iHairColor", iBimboHairColor )  
 	debugTrace(" 	bimbo hair color: " + iBimboHairColor)
 	if (transformationDays>15) 
-		BimboActor.SendModEvent("SLHRefreshHairColor","Base")
-	else
-		BimboActor.SendModEvent("SLHRefreshHairColor","Dye")
+		SendModEvent("yps-HairColorBaseEvent", "Platinum Blonde", 0xCABFB1)
 	endif
 	; BimboActor.SendModEvent("SLHRefreshColors")
 
@@ -930,78 +1031,263 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 	fctHormones.modHormoneLevel(BimboActor, "Bimbo", 5.0 ) ; make breasts and butt larger
 	fctHormones.modHormoneLevel(BimboActor, "Metabolism", -5.0 ) ; make breasts and butt larger
 
-	;level 1: makeup
-	if (transformationLevel >= 1)  
-		Debug.Notification("You feel a little tingling on your face.")
-	    SLH_Control.playChuckle(bimbo)
-
+	;level 1: lipstick
+	if (transformationLevel == 1)  
+		Debug.Notification("You feel a little tingle on your lips.")
+		SLH_Control.playChuckle(bimbo)
+			
 		If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
-			If (!isBimboPermanent) 
-				SendModEvent("yps-LipstickEvent", "", -1)  ; -1 = use custom color defined in YPS Fashion
-				SendModEvent("yps-EyeshadowEvent", "", -1)   
-
+			;If (!isBimboPermanent)
+				SendModEvent("yps-LipstickEvent", "Red", 0xFF0000)  ; -1 = use custom color defined in YPS Fashion
+					
+					
 				if (hairLength<5)
 					SendModEvent("yps-SetHaircutEvent", "", 5)
 				endif
-			Endif
+			;Endif
 		else
 			; SlaveTats.simple_add_tattoo(bimbo, "Bimbo", "Lipstick", color = 0x66FF0984, last = false, silent = true)
 			fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Lipstick", iColor = 0x66FF0984)
 			fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Eye Shadow", iColor = 0x99000000, bRefresh = True)
 		Endif
 
-		fctBodyshape.alterBodyByPercent(bimbo, "Breast", 2.0)
+		fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
 	endif
+		
+	;level 2: eyeshadow
+	if (transformationLevel == 2)  
+		Debug.Notification("You feel a little tingle on your eyelids.")
+		SLH_Control.playChuckle(bimbo)
+			
+			
+		If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
+			;If (!isBimboPermanent) 
+				SendModEvent("yps-EyeshadowEvent", "Black", 0x000000)
+				SendModEvent("yps-LipstickEvent", "Red", 0xFF0000)  ; -1 = use custom color defined in YPS Fashion 
 
-	;level 2, nails, weak body (can drop weapons when hit)
-	if transformationLevel >= 2
-		Debug.Notification("Your body feels weak and your boobs are sizzling.")
-	    SLH_Control.playGiggle(bimbo)
+				
+				if (hairLength<5)
+					SendModEvent("yps-SetHaircutEvent", "", 5)
+				endif
+			;Endif
+		else
+			; SlaveTats.simple_add_tattoo(bimbo, "Bimbo", "Lipstick", color = 0x66FF0984, last = false, silent = true)
+			fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Lipstick", iColor = 0x66FF0984)
+			fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Eye Shadow", iColor = 0x99000000, bRefresh = True)
+		Endif
+
+		fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
+	endif
+		
+	;level 3: hair
+	if (transformationLevel == 3)  
+		Debug.Notification("You feel a little tingle on your scalp.")
+		SLH_Control.playChuckle(bimbo)
 
 		If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
-			If (!isBimboPermanent) 
+			;If (!isBimboPermanent) 
+				SendModEvent("yps-HairColorBaseEvent", "Platinum Blonde", 0xCABFB1)
+				SendModEvent("yps-LipstickEvent", "Red", 0xFF0000)  ; -1 = use custom color defined in YPS Fashion
+				SendModEvent("yps-EyeshadowEvent", "Black", 0x000000)   
+					
+				if (hairLength<6)
+					SendModEvent("yps-SetHaircutEvent", "", 6)
+				endif
+			;Endif
+		else
+			; SlaveTats.simple_add_tattoo(bimbo, "Bimbo", "Lipstick", color = 0x66FF0984, last = false, silent = true)
+			fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Lipstick", iColor = 0x66FF0984)
+			fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Eye Shadow", iColor = 0x99000000, bRefresh = True)
+		Endif
+
+		fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
+	endif
+
+	;level 4, fingernails
+	if (transformationLevel == 4)
+		Debug.Notification("Your nails are turning into a slutty shade of pink")
+		SLH_Control.playGiggle(bimbo)
+
+		If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
+			;If (!isBimboPermanent) 
 				SendModEvent("yps-FingerNailsEvent", "", 29) 
-				SendModEvent("yps-ToeNailsEvent",  "", 29)
+				SendModEvent("yps-LipstickEvent", "Red", 0xFF0000)  ; -1 = use custom color defined in YPS Fashion
+				SendModEvent("yps-EyeshadowEvent", "Black", 0x000000)   
+				SendModEvent("yps-HairColorBaseEvent", "Platinum Blonde", 0xCABFB1)
 
 				if (hairLength<6)
 					SendModEvent("yps-SetHaircutEvent", "", 6)
 				endif
-			Endif
+			;Endif
 		else
 			fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Feet Nails", iColor = 0x00FF0984 )
 			fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Hand Nails", iColor = 0x00FF0984, bRefresh = True )
 		Endif
 
-		fctBodyshape.alterBodyByPercent(bimbo, "Breast", 2.0)
-		isBimboClumsyHands = true
+		fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
 	endif
-
-	;level 3: back tattoo, clumsy hands
-	if transformationLevel >= 3
-		Debug.Notification("A naughty shiver runs down your back.")
-		fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Tramp Stamp", bRefresh = True )
-	    SLH_Control.playMoan(bimbo)
+		
+	;level 5, toenails
+	if (transformationLevel == 5)
+		Debug.Notification("Your toenails are turning into glimmery shade of pink")
+		SLH_Control.playGiggle(bimbo)
 
 		If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
-			if (hairLength<8)
-				SendModEvent("yps-SetHaircutEvent", "", 8)
-			endif
+			;If (!isBimboPermanent) 
+				SendModEvent("yps-FingerNailsEvent", "", 29) 
+				SendModEvent("yps-ToeNailsEvent",  "", 29)
+				SendModEvent("yps-LipstickEvent", "Red", 0xFF0000)  ; -1 = use custom color defined in YPS Fashion
+				SendModEvent("yps-EyeshadowEvent", "Black", 0x000000)   
+				SendModEvent("yps-HairColorBaseEvent", "Platinum Blonde", 0xCABFB1)
+
+				if (hairLength<7)
+					SendModEvent("yps-SetHaircutEvent", "", 7)
+				endif
+			;Endif
+		else
+			fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Feet Nails", iColor = 0x00FF0984 )
+			fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Hand Nails", iColor = 0x00FF0984, bRefresh = True )
 		Endif
 
-		fctBodyshape.alterBodyByPercent(bimbo, "Breast", 2.0)
+		fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
+	endif
+		
+	;level 6, weak body (can drop weapons when hit)
+	if (transformationLevel == 6)
+		Debug.Notification("Your body feels weak and your chest feels tight.")
+		SLH_Control.playGiggle(bimbo)
+
+		If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
+			;If (!isBimboPermanent) 
+				SendModEvent("yps-LipstickEvent", "Red", 0xFF0000)  ; -1 = use custom color defined in YPS Fashion
+				SendModEvent("yps-EyeshadowEvent", "Black", 0x000000)   
+				SendModEvent("yps-HairColorBaseEvent", "Platinum Blonde", 0xCABFB1)
+				SendModEvent("yps-FingerNailsEvent", "", 29) 
+				SendModEvent("yps-ToeNailsEvent",  "", 29)				
+
+				if (hairLength<7)
+					SendModEvent("yps-SetHaircutEvent", "", 7)
+				endif
+			;Endif
+		else
+			fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Feet Nails", iColor = 0x00FF0984 )
+			fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Hand Nails", iColor = 0x00FF0984, bRefresh = True )
+		Endif
+
+		fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
+		isBimboClumsyHands = true
+	endif
+		
+	;level 7: earrings
+	if (transformationLevel == 7)
+		Debug.Notification("You yelp in pain as your ears are suddenly pierced")
+		SLH_Control.playMoan(bimbo)
+
+		If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
+			;If (!isBimboPermanent) 
+				SendModEvent("yps-PiercingEvent", "Mr Needle", 1)
+				SendModEvent("yps-LipstickEvent", "Red", 0xFF0000)  ; -1 = use custom color defined in YPS Fashion
+				SendModEvent("yps-EyeshadowEvent", "Black", 0x000000)   
+				SendModEvent("yps-HairColorBaseEvent", "Platinum Blonde", 0xCABFB1)
+				SendModEvent("yps-FingerNailsEvent", "", 29) 
+				SendModEvent("yps-ToeNailsEvent",  "", 29)				
+
+				if (hairLength<8)
+					SendModEvent("yps-SetHaircutEvent", "", 8)
+				endif
+			;endif
+		Endif
+
+		fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
+	endif	
+
+	;level 8: back tattoo
+	if (transformationLevel == 8)
+		Debug.Notification("You writhe in discomfort as invisible tattoo needles ink your back.")
+		BimboTattoo(bimbo,"Bimbo","Tramp Stamp",true,true,false)
+		SLH_Control.playMoan(bimbo)
+
+		If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
+			;If (!isBimboPermanent) 
+				SendModEvent("yps-LipstickEvent", "Red", 0xFF0000)  ; -1 = use custom color defined in YPS Fashion
+				SendModEvent("yps-EyeshadowEvent", "Black", 0x000000)   
+				SendModEvent("yps-HairColorBaseEvent", "Platinum Blonde", 0xCABFB1)
+				SendModEvent("yps-FingerNailsEvent", "", 29) 
+				SendModEvent("yps-ToeNailsEvent",  "", 29)				
+
+				if (hairLength<8)
+					SendModEvent("yps-SetHaircutEvent", "", 8)
+				endif
+			;endif
+		Endif
+
+		fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
+	endif
+		
+	;level 9: upper back tattoo
+	if (transformationLevel == 9)
+		Debug.Notification("You writhe in discomfort as invisible tattoo needles continue inking your back.")
+		BimboTattoo(bimbo,"Bimbo","Tramp Stamp Upper",true,true,false)
+		SLH_Control.playMoan(bimbo)
+
+		If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
+			;If (!isBimboPermanent) 
+				SendModEvent("yps-LipstickEvent", "Red", 0xFF0000)  ; -1 = use custom color defined in YPS Fashion
+				SendModEvent("yps-EyeshadowEvent", "Black", 0x000000)   
+				SendModEvent("yps-HairColorBaseEvent", "Platinum Blonde", 0xCABFB1)
+				SendModEvent("yps-FingerNailsEvent", "", 29) 
+				SendModEvent("yps-ToeNailsEvent",  "", 29)				
+
+				if (hairLength<9)
+					SendModEvent("yps-SetHaircutEvent", "", 9)
+				endif
+			;endif
+		Endif
+
+		fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
+	endif
+		
+	;level 10: belly tattoo
+	if (transformationLevel == 10)
+		Debug.Notification("You shudder in pained pleasure as the invisible tattoo needles mark your belly.")
+		BimboTattoo(bimbo,"Bimbo","Belly",true,true,false)
+		SLH_Control.playMoan(bimbo)
+
+		If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
+			;If (!isBimboPermanent) 
+				SendModEvent("yps-LipstickEvent", "Red", 0xFF0000)  ; -1 = use custom color defined in YPS Fashion
+				SendModEvent("yps-EyeshadowEvent", "Black", 0x000000)   
+				SendModEvent("yps-HairColorBaseEvent", "Platinum Blonde", 0xCABFB1)
+				SendModEvent("yps-FingerNailsEvent", "", 29) 
+				SendModEvent("yps-ToeNailsEvent",  "", 29)				
+
+				if (hairLength<9)
+					SendModEvent("yps-SetHaircutEvent", "", 9)
+				endif
+			;endif
+		Endif
+
+		fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
 	endif
 
-	;level 4: belly tattoo, bigger butt, clumsy legs
-	if transformationLevel >= 4
-		Debug.Notification("Your butt feels bloated, your belly craves cock.")
-		fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Belly", bRefresh = True )
- 
- 		If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
- 			SendModEvent("yps-ArchedFeetEvent")
-
-			if (hairLength<11)
-				SendModEvent("yps-SetHaircutEvent", "", 11)
-			endif
+	;level 11: navel ring, bigger butt
+	if (transformationLevel == 11)
+		Debug.Notification("You yelp in pain as an invisible needle pierces your navel.")
+		SLH_Control.playMoan(bimbo)
+	 
+		If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
+			;If (!isBimboPermanent) 
+				SendModEvent("yps-PiercingEvent", "Mr Needle", 9)
+				SendModEvent("yps-LipstickEvent", "Red", 0xFF0000)  ; -1 = use custom color defined in YPS Fashion
+				SendModEvent("yps-EyeshadowEvent", "Black", 0x000000)   
+				SendModEvent("yps-HairColorBaseEvent", "Platinum Blonde", 0xCABFB1)
+				SendModEvent("yps-FingerNailsEvent", "", 29) 
+				SendModEvent("yps-ToeNailsEvent",  "", 29)				
+					
+				if (hairLength<10)
+					SendModEvent("yps-SetHaircutEvent", "", 10)
+				endif
+			;endif
 		EndIf
 
 		;butt
@@ -1012,44 +1298,160 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 			Debug.SendAnimationEvent(bimbo, "BleedOutStart")
 			SLH_Control.playRandomSound(bimbo)
 
-			fButtActual = 0.1 + fButtActual * 1.5 ;now with 50% more butt!
+			fButtActual = 0.1 + fButtActual * 1.15 ;now with 15% more butt!
 			if fButtActual > fButtMax
 				fButtActual = fButtMax
 			endif
-            StorageUtil.SetFloatValue(bimbo, "_SLH_fButt", fButtActual ) 
-            Bimbo.SendModEvent("SLHRefresh")
+			StorageUtil.SetFloatValue(bimbo, "_SLH_fButt", fButtActual ) 
+			Bimbo.SendModEvent("SLHRefresh")
 
 			Utility.Wait(1.0)
 			Debug.SendAnimationEvent(bimbo, "BleedOutStop")
-        endif
+		endif
 
-		fctBodyshape.alterBodyByPercent(bimbo, "Breast", 2.0)
+		fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
+	endif
+		
+	;level 12: bigger butt, heel hubbled
+	if (transformationLevel == 12)
+		Debug.Notification("Your feet tingle and deform into a slutty high-heeled arch")
+		SLH_Control.playMoan(bimbo)
+	 
+		If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
+			;If (!isBimboPermanent) 
+				SendModEvent("yps-ArchedFeetEvent")
+				SendModEvent("yps-LipstickEvent", "Red", 0xFF0000)  ; -1 = use custom color defined in YPS Fashion
+				SendModEvent("yps-EyeshadowEvent", "Black", 0x000000)   
+				SendModEvent("yps-HairColorBaseEvent", "Platinum Blonde", 0xCABFB1)
+				SendModEvent("yps-FingerNailsEvent", "", 29) 
+				SendModEvent("yps-ToeNailsEvent",  "", 29)				
+					
+				if (hairLength<10)
+					SendModEvent("yps-SetHaircutEvent", "", 10)
+				endif
+			;endif
+		EndIf
+
+		;butt
+		fButtMin = StorageUtil.GetFloatValue(bimbo, "_SLH_fButtMin")
+		fButtMax = StorageUtil.GetFloatValue(bimbo, "_SLH_fButtMax")
+		fButtActual = StorageUtil.GetFloatValue(bimbo, "_SLH_fButt")
+		if (fButtActual < fButtMax )
+			Debug.SendAnimationEvent(bimbo, "BleedOutStart")
+			SLH_Control.playRandomSound(bimbo)
+
+			fButtActual = 0.1 + fButtActual * 1.15 ;now with 15% more butt!
+			if fButtActual > fButtMax
+				fButtActual = fButtMax
+			endif
+			StorageUtil.SetFloatValue(bimbo, "_SLH_fButt", fButtActual ) 
+			Bimbo.SendModEvent("SLHRefresh")
+
+			Utility.Wait(1.0)
+			Debug.SendAnimationEvent(bimbo, "BleedOutStop")
+		endif
+
+		fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
 		isBimboClumsyLegs = true
 	endif
 
-	;level 5,  pubic tattoo
-	if transformationLevel >= 5
+	;level 13: pubic tattoo, bigger butt
+	if (transformationLevel == 13)
 		if !isMale ;no schlong on the way
-			; SlaveTats.simple_add_tattoo(bimbo, "Bimbo", "Pubic Tattoo", last = true, silent = true)
-			Debug.Notification("Your pussy feels so hot and empty.")
-			fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Pubic Tattoo", bRefresh = True  )
+			Debug.Notification("You moan in surprise as the invisible tattoo needles work their way down your smooth mound.")
+			BimboTattoo(bimbo,"Bimbo","Pubic Tattoo",true,true,false)
+			SLH_Control.playMoan(bimbo)
 		endif
-
- 		If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1) 
-			if (hairLength>13) || (hairLength<13)
-				SendModEvent("yps-SetHaircutEvent", "", 13)
-			endif
-
+	 
+		If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
+			;If (!isBimboPermanent) 
+				SendModEvent("yps-LipstickEvent", "Red", 0xFF0000)  ; -1 = use custom color defined in YPS Fashion
+				SendModEvent("yps-EyeshadowEvent", "Black", 0x000000)   
+				SendModEvent("yps-HairColorBaseEvent", "Platinum Blonde", 0xCABFB1)
+				SendModEvent("yps-FingerNailsEvent", "", 29) 
+				SendModEvent("yps-ToeNailsEvent",  "", 29)				
+					
+				if (hairLength>11) || (hairLength<11)
+					SendModEvent("yps-SetHaircutEvent", "", 11)
+				endif
+			;endif
 		EndIf
 
-		fctBodyshape.alterBodyByPercent(bimbo, "Breast", 2.0)
+		;butt
+		fButtMin = StorageUtil.GetFloatValue(bimbo, "_SLH_fButtMin")
+		fButtMax = StorageUtil.GetFloatValue(bimbo, "_SLH_fButtMax")
+		fButtActual = StorageUtil.GetFloatValue(bimbo, "_SLH_fButt")
+		if (fButtActual < fButtMax )
+			Debug.SendAnimationEvent(bimbo, "BleedOutStart")
+			SLH_Control.playRandomSound(bimbo)
+
+			fButtActual = 0.1 + fButtActual * 1.15 ;now with 15% more butt!
+			if fButtActual > fButtMax
+				fButtActual = fButtMax
+			endif
+			StorageUtil.SetFloatValue(bimbo, "_SLH_fButt", fButtActual ) 
+			Bimbo.SendModEvent("SLHRefresh")
+
+			Utility.Wait(1.0)
+			Debug.SendAnimationEvent(bimbo, "BleedOutStop")
+		endif
+			
+		fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
+	endif
+		
+	;level 14: nipple piercings
+	if (transformationLevel == 14)
+		Debug.Notification("You moan in pained pleasure as thick, invisible needles pierce your swollen nipples.")
+		SLH_Control.playMoan(bimbo)
+			 
+		If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
+			;If (!isBimboPermanent) 
+				SendModEvent("yps-PiercingEvent", "Mr Needle", 10)
+				SendModEvent("yps-LipstickEvent", "Red", 0xFF0000)  ; -1 = use custom color defined in YPS Fashion
+				SendModEvent("yps-EyeshadowEvent", "Black", 0x000000)   
+				SendModEvent("yps-HairColorBaseEvent", "Platinum Blonde", 0xCABFB1)
+				SendModEvent("yps-FingerNailsEvent", "", 29) 
+				SendModEvent("yps-ToeNailsEvent",  "", 29)				
+					
+				if (hairLength>12) || (hairLength<12)
+					SendModEvent("yps-SetHaircutEvent", "", 12)
+				endif
+			;endif
+		EndIf
+			
+		fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
+	endif
+		
+	;level 15: clit piercing
+	if (transformationLevel == 15)
+		Debug.Notification("You writhe and spasm uncontrollably as a thick, invisible needle slowly pierces your vulnerable clit.")
+		SLH_Control.playMoan(bimbo)
+			 
+		If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
+			;If (!isBimboPermanent) 
+				SendModEvent("yps-LipstickEvent", "Red", 0xFF0000)  ; -1 = use custom color defined in YPS Fashion
+				SendModEvent("yps-PiercingEvent", "Mr Needle", 11)
+				SendModEvent("yps-EyeshadowEvent", "Black", 0x000000)   
+				SendModEvent("yps-HairColorBaseEvent", "Platinum Blonde", 0xCABFB1)
+				SendModEvent("yps-FingerNailsEvent", "", 29) 
+				SendModEvent("yps-ToeNailsEvent",  "", 29)				
+					
+				if (hairLength>13) || (hairLength<13)
+					SendModEvent("yps-SetHaircutEvent", "", 13)
+				endif
+			;endif
+		EndIf
+
+		fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.5)
 		isBimboFrailBody = true
 		fctPolymorph.bimboFinalON(bimbo)
-
+			
 	endif
 
 	if (transformationDays>15) 
-
+		Debug.Notification("I need more cocks! *giggle*")
+		SLH_Control.playMoan(bimbo)
+			
 		if (StorageUtil.GetIntValue(none, "ypsPubicHairEnabled") == 1)
 			SendModEvent("yps-SetPubicHairLengthEvent", "", 0)
 		Endif
@@ -1061,15 +1463,27 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 		Float fBimboHormoneLevel = StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneBimbo") 
 
 		if (!isBimboPermanent) && (Utility.RandomInt(0,100)< (fBimboHormoneLevel as Int))
-			SendModEvent("yps-LipstickEvent", "", -1 )  
-			SendModEvent("yps-EyeshadowEvent", "", -1 )   
+			RemoveBimboTattoo(bimbo, "Bimbo", true, true)
+			BimboTattoo(bimbo,"Bimbo","Tramp Stamp",false,true,true)
+			BimboTattoo(bimbo,"Bimbo","Belly",false,true,true)
+			BimboTattoo(bimbo,"Bimbo","Tramp Stamp Upper",false,true,true)
+			BimboTattoo(bimbo,"Bimbo","Pubic Tattoo",false,true,true)
+			BimboTattoo(bimbo,"Bimbo","Permanent Bimbo",true,true,true)
+			SendModEvent("yps-LipstickEvent", "Red", 0xFF0000)  
+			SendModEvent("yps-EyeshadowEvent", "Black", 0x000000)   
 			SendModEvent("yps-DisableSmudgingEvent")
 			SendModEvent("yps-LockMakeupEvent")
 			SendModEvent("yps-PermanentMakeupEvent")
+			SendModEvent("yps-HairColorBaseEvent", "Platinum Blonde", 0xCABFB1)
+			SendModEvent("yps-FingerNailsEvent", "", 29) 
+			SendModEvent("yps-ToeNailsEvent",  "", 29)
+			SendModEvent("yps-DisableHairgrowthEvent")
+			SendModEvent("yps-DisableHairmakeoverEvent")
 
 			isBimboPermanent = true
 			fctPolymorph.bimboLockedON(bimbo)
-			Debug.Messagebox("The curse has rewired your brain and transformed your body it its core. The changes are now irreversible. Enjoy your new life little Bimbo.")
+			Debug.Messagebox("Somewhere in the back of your foggy, lust-addled mind you register the finality of your unfortunate predicament. What little remains of your lucid psyche screams in horror as the curse weaves into every fibre of your perversely modified body, its silhouette bearing little resemblance to your former self. Your new, forcibly altered form is completely tailor made for the singular purpose of eliciting and according maximum sexual pleasure to whomever lucky enough to utilize your thoroughly conditioned orifices. You writhe and moan in pained ecstacy as your bright, gaudy makeup, your slutty, erotic tattoos, and your lewd, glittering piercings all heat, tingle, then bind to your softly undulating flesh, becoming permanent fixtures to your bimbo form, irrevocably marking your body as that of a modified, carnal, and peversely erotic masturbatory aid.")
+			Debug.Messagebox("The magical tattoo needles, which you've become so familiar with during your metamorphosis, return one final time to commemorate the permanence of your transformation. You writhe and moan in pleasure, barely cognizant of the needles as they buzz over your smooth, hairless mound, your well-conditioned body writhing in pleasure as the invisible needles prick your skin, permanently depositing pigments that form your final, obscene modification. Then, just as swiftly, the needles disappear, leaving behind a bright, pink tattoo that seems to shimmer above your soft, slick folds, irrevocably marking you as a PERMANENT BIMBO FUCKTOY, and advertising both your availability and eagerness to service your next sexual partner.")
 		endif
 	else
 		Debug.Notification("Every day as a Bimbo drains your mind away.")
@@ -1103,7 +1517,6 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 	;check what happens after the player is cured
 	;--------------------------------------------
 endfunction
-
 
 
 Function debugTrace(string traceMsg)
