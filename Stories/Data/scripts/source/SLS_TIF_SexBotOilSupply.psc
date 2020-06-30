@@ -14,8 +14,8 @@ SexBotOilLevel.SetValue(iOilLevel + 1)
 
 StorageUtil.SetIntValue(SexBotActor, "_SLS_SexBotOilLevel", SexBotOilLevel.GetValue() as Int)
 
-Debug.Notification("Energy level - " + StorageUtil.GetIntValue(SexBotActor, "_SLS_SexBotEnergyLevel") )
-Debug.Notification("Lubrication level - " + StorageUtil.GetIntValue(SexBotActor, "_SLS_SexBotOilLevel") )
+Debug.Notification("Energy level: " + StorageUtil.GetIntValue(SexBotActor, "_SLS_SexBotEnergyLevel") )
+Debug.Notification("Lubrication level: " + StorageUtil.GetIntValue(SexBotActor, "_SLS_SexBotOilLevel") )
 ;END CODE
 EndFunction
 ;END FRAGMENT

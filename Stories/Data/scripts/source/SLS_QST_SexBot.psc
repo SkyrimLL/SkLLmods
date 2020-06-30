@@ -9,6 +9,8 @@ Armor Property SexBotEvolvedSkin Auto
 
 Armor Property RefreshToken Auto
 
+GlobalVariable Property SexBotOilLevel Auto
+
 Event OnInit()
 	_Maintenance()
 EndEvent
@@ -83,10 +85,17 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 
 	; EndIf
 
-	If victim	;none consensual
-		;
+	If (_hasActor(actors, SexBotActor))
+		Int iOilLevel = SexBotOilLevel.GetValue() as Int
 
-	Else        ;consensual
+		SexBotOilLevel.SetValue(iOilLevel - 1)
+
+		StorageUtil.SetIntValue(SexBotActor, "_SLS_SexBotOilLevel", SexBotOilLevel.GetValue() as Int)
+
+		Debug.Notification("Energy level: " + StorageUtil.GetIntValue(SexBotActor, "_SLS_SexBotEnergyLevel") )
+		Debug.Notification("Lubrication level: " + StorageUtil.GetIntValue(SexBotActor, "_SLS_SexBotOilLevel") )
+
+	Else        
 		;
 		
 	EndIf
