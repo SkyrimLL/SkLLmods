@@ -287,6 +287,8 @@ state STATE_RACE_RESET ; TOGGLE
 			_changePlayerScale(fMinHeight + ((playerAge - baseAge) * 0.01 ) )
 		endif
 
+		PlayerActor.SendModEvent("SLHSetShape")
+
 		Debug.MessageBox("Family ties: Player race reset")
 	
 	endEvent
