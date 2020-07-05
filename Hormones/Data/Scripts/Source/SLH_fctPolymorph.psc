@@ -540,7 +540,13 @@ function bimboTransformEffectOFF(actor kActor)
         SprigganFX.Play( kActor, 30 )
 
         BimboAliasRef.ForceRefTo(BimboDummyRef)
-
+		
+		if StorageUtil.GetIntValue(kActor, "_SLH_bimboTransformGameDays") > 15
+			SendModEvent("yps-EnableSmudgingEvent")
+			SendModEvent("yps-UnlockMakeupEvent")
+			SendModEvent("yps-NoPermanentMakeupEvent")
+		endif
+		
         SLH_Control.setHormonesStateDefault(kActor)
 
         Debug.Messagebox("The heatwave returns... hopefully restoring most of your normal self.")
