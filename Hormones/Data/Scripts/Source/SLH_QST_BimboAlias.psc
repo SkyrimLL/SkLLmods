@@ -359,7 +359,7 @@ Event OnUpdate()
 	            	debug.messagebox("I happen to be on my back *giggle* when I felt the familiar pinpricks on my tummy; since the nice, helpful man was busy using my pussy, I had to BEG him to help pull my boobies to the side so I can see how the slutty tattoo is applied. So, the ink umm, just, kind of appeared on my skin like magic! Maybe it's con..comju...cumju-something magic? I'm probably too dumb to understand how it works, and the kind man holding my boobies kept telling me that I should think less, and suck more (good girls always swallow! <3). Men are so nice to me when I smile and let them play with my big boobies. Oh and I now have a suuuper slutty BIMBO FUCKTOY tattoo on my tummy to show off to all the cute boys! Yay!")
 	            elseif (daysSinceEnslavement==11)
 					SLH_Control.playRandomSound(BimboActor)
-	            	debug.messagebox("Ooouchie! Another stab, this time right above my navel! Why can't getting a piercing be more pleasant? I mean, I'm not complaining, since my new navel stud looks suuuper hawt, oh wait, I think I just did, I'm such a silly bimbo sometimes *giggle*. Yay! The piercing even glitters, this will definitely help me attract more boys. Ohhh, I think my clit likes it too. Mhmmm, clit. I can't believe I used to call it cli-clitt...clittorius, that's like, sooo tacky, yuck! I think a nice man once told me that sluts don't have clits, they have clitties, which rhyme with boobies, wait... no, not boobies, titties. I have a clitty and two titties. I'm like, super smart!")
+	            	debug.messagebox("Ooouchie! Another stab, this time right above my navel! Why can't getting a piercing be more pleasant? I mean, I'm not complaining, since my new navel stud looks suuuper hawt, oh wait, I think I just did, I'm such a silly bimbo sometimes *giggle*. Yay! The piercing even glitters, this will definitely help me attract more boys. Ohhh, I think my clit likes it too. Mhmmm, clit. I can't believe I used to call it cli-clitt...clittorius, that's like, sooo tacky, yuck! I think a nice man once told me that sluts don't have clits, they have clitties, which rhymes with boobies, wait... no, not boobies, titties. I have a clitty and two titties. I'm like, super smart!")
 	            elseif (daysSinceEnslavement==12)
 	            	SLH_Control.playRandomSound(BimboActor)
 	            	debug.messagebox("I can't believe I used to hate having random men touch my clitty, they are so kind and gentle when they pinch and squeeze my exposed nub, and I always get the BEST orgasms when someone else plays with my body! My cute, pea sized clitty is sooo sensitive, I can't even breathe on it without shuddering all over! As I tried to stand, my silly, clumsy feet refuse to cooperate and I fell onto my butt like the ditzy bimbo that I am. Thank Gods the said butt is super well padded! *giggle* As I look down, I realize my feet are actually stuck in a slutty high-heeled position, like I'm wearing a pair of suuuper slutty invisible heels! They seem to refuse to flex, like, at all. *giggle* I guess it's only super slutty heels for me from now on. Not that I mind, since I get so many compliments when I wear stilettos, and they make my bubble butt look AMAZING and super fuckable~")
@@ -1423,7 +1423,7 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 	endif
 		
 	;level 15: clit piercing
-	if (transformationLevel == 15)
+	if (transformationDays == 15)
 		Debug.Notification("You writhe and spasm uncontrollably as a thick, invisible needle slowly pierces your vulnerable clit.")
 		SLH_Control.playMoan(bimbo)
 			 
@@ -1451,18 +1451,9 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 	if (transformationDays>15) 
 		Debug.Notification("I need more cocks! *giggle*")
 		SLH_Control.playMoan(bimbo)
-			
-		if (StorageUtil.GetIntValue(none, "ypsPubicHairEnabled") == 1)
-			SendModEvent("yps-SetPubicHairLengthEvent", "", 0)
-		Endif
+		; Float fBimboHormoneLevel = StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneBimbo") 
 
-		if (StorageUtil.GetIntValue(none, "ypsArmpitHairEnabled")==1)
-			SendModEvent("yps-SetArmpitsHairLengthEvent", "", 0)
-		endif
-
-		Float fBimboHormoneLevel = StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneBimbo") 
-
-		if (!isBimboPermanent) && (Utility.RandomInt(0,100)< (fBimboHormoneLevel as Int))
+		if (!isBimboPermanent) ; && (Utility.RandomInt(0,100)< (fBimboHormoneLevel as Int))
 			RemoveBimboTattoo(bimbo, "Bimbo", true, true)
 			BimboTattoo(bimbo,"Bimbo","Tramp Stamp",false,true,true)
 			BimboTattoo(bimbo,"Bimbo","Belly",false,true,true)
@@ -1479,14 +1470,26 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 			SendModEvent("yps-ToeNailsEvent",  "", 29)
 			SendModEvent("yps-DisableHairgrowthEvent")
 			SendModEvent("yps-DisableHairmakeoverEvent")
+			
+					if (hairLength>13) || (hairLength<13)
+						SendModEvent("yps-SetHaircutEvent", "", 13)
+					endif
+				
+					if (StorageUtil.GetIntValue(none, "ypsPubicHairEnabled") == 1)
+						SendModEvent("yps-SetPubicHairLengthEvent", "", 0)
+					Endif
+					
+					if (StorageUtil.GetIntValue(none, "ypsArmpitHairEnabled")==1)
+						SendModEvent("yps-SetArmpitsHairLengthEvent", "", 0)
+					endif
 
 			isBimboPermanent = true
 			fctPolymorph.bimboLockedON(bimbo)
 			Debug.Messagebox("Somewhere in the back of your foggy, lust-addled mind you register the finality of your unfortunate predicament. What little remains of your lucid psyche screams in horror as the curse weaves into every fibre of your perversely modified body, its silhouette bearing little resemblance to your former self. Your new, forcibly altered form is completely tailor made for the singular purpose of eliciting and according maximum sexual pleasure to whomever lucky enough to utilize your thoroughly conditioned orifices. You writhe and moan in pained ecstacy as your bright, gaudy makeup, your slutty, erotic tattoos, and your lewd, glittering piercings all heat, tingle, then bind to your softly undulating flesh, becoming permanent fixtures to your bimbo form, irrevocably marking your body as that of a modified, carnal, and peversely erotic masturbatory aid.")
 			Debug.Messagebox("The magical tattoo needles, which you've become so familiar with during your metamorphosis, return one final time to commemorate the permanence of your transformation. You writhe and moan in pleasure, barely cognizant of the needles as they buzz over your smooth, hairless mound, your well-conditioned body writhing in pleasure as the invisible needles prick your skin, permanently depositing pigments that form your final, obscene modification. Then, just as swiftly, the needles disappear, leaving behind a bright, pink tattoo that seems to shimmer above your soft, slick folds, irrevocably marking you as a PERMANENT BIMBO FUCKTOY, and advertising both your availability and eagerness to service your next sexual partner.")
 		endif
-	else
-		Debug.Notification("Every day as a Bimbo drains your mind away.")
+	; else
+		; Debug.Notification("Every day as a Bimbo drains your mind away.")
 	endif
 	;--------------------------------------------
 	;IDEAS
