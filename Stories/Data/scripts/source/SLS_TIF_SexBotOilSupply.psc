@@ -10,7 +10,7 @@ Actor SexBotActor = SexBotRef as Actor
 Int iOilLevel = SexBotOilLevel.GetValue() as Int
 Game.GetPlayer().RemoveItem(DwarvenOil, 1 )
 
-SexBotOilLevel.SetValue(iOilLevel + 1)
+SexBotOilLevel.SetValue(iOilLevel + 10)
 
 StorageUtil.SetIntValue(SexBotActor, "_SLS_SexBotOilLevel", SexBotOilLevel.GetValue() as Int)
 
