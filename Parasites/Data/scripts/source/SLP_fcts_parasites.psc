@@ -314,7 +314,7 @@ Bool Function equipParasiteNPC ( Actor akActor, Armor ddArmorInventory, Armor dd
 	return bDeviceEquipSuccess
 EndFunction
 
-Bool Function clearParasite ( Armor ddArmorInventory, Armor ddArmorRendered, Keyword ddArmorKeyword, Bool bDestroy = False)
+Bool Function clearParasite ( Armor ddArmorInventory, Armor ddArmorRendered, Keyword ddArmorKeyword, Bool bDestroy = True)
 	Actor kPlayer = Game.GetPlayer() as Actor
 	Keyword kwWornKeyword
 	Bool bDeviceRemoveSuccess = False
@@ -324,7 +324,7 @@ Bool Function clearParasite ( Armor ddArmorInventory, Armor ddArmorRendered, Key
 	return bDeviceRemoveSuccess
 EndFunction
 
-Bool Function clearParasiteNPC ( Actor akActor, Armor ddArmorInventory, Armor ddArmorRendered, Keyword ddArmorKeyword, Bool bDestroy = False) 
+Bool Function clearParasiteNPC ( Actor akActor, Armor ddArmorInventory, Armor ddArmorRendered, Keyword ddArmorKeyword, Bool bDestroy = True) 
 	Keyword kwWornKeyword
 	Bool bDeviceRemoveSuccess = False
 
@@ -1209,7 +1209,6 @@ EndFunction
 ;------------------------------------------------------------------------------
 Bool Function infectFaceHugger( Actor kActor   )
  	Actor PlayerActor = Game.GetPlayer()
- 	Cell kActorCell
 
   	if (kActor == None)
   		kActor = PlayerActor
@@ -1232,13 +1231,6 @@ Bool Function infectFaceHugger( Actor kActor   )
 
 	If (!isFemale( kActor))
 		Debug.Trace("		Actor is not female - Aborting")
-		Return False
-	Endif
-	
-
- 	kActorCell = kActor.GetParentCell()
-	If (kActorCell.IsInterior())
-		Debug.Trace("		Location is outdoors (some locations falsely register as caves) - Aborting")
 		Return False
 	Endif
 
@@ -1299,8 +1291,7 @@ EndFunction
 
 Bool Function infectFaceHuggerGag( Actor kActor   )
  	Actor PlayerActor = Game.GetPlayer()
-	Cell kActorCell
- 
+
   	if (kActor == None)
   		kActor = PlayerActor
   	endIf
@@ -1317,12 +1308,6 @@ Bool Function infectFaceHuggerGag( Actor kActor   )
 
 	If (ActorHasKeywordByString( kActor, "Gag"  ))
 		Debug.Trace("		Already wearing a gag - Aborting")
-		Return False
-	Endif
-
- 	kActorCell = kActor.GetParentCell()
-	If (kActorCell.IsInterior())
-		Debug.Trace("		Location is outdoors (some locations falsely register as caves) - Aborting")
 		Return False
 	Endif
 
@@ -1385,7 +1370,6 @@ EndFunction
 ;------------------------------------------------------------------------------
 Bool Function infectBarnacles( Actor kActor   )
  	Actor PlayerActor = Game.GetPlayer()
-	Cell kActorCell
 
   	if (kActor == None)
   		kActor = PlayerActor
@@ -1406,11 +1390,6 @@ Bool Function infectBarnacles( Actor kActor   )
 		Return False
 	Endif
 
- 	kActorCell = kActor.GetParentCell()
-	If (kActorCell.IsInterior())
-		Debug.Trace("		Location is outdoors (some locations falsely register as caves) - Aborting")
-		Return False
-	Endif
 
 	If (!isFemale( kActor))
 		Debug.Trace("		Actor is not female - Aborting")
@@ -1920,3 +1899,4 @@ Function _resetParasiteSettings()
 	StorageUtil.SetIntValue(kPlayer, "_SLP_toggleBarnacles", 0 )
 	StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceBarnacles", 30.0 )
 EndFunction
+Ingredient Property GlowingMushrooms  Auto  

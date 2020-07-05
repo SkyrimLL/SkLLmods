@@ -6,6 +6,9 @@ Scriptname SLP_TIF_Lastelle65a Extends TopicInfo Hidden
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
+ObjectReference ChaurusRef = ChaurusStudRef.GetReference()
+ChaurusRef.disable()
+
 self.GetOwningQuest().SetObjectiveDisplayed(60,false)
 self.GetOwningQuest().SetObjectiveDisplayed(65)
 self.GetOwningQuest().setstage(65)
@@ -14,3 +17,5 @@ EndFunction
 ;END FRAGMENT
 
 ;END FRAGMENT CODE - Do not edit anything between this and the begin comment
+
+ReferenceAlias Property ChaurusStudRef  Auto  

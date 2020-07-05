@@ -10,6 +10,7 @@ fctParasites.infectEstrusTentacles( akSpeaker )
 fctParasites.infectEstrusChaurusEgg( akSpeaker )
 
 self.GetOwningQuest().setstage(11)
+self.GetOwningQuest().setstage(19)
 ;END CODE
 EndFunction
 ;END FRAGMENT

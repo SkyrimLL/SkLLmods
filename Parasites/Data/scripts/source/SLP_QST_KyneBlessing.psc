@@ -1,6 +1,23 @@
 ;BEGIN FRAGMENT CODE - Do not edit anything between this and the end comment
-;NEXT FRAGMENT INDEX 6
+;NEXT FRAGMENT INDEX 8
 Scriptname SLP_QST_KyneBlessing Extends Quest Hidden
+
+;BEGIN FRAGMENT Fragment_4
+Function Fragment_4()
+;BEGIN CODE
+SetObjectiveDisplayed(11,false)
+SetObjectiveDisplayed(12)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_7
+Function Fragment_7()
+;BEGIN CODE
+SetObjectiveDisplayed(100, false)
+;END CODE
+EndFunction
+;END FRAGMENT
 
 ;BEGIN FRAGMENT Fragment_5
 Function Fragment_5()
@@ -19,20 +36,23 @@ KyneSanctuaryDoor.Lock()
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_4
-Function Fragment_4()
-;BEGIN CODE
-SetObjectiveDisplayed(11,false)
-SetObjectiveDisplayed(12)
-;END CODE
-EndFunction
-;END FRAGMENT
-
 ;BEGIN FRAGMENT Fragment_2
 Function Fragment_2()
 ;BEGIN CODE
 SetObjectiveDisplayed(10)
 SetObjectiveDisplayed(11)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_6
+Function Fragment_6()
+;BEGIN CODE
+SetObjectiveDisplayed(10, false)
+SetObjectiveDisplayed(11, false)
+SetObjectiveDisplayed(12, false)
+SetObjectiveDisplayed(14, false)
+SetObjectiveDisplayed(100)
 ;END CODE
 EndFunction
 ;END FRAGMENT

@@ -894,11 +894,12 @@ Event OnSLPSexCure(String _eventName, String _args, Float _argc = 0.0, Form _sen
  	Bool bIsPlayerHealer = _argc as Bool
  	Bool bHarvestParasite = False
 
- 	if (KynesBlessingQuest.GetStageDone(22))
-		if ((kPlayer.GetItemCount(GlowingMushroom) != 0) && (Utility.RandomInt(0,100) <= (30 + StorageUtil.GetIntValue(kPlayer, "_SLP_iInfections") * 5) ) )
+ 	; if (KynesBlessingQuest.GetStageDone(22))
+	if (kPlayer.GetItemCount(GlowingMushroom) != 0) ; && (Utility.RandomInt(0,100) <= (30 + StorageUtil.GetIntValue(kPlayer, "_SLP_iInfections") * 5) ) )
 		   	bHarvestParasite = True
-		endIf	
-	Endif
+		   	kPlayer.RemoveItem(GlowingMushroom,1)
+	endIf	
+	; Endif
 
  	If (sParasite == "SpiderEgg")
  		sTags = "Fisting"
@@ -1085,6 +1086,7 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 	Actor PlayerActor = Game.GetPlayer() as Actor
 	Location kLocation = PlayerActor.GetCurrentLocation()
 	Bool bLocationAllowed = False
+ 	Cell kActorCell = PlayerActor.GetParentCell()
 
 	If (StorageUtil.GetIntValue(PlayerActor, "_SLP_iDisableParasitesOnSleep") == 1)
 		Debug.Trace("[SLP] Parasites on Sleep disabled: " + StorageUtil.GetIntValue(PlayerActor, "_SLP_iDisableParasitesOnSleep"))
@@ -1093,7 +1095,7 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 
 	if (kLocation)  
 
-		If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceBarnacles" )>0.0)
+		If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceBarnacles" )>0.0) && (kActorCell.IsInterior())
 			If kLocation.IsSameLocation(SLP_BlackreachLocation) || kLocation.HasKeyword(SLP_FalmerHiveLocType) || kLocation.HasKeyword(SLP_CaveLocType) || kLocation.HasKeyword(SLP_DwarvenRuinLocType)
 				Debug.Trace("[SLP] Good location for Barnacles")
 				bLocationAllowed = True
@@ -1103,7 +1105,7 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 			endIf
 		endIf
 
-		if (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceFaceHugger" )>0.0)
+		if (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceFaceHugger" )>0.0) && (kActorCell.IsInterior())
 			if kLocation.IsSameLocation(SLP_BlackreachLocation) || kLocation.HasKeyword(SLP_DraugrCryptLocType) || kLocation.HasKeyword(SLP_NordicRuinLocType) || kLocation.HasKeyword(SLP_MineLocType) || kLocation.HasKeyword(SLP_CaveLocType) || kLocation.HasKeyword(SLP_OutdoorLocType)
 				Debug.Trace("[SLP] Good location for Face hugger")
 				bLocationAllowed = True
@@ -1112,7 +1114,7 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 			EndIf
 		endIf
 
-		if (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceFaceHuggerGag" )>0.0)
+		if (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceFaceHuggerGag" )>0.0) && (kActorCell.IsInterior())
 			if kLocation.IsSameLocation(SLP_BlackreachLocation) || kLocation.HasKeyword(SLP_DraugrCryptLocType) || kLocation.HasKeyword(SLP_NordicRuinLocType) || kLocation.HasKeyword(SLP_MineLocType) || kLocation.HasKeyword(SLP_CaveLocType) || kLocation.HasKeyword(SLP_OutdoorLocType)
 				Debug.Trace("[SLP] Good location for Face hugger")
 				bLocationAllowed = True

@@ -16,10 +16,10 @@ Int Function GetChanceModified(actor akActor, int chanceMod)
 	; include both tags for truely active effects
 	float ret = Probability
 	if akActor.HasMagicEffectWithKeyword(libs.zad_EffectLively)
-		ret *= 1.5
+		ret *= 2
 	EndIf
 	if akActor.HasMagicEffectWithKeyword(libs.zad_EffectVeryLively)
-		ret *= 2
+		ret *= 4
 	EndIf
 	return ((ret - Probability) as Int)
 EndFunction
