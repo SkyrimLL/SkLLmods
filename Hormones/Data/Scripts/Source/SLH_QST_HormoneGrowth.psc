@@ -863,11 +863,7 @@ Event OnCastBimboCurseEvent(String _eventName, String _args, Float _argc = 1.0, 
 	isBimbo = fctPolymorph.bimboTransformEffectON(kActor)
 
 	If (isBimbo)
-		if (_args == "Dremora")
-			_SLH_QST_Bimbo.SetStage(11)
-		Elseif (_args == "Bimbo")
-			_SLH_QST_Bimbo.SetStage(10)
-		endif
+		_SLH_QST_Bimbo.SetStage(4)
 
 		Game.ShowRaceMenu()
 	Endif
@@ -893,6 +889,42 @@ Event OnCureBimboCurseEvent(String _eventName, String _args, Float _argc = 1.0, 
 
 endEvent
 
+Event OnCastTGCurseEvent(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+ 	Bool isTG = False
+  	
+ 	if (kActor == None)
+ 		kActor = Game.GetPlayer()
+ 	EndIf
+	debugTrace(" Cast TG Curse event" )	  
+	isTG = fctPolymorph.TGEffectON(kActor)
+
+	if (isTG)
+		; PolymorphBimbo.Cast(PlayerActor,PlayerActor)
+		_SLH_QST_Bimbo.SetStage(6)
+
+	endif
+
+endEvent
+
+Event OnCureTGCurseEvent(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+
+ 	if (kActor == None)
+ 		kActor = Game.GetPlayer()
+ 	EndIf
+
+ 	if (GV_isTGFinal.GetValue()==0)
+		debugTrace(" Cure TG Curse event" )	  
+
+	    GV_isTGFinal.SetValue(0)
+		fctPolymorph.TGEffectOFF(kActor)
+	Else
+		debugTrace(" Cure TG Curse event - Aborted. TG is locked." )	  
+	Endif
+ 	
+endEvent
+
 Event OnCastHRTCurseEvent(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
  	Bool isHRT = False
@@ -905,11 +937,7 @@ Event OnCastHRTCurseEvent(String _eventName, String _args, Float _argc = 1.0, Fo
 
 	; PolymorphBimbo.Cast(PlayerActor,PlayerActor)
 	if (isHRT)
-		if (_args == "Dremora")
-			_SLH_QST_Bimbo.SetStage(11)
-		Elseif (_args == "Bimbo")
-			_SLH_QST_Bimbo.SetStage(10)
-		endif
+		_SLH_QST_Bimbo.SetStage(8)
 
 	    Game.ShowRaceMenu()
 	Endif
@@ -935,44 +963,6 @@ Event OnCureHRTCurseEvent(String _eventName, String _args, Float _argc = 1.0, Fo
 
 endEvent
 
-Event OnCastTGCurseEvent(String _eventName, String _args, Float _argc = 1.0, Form _sender)
- 	Actor kActor = _sender as Actor
- 	Bool isTG = False
-  	
- 	if (kActor == None)
- 		kActor = Game.GetPlayer()
- 	EndIf
-	debugTrace(" Cast TG Curse event" )	  
-	isTG = fctPolymorph.TGEffectON(kActor)
-
-	if (isTG)
-		; PolymorphBimbo.Cast(PlayerActor,PlayerActor)
-		if (_args == "Dremora")
-			_SLH_QST_Bimbo.SetStage(11)
-		Elseif (_args == "Bimbo")
-			_SLH_QST_Bimbo.SetStage(10)
-		endif
-	endif
-
-endEvent
-
-Event OnCureTGCurseEvent(String _eventName, String _args, Float _argc = 1.0, Form _sender)
- 	Actor kActor = _sender as Actor
-
- 	if (kActor == None)
- 		kActor = Game.GetPlayer()
- 	EndIf
-
- 	if (GV_isTGFinal.GetValue()==0)
-		debugTrace(" Cure TG Curse event" )	  
-
-	    GV_isTGFinal.SetValue(0)
-		fctPolymorph.TGEffectOFF(kActor)
-	Else
-		debugTrace(" Cure TG Curse event - Aborted. TG is locked." )	  
-	Endif
- 	
-endEvent
 
 Event OnBimboThoughts(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
