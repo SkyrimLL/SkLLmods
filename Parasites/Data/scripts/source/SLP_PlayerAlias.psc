@@ -119,6 +119,7 @@ Function _maintenance()
 	RegisterForModEvent("SLPTriggerEstrusChaurusBirth",   "OnSLPTriggerEstrusChaurusBirth")
 
 	RegisterForModEvent("ArachnophobiaPlayerCaptured",   "OnArachnophobiaPlayerCaptured")
+	RegisterForModEvent("ECBirthStarted",   "OnECBirthCompleted")
 
 	RegisterForModEvent("SLPRefreshParasites",   "OnSLPRefreshParasites")
 	RegisterForModEvent("SLPClearParasites",   "OnSLPClearParasites")
@@ -480,6 +481,75 @@ Event OnSexLabOrgasm(String _eventName, String _args, Float _argc, Form _sender)
 	; Debug.Trace("[SLP] Orgasm - end")
 EndEvent
 
+Event OnSexLabOrgasmSeparate(Form ActorRef, Int Thread)
+
+    string _args = Thread as string
+    actor kActor = ActorRef as actor
+    ObjectReference PlayerREF= PlayerAlias.GetReference()
+    Actor PlayerActor= PlayerAlias.GetReference() as Actor
+    sslBaseAnimation animation = SexLab.HookAnimation(_args)
+ 
+    if !Self || !SexLab 
+        Debug.Trace("SexLab Parasites: Critical error on SexLab Orgasm")
+        Return
+    EndIf
+
+    Actor[] actors  = SexLab.HookActors(_args)
+    Actor   victim  = SexLab.HookVictim(_args)
+    Actor[] victims = new Actor[1]
+    victims[0] = victim
+
+    ; Debug.Notification("[SLP] Orgasm")
+    ; Debug.Trace("[SLP] Orgasm")
+    ; 
+    if (_hasPlayer(actors) && kActor == PlayerActor)
+        if animation.HasTag("Spider")  
+     
+            if (fctParasites.isInfectedByString( PlayerActor,  "SpiderEgg" )) && (Utility.RandomInt(2,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceSpiderEgg" ) / 4))
+                Debug.MessageBox("As you lay on the floor, still panting, you realize the spider extracted the fertilized eggs out of your exhausted body.")
+                ; PlayerActor.SendModEvent("SLPCureSpiderEgg","All")
+                fctParasites.cureSpiderEgg( PlayerActor, "All"  )
+                PlayerActor.PlaceAtMe(EggSac)
+            endIf
+     
+        EndIf
+
+        If (fctParasites.isInfectedByString( PlayerActor,  "ChaurusWorm" )) && (Utility.RandomInt(2,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceChaurusWorm" ) / 5))
+                Debug.MessageBox("The power of your orgasm is enough to expel the worm from your bowels, making you nearly black out from the added stimulation.")
+                ; PlayerActor.SendModEvent("SLPCureChaurusWorm")
+                fctParasites.cureChaurusWorm( PlayerActor  )
+        EndIf
+
+        If (fctParasites.isInfectedByString( PlayerActor,  "ChaurusWormVag" )) && (Utility.RandomInt(2,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceChaurusWormVag" ) / 5))
+                Debug.MessageBox("The power of your orgasm is enough to expel the worm, making you nearly black out from the added stimulation.")
+                ; PlayerActor.SendModEvent("SLPCureChaurusWormVag")
+                fctParasites.cureChaurusWormVag( PlayerActor  ) 
+        EndIf
+    endif
+
+	if (kActor) && ( kActor != PlayerActor) 
+		if animation.HasTag("Spider")  
+			if (fctParasites.isInfectedByString( kActor,  "SpiderEgg" )) && (Utility.RandomInt(2,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceSpiderEgg" ) / 4))
+				; kActor.SendModEvent("SLPCureSpiderEgg","All")
+				fctParasites.cureSpiderEgg( kActor, "All"  )
+				kActor.PlaceAtMe(EggSac)
+			endIf
+		endif
+
+		If (fctParasites.isInfectedByString( kActor,  "ChaurusWorm" )) && (Utility.RandomInt(1,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceChaurusWorm" ) / 5))
+				; kActor.SendModEvent("SLPCureChaurusWorm")
+				fctParasites.cureChaurusWorm( kActor  ) 
+		EndIf
+
+		If (fctParasites.isInfectedByString( kActor,  "ChaurusWormVag" )) && (Utility.RandomInt(1,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceChaurusWormVag" ) / 5))
+				; kActor.SendModEvent("SLPCureChaurusWormVag")
+				fctParasites.cureChaurusWormVag( kActor  ) 
+		EndIf
+
+	endIf
+    ; Debug.Trace("[SLP] Orgasm - end")
+EndEvent
+
 Event OnArachnophobiaPlayerCaptured(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
  	Actor PlayerActor = Game.GetPlayer()
@@ -499,7 +569,18 @@ Event OnArachnophobiaPlayerCaptured(String _eventName, String _args, Float _argc
 	EndIf
 EndEvent
 
+Event OnECBirthCompleted(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+ 	Actor PlayerActor = Game.GetPlayer()
 
+
+	If ( (fctParasites.isInfectedByString( kActor,  "ChaurusWorm" )) || (fctParasites.isInfectedByString( kActor,  "ChaurusWormVag" )) )
+		Debug.MessageBox("The excruciating contractions expelling the eggs out of your body push out your chaurus worms as well.")
+		fctParasites.cureChaurusWorm( kActor  ) 
+		fctParasites.cureChaurusWormVag( kActor  ) 
+	Endif
+
+EndEvent
 ;------------------------------------------------------------------------------
 Event OnSLPInfectSpiderEgg(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor

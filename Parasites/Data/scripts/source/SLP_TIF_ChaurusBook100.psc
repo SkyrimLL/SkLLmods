@@ -1,21 +1,12 @@
 ;BEGIN FRAGMENT CODE - Do not edit anything between this and the end comment
 ;NEXT FRAGMENT INDEX 1
-Scriptname SLP_TIF_LastelleTasks70 Extends TopicInfo Hidden
+Scriptname SLP_TIF_ChaurusBook100 Extends TopicInfo Hidden
 
 ;BEGIN FRAGMENT Fragment_0
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
-Actor kChaurus = CaveChaurusRef as Actor
-Actor kPlayer = Game.GetPlayer()
-
-self.GetOwningQuest().setstage(70)
-
-Debug.Messagebox("Lastelle comes closer and kisses you deeply, forcing a mouthful of milky fluids down your throat and inserting something slimy down your lower back.")
-
-fctParasites.infectChaurusWorm( kPlayer )
-
-fctParasites.ParasiteSex(kPlayer,kChaurus )
+self.GetOwningQuest().SetStage(100)
 ;END CODE
 EndFunction
 ;END FRAGMENT

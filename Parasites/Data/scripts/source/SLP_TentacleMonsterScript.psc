@@ -1,5 +1,7 @@
 Scriptname SLP_TentacleMonsterScript extends zadequipscript  
 
+SLP_fcts_parasites Property fctParasites  Auto
+
 Function OnEquippedPre(actor akActor, bool silent=false)
 	if !silent
 		if akActor == libs.PlayerRef
@@ -38,4 +40,7 @@ EndFunction
 
 Function OnEquippedPost(actor akActor)
 	libs.Log("RestraintScript OnEquippedPost BodyHarness")
+
+	fctParasites.applyTentacleMonster(akActor )
+
 EndFunction

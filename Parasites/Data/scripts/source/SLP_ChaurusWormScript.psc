@@ -2,6 +2,7 @@ Scriptname SLP_ChaurusWormScript extends zadPlugScript
 
  
 Message Property squeezeMsg Auto
+SLP_fcts_parasites Property fctParasites  Auto
 
 string strFailEquip =  "Try as you might, the belt you are wearing prevents you from inserting the slimy worm inside you."
 
@@ -51,6 +52,9 @@ Function OnEquippedPost(actor akActor)
 	if analSlot && vagSlot && analSlot == vagSlot
 		legacyPlugs = true
 	EndIf
+
+	fctParasites.applyChaurusWorm(akActor )
+
 	; if ((!akActor.WornHasKeyword(zad_DeviousBelt))  || (akActor.WornHasKeyword(zad_DeviousBelt) && akActor.WornHasKeyword(libs.zad_PermitAnal) && !legacyPlugs && deviceRendered.HasKeyword(libs.zad_DeviousPlugAnal))) && akActor.WornHasKeyword(zad_DeviousDevice) && !akActor.WornHasKeyword(libs.zad_EffectPossessed) && akActor == libs.PlayerRef && akActor.GetActorBase().GetSex() != 0
 	; 	libs.Log("Belt not worn: Removing plugs.")
 	; 	RemoveDevice(akActor)

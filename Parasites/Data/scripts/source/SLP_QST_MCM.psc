@@ -3,6 +3,8 @@ Scriptname SLP_QST_MCM extends SKI_ConfigBase
 SLP_fcts_parasites Property fctParasites  Auto
 Ingredient  Property IngredientSpiderEgg Auto
 
+GlobalVariable      Property _SLP_GV_numChaurusEggsLastelle                   Auto
+
 ; PRIVATE VARIABLES -------------------------------------------------------------------------------
 
 ; --- Version 1 ---
@@ -213,7 +215,24 @@ event OnPageReset(string a_page)
 	ElseIf (a_page == "Quests")
 		SetCursorFillMode(TOP_TO_BOTTOM)
 
-		AddHeaderOption(" Placeholder - No option yet")
+		AddHeaderOption(" Kyne Blessing ")
+
+		AddTextOption("     Total infections: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iInfections") as Int, "", OPTION_FLAG_DISABLED)
+		AddTextOption("     Spider Egg Infections: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iSpiderEggInfections") as Int, "", OPTION_FLAG_DISABLED)
+		AddTextOption("     Anal Chaurus Worm Infections: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iChaurusWormInfections") as Int, "", OPTION_FLAG_DISABLED)
+		AddTextOption("     Vaginal Chaurus Worm Infections: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iChaurusWormVagInfections") as Int, "", OPTION_FLAG_DISABLED)
+		AddTextOption("     Hip Hugger: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iFaceHuggerInfections") as Int, "", OPTION_FLAG_DISABLED)
+		AddTextOption("     Face Hugger: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iFaceHuggerInfections") as Int, "", OPTION_FLAG_DISABLED)
+		AddTextOption("     Barnacles: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iBarnaclesInfections") as Int, "", OPTION_FLAG_DISABLED)
+		AddTextOption("     Living Armor Infections: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iLivingArmorInfections") as Int, "", OPTION_FLAG_DISABLED)
+		AddTextOption("     Tentacle Monster Infections: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iTentacleMonsterInfections") as Int, "", OPTION_FLAG_DISABLED)
+		AddTextOption("     Estrus Tentacles Attacks: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iEstrusTentaclesInfections") as Int, "", OPTION_FLAG_DISABLED)
+		AddTextOption("     Estrus Eggs Infections: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iEstrusChaurusEggInfections") as Int, "", OPTION_FLAG_DISABLED)
+		AddTextOption("     Estrus Slime Infections: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iEstrusSlimeInfections") as Int, "", OPTION_FLAG_DISABLED)
+
+		SetCursorPosition(1)
+		AddHeaderOption(" Brood Maiden ")
+		AddTextOption("     Lastelle Eggs: " + _SLP_GV_numChaurusEggsLastelle.GetValue() as Int, "", OPTION_FLAG_DISABLED)
 
 
 	endIf

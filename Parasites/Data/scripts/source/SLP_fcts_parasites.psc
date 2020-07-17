@@ -531,33 +531,42 @@ Bool Function isInfectedByString( Actor akActor,  String sParasiteString  )
 EndFunction
 
 ;------------------------------------------------------------------------------
-Bool Function infectSpiderEgg( Actor kActor   )
+Bool Function infectSpiderEgg( Actor kActor )
  	Actor PlayerActor = Game.GetPlayer()
-  	Int iNumSpiderEggs
-  
+
   	if (kActor == None)
   		kActor = PlayerActor
   	endIf
  
  	If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceSpiderEgg" )==0.0)
-		Debug.Trace("		Parasite disabled - Aborting")
+		Debug.Trace("[SLP]	Parasite disabled - Aborting")
 		Return False
 	Endif
 
 	If (isInfectedByString( kActor,  "SpiderEgg" ))
-		Debug.Trace("		Already infected - Aborting")
+		Debug.Trace("[SLP]	Already infected - Aborting")
 		Return False
 	Endif
 
 	If (ActorHasKeywordByString( kActor, "PlugVaginal"  ))
-		Debug.Trace("		Already wearing a vaginal plug - Aborting")
+		Debug.Trace("[SLP]	Already wearing a vaginal plug - Aborting")
 		Return False
 	Endif
 
 	If (!isFemale( kActor))
-		Debug.Trace("		Actor is not female - Aborting")
+		Debug.Trace("[SLP]	Actor is not female - Aborting")
 		Return False
 	Endif
+
+	equipParasiteNPCByString (kActor, "SpiderEgg")
+
+	Return true ; Return applySpiderEgg( kActor )
+
+EndFunction
+
+Bool Function applySpiderEgg( Actor kActor )
+ 	Actor PlayerActor = Game.GetPlayer()
+  	Int iNumSpiderEggs
 
 	iNumSpiderEggs = Utility.RandomInt(5,10)
 	If (StorageUtil.GetIntValue(kActor, "_SLP_iSpiderEggCount")!=0)
@@ -570,8 +579,6 @@ Bool Function infectSpiderEgg( Actor kActor   )
 	if (iNumSpiderEggs>=8)
 		StomachRot.RemoteCast(kActor as ObjectReference, kActor,kActor as ObjectReference)
 	endIf
-
-	equipParasiteNPCByString (kActor, "SpiderEgg")
 
 	ApplyBodyChange( kActor, "SpiderEgg", "Belly", 1.0 + (4.0 * (iNumSpiderEggs as Float) / StorageUtil.GetFloatValue(PlayerActor, "_SLP_bellyMaxSpiderEgg" )), StorageUtil.GetFloatValue(PlayerActor, "_SLP_bellyMaxSpiderEgg" ))
 
@@ -639,34 +646,42 @@ EndFunction
 
 
 ;------------------------------------------------------------------------------
-Bool Function infectSpiderPenis( Actor kActor   )
+Bool Function infectSpiderPenis( Actor kActor  )
  	Actor PlayerActor = Game.GetPlayer()
-  	Int iNumSpiderEggs
- 
+
   	if (kActor == None)
   		kActor = PlayerActor
   	endIf
  
 	If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceSpiderPenis" )==0.0)
-		Debug.Trace("		Parasite disabled - Aborting")
+		Debug.Trace("[SLP]	Parasite disabled - Aborting")
 		Return False
 	Endif
 
 	If (isInfectedByString( kActor,  "SpiderPenis" ))
-		Debug.Trace("		Already infected - Aborting")
+		Debug.Trace("[SLP]	Already infected - Aborting")
 		Return False
 	Endif
 
 	If (ActorHasKeywordByString( kActor, "PlugVaginal"  ))
-		Debug.Trace("		Already wearing a vaginal plug - Aborting")
+		Debug.Trace("[SLP]	Already wearing a vaginal plug - Aborting")
 		Return False
 	Endif
 
 	If (!isFemale( kActor))
-		Debug.Trace("		Actor is not female - Aborting")
+		Debug.Trace("[SLP]	Actor is not female - Aborting")
 		Return False
 	Endif
-	
+
+	equipParasiteNPCByString (kActor, "SpiderPenis")
+
+	Return true ; Return applySpiderPenis( kActor  )
+EndFunction
+
+Bool Function applySpiderPenis( Actor kActor  )
+ 	Actor PlayerActor = Game.GetPlayer()
+  	Int iNumSpiderEggs
+
 	iNumSpiderEggs = Utility.RandomInt(5,10)
 
 	If (kActor == PlayerActor)
@@ -675,8 +690,6 @@ Bool Function infectSpiderPenis( Actor kActor   )
 	if (iNumSpiderEggs>=4)
 		StomachRot.RemoteCast(kActor as ObjectReference, kActor,kActor as ObjectReference)
 	endIf
-
-	equipParasiteNPCByString (kActor, "SpiderPenis")
 
 	ApplyBodyChange( kActor, "SpiderEgg", "Belly", 1.0 + (4.0 * (iNumSpiderEggs as Float) / StorageUtil.GetFloatValue(PlayerActor, "_SLP_bellyMaxSpiderEgg" )), StorageUtil.GetFloatValue(PlayerActor, "_SLP_bellyMaxSpiderEgg" ) )
 
@@ -731,7 +744,7 @@ EndFunction
 
 
 ;------------------------------------------------------------------------------
-Bool Function infectChaurusWorm( Actor kActor   )
+Bool Function infectChaurusWorm( Actor kActor  )
  	Actor PlayerActor = Game.GetPlayer()
  
   	if (kActor == None)
@@ -739,21 +752,28 @@ Bool Function infectChaurusWorm( Actor kActor   )
   	endIf
  
 	If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceChaurusWorm" )==0.0)
-		Debug.Trace("		Parasite disabled - Aborting")
+		Debug.Trace("[SLP]	Parasite disabled - Aborting")
 		Return False
 	Endif
 
 	If (isInfectedByString( kActor,  "ChaurusWorm" ))
-		Debug.Trace("		Already infected - Aborting")
+		Debug.Trace("[SLP]	Already infected - Aborting")
 		Return False
 	Endif
 
 	If (ActorHasKeywordByString( kActor, "PlugAnal"  ))
-		Debug.Trace("		Already wearing an anal plug - Aborting")
+		Debug.Trace("[SLP]	Already wearing an anal plug - Aborting")
 		Return False
 	Endif
 
 	equipParasiteNPCByString (kActor, "ChaurusWorm")
+
+	Return true ; Return applyChaurusWorm( kActor  )
+
+EndFunction
+
+Bool Function applyChaurusWorm( Actor kActor  )
+ 	Actor PlayerActor = Game.GetPlayer()
 
 	If (kActor == PlayerActor)
 		ChaurusWormInfectedAlias.ForceRefTo(PlayerActor)
@@ -811,7 +831,7 @@ Function cureChaurusWorm( Actor kActor, Bool bHarvestParasite = False   )
 EndFunction
 
 ;------------------------------------------------------------------------------
-Bool Function infectChaurusWormVag( Actor kActor   )
+Bool Function infectChaurusWormVag( Actor kActor  )
  	Actor PlayerActor = Game.GetPlayer()
  
   	if (kActor == None)
@@ -819,27 +839,33 @@ Bool Function infectChaurusWormVag( Actor kActor   )
   	endIf
  
 	If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceChaurusWormVag" )==0.0)
-		Debug.Trace("		Parasite disabled - Aborting")
+		Debug.Trace("[SLP]	Parasite disabled - Aborting")
 		Return False
 	Endif
 
 	If (isInfectedByString( kActor,  "ChaurusWormVag" ))
-		Debug.Trace("		Already infected - Aborting")
+		Debug.Trace("[SLP]	Already infected - Aborting")
 		Return False
 	Endif
 
 	If (ActorHasKeywordByString( kActor, "PlugVaginal"  ))
-		Debug.Trace("		Already wearing a vaginal plug - Aborting")
+		Debug.Trace("[SLP]	Already wearing a vaginal plug - Aborting")
 		Return False
 	Endif
 
 	If (!isFemale( kActor))
-		Debug.Trace("		Actor is not female - Aborting")
+		Debug.Trace("[SLP]	Actor is not female - Aborting")
 		Return False
 	Endif
 	
-
 	equipParasiteNPCByString (kActor, "ChaurusWormVag")
+
+	Return true ; Return applyChaurusWormVag( kActor  )
+
+EndFunction
+
+Bool Function applyChaurusWormVag( Actor kActor  )
+ 	Actor PlayerActor = Game.GetPlayer()
 
 	If (kActor == PlayerActor)
 		ChaurusWormInfectedAlias.ForceRefTo(PlayerActor)
@@ -897,7 +923,7 @@ Function cureChaurusWormVag( Actor kActor, Bool bHarvestParasite = False   )
 EndFunction
 
 ;------------------------------------------------------------------------------
-Bool Function infectEstrusTentacles( Actor kActor   )
+Bool Function infectEstrusTentacles( Actor kActor  )
   	Actor PlayerActor = Game.GetPlayer()
  
   	if (kActor == None)
@@ -905,12 +931,12 @@ Bool Function infectEstrusTentacles( Actor kActor   )
   	endIf
  
 	If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceEstrusTentacles" )==0.0)
-		Debug.Trace("		Parasite disabled - Aborting")
+		Debug.Trace("[SLP]	Parasite disabled - Aborting")
 		Return False
 	Endif
 
 	If (!isFemale( kActor))
-		Debug.Trace("		Actor is not female - Aborting")
+		Debug.Trace("[SLP]	Actor is not female - Aborting")
 		Return False
 	Endif
 	
@@ -944,6 +970,12 @@ Bool Function infectEstrusTentacles( Actor kActor   )
 	    ModEvent.Send(ECtrap)
 	endif
 
+	Return applyEstrusTentacles( kActor  )
+EndFunction
+
+Bool Function applyEstrusTentacles( Actor kActor  )
+  	Actor PlayerActor = Game.GetPlayer()
+ 
 	If !StorageUtil.HasIntValue(kActor, "_SLP_iEstrusTentaclesInfections")
 			StorageUtil.SetIntValue(kActor, "_SLP_iEstrusTentaclesInfections",  0)
 	EndIf
@@ -969,7 +1001,7 @@ Bool Function infectEstrusTentacles( Actor kActor   )
 EndFunction
 
 ;------------------------------------------------------------------------------
-Bool Function infectTentacleMonster( Actor kActor   )
+Bool Function infectTentacleMonster( Actor kActor  )
  	Actor PlayerActor = Game.GetPlayer()
  
   	if (kActor == None)
@@ -977,27 +1009,33 @@ Bool Function infectTentacleMonster( Actor kActor   )
   	endIf
  
 	If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceTentacleMonster" )==0.0)
-		Debug.Trace("		Parasite disabled - Aborting")
+		Debug.Trace("[SLP]	Parasite disabled - Aborting")
 		Return False
 	Endif
 
 	If ((isInfectedByString( kActor,  "TentacleMonster" )) || (isInfectedByString( kActor,  "FaceHugger" )) )
-		Debug.Trace("		Already infected - Aborting")
+		Debug.Trace("[SLP]	Already infected - Aborting")
 		Return False
 	Endif
 
 	If (ActorHasKeywordByString( kActor, "Harness"  ))
-		Debug.Trace("		Already wearing a harness- Aborting")
+		Debug.Trace("[SLP]	Already wearing a harness- Aborting")
 		Return False
 	Endif
 
 	If (!isFemale( kActor))
-		Debug.Trace("		Actor is not female - Aborting")
+		Debug.Trace("[SLP]	Actor is not female - Aborting")
 		Return False
 	Endif
 	
-
 	equipParasiteNPCByString (kActor, "TentacleMonster")
+
+	Return true ; Return applyTentacleMonster( kActor  )
+
+EndFunction
+
+Bool Function applyTentacleMonster( Actor kActor  )
+ 	Actor PlayerActor = Game.GetPlayer()
 
 	If (kActor == PlayerActor)
 		TentacleMonsterInfectedAlias.ForceRefTo(PlayerActor)
@@ -1053,7 +1091,7 @@ Function cureTentacleMonster( Actor kActor, Bool bHarvestParasite = False   )
 EndFunction
 
 ;------------------------------------------------------------------------------
-Bool Function infectEstrusSlime( Actor kActor   )
+Bool Function infectEstrusSlime( Actor kActor  )
   	Actor PlayerActor = Game.GetPlayer()
  
   	if (kActor == None)
@@ -1061,12 +1099,12 @@ Bool Function infectEstrusSlime( Actor kActor   )
   	endIf
  
 	If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceEstrusSlime" )==0.0)
-		Debug.Trace("		Parasite disabled - Aborting")
+		Debug.Trace("[SLP]	Parasite disabled - Aborting")
 		Return False
 	Endif
 
 	If (!isFemale( kActor))
-		Debug.Trace("		Actor is not female - Aborting")
+		Debug.Trace("[SLP]	Actor is not female - Aborting")
 		Return False
 	Endif
 	
@@ -1099,6 +1137,12 @@ Bool Function infectEstrusSlime( Actor kActor   )
 	    ModEvent.Send(ECtrap)
 	endif
 
+	Return applyEstrusSlime( kActor  )
+EndFunction
+
+Bool Function applyEstrusSlime( Actor kActor  )
+  	Actor PlayerActor = Game.GetPlayer()
+ 
 	If !StorageUtil.HasIntValue(kActor, "_SLP_iEstrusSlimeInfections")
 			StorageUtil.SetIntValue(kActor, "_SLP_iEstrusSlimeInfections",  0)
 	EndIf
@@ -1124,7 +1168,7 @@ Bool Function infectEstrusSlime( Actor kActor   )
 EndFunction
 
 ;------------------------------------------------------------------------------
-Bool Function infectLivingArmor( Actor kActor   )
+Bool Function infectLivingArmor( Actor kActor  )
  	Actor PlayerActor = Game.GetPlayer()
  
   	if (kActor == None)
@@ -1132,28 +1176,34 @@ Bool Function infectLivingArmor( Actor kActor   )
   	endIf
  
 	If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceLivingArmor" )==0.0)
-		Debug.Trace("		Parasite disabled - Aborting")
+		Debug.Trace("[SLP]	Parasite disabled - Aborting")
 		Return False
 	Endif
 
 	If ((isInfectedByString( kActor,  "LivingArmor" )) || (isInfectedByString( kActor,  "FaceHugger" )) )
-		Debug.Trace("		Already infected - Aborting")
+		Debug.Trace("[SLP]	Already infected - Aborting")
 		Return False
 	Endif
 
 	If (ActorHasKeywordByString( kActor, "Harness"  ))
-		Debug.Trace("		Already wearing a corset - Aborting")
+		Debug.Trace("[SLP]	Already wearing a corset - Aborting")
 		Return False
 	Endif
 
 	If (!isFemale( kActor))
-		Debug.Trace("		Actor is not female - Aborting")
+		Debug.Trace("[SLP]	Actor is not female - Aborting")
 		Return False
 	Endif
 	
 
 	equipParasiteNPCByString (kActor, "LivingArmor")
 
+	Return true ; Return applyLivingArmor( kActor  )
+EndFunction
+
+Bool Function applyLivingArmor( Actor kActor  )
+ 	Actor PlayerActor = Game.GetPlayer()
+ 
 	If (kActor == PlayerActor)
 		LivingArmorInfectedAlias.ForceRefTo(PlayerActor)
 	endIf
@@ -1207,7 +1257,7 @@ Function cureLivingArmor( Actor kActor, Bool bHarvestParasite = False   )
 EndFunction
 
 ;------------------------------------------------------------------------------
-Bool Function infectFaceHugger( Actor kActor   )
+Bool Function infectFaceHugger( Actor kActor  )
  	Actor PlayerActor = Game.GetPlayer()
 
   	if (kActor == None)
@@ -1215,26 +1265,32 @@ Bool Function infectFaceHugger( Actor kActor   )
   	endIf
  
 	If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceFaceHugger" )==0.0)
-		Debug.Trace("		Parasite disabled - Aborting")
+		Debug.Trace("[SLP]	Parasite disabled - Aborting")
 		Return False
 	Endif
 
 	If (( isInfectedByString( kActor,  "FaceHugger" )) || (isInfectedByString( kActor,  "LivingArmor" )) || (isInfectedByString( kActor,  "TentacleMonster" )) )
-		Debug.Trace("		Already infected - Aborting")
+		Debug.Trace("[SLP]	Already infected - Aborting")
 		Return False
 	Endif
 
 	If (ActorHasKeywordByString( kActor, "Belt"  ))
-		Debug.Trace("		Already wearing a belt - Aborting")
+		Debug.Trace("[SLP]	Already wearing a belt - Aborting")
 		Return False
 	Endif
 
 	If (!isFemale( kActor))
-		Debug.Trace("		Actor is not female - Aborting")
+		Debug.Trace("[SLP]	Actor is not female - Aborting")
 		Return False
 	Endif
 
 	equipParasiteNPCByString (kActor, "FaceHugger")
+
+	Return true ; Return applyFaceHugger( kActor  )
+EndFunction
+
+Bool Function applyFaceHugger( Actor kActor  )
+ 	Actor PlayerActor = Game.GetPlayer()
 
 	If (kActor == PlayerActor)
 		FaceHuggerInfectedAlias.ForceRefTo(PlayerActor)
@@ -1289,7 +1345,8 @@ Function cureFaceHugger( Actor kActor, Bool bHarvestParasite = False   )
 	EndIf
 EndFunction
 
-Bool Function infectFaceHuggerGag( Actor kActor   )
+;------------------------------------------------------------------------------
+Bool Function infectFaceHuggerGag( Actor kActor  )
  	Actor PlayerActor = Game.GetPlayer()
 
   	if (kActor == None)
@@ -1297,21 +1354,27 @@ Bool Function infectFaceHuggerGag( Actor kActor   )
   	endIf
  
 	If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceFaceHugger" )==0.0)
-		Debug.Trace("		Parasite disabled - Aborting")
+		Debug.Trace("[SLP]	Parasite disabled - Aborting")
 		Return False
 	Endif
 
 	If (isInfectedByString( kActor,  "FaceHuggerGag" ))
-		Debug.Trace("		Already infected - Aborting")
+		Debug.Trace("[SLP]	Already infected - Aborting")
 		Return False
 	Endif
 
 	If (ActorHasKeywordByString( kActor, "Gag"  ))
-		Debug.Trace("		Already wearing a gag - Aborting")
+		Debug.Trace("[SLP]	Already wearing a gag - Aborting")
 		Return False
 	Endif
 
 	equipParasiteNPCByString (kActor, "FaceHuggerGag")
+
+	Return  applyFaceHuggerGag( kActor )
+EndFunction
+
+Bool Function applyFaceHuggerGag( Actor kActor  )
+ 	Actor PlayerActor = Game.GetPlayer()
 
 	If (kActor == PlayerActor)
 		FaceHuggerInfectedAlias.ForceRefTo(PlayerActor)
@@ -1368,7 +1431,7 @@ Function cureFaceHuggerGag( Actor kActor, Bool bHarvestParasite = False   )
 EndFunction
 
 ;------------------------------------------------------------------------------
-Bool Function infectBarnacles( Actor kActor   )
+Bool Function infectBarnacles( Actor kActor  )
  	Actor PlayerActor = Game.GetPlayer()
 
   	if (kActor == None)
@@ -1376,28 +1439,34 @@ Bool Function infectBarnacles( Actor kActor   )
   	endIf
 
 	If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceBarnacles" )==0.0)
-		Debug.Trace("		Parasite disabled - Aborting")
+		Debug.Trace("[SLP]	Parasite disabled - Aborting")
 		Return False
 	Endif
 
 	If (isInfectedByString( kActor,  "Barnacles" ))
-		Debug.Trace("		Already infected - Aborting")
+		Debug.Trace("[SLP]	Already infected - Aborting")
 		Return False
 	Endif
 
 	If ((ActorHasKeywordByString( kActor, "Harness"  )) || (ActorHasKeywordByString( kActor, "Corset"  )) )
-		Debug.Trace("		Already wearing a corset - Aborting")
+		Debug.Trace("[SLP]	Already wearing a corset - Aborting")
 		Return False
 	Endif
 
 
 	If (!isFemale( kActor))
-		Debug.Trace("		Actor is not female - Aborting")
+		Debug.Trace("[SLP]	Actor is not female - Aborting")
 		Return False
 	Endif
 	
 
 	equipParasiteNPCByString (kActor, "Barnacles")
+
+	Return true ; Return applyBarnacles( kActor  )
+EndFunction
+
+Bool Function applyBarnacles( Actor kActor  )
+ 	Actor PlayerActor = Game.GetPlayer()
 
 	If (kActor == PlayerActor)
 		BarnaclesInfectedAlias.ForceRefTo(PlayerActor)
@@ -1453,7 +1522,7 @@ Function cureBarnacles( Actor kActor, Bool bHarvestParasite = False   )
 EndFunction
 
 ;------------------------------------------------------------------------------
-Bool Function infectEstrusChaurusEgg( Actor kActor   )
+Bool Function infectEstrusChaurusEgg( Actor kActor  )
   	Actor PlayerActor = Game.GetPlayer()
 
   	if (kActor == None)
@@ -1461,7 +1530,7 @@ Bool Function infectEstrusChaurusEgg( Actor kActor   )
   	endIf
 
 	If (!isFemale( kActor))
-		Debug.Trace("		Actor is not female - Aborting")
+		Debug.Trace("[SLP]	Actor is not female - Aborting")
 		Return False
 	Endif
 	
@@ -1483,6 +1552,13 @@ Bool Function infectEstrusChaurusEgg( Actor kActor   )
 	    ModEvent.PushBool(ECTrap, true)         ; Bool Use EC (basic) crowd control on hostiles 
 	    ModEvent.Send(ECtrap)
 	endif
+
+	Return applyEstrusChaurusEgg( kActor  )
+
+EndFunction
+
+Bool Function applyEstrusChaurusEgg( Actor kActor  )
+  	Actor PlayerActor = Game.GetPlayer()
 
 	If !StorageUtil.HasIntValue(kActor, "_SLP_iEstrusChaurusEggInfections")
 			StorageUtil.SetIntValue(kActor, "_SLP_iEstrusChaurusEggInfections",  0)
@@ -1727,6 +1803,10 @@ EndFunction
 Bool function isFemale(actor kActor)
 	Bool bIsFemale
 	ActorBase kActorBase = kActor.GetActorBase()
+
+	Debug.Trace("[SLP] Checking actor gender")
+	Debug.Trace("[SLP]     kActor: " + kActor)
+	Debug.Trace("[SLP]     kActorBase: " + kActorBase)
 
 	if (kActorBase.GetSex() == 1) ; female
 		bIsFemale = True

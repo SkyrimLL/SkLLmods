@@ -1,5 +1,6 @@
 Scriptname SLP_LivingArmorScript extends zadPlugScript  
 
+SLP_fcts_parasites Property fctParasites  Auto
 
 Function OnEquippedPre(actor akActor, bool silent=false)
 	if !silent
@@ -39,4 +40,7 @@ EndFunction
 
 Function OnEquippedPost(actor akActor)
 	libs.Log("RestraintScript OnEquippedPost BodyHarness")
+
+	fctParasites.applyLivingArmor(akActor )
+
 EndFunction

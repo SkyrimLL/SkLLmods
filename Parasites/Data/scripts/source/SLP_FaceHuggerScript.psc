@@ -3,6 +3,7 @@ Scriptname SLP_FaceHuggerScript extends zadequipscript
 
 ; Frameworks
 SexLabFramework property SexLab auto
+SLP_fcts_parasites Property fctParasites  Auto
 
 ; Keywords
 Keyword Property zad_DeviousPlug Auto 
@@ -172,6 +173,9 @@ Function OnEquippedPost(actor akActor)
         libs.Log("original exposure rate was " + libs.GetOriginalRate(akActor) + ". Setting to " + modRate + ".")
         Aroused.SetActorExposureRate(akActor, modRate)
 	libs.CorsetMagic(akActor)
+
+	fctParasites.applyFaceHugger(akActor )
+
 EndFunction
  
 int Function OnContainerChangedFilter(ObjectReference akNewContainer, ObjectReference akOldContainer)
