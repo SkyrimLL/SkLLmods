@@ -1006,7 +1006,7 @@ Event OnModHormoneRandomEvent(String _eventName, String _args, Float _argc = 1.0
  	if (kActor == None)
  		kActor = Game.GetPlayer()
  	EndIf
-	debugTrace(" Receiving 'mod hormone random level' event. Actor: " + kActor )
+	debugTrace(" Receiving 'mod hormone random level' event. Tag: " + _args )
 
 	fctHormones.modHormoneLevel(kActor, "Pigmentation", Utility.RandomFloat(-1.0,2.0) * _argc )
 	fctHormones.modHormoneLevel(kActor, "Growth", Utility.RandomFloat(5.0,10.0) * _argc )
@@ -1031,6 +1031,7 @@ Event OnModHormoneRandomEvent(String _eventName, String _args, Float _argc = 1.0
 	endif
 
 	if (_args == "Succubus") || (_args == "Bimbo")
+		fctHormones.modHormoneLevel(kActor, "Metabolism", Utility.RandomFloat(20.0,40.0) * _argc )
 		fctHormones.modHormoneLevel(kActor, "Bimbo", Utility.RandomFloat(20.0,40.0) * _argc )
 	Endif
 
