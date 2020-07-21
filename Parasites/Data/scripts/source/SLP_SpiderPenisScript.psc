@@ -123,7 +123,7 @@ EndFunction
 		
 
 Function NoKeyFailMessage(Actor akActor)
-	libs.NotifyPlayer("The eggs are too deep to be removed that easily.", true)
+	libs.NotifyPlayer("The spider penis is too painful to be removed by yourself.", true)
 
 EndFunction
 

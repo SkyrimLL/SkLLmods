@@ -975,6 +975,29 @@ Event OnSLPSexCure(String _eventName, String _args, Float _argc = 0.0, Form _sen
  	Bool bIsPlayerHealer = _argc as Bool
  	Bool bHarvestParasite = False
 
+ 	If (kActor == None)
+ 		kActor = kPlayer
+ 	Endif
+
+ 	if (kActor == kPlayer) && (sParasite == "")
+	 	If (fctParasites.isInfectedByString( kPlayer,  "SpiderEgg" ))  
+			sParasite = "SpiderEgg"
+
+		ElseIf (fctParasites.isInfectedByString( kPlayer,  "ChaurusWorm" ))
+			sParasite = "ChaurusWorm"
+
+		ElseIf (fctParasites.isInfectedByString( kPlayer,  "ChaurusWormVag" ))
+			sParasite = "ChaurusWormVag"
+
+		ElseIf (fctParasites.isInfectedByString( kPlayer,  "FaceHugger" ))
+			sParasite = "FaceHugger"
+
+		ElseIf (fctParasites.isInfectedByString( kPlayer,  "FaceHuggerGag" ))
+			sParasite = "FaceHuggerGag"
+
+		EndIf
+ 	endif
+
  	; if (KynesBlessingQuest.GetStageDone(22))
 	if (kPlayer.GetItemCount(GlowingMushroom) != 0) ; && (Utility.RandomInt(0,100) <= (30 + StorageUtil.GetIntValue(kPlayer, "_SLP_iInfections") * 5) ) )
 		   	bHarvestParasite = True
@@ -982,45 +1005,96 @@ Event OnSLPSexCure(String _eventName, String _args, Float _argc = 0.0, Form _sen
 	endIf	
 	; Endif
 
+	; Add removal of ingredients if player is self removing
+
  	If (sParasite == "SpiderEgg")
+		if (kPlayer.GetItemCount(DwarvenOil) == 0)
+			Debug.Messagebox("Your attempt at removing the eggs is pointless without Dwarven Oil")
+			return
+		endif
+
  		sTags = "Fisting"
  		kPlayer.RemoveItem(DwarvenOil,1)
+
  	ElseIf (sParasite == "ChaurusWorm")
+		if (kPlayer.GetItemCount(TrollFat) == 0)
+			Debug.Messagebox("You can't possibly remove the worm without Troll fat")
+			return
+		endif
+
  		sTags = "Anal"
  		kPlayer.RemoveItem(TrollFat,1)
+
  	ElseIf (sParasite == "ChaurusWormVag")
+		if (kPlayer.GetItemCount(TrollFat) == 0)
+			Debug.Messagebox("You can't possibly remove the worm without Troll fat")
+			return
+		endif
+
  		sTags = "Vaginal"
  		kPlayer.RemoveItem(TrollFat,1)
+
  	ElseIf (sParasite == "FaceHugger")
+		if (kPlayer.GetItemCount(FireSalts) == 0)
+			Debug.Messagebox("The Hip Hugger will never let go without Fire Salts")
+			return
+		endif
+
  		sTags = "Anal"
  		kPlayer.RemoveItem(FireSalts,1)
+
  	ElseIf (sParasite == "FaceHuggerGag")
+		if (kPlayer.GetItemCount(FireSalts) == 0)
+			Debug.Messagebox("The Face Hugger will never let go without Fire Salts")
+			return
+		endif
+
  		sTags = "Oral"
  		kPlayer.RemoveItem(FireSalts,1)
+
  	Else
 		sTags = "Sex"
   	endif
 
 	Debug.Trace("[SLP] Parasite cure scene")
 
-	If  (SexLab.ValidateActor( kPlayer ) > 0) &&  (SexLab.ValidateActor(kActor) > 0) 
-		actor[] sexActors = new actor[2]
-		If (bIsPlayerHealer)
-			sexActors[0] = kActor
-			sexActors[1] = kPlayer
-		else
+	if (kActor != kPlayer)
+		; player removing parasite from actor
+		If  (SexLab.ValidateActor( kPlayer ) > 0) &&  (SexLab.ValidateActor(kActor) > 0) 
+			actor[] sexActors = new actor[2]
+			If (bIsPlayerHealer)
+				sexActors[0] = kActor
+				sexActors[1] = kPlayer
+			else
+				sexActors[0] = kPlayer
+				sexActors[1] = kActor
+			endif
+
+			sslBaseAnimation[] anims
+			anims = new sslBaseAnimation[1]
+			anims = SexLab.GetAnimationsByTags(2, sTags,"Estrus,Dwemer")
+
+			SexLab.StartSex(sexActors, anims)
+		Else
+			Debug.Trace("[SLP] Actors not ready - skipping parasite cure sex scene")
+		EndIf
+	else
+		; player removing parasite from themselves
+		If  (SexLab.ValidateActor( kPlayer ) > 0) 
+			bIsPlayerHealer = True
+
+			actor[] sexActors = new actor[1]
 			sexActors[0] = kPlayer
-			sexActors[1] = kActor
-		endif
 
-		sslBaseAnimation[] anims
-		anims = new sslBaseAnimation[1]
-		anims = SexLab.GetAnimationsByTags(2, sTags,"Estrus,Dwemer")
+			sslBaseAnimation[] anims
+			anims = new sslBaseAnimation[1]
+			anims = SexLab.GetAnimationsByTags(1, sTags,"Estrus,Dwemer")
 
-		SexLab.StartSex(sexActors, anims)
-	Else
-		Debug.Trace("[SLP] Actors not ready - skipping parasite cure sex scene")
-	EndIf
+			SexLab.StartSex(sexActors, anims)
+		Else
+			Debug.Trace("[SLP] Player Actor not ready - skipping parasite cure sex scene")
+		EndIf
+	endif
 
 
 	If (!bIsPlayerHealer)

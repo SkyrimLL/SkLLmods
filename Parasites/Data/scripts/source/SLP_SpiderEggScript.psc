@@ -123,13 +123,21 @@ EndFunction
 		
 
 Function NoKeyFailMessage(Actor akActor)
-	libs.NotifyPlayer("The eggs are too deep to be removed that easily.", true)
+	; debug.messagebox("Arousal: "  + Aroused.GetActorArousal(libs.PlayerRef) as Int)
+	if ( Utility.RandomInt(0,120) > Aroused.GetActorArousal(libs.PlayerRef) ) 
+		libs.NotifyPlayer("You start tugging at the egg cluster...", true)
+		akActor.SendModEvent("SLPSexCure","SpiderEgg",1)
+	else
+		libs.UpdateExposure(libs.PlayerRef,2)
+		libs.NotifyPlayer("The eggs are too deep to be removed that easily...", true)
+	endif
 
 EndFunction
 
 Function DeviceMenuExt(Int msgChoice)
 	if msgChoice == 4
-		squeezeMsg.show()
+		; squeezeMsg.show()
+		libs.NotifyPlayer("The eggs stretch your hole painfully as they push deeper.", true)
 		libs.UpdateExposure(libs.PlayerRef,2)
 	EndIf
 EndFunction

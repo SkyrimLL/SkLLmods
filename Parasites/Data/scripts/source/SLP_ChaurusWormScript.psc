@@ -124,7 +124,12 @@ EndFunction
 		
 
 Function NoKeyFailMessage(Actor akActor)
-	libs.NotifyPlayer("The worm is too deep to be removed that easily.", true)
+	if ( Utility.RandomInt(0,120) > Aroused.GetActorArousal(libs.PlayerRef) ) 
+		libs.NotifyPlayer("You grab the slimy worm and start pulling...", true)
+		akActor.SendModEvent("SLPSexCure","ChaurusWorm",1)
+	else
+		libs.NotifyPlayer("The worm is too deep to be removed that easily.", true)
+	endif
 
 EndFunction
 

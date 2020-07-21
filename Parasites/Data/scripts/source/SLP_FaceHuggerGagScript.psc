@@ -40,9 +40,16 @@ string Function DeviceMenuPickLockModerate()
 	return ""
 EndFunction
 string Function DeviceMenuPickLockFail()
-	libs.PlayerRef.RemoveItem(Lockpick)
-	zad_GagPickLockFailMsg.Show()
-	return ""
+	Actor akActor = libs.PlayerRef as Actor
+
+	if ( Utility.RandomInt(0,120) > Aroused.GetActorArousal(libs.PlayerRef) ) 
+		libs.NotifyPlayer("You yank the face hugger with all your strength...", true)
+		akActor.SendModEvent("SLPSexCure","FaceHuggerGag",1)
+	else
+		libs.PlayerRef.RemoveItem(Lockpick)
+		zad_GagPickLockFailMsg.Show()
+		return ""
+	endif
 EndFunction
 
 Function DeviceMenuPickLock()

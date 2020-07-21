@@ -21,7 +21,11 @@ EndIf
    
 SLP_GV_NumChaurusEggsLastelle.SetValue(eggsCountLastelle + eggsCount)
 
-debug.notification("Eggs count: " + SLP_GV_NumChaurusEggsLastelle.GetValue() as Int )
+; debug.notification("Eggs count: " + SLP_GV_NumChaurusEggsLastelle.GetValue() as Int )
+
+if (SLP_GV_NumChaurusEggsLastelle.GetValue()>100)
+self.GetOwningQuest().SetObjectiveDisplayed(70, false)
+endif
 ;END CODE
 EndFunction
 ;END FRAGMENT
