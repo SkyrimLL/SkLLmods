@@ -378,6 +378,7 @@ EndEvent
 
 Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile, bool abPowerAttack, bool abSneakAttack, bool abBashAttack, bool abHitBlocked)
 	Actor AliciaActor= Alias_AliciaDaedric.GetReference() as Actor
+	Actor kPlayer = Game.GetPlayer()
 
 	Float GameDaysPassedValue = GameDaysPassed.Getvalue() as Float
 	Float  AliciaCutGameDaysPassedValue = AliciaCutGameDaysPassed.Getvalue() as Float
@@ -386,7 +387,17 @@ Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile,
 	Int daysSinceLastBeating
 
 	If (akAggressor == Game.GetPlayer())
-
+		Weapon wSourceWeapon = akSource as Weapon
+		Keyword kwControlRod = Keyword.GetKeyword("_Alicia_ControlRod")
+		if(wSourceWeapon.HasKeyword(kwControlRod))
+		  	Debug.Notification("[Alicia] Control rod is used on Daedric Alicia")
+			AliciaLustLevel.Setvalue(10000)
+		 
+		  	; Debug.Trace("Magic effect was started on " + akTarget)
+			; StorageUtil.SetIntValue(Game.GetPlayer(), "Puppet_SpellON", 1)
+			StorageUtil.SetIntValue(kPlayer, "Puppet_CastTarget", 1)
+			StorageUtil.SetFormValue(kPlayer, "Puppet_NewTarget", AliciaActor)
+		endif
 		; SexLab Alicia: Use this to add bonus on friendly fire
 
 		; debug.trace(self + "Dismissing follower because he is now attacking the player")
