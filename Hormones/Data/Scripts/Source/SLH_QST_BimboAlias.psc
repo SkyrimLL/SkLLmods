@@ -204,8 +204,13 @@ Event OnUpdate()
 	rollFirstPerson = Utility.RandomInt(0,100)
 
     ; Exit conditions
-    If (iDaysSinceLastCheck >= 1)
-        Debug.Trace( "[SLH] Bimbo status update - Days transformed: " + daysSinceEnslavement )
+    If (iDaysSinceLastCheck >= 1) && !(BimboActor.IsBleedingOut() || BimboActor.IsInCombat() || BimboActor.IsDead() || BimboActor.IsOnMount() || BimboActor.IsFlying() || BimboActor.IsTrespassing() || BimboActor.IsUnconscious())
+        bool IsPlayer = (kPlayer == BimboActor) ; Shuld be but just to be sure.
+		if (IsPlayer && !Game.IsMovementControlsEnabled()) || SexLab.IsActorActive(BimboActor)
+			RegisterForSingleUpdate(10)
+			Return ; Is too Busy 
+		endIf
+		Debug.Trace( "[SLH] Bimbo status update - Days transformed: " + daysSinceEnslavement )
         isMale = fctUtil.isMale(BimboActor)
         fSchlongMin = StorageUtil.GetFloatValue(BimboActor, "_SLH_fSchlongMin")
         fSchlongMax = StorageUtil.GetFloatValue(BimboActor, "_SLH_fSchlongMax")
@@ -223,7 +228,9 @@ Event OnUpdate()
 
         ;[mod] progressive tf - start
         ; if (daysSinceEnslavement<=15) ; !(_SLH_QST_Bimbo.IsStageDone(18) || _SLH_QST_Bimbo.IsStageDone(16) )
+		if !IsPlayer || Game.IsActivateControlsEnabled() ; Check if have the hands too tied for compatibility reasons
         	bimboDailyProgressiveTransformation(BimboActor, GV_isTG.GetValue() == 1)
+		endIf
         ; endif
         ;[mod] progressive tf - end
 
@@ -338,7 +345,7 @@ Event OnUpdate()
 	            	debug.messagebox("This is ridiculous! My hair has lightened overnight into a shade of tacky, shimmering, platinum blonde that, of course, couldn't be washed off, and seems to remain bright and shiny regardless of how dirty it gets. Worse, I think my vagina is becoming really sensitive, especially my clitoris, which seems to become more sensitive with each passing day. My breeches feel too rough and restrictive, and squeezing my thighs only provides temporary reprieve to this maddening sensation. I got to find a way to stop this!")
 	            elseif (daysSinceEnslavement==4)
 	            	SLH_Control.playGiggle(BimboActor)
-	            	debug.messagebox("Nonononono... Why is this happening to me?! It's not enough that I wake up every morning to find my slutty makeup perfectly re-applied without a smudge, I now find myself with gaudy, pink fingernails that seem tougher than any armor - not that I've had much use for armors lately, what with my slutty looks and all. That bastard Belethor actually asked me how much I charge to swallow. Me! The Dragonborn! Future hero of Skyrim, she who is born with the blood and soul of a Dragon! I almost attacked him on the spot if not for all the big, scary guards leering at me... Everything now looks so confusing and difficult, maybe I should find a smart, tough m..ma..companion to fight for me...")
+	            	debug.messagebox("Nonononono... Why is this happening to me?! It's not enough that I wake up every morning to find my slutty makeup perfectly re-applied without a smudge, I now find myself with gaudy, pink fingernails that seem tougher than any armor - not that I've had much use for armors lately, what with my slutty looks and all. Everything now looks so confusing and difficult, maybe I should find a smart, tough m..ma..companion to fight for me...")
 	            elseif (daysSinceEnslavement==5)
 					SLH_Control.playGiggle(BimboActor)
 	            	debug.messagebox("I wake up to find my toenails the same shade of glittery pink that just HAPPEN to perfectly match my fingers. *sigh*... what's another change on top of everything else... I still haven't been able to figure out what's happening to my body, and my clit is definitely far more sensitive than before, though I guess it's not such a bad thing, since my clit's becoming so much more pleasurable to play with; I can almost cum instantly when I pinch and squeeze the little nub - not that I've tried! It is however very distracting when the swollen nub rubs against my breeches with every step; how am I supposed to save Skyrim when I can't even keep my shaky legs in check?!")
@@ -457,11 +464,20 @@ Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile,
 		float dropchance = 1.0 + (bimboArousal / 30.0 ) * (GV_bimboClumsinessMod.GetValue() as Float) * fClumsyMod
 		; debugTrace(" bimbo beeing hit, drop chance: " + dropchance)
       	If (Utility.RandomInt(0,100) <= dropchance) &&  (GV_bimboClumsinessMod.GetValue()!=0); && (!(akAggressor as Actor).IsInFaction(pCreatureFaction)))
+			
+			if BimboActor.IsWeaponDrawn() 
+				If BimboActor.GetEquippedItemType(1) > 1 && BimboActor.GetEquippedItemType(1) != 9 && BimboActor.GetEquippedItemType(1) != 7
+					Debug.Notification("The enemy made you lose your grip!")
+					dropWeapons(BimboActor, 1) ;only the weapon
+				elseIf BimboActor.GetEquippedItemType(0) > 1 && BimboActor.GetEquippedItemType(0) != 9
+					Debug.Notification("The enemy made you lose your grip!")
+					dropWeapons(BimboActor, 0) ;only the weapon
+				endIf
+			endIf
 				;
 
-			Debug.Notification("The enemy made you lose your grip!")
 			Debug.Notification("They are so mean hitting you like that!")
-			dropWeapons(BimboActor, both = false, chanceMult = 1.0) ;only the weapon
+			; dropWeapons(BimboActor, both = false, chanceMult = 1.0) ;only the weapon
 		    ;if(BimboActor.IsWeaponDrawn())
 		    ;    BimboActor.SheatheWeapon()
 		    ;    Utility.Wait(2.0)
@@ -491,8 +507,12 @@ EndEvent
 ;move this to a mcm option
 ;===========================================================================
 Function DropOrUnequip(Actor akActor, Form akObject, bool drop = true)
-	If drop && (GV_bimboClumsinessDrop.GetValue() == 1) 
-		akActor.DropObject(akObject)
+	If drop && (GV_bimboClumsinessDrop.GetValue() == 1)
+		akActor.UnequipItem(akObject, False, True)
+		objectreference TempRef = akActor.DropObject(akObject)
+	;	if TempRef != none && TempRef.GetActorOwner() == none
+	;		TempRef.SetActorOwner(akActor.GetActorBase())
+	;	endIf
 	else
 		akActor.UnequipItem(akObject, false, true)
 	EndIf
@@ -506,7 +526,7 @@ EndFunction
 ;bool both = should drop both weapons
 ;float chanceMult = increase the chance to drop
 ;===========================================================================
-int[] function dropWeapons(Actor pl, bool both = false, float chanceMult = 1.0)
+int[] function dropWeapons(Actor pl, int Slot = -1, float chanceMult = 1.0)
 	; By default, drops only stuff on left hand, if both == true, also right hand
 	; returns an array of dropped item counts, weapon & shield at 0, spells at 1
 	; debugTrace(" dropWeapons(both = "+both+", chanceMult = "+chanceMult+")")
@@ -539,57 +559,68 @@ int[] function dropWeapons(Actor pl, bool both = false, float chanceMult = 1.0)
 	drops[1] = 0
 		
 	float chance = Utility.RandomInt(0, 99)
-	Spell spl
-	Weapon weap
-	Armor sh
 	
-	int i = 2
+	; int i = 2
 	bool drop = true
-	While i > 0
-		i -= 1
-		if i == 0
-			Utility.Wait(1.0) ; Equipping the secondary set takes a while...
-		EndIf
-		if both
-			spl = pl.getEquippedSpell(1)
-			if spl && chance < spellDropChance
-				pl.unequipSpell(spl, 1)
+	if Slot < 0 || Slot > 1
+		int i = 2
+		While i > 0 && pl.IsWeaponDrawn()
+			i -= 1
+			if i == 0
+				Utility.Wait(1.0) ; Equipping the secondary set takes a while...
+			EndIf
+			Form Equipped = pl.GetEquippedObject(i)
+			int Type = pl.GetEquippedItemType(i)
+			
+			If Type == 9 ; Magic spell
+				if chance < spellDropChance
+					if i == 1 && pl.GetEquippedItemType(0) == Type
+						pl.SheatheWeapon()
+					else
+						pl.UnequipSpell(Equipped as spell, i)
+					endIf
+					drops[1] = drops[1] + 1
+				endIf
+			ElseIf Type == 10 || (Type > 4 && Type < 7) ; Two-handed Weapon and Shield
+				if chance < spellDropChance * 2 ; Are heavy but well handed so the chance of drop it is not too high
+					DropOrUnequip(pl, Equipped, drop)
+					drops[0] = drops[0] + 1
+					drop = false
+				endIf
+			ElseIf Type > 0
+				DropOrUnequip(pl, Equipped, drop)
+				drops[0] = drops[0] + 1
+			endIf
+	
+			If drops[0] > 0
+			; Some weapons are dropped already, make sure to unequip any spells on the second iteration as well
+				spellDropChance = 100
+			EndIf
+		EndWhile
+	else
+		Form Equipped = pl.GetEquippedObject(Slot)
+		int Type = pl.GetEquippedItemType(Slot)
+		
+		If Type == 9 ; Magic spell
+			if chance < spellDropChance
+				pl.UnequipSpell(Equipped as spell, Slot)
 				drops[1] = drops[1] + 1
 			endIf
-			
-			weap = pl.GetEquippedWeapon(true)
-			if weap && pl.IsWeaponDrawn()
-				DropOrUnequip(pl, weap, drop)
+		ElseIf Type == 7 && Slot == 1 ; Bow Rigth Hand
+			if chance < spellDropChance ; Is the hand of the line so the chance of drop the Bow is low
+				DropOrUnequip(pl, Equipped, drop)
 				drops[0] = drops[0] + 1
 			endIf
-			
-			sh = pl.GetEquippedShield()
-			if sh && pl.IsWeaponDrawn()
-				DropOrUnequip(pl, sh, drop)
+		ElseIf Type == 10 || (Type > 4 && Type < 7) ; Two-handed Weapon and Shield
+			if chance < spellDropChance * 2 ; Are heavy but well handed so the chance of drop it is not too high
+				DropOrUnequip(pl, Equipped, drop)
 				drops[0] = drops[0] + 1
 			endIf
-		endIf
-		
-		spl = pl.getEquippedSpell(0)
-		if spl && chance < spellDropChance
-			pl.unequipSpell(spl, 0)
-			drops[1] = drops[1] + 1
-		endIf
-		
-		weap = pl.GetEquippedWeapon(false)
-		if weap && pl.IsWeaponDrawn()
-			both = both || weap.GetWeaponType() >= 5 ; if this is a two handed weapon, unequip both hands on the 2nd loop
-			DropOrUnequip(pl, weap, drop)
+		ElseIf Type > 0
+			DropOrUnequip(pl, Equipped, drop)
 			drops[0] = drops[0] + 1
 		endIf
-		
-		drop = false
-		If drops[0] > 0
-		; Some weapons are dropped already, make sure to unequip any spells on the second iteration as well
-			spellDropChance = 100
-		EndIf
-	EndWhile
-
+	endIf
 	return drops
 endFunction
 
@@ -749,13 +780,10 @@ function clumsyBimboHands(int actionType, Actor bimbo, Form source, int slot)
 			roll = Utility.RandomInt()
 			dropchance = dropchance * 0.33
 			if roll <= (dropchance as int)
-				drops = dropWeapons(bimbo, both = false ) ;may drop the bow too
+				drops = dropWeapons(bimbo, 0) ;may drop the bow too
 			endif
-		elseif slot == 1
-			; right hand
-			drops = dropWeapons(bimbo, both = true)
-		else
-			drops = dropWeapons(bimbo, both = false)
+		elseIf actionType < 10 ; If already Sheathed don't drop it
+			drops = dropWeapons(bimbo, slot)
 		endif
 		bimbo.CreateDetectionEvent(bimbo, 20)
 		if drops[0] > 0 ;dropped weapons
@@ -850,7 +878,7 @@ function clumsyBimboLegs(Actor bimbo)
 						Debug.Notification("You tripped! Clumsy bimbo!") ;temp messages
 					endIf
 
-					int[] drop = dropWeapons(bimbo, both = true, chanceMult = 0.1)
+					int[] drop = dropWeapons(bimbo, -1, chanceMult = 0.1)
 					if drop[0] > 0 ;if dropped anything, play a moan sound
 						SLH_Control.playRandomSound(bimbo)
 					endif
@@ -903,7 +931,7 @@ function clumsyBimboLegs(Actor bimbo)
 					;alternative to the ragdoll: trigger the bleedout animation for 2 seconds
 					;Debug.SendAnimationEvent(bimbo, "BleedOutStart")
 					;if util.config.dropWeapons
-					;	util.dropWeapons(both = true, chanceMult = 2.0)
+					;	util.dropWeapons(chanceMult = 2.0)
 					;endif
 					;Utility.Wait(2.0)
 					;Debug.SendAnimationEvent(bimbo, "BleedOutStop")
