@@ -87,7 +87,8 @@ Function _maintenance()
 	RegisterForModEvent("AnimationStart", "OnSexLabStart")
 	RegisterForModEvent("AnimationEnd",   "OnSexLabEnd")
 	RegisterForModEvent("OrgasmStart",    "OnSexLabOrgasm")
- 
+ 	RegisterForModEvent("SexLabOrgasmSeparate",    "OnSexLabOrgasmSeparate")
+
 	RegisterForModEvent("SLPSexCure",   "OnSLPSexCure")
 	RegisterForModEvent("SLPFalmerBlue",   "OnSLPFalmerBlue")
 
