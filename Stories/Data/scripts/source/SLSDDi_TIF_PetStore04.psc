@@ -6,7 +6,7 @@ Scriptname SLSDDi_TIF_PetStore04 Extends TopicInfo Hidden
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
-Game.GetPlayer().RemoveItem(Gold, 500 )
+Game.GetPlayer().RemoveItem(Gold, 500, akSpeaker)
 
 PetBelethorBought.SetValue(0)
 PetFollow.SetValue(1)

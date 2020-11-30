@@ -4,32 +4,16 @@ Scriptname SLS_TIF_RedWaveService06 Extends TopicInfo Hidden
 
 ;BEGIN FRAGMENT Fragment_0
 Function Fragment_0(ObjectReference akSpeakerRef)
+Actor akActor = Game.GetPlayer()
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
-Int randomNum = Utility.RandomInt(0,100)
 
-ActorBase PlayerBase = Game.GetPlayer().GetBaseObject() as ActorBase
-Int PlayerGender = PlayerBase.GetSex() ; 0 = Male ; 1 = Female
-
-;		Debug.MessageBox( "The Sister quietly peels off your clothes to reveal your beauty to the world." )
-;  		SexLab.ActorLib.StripActor(Game.GetPlayer(), DoAnimate= false)
-
-Game.GetPlayer().RemoveItem(Gold001, 100)
-
-	If  (SexLab.ValidateActor( SexLab.PlayerRef ) > 0) &&  (SexLab.ValidateActor(akSpeaker) > 0) 
-
-		Actor akActor = SexLab.PlayerRef
-		
-		sslThreadModel Thread = SexLab.NewThread()
-		Thread.AddActor(akSpeaker, IsVictim = true) ; // IsVictim = true
-		Thread.AddActor(akActor) ; // IsVictim = true
-
-
-
-		Thread.SetAnimations(SexLab.GetAnimationsByTags(2, "Pillory"))
-
-		Thread.StartThread()
-	Endif
+	If  (SexLab.ValidateActor(akActor) > 0) &&  (SexLab.ValidateActor(akSpeaker) > 0) 
+		Game.GetPlayer().RemoveItem(Gold001, 100)
+		SexLab.QuickStart(akSpeaker, akActor, Victim=akSpeaker, AnimationTags="Pole,Pillory,Stockade,Xcross")
+	else
+		Debug.Notification("Ask me again when both be found less occupied!")
+	endIf
 ;END CODE
 EndFunction
 ;END FRAGMENT

@@ -396,7 +396,7 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 	victims[0] = victim
 	
 	; Debug.Notification("Has player: " + _hasPlayer(actors))
-	; Debug.Notification("Arousal trigger: " + (slaUtil.GetActorExposure(akRef = PlayerActor) / 3))
+	; Debug.Notification("Arousal trigger: " + (slaUtil.GetActorExposure(PlayerActor) / 3))
 
 	; Force lactation if Player is wearing harness and not lactating yet
 	if ( PlayerActor.WornHasKeyword(SLSD_CowHarness) || PlayerActor.WornHasKeyword(SLSD_CowMilker) ) && (!StorageUtil.HasIntValue(PlayerActor, "_SLH_iLactating") || (StorageUtil.GetIntValue(PlayerActor, "_SLH_iLactating") == 0) )
@@ -422,7 +422,7 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 					StorageUtil.SetIntValue(PlayerActor, "_SLH_iMilkProduced", MilkProduced.GetValue() as Int)
 			Endif
 
-			If ( PlayerActor.WornHasKeyword(SLSD_CowHarness) && ( Utility.RandomInt(0,100) > (100 - iProlactinLevel*2 - slaUtil.GetActorExposure(akRef = PlayerActor))  ) ) || PlayerActor.WornHasKeyword(SLSD_CowMilker) 
+			If ( PlayerActor.WornHasKeyword(SLSD_CowHarness) && ( Utility.RandomInt(0,100) > (100 - iProlactinLevel*2 - slaUtil.GetActorExposure(PlayerActor))  ) ) || PlayerActor.WornHasKeyword(SLSD_CowMilker) 
 				; Hormones compatibility
 				Debug.Notification("Your breasts are swelling from a strong rush of milk.")
 
@@ -435,7 +435,7 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 
 				endIf
 
-			ElseIf ( !PlayerActor.WornHasKeyword(SLSD_CowHarness) && !PlayerActor.WornHasKeyword(SLSD_CowMilker) && ( Utility.RandomInt(0,100) > (100 - iProlactinLevel - slaUtil.GetActorExposure(akRef = PlayerActor))  ) )  || (StorageUtil.GetIntValue(PlayerActor, "_SLH_isPregnant") == 1)
+			ElseIf ( !PlayerActor.WornHasKeyword(SLSD_CowHarness) && !PlayerActor.WornHasKeyword(SLSD_CowMilker) && ( Utility.RandomInt(0,100) > (100 - iProlactinLevel - slaUtil.GetActorExposure(PlayerActor))  ) )  || (StorageUtil.GetIntValue(PlayerActor, "_SLH_isPregnant") == 1)
 				; Hormones compatibility
 				Debug.Notification("Your breasts are tingling from a small rush of milk.")
 
@@ -447,7 +447,7 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 					StorageUtil.SetIntValue(PlayerActor, "_SLH_iProlactinLevel", StorageUtil.GetIntValue(PlayerActor, "_SLH_iProlactinLevel") + 2)
 				endif
 			Else
-				Debug.Trace("[SLSDDi] You can't produce enough milk to fill the suction cup. Exposure trigger: " + slaUtil.GetActorExposure(akRef = PlayerActor))
+				Debug.Trace("[SLSDDi] You can't produce enough milk to fill the suction cup. Exposure trigger: " + slaUtil.GetActorExposure(PlayerActor))
 
 				if (StorageUtil.GetIntValue(PlayerActor, "_SLH_isPregnant") == 1)
 					StorageUtil.SetIntValue(PlayerActor, "_SLH_iProlactinLevel", StorageUtil.GetIntValue(PlayerActor, "_SLH_iProlactinLevel") + 2)
@@ -483,7 +483,7 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 				iProlactinLevel = 10
 			endIf
 
-			if ( actors[idx].WornHasKeyword(SLSD_CowHarness)  && ( Utility.RandomInt(0,100) > (100 - iProlactinLevel*2 - slaUtil.GetActorExposure(akRef = actors[idx]))  ) ) || actors[idx].WornHasKeyword(SLSD_CowMilker)  
+			if ( actors[idx].WornHasKeyword(SLSD_CowHarness)  && ( Utility.RandomInt(0,100) > (100 - iProlactinLevel*2 - slaUtil.GetActorExposure(actors[idx]))  ) ) || actors[idx].WornHasKeyword(SLSD_CowMilker)  
 
 				If (!StorageUtil.HasIntValue(actors[idx], "_SLH_iMilkLevel"))
 						StorageUtil.SetIntValue(actors[idx], "_SLH_iMilkLevel", 0)
@@ -503,7 +503,7 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 				endIf
 				Debug.Trace("[SLSDDi] NPC Milk level: " + StorageUtil.GetIntValue(actors[idx], "_SLH_iMilkLevel"))
 
-			elseif ( !actors[idx].WornHasKeyword(SLSD_CowHarness)  && !actors[idx].WornHasKeyword(SLSD_CowMilker)  && ( Utility.RandomInt(0,100) > (100 - iProlactinLevel - slaUtil.GetActorExposure(akRef = actors[idx]))  ) )  || (StorageUtil.GetIntValue(actors[idx], "_SLH_isPregnant") == 1) 
+			elseif ( !actors[idx].WornHasKeyword(SLSD_CowHarness)  && !actors[idx].WornHasKeyword(SLSD_CowMilker)  && ( Utility.RandomInt(0,100) > (100 - iProlactinLevel - slaUtil.GetActorExposure(actors[idx]))  ) )  || (StorageUtil.GetIntValue(actors[idx], "_SLH_isPregnant") == 1) 
 
 				If (!StorageUtil.HasIntValue(actors[idx], "_SLH_iMilkLevel"))
 						StorageUtil.SetIntValue(actors[idx], "_SLH_iMilkLevel", 0)
@@ -522,7 +522,7 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 					StorageUtil.SetIntValue(actors[idx], "_SLH_iProlactinLevel", StorageUtil.GetIntValue(actors[idx], "_SLH_iProlactinLevel") + 2)
 				EndIf
 			Else
-				Debug.Trace("[SLSDDi] You can't extract enough milk to fill the suction cup. Exposure trigger: " + slaUtil.GetActorExposure(akRef = actors[idx]))
+				Debug.Trace("[SLSDDi] You can't extract enough milk to fill the suction cup. Exposure trigger: " + slaUtil.GetActorExposure(actors[idx]))
 
 				if (StorageUtil.GetIntValue(actors[idx], "_SLH_isPregnant") == 1) 
 					StorageUtil.SetIntValue(actors[idx], "_SLH_iProlactinLevel", StorageUtil.GetIntValue(actors[idx], "_SLH_iProlactinLevel") + 2)
@@ -614,14 +614,15 @@ Event OnSexLabOrgasm(String _eventName, String _args, Float _argc, Form _sender)
 			else
 				libs.Pant(PlayerActor)
 				StorageUtil.SetIntValue(PlayerActor, "_SLH_iMilkLevel",  StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkLevel") / 2)	
-				ApplySweatFX.RemoteCast(PlayerActor as ObjectReference, PlayerActor,PlayerActor as ObjectReference)
+			;	ApplySweatFX.RemoteCast(PlayerActor as ObjectReference, PlayerActor,PlayerActor as ObjectReference)
+				SexLab.AddCum(PlayerActor,False,True,False)
 				Debug.Notification("Milk spills all over your chest.")
 			Endif
 
 			If  (StorageUtil.GetIntValue(none, "_SLS_fetishID") == 10 )
-				slaUtil.UpdateActorExposure(akRef = PlayerActor, val = 10, debugMsg = "producing breast milk as a cow.")
+				slaUtil.UpdateActorExposure(PlayerActor, 10, "producing breast milk as a cow.")
 			Else
-				slaUtil.UpdateActorExposure(akRef = PlayerActor, val = -20, debugMsg = "producing breast milk as a cow.")
+				slaUtil.UpdateActorExposure(PlayerActor, -20, "producing breast milk as a cow.")
 			EndIf
 
 			if  (PlayerActor.WornHasKeyword(SLSD_CowHarness) || PlayerActor.WornHasKeyword(SLSD_CowMilker))
@@ -657,7 +658,8 @@ Event OnSexLabOrgasm(String _eventName, String _args, Float _argc, Form _sender)
 				else
 					Debug.Notification("Milk spills all over her chest.")
 					StorageUtil.SetIntValue(actors[idx], "_SLH_iMilkLevel", StorageUtil.GetIntValue(actors[idx], "_SLH_iMilkLevel") / 2)	
-					ApplySweatFX.RemoteCast(actors[idx] as ObjectReference, actors[idx],actors[idx] as ObjectReference)
+				;	ApplySweatFX.RemoteCast(actors[idx] as ObjectReference, actors[idx],actors[idx] as ObjectReference)
+					SexLab.AddCum(actors[idx],False,True,False)
 				Endif
 
 				if  (actors[idx].WornHasKeyword(SLSD_CowHarness) || actors[idx].WornHasKeyword(SLSD_CowMilker))
@@ -729,9 +731,9 @@ Event OnSit(ObjectReference akFurniture)
 		GetMilk(PlayerActor, 1)		
 
 		If  (StorageUtil.GetIntValue(none, "_SLS_fetishID") == 10 )
-			slaUtil.UpdateActorExposure(akRef = PlayerActor, val = 10, debugMsg = "producing breast milk as a cow.")
+			slaUtil.UpdateActorExposure(PlayerActor, 10, "producing breast milk as a cow.")
 		Else
-			slaUtil.UpdateActorExposure(akRef = PlayerActor, val = -20, debugMsg = "producing breast milk as a cow.")
+			slaUtil.UpdateActorExposure(PlayerActor, -20, "producing breast milk as a cow.")
 		EndIf
 
 		; PlayerActor.SendModEvent("_SLSDDi_UpdateCow","Milk")
@@ -784,9 +786,9 @@ Event OnSit(ObjectReference akFurniture)
 		GetMilk(PlayerActor, 2)		
 
 		If  (StorageUtil.GetIntValue(none, "_SLS_fetishID") == 10 )
-			slaUtil.UpdateActorExposure(akRef = PlayerActor, val = 10, debugMsg = "producing breast milk as a cow.")
+			slaUtil.UpdateActorExposure(PlayerActor, 10, "producing breast milk as a cow.")
 		Else
-			slaUtil.UpdateActorExposure(akRef = PlayerActor, val = -20, debugMsg = "producing breast milk as a cow.")
+			slaUtil.UpdateActorExposure(PlayerActor, -20, "producing breast milk as a cow.")
 		EndIf
 
 		; PlayerActor.SendModEvent("_SLSDDi_UpdateCow","Milk")

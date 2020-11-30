@@ -188,6 +188,10 @@ Event OnPlayerRedWave(String _eventName, String _args, Float _argc = -1.0, Form 
 		SLS_PlayerRedWaveQuest.SetStage(10)
 	EndIf
 
+	if PlayerRedWaveDebt.GetValue() <= 0
+		PlayerRedWaveDebt.SetValue(2000)
+	endIf
+
 	RegisterForSingleUpdate(10)
 
 EndEvent
@@ -200,6 +204,7 @@ Event OnSDStorySex(String _eventName, String _args, Float _argc = 1.0, Form _sen
  	Actor kPlayer = Game.GetPlayer()
 	Actor kTempAggressor = StorageUtil.GetFormValue( kPlayer, "_SD_TempAggressor") as Actor
 	; int storyID = _argc as Int
+	float fGold = 0
 
 	if (kActor != None)
 		; StorageUtil _SD_TempAggressor is deprecated
@@ -218,18 +223,17 @@ Event OnSDStorySex(String _eventName, String _args, Float _argc = 1.0, Form _sen
 	EndIf
  
 	if  (_args == "Gangbang") && (SexLab.GetAnimationByName("FunnyBizness Missionary Rape")!= None)
-		RedWaveController.RedWavePlayerSex( akActor = kTempAggressor, goldAmount = 50, sexTags = "FunnyBizness,Forced,", isSolo = False)
-
+		fGold = RedWaveController.RedWavePlayerSex( akActor = kTempAggressor, goldAmount = 50, sexTags = "FunnyBizness,Forced,", isSolo = False)
 	Else 
 		; Debug.Trace("[_sdras_player] Sending sex story")
 		if  (_args == "") 
 			_args = "Aggressive"
 		endif
 
-		RedWaveController.RedWavePlayerSex( akActor = kTempAggressor, goldAmount = 50, sexTags = _args, isSolo = False)
-
-
+		fGold = RedWaveController.RedWavePlayerSex( akActor = kTempAggressor, goldAmount = 50, sexTags = _args, isSolo = False)
 	EndIf
+	PlayerRedWaveDebt.SetValue(  PlayerRedWaveDebt.GetValue() -  (fGold - (fGold/10) ) )
+	Debug.Notification("You now owe " + PlayerRedWaveDebt.GetValue() as Int + " gold.")
 EndEvent
 
 Event OnSDStoryEntertain(String _eventName, String _args, Float _argc = 1.0, Form _sender)
@@ -237,6 +241,7 @@ Event OnSDStoryEntertain(String _eventName, String _args, Float _argc = 1.0, For
  	Actor kPlayer = Game.GetPlayer()
 	Actor kTempAggressor = StorageUtil.GetFormValue( kPlayer, "_SD_TempAggressor") as Actor
 	; int storyID = _argc as Int
+	float fGold = 0
 
 	if (kActor != None)
 		; StorageUtil _SD_TempAggressor is deprecated
@@ -255,16 +260,32 @@ Event OnSDStoryEntertain(String _eventName, String _args, Float _argc = 1.0, For
 		Return
 	EndIf
 
-	if  (_args == "Gangbang")
-		; Debug.Notification("[_sdras_slave] Receiving Gangbang")
-		; funct.SanguineGangRape( kTempAggressor, kPlayer, True, False)
-
+	if  (_args == "Dance")
+		; Debug.Notification("[_sdras_slave] Receiving Dance")
+		Int iActorSpeech = kTempAggressor.GetActorValue("Speechcraft") As Int
+		Float fActorStamina = kTempAggressor.getActorValuePercentage("Stamina") * 100
+		Float fDance = (fActorStamina +(50 - (iActorSpeech - 50))) * 0.5
+		
+		If (fDance > 80)
+			Debug.SendAnimationEvent(kTempAggressor, "FNISSPc20")
+		elseIf (fDance > 60)
+			Debug.SendAnimationEvent(kTempAggressor, "FNISSPc21")
+		elseIf (fDance > 40)
+			Debug.SendAnimationEvent(kTempAggressor, "FNISSPc22")
+		elseIf (fDance > 20)
+			Debug.SendAnimationEvent(kTempAggressor, "FNISSPc23")
+		else
+			Debug.SendAnimationEvent(kTempAggressor, "FNISSPc24")
+		endIf
+		fGold = 20
 	Elseif (_args == "Soloshow")
 		; Debug.Notification("[_sdras_slave] Receiving Show")
 
-		RedWaveController.RedWavePlayerSex( akActor = kTempAggressor, goldAmount = 10, sexTags = "", isSolo = True)
+		fGold = RedWaveController.RedWavePlayerSex( akActor = kTempAggressor, goldAmount = 10, sexTags = "", isSolo = True)
 
 	EndIf
+	PlayerRedWaveDebt.SetValue(  PlayerRedWaveDebt.GetValue() -  (fGold - (fGold/10) ) )
+	Debug.Notification("You now owe " + PlayerRedWaveDebt.GetValue() as Int + " gold.")
 
 EndEvent
 
@@ -272,6 +293,7 @@ Event OnSDStoryWhip(String _eventName, String _args, Float _argc = 1.0, Form _se
  	Actor kActor = _sender as Actor
  	Actor kPlayer = Game.GetPlayer()
 	Actor kTempAggressor = StorageUtil.GetFormValue( kPlayer, "_SD_TempAggressor") as Actor
+	float fGold = 0
 
 	if (kActor != None)
 		; StorageUtil _SD_TempAggressor is deprecated
@@ -282,14 +304,17 @@ Event OnSDStoryWhip(String _eventName, String _args, Float _argc = 1.0, Form _se
 	Debug.Trace("[SLS_PlayerRedWaveAlias] Receiving whip story event [" + _args  + "] [" + _argc as Int + "]")
 
 	If (SexLab.GetAnimationByName("FB_DrugFuck")!= None)
-		RedWaveController.RedWavePlayerSex( akActor = kTempAggressor, goldAmount = 50, sexTags = "FunnyBizness,Forced,Sex", isSolo = False)
+		fGold = RedWaveController.RedWavePlayerSex( akActor = kTempAggressor, goldAmount = 50, sexTags = "FunnyBizness,Forced,Sex", isSolo = False)
 
 	ElseIf (SexLab.GetAnimationByName("BoundDoggyStyle")!= None)
-		RedWaveController.RedWavePlayerSex( akActor = kTempAggressor, goldAmount = 50, sexTags = "Wrists,DomSub", isSolo = False)
+		fGold = RedWaveController.RedWavePlayerSex( akActor = kTempAggressor, goldAmount = 50, sexTags = "Wrists,DomSub", isSolo = False)
 
 	Else
-		RedWaveController.RedWavePlayerSex( akActor = kTempAggressor, goldAmount = 50, sexTags = "Aggressive", isSolo = False)
+		fGold = RedWaveController.RedWavePlayerSex( akActor = kTempAggressor, goldAmount = 50, sexTags = "Aggressive", isSolo = False)
 	Endif
+
+	PlayerRedWaveDebt.SetValue(  PlayerRedWaveDebt.GetValue() -  (fGold - (fGold/10) ) )
+	Debug.Notification("You now owe " + PlayerRedWaveDebt.GetValue() as Int + " gold.")
 
 EndEvent
 
@@ -297,6 +322,7 @@ Event OnSDStoryPunish(String _eventName, String _args, Float _argc = 1.0, Form _
  	Actor kActor = _sender as Actor
  	Actor kPlayer = Game.GetPlayer()
 	Actor kTempAggressor = StorageUtil.GetFormValue( kPlayer, "_SD_TempAggressor") as Actor
+	float fGold = 0
  
 	if (kActor != None)
 		; StorageUtil _SD_TempAggressor is deprecated
@@ -315,14 +341,16 @@ Event OnSDStoryPunish(String _eventName, String _args, Float _argc = 1.0, Form _
 	EndIf
  
 	If (SexLab.GetAnimationByName("FB_ExtremeDoggy")!= None)
-		RedWaveController.RedWavePlayerSex( akActor = kTempAggressor, goldAmount = 50, sexTags = "FunnyBizness,Forced,Sex,Bound,Wrists", isSolo = False)
+		fGold = RedWaveController.RedWavePlayerSex( akActor = kTempAggressor, goldAmount = 50, sexTags = "FunnyBizness,Forced,Sex,Bound,Wrists", isSolo = False)
 
 	ElseIf (SexLab.GetAnimationByName("BoundDoggyStyle")!= None)
-		RedWaveController.RedWavePlayerSex( akActor = kTempAggressor, goldAmount = 50, sexTags = "Pillory", isSolo = False)
+		fGold = RedWaveController.RedWavePlayerSex( akActor = kTempAggressor, goldAmount = 50, sexTags = "Pillory", isSolo = False)
 
 	Else
-		RedWaveController.RedWavePlayerSex( akActor = kTempAggressor, goldAmount = 50, sexTags = "Aggressive", isSolo = False)
+		fGold = RedWaveController.RedWavePlayerSex( akActor = kTempAggressor, goldAmount = 50, sexTags = "Aggressive", isSolo = False)
 	Endif
+	PlayerRedWaveDebt.SetValue(  PlayerRedWaveDebt.GetValue() -  (fGold - (fGold/10) ) )
+	Debug.Notification("You now owe " + PlayerRedWaveDebt.GetValue() as Int + " gold.")
 EndEvent
 
 

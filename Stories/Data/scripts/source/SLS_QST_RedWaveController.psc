@@ -80,131 +80,144 @@ Function RedWaveSex(Actor akActor, Int goldAmount = 10, string sexTags = "Sex", 
 	Int randomNum = Utility.RandomInt(0,100)
 	Actor PlayerActor = Game.GetPlayer()
 	ActorBase PlayerBase = PlayerActor.GetBaseObject() as ActorBase
-	Int PlayerGender = PlayerBase.GetSex() ; 0 = Male ; 1 = Female
-	Int iRelationshipType = StorageUtil.GetIntValue(akActor, "_SD_iRelationshipType" )
+	ActorBase akActorBase = akActor.GetBaseObject() as ActorBase
+	Int iRelationshipType = StorageUtil.GetIntValue(akActor, "_SD_iRelationshipType", -1)
 	Int iRelationshipRank = akActor.GetRelationshipRank(PlayerActor)
+	Int PlayerGender = PlayerBase.GetSex() ; 0 = Male ; 1 = Female
+
+	Int ActorGender = akActorBase.GetSex() ; 0 = Male ; 1 = Female
 
 ;		Debug.MessageBox( "The Sister quietly peels off your clothes to reveal your beauty to the world." )
 ;  		SexLab.ActorLib.StripActor(Game.GetPlayer(), DoAnimate= false)
 
-	If ( iRelationshipType <= 0 ) || (iRelationshipRank<=0)
-		PlayerActor.RemoveItem(Gold001, goldAmount)
-		akActor.SendModEvent("OnSLDRobPlayer")
-
-	ElseIf ( iRelationshipType <= 1 ) || (iRelationshipRank<=1)
-		PlayerActor.RemoveItem(Gold001, goldAmount)
-		
-	ElseIf ( iRelationshipType <= 3 ) || (iRelationshipRank<=3)
-			Debug.Notification("Hey sexy.. I like you a lot."  )
-		PlayerActor.RemoveItem(Gold001, goldAmount / 2)
-		
-	ElseIf ( iRelationshipType >= 4 ) || (iRelationshipRank>=4)
+	If ( iRelationshipType >= 4 ) || (iRelationshipRank >= 4)
 		if (randomNum <= 50)
 			Debug.Notification("Anything for you honey..."  )
-			PlayerActor.RemoveItem(Gold001, 1)
+			PlayerActor.RemoveItem(Gold001, 1, akActor)
 		else
 			Debug.Notification("Hey sweetie.. so nice of you to come back."  )
 			PlayerActor.RemoveItem(Gold001, goldAmount / 3)
 		endif
 		
+	ElseIf ( iRelationshipType >= 2 ) || (iRelationshipRank >= 2)
+		Debug.Notification("Hey sexy.. I like you a lot."  )
+		PlayerActor.RemoveItem(Gold001, goldAmount / 2)
+		
+	ElseIf ( iRelationshipType == 1 ) || (iRelationshipRank == 1)
+		PlayerActor.RemoveItem(Gold001, goldAmount)
+		
+	ElseIf ( iRelationshipType == 0 ) || (iRelationshipRank <= 0)
+		PlayerActor.RemoveItem(Gold001, goldAmount)
+		akActor.SendModEvent("OnSLDRobPlayer")
+
 	Endif
 
-	If  (SexLab.ValidateActor( Game.GetPlayer() ) > 0) &&  (SexLab.ValidateActor(akActor) > 0) 
+	If  (SexLab.ValidateActor(PlayerActor) > 0) &&  (SexLab.ValidateActor(akActor) > 0) 
 
+		sslThreadModel Thread = SexLab.NewThread()
 		If (isSolo)	
-
-			sslThreadModel Thread = SexLab.NewThread()
-			Thread.AddActor(akActor,IsVictim = true) ; // IsVictim = true
-
-			If (akActor.GetActorBase().getSex() == 1)
-				Thread.SetAnimations(SexLab.GetAnimationsByTags(1, "Solo,F","Estrus,Dwemer"))
+			Thread.AddActor(akActor)
+			If (ActorGender == 1)
+				Thread.SetAnimations(SexLab.GetAnimationsByTags(1, "Solo,F,Sex","Estrus,Dwemer"))
 			Else
-				Thread.SetAnimations(SexLab.GetAnimationsByTags(1, "Solo,M","Estrus,Dwemer"))
+				Thread.SetAnimations(SexLab.GetAnimationsByTags(1, "Solo,M,Sex","Estrus,Dwemer"))
 			EndIf
-
-			Thread.StartThread()
 		Else
-
-			sslThreadModel Thread = SexLab.NewThread()
-			Thread.AddActor(akActor, IsVictim = true) ; // IsVictim = true
-			Thread.AddActor(PlayerActor) ; // IsVictim = true
-
-			If (PlayerGender  == 1)
-				Thread.SetAnimations(SexLab.GetAnimationsByTags(2, "Lesbian" + sexTags))
-			Else
-				Thread.SetAnimations(SexLab.GetAnimationsByTags(2, "MF" + sexTags))
-			EndIf
-
-			Thread.StartThread()
-
+			If (PlayerGender == 1 && ActorGender == 1)
+				Thread.AddActor(akActor)
+				Thread.AddActor(PlayerActor)
+				Thread.SetAnimations(SexLab.GetAnimationsByTags(2, "Lesbian," + sexTags))
+			elseIf (PlayerGender == 0 && ActorGender == 0)
+				Thread.AddActor(akActor)
+				Thread.AddActor(PlayerActor)
+				Thread.SetAnimations(SexLab.GetAnimationsByTags(2, "MM," + sexTags))
+			else
+				If PlayerGender == 1
+					Thread.AddActor(PlayerActor)
+					Thread.AddActor(akActor)
+				else
+					Thread.AddActor(akActor)
+					Thread.AddActor(PlayerActor)
+				endIf
+				Thread.SetAnimations(SexLab.GetAnimationsByTags(2, "MF," + sexTags))
+			endIf
 		Endif
+		
+		Thread.StartThread()
 
 	Endif
 Endfunction
 
 
-Function RedWavePlayerSex(Actor akActor, Int goldAmount = 10, string sexTags = "Sex", Bool isSolo = False)
+float Function RedWavePlayerSex(Actor akActor, Int goldAmount = 10, string sexTags = "Sex", Bool isSolo = False)
 	Int randomNum = Utility.RandomInt(0,100)
 	Actor PlayerActor = Game.GetPlayer()
+	ActorBase akActorBase = akActor.GetBaseObject() as ActorBase
 	ActorBase PlayerBase = PlayerActor.GetBaseObject() as ActorBase
-	Int PlayerGender = PlayerBase.GetSex() ; 0 = Male ; 1 = Female
-	Int iRelationshipType = StorageUtil.GetIntValue(akActor, "_SD_iRelationshipType" )
+	Int iRelationshipType = StorageUtil.GetIntValue(akActor, "_SD_iRelationshipType" , -1)
 	Int iRelationshipRank = akActor.GetRelationshipRank(PlayerActor)
+	float Earnings = 0 
+	Int PlayerGender = PlayerBase.GetSex() ; 0 = Male ; 1 = Female
+	
+	Int ActorGender = akActorBase.GetSex() ; 0 = Male ; 1 = Female
 
 ;		Debug.MessageBox( "The Sister quietly peels off your clothes to reveal your beauty to the world." )
 ;  		SexLab.ActorLib.StripActor(Game.GetPlayer(), DoAnimate= false)
 
-	If ( iRelationshipType <= 0 ) || (iRelationshipRank<=0)
-		PlayerActor.AddItem(Gold001, goldAmount)
-		; akActor.SendModEvent("OnSLDRobPlayer")
-
-	ElseIf ( iRelationshipType <= 1 ) || (iRelationshipRank<=1)
-		PlayerActor.AddItem(Gold001, goldAmount)
-		
-	ElseIf ( iRelationshipType <= 3 ) || (iRelationshipRank<=3)
-			Debug.Notification("Hey sexy.. I like you a lot."  )
-		PlayerActor.AddItem(Gold001, goldAmount / 2)
-		
-	ElseIf ( iRelationshipType >= 4 ) || (iRelationshipRank>=4)
+	If ( iRelationshipType >= 4 ) || (iRelationshipRank >= 4)
 		if (randomNum <= 50)
 			Debug.Notification("Anything for you honey..."  )
 			PlayerActor.AddItem(Gold001, 1)
 		else
 			Debug.Notification("Hey sweetie.. so nice of you to come back."  )
 			PlayerActor.AddItem(Gold001, goldAmount / 3)
+			Earnings = goldAmount / 3
 		endif
 		
+	ElseIf ( iRelationshipType >= 2 ) || (iRelationshipRank >= 2)
+		Debug.Notification("Hey sexy.. I like you a lot."  )
+		PlayerActor.AddItem(Gold001, goldAmount / 2)
+		Earnings = goldAmount / 2
+	ElseIf ( iRelationshipType == 1 ) || (iRelationshipRank == 1)
+		PlayerActor.AddItem(Gold001, goldAmount)
+		Earnings = goldAmount
+	ElseIf ( iRelationshipType == 0 ) || (iRelationshipRank <= 0)
+		PlayerActor.AddItem(Gold001, goldAmount)
+		Earnings = goldAmount
 	Endif
 
-	If  (SexLab.ValidateActor( Game.GetPlayer() ) > 0) &&  (SexLab.ValidateActor(akActor) > 0) 
 
+	If  (SexLab.ValidateActor(PlayerActor) > 0) &&  (SexLab.ValidateActor(akActor) > 0) 
+
+		sslThreadModel Thread = SexLab.NewThread()
 		If (isSolo)	
-
-			sslThreadModel Thread = SexLab.NewThread()
-			Thread.AddActor(akActor,IsVictim = true) ; // IsVictim = true
-
-			If (akActor.GetActorBase().getSex() == 1)
-				Thread.SetAnimations(SexLab.GetAnimationsByTags(1, "Solo,F","Estrus,Dwemer"))
+			Thread.AddActor(akActor)
+			If (ActorGender == 1)
+				Thread.SetAnimations(SexLab.GetAnimationsByTags(1, "Solo,F,Sex","Estrus,Dwemer"))
 			Else
-				Thread.SetAnimations(SexLab.GetAnimationsByTags(1, "Solo,M","Estrus,Dwemer"))
+				Thread.SetAnimations(SexLab.GetAnimationsByTags(1, "Solo,M,Sex","Estrus,Dwemer"))
 			EndIf
-
-			Thread.StartThread()
 		Else
-
-			sslThreadModel Thread = SexLab.NewThread()
-			Thread.AddActor(PlayerActor, IsVictim = true) ; // IsVictim = true
-			Thread.AddActor(akActor) ; // IsVictim = true
-
-			If (PlayerGender  == 1)
-				Thread.SetAnimations(SexLab.GetAnimationsByTags(2, "Lesbian" + sexTags))
-			Else
-				Thread.SetAnimations(SexLab.GetAnimationsByTags(2, "MF" + sexTags))
-			EndIf
-
-			Thread.StartThread()
-
+			If (PlayerGender == 1 && ActorGender == 1)
+				Thread.AddActor(PlayerActor)
+				Thread.AddActor(akActor)
+				Thread.SetAnimations(SexLab.GetAnimationsByTags(2, "Lesbian," + sexTags))
+			elseIf (PlayerGender == 0 && ActorGender == 0)
+				Thread.AddActor(PlayerActor)
+				Thread.AddActor(akActor)
+				Thread.SetAnimations(SexLab.GetAnimationsByTags(2, "MM," + sexTags))
+			else
+				If PlayerGender == 1
+					Thread.AddActor(PlayerActor)
+					Thread.AddActor(akActor)
+				else
+					Thread.AddActor(akActor)
+					Thread.AddActor(PlayerActor)
+				endIf
+				Thread.SetAnimations(SexLab.GetAnimationsByTags(2, "MF," + sexTags))
+			endIf
 		Endif
-
+		Thread.StartThread()
 	Endif
+	return Earnings
 Endfunction

@@ -12,23 +12,35 @@ StorageUtil.SetIntValue( Game.GetPlayer() , "_SD_iSub", StorageUtil.GetIntValue(
 StorageUtil.SetIntValue( akSpeaker, "_SD_iDisposition", StorageUtil.GetIntValue( akSpeaker, "_SD_iDisposition"  ) + 1  )
  
 
-If (randomNum > 95)
-	akSpeaker.SendModEvent("PCSubEntertain", "Dance")
-ElseIf (randomNum > 90)
-	akSpeaker.SendModEvent("PCSubEntertain", "Gangbang")
-ElseIf (randomNum > 80)
-	akSpeaker.SendModEvent("PCSubSex", "Aggressive,Anal") 
-ElseIf (randomNum > 70)
-	akSpeaker.SendModEvent("PCSubSex", "Dirty") 
-Else
-	akSpeaker.SendModEvent("PCSubSex") ; Sex
-EndIf
+if(Quest.GetQuest("_SD_controller"))
+	If (randomNum > 95)
+		akSpeaker.SendModEvent("PCSubEntertain", "Dance")
+	ElseIf (randomNum > 90)
+		akSpeaker.SendModEvent("PCSubEntertain", "Gangbang")
+	ElseIf (randomNum > 80)
+		akSpeaker.SendModEvent("PCSubSex", "Aggressive,Anal") 
+	ElseIf (randomNum > 70)
+		akSpeaker.SendModEvent("PCSubSex", "Dirty") 
+	Else
+		akSpeaker.SendModEvent("PCSubSex") ; Sex
+	EndIf
+	Game.GetPlayer().AddItem(Gold, (randomNum/10) + 10)
+	RedWaveDebt.SetValue(  RedWaveDebt.GetValue() -  (randomNum - (randomNum/10) ) )
+	Debug.Notification("You now owe " + RedWaveDebt.GetValue() as Int + " gold.")
+else
+	If (randomNum > 95)
+		akSpeaker.SendModEvent("RedWaveEntertain", "Dance")
+	ElseIf (randomNum > 90)
+		akSpeaker.SendModEvent("RedWaveEntertain", "Soloshow")
+	ElseIf (randomNum > 80)
+		akSpeaker.SendModEvent("RedWaveSex", "Aggressive,Anal") 
+	ElseIf (randomNum > 70)
+		akSpeaker.SendModEvent("RedWaveSex", "Dirty") 
+	Else
+		akSpeaker.SendModEvent("RedWaveSex") ; Sex
+	EndIf
+endif
 
-Game.GetPlayer().AddItem(Gold, (randomNum/10) + 10)
-
-RedWaveDebt.SetValue(  RedWaveDebt.GetValue() -  (randomNum - (randomNum/10) ) )
-
-Debug.Notification("You now owe " + RedWaveDebt.GetValue() as Int + " gold.")
 ;END CODE
 EndFunction
 ;END FRAGMENT

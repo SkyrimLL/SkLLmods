@@ -5,41 +5,43 @@ Scriptname SLSDDi_QST_PetBind Extends Scene Hidden
 ;BEGIN FRAGMENT Fragment_10
 Function Fragment_10()
 ;BEGIN CODE
-ObjectReference  PetSlaveActorREF= _SLSD_PetSlaveREF.GetReference() 
-Actor PetSlaveActor= _SLSD_PetSlaveREF.GetReference() as Actor
-Actor PetFreeActor= _SLSD_PetFreeREF.GetReference() as Actor
+	ObjectReference  PetSlaveActorREF= _SLSD_PetSlaveREF.GetReference() 
+	Actor PetSlaveActor= _SLSD_PetSlaveREF.GetReference() as Actor
+	Actor PetFreeActor= _SLSD_PetFreeREF.GetReference() as Actor
 
-_SLSD_PetFollow.SetValue(1)
-_SLSD_PetPosition.SetValue(0)
+	_SLSD_PetFollow.SetValue(1)
+	_SLSD_PetPosition.SetValue(0)
 
-FlameAuraFX.RemoteCast( PetFreeActor, PetFreeActor, Game.GetPlayer())
-Utility.Wait(1.0)
+	FlameAuraFX.RemoteCast( PetFreeActor, PetFreeActor, Game.GetPlayer())
+	Utility.Wait(1.0)
 
-if (_SLSD_PetPlugFree.GetValue() == 1)
-	PetFreeActor.RemoveFromFaction( WEPlayerFriend )
-	PetFreeActor.AddToFaction( WEPlayerEnemy )
-	PetFreeActor.IgnoreFriendlyHits(False)
-      PetFreeActor.SetRelationshipRank(Game.GetPlayer(), -4)
-else
-	PetFreeActor.AddToFaction( WEPlayerFriend )
-	PetFreeActor.RemoveFromFaction( WEPlayerEnemy )
-	PetFreeActor.IgnoreFriendlyHits()
-       PetFreeActor.SetRelationshipRank(Game.GetPlayer(), 3)
+	if (_SLSD_PetPlugFree.GetValue() == 1)
+		PetFreeActor.RemoveFromFaction( WEPlayerFriend )
+		PetFreeActor.AddToFaction( WEPlayerEnemy )
+		PetFreeActor.IgnoreFriendlyHits(False)
+		  PetFreeActor.SetRelationshipRank(Game.GetPlayer(), -4)
+	else
+		PetFreeActor.AddToFaction( WEPlayerFriend )
+		PetFreeActor.RemoveFromFaction( WEPlayerEnemy )
+		PetFreeActor.IgnoreFriendlyHits()
+		   PetFreeActor.SetRelationshipRank(Game.GetPlayer(), 3)
 
-EndIf
+	EndIf
 
-PetFreeActor.Disable()
-PetSlaveActorREF.MoveTo(Game.GetPlayer())
 
-Utility.Wait(1.0)
+	PetSlaveActorREF.MoveTo(Game.GetPlayer())
+	PetSlaveActor.Enable()
 
-PetSlaveActor.Enable()
-IsPetHuman.SetValue(1)
+	Utility.Wait(1.0)
 
-Utility.Wait(1.0)
+	PetFreeActor.Disable()
 
-Debug.SendAnimationEvent( PetSlaveActor, "IdleHandsBehindBack")
-PetSlaveActor.EvaluatePackage()
+	IsPetHuman.SetValue(1)
+
+	Utility.Wait(1.0)
+
+	Debug.SendAnimationEvent( PetSlaveActor, "IdleHandsBehindBack")
+	PetSlaveActor.EvaluatePackage()
 ;END CODE
 EndFunction
 ;END FRAGMENT

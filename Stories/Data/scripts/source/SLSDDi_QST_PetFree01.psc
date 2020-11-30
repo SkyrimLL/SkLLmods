@@ -13,37 +13,41 @@ EndFunction
 ;BEGIN FRAGMENT Fragment_17
 Function Fragment_17()
 ;BEGIN CODE
-Actor PetSlaveActor= _SLSD_PetSlaveREF.GetReference() as Actor
-ObjectReference PetFreeActorREF= _SLSD_PetFreeREF.GetReference() 
-Actor PetFreeActor= _SLSD_PetFreeREF.GetReference() as Actor
+	Actor PetSlaveActor= _SLSD_PetSlaveREF.GetReference() as Actor
+	ObjectReference PetFreeActorREF= _SLSD_PetFreeREF.GetReference() 
+	Actor PetFreeActor= _SLSD_PetFreeREF.GetReference() as Actor
+	string PetRaceID = MiscUtil.GetActorRaceEditorID(PetFreeActor)
+	if sslCreatureAnimationSlots.HasRaceKey("FlameAtronach") && !sslCreatureAnimationSlots.HasRaceID("FlameAtronach", PetRaceID)
+		sslCreatureAnimationSlots.AddRaceID("FlameAtronach", PetRaceID)
+	EndIf
+	_SLSD_PetFollow.SetValue(1)
+	_SLSD_PetPosition.SetValue(0)
 
-_SLSD_PetFollow.SetValue(1)
-_SLSD_PetPosition.SetValue(0)
+	PetFreeActorREF.MoveTo(Game.GetPlayer())
+	Debug.Trace("[SL Stories] Enabling Pet Free")
+	PetFreeActor.Enable()
 
-Debug.Trace("[SL Stories] Removing Pet Slave")
-PetSlaveActor.Disable()
-PetFreeActorREF.MoveTo(Game.GetPlayer())
+	Utility.Wait(1.0)
 
-Utility.Wait(1.0)
+	Debug.Trace("[SL Stories] Removing Pet Slave")
+	PetSlaveActor.Disable()
 
-Debug.Trace("[SL Stories] Enabling Pet Free")
-PetFreeActor.Enable()
-IsPetHuman.SetValue(0)
+	IsPetHuman.SetValue(0)
 
-Utility.Wait(1.0)
+	Utility.Wait(1.0)
 
-PetFreeActor.EvaluatePackage()
+	PetFreeActor.EvaluatePackage()
 
-if (_SLSD_PetPlugFree.GetValue() == 1)
-	PetFreeActor.RemoveFromFaction( WEPlayerFriend )
-	PetFreeActor.AddToFaction( WEPlayerEnemy )
-	PetFreeActor.IgnoreFriendlyHits(False)
-      PetFreeActor.SetRelationshipRank(Game.GetPlayer(), -4)
-else
-	PetFreeActor.AddToFaction( WEPlayerFriend )
-	PetFreeActor.RemoveFromFaction( WEPlayerEnemy )
-	PetFreeActor.IgnoreFriendlyHits()
-       PetFreeActor.SetRelationshipRank(Game.GetPlayer(), 3)
+	if (_SLSD_PetPlugFree.GetValue() == 1)
+		PetFreeActor.RemoveFromFaction( WEPlayerFriend )
+		PetFreeActor.AddToFaction( WEPlayerEnemy )
+		PetFreeActor.IgnoreFriendlyHits(False)
+		  PetFreeActor.SetRelationshipRank(Game.GetPlayer(), -4)
+	else
+		PetFreeActor.AddToFaction( WEPlayerFriend )
+		PetFreeActor.RemoveFromFaction( WEPlayerEnemy )
+		PetFreeActor.IgnoreFriendlyHits()
+		   PetFreeActor.SetRelationshipRank(Game.GetPlayer(), 3)
 
 EndIf
 ;END CODE

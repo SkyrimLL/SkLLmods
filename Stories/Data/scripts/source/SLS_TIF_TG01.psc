@@ -6,7 +6,7 @@ Scriptname SLS_TIF_TG01 Extends TopicInfo Hidden
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
-Game.GetPlayer().RemoveItem(Gold, 100 )
+Game.GetPlayer().RemoveItem(Gold, 100, akSpeaker)
 _SLS_PCPaidForTG.SetValue(1)
 ;END CODE
 EndFunction
