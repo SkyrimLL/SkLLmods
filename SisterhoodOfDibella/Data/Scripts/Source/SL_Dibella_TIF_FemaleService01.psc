@@ -26,7 +26,7 @@ ElseIf (randomNum > 90) && (PlayerGender >= 0)
 		Thread.AddActor(akSpeaker) ; // IsVictim = true
 
 		If (PlayerGender  == 1)
-			Thread.SetAnimations(SexLab.GetAnimationsByTags(2, "Oral,Lesbian", "Aggressive"))
+			Thread.SetAnimations(SexLab.GetAnimationsByTags(2, "Lesbian", "Aggressive"))
 		Else
 			Thread.SetAnimations(SexLab.GetAnimationsByTags(2, "Oral,MF", "Aggressive"))
 		EndIf

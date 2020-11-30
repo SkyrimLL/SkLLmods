@@ -26,7 +26,7 @@ Event OnTriggerEnter(ObjectReference akActionRef)
                     SybilActor.SendModEvent("SDEquipDevice",   "PlugVaginal|plug,vaginal,heretic,ddx")
                     SybilActor.SendModEvent("SDEquipDevice",   "Belt|belt,metal,iron") 
                   Endif
-                  SybilActor.SendModEvent("SDEquipDevice",   "WristResitraint|heretic,ddx")
+                  SybilActor.SendModEvent("SDEquipDevice",   "WristRestraint|heretic,ddx")
                   SybilActor.SendModEvent("SDEquipDevice",   "Gag|gag,heretic,ddx")
                   SybilActor.SendModEvent("SDEquipDevice",   "Collar|collar,heretic,ddx")
             else
