@@ -6,8 +6,7 @@ Scriptname SLP_TIF_CureSpiderEgg01 Extends TopicInfo Hidden
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
-Actor kPlayer = Game.GetPlayer()
-kPlayer.SendModEvent("SLPSexCure","SpiderEgg")
+akSpeaker.SendModEvent("SLPSexCure","SpiderEgg")
 KynesBlessingQuest.SetStage(30)
 KynesBlessingQuest.SetStage(21)
 ;END CODE
