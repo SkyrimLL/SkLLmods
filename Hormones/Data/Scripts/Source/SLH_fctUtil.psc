@@ -389,7 +389,7 @@ endFunction
 ; ------- Bimbo thoughts
 
 
-function tryRandomBimboThoughts()
+function tryRandomBimboThoughts(String sTag)
  	Actor PlayerActor = Game.GetPlayer()
 	Float fClumsyMod = StorageUtil.GetFloatValue(PlayerActor, "_SLH_fBimboClumsyMod" ) 
 	float bimboArousal = slaUtil.GetActorArousal(PlayerActor) as float
@@ -400,7 +400,7 @@ function tryRandomBimboThoughts()
 		iBimboThreshold = 10
 	endif
 
-	if (iCommentThrottle > iBimboThrottle) 
+	if (iCommentThrottle > iBimboThrottle) || (sTag == "now")
 		if (Utility.RandomInt(0,100) < iBimboThreshold ) 
 			Debug.Trace("[SLH] Bimbo Thoughts:")
 			Debug.Trace("[SLH] fClumsyMod:" + fClumsyMod)

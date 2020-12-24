@@ -728,7 +728,7 @@ Event OnUpdate()
 			; Moved random thoughts in main update loop to be enabled outside of bimbo curse
 
 			If (StorageUtil.GetIntValue(PlayerActor, "_SLH_iAllowBimboThoughts") == 1) 
-				fctUtil.tryRandomBimboThoughts()
+				fctUtil.tryRandomBimboThoughts("")
 			endif
 
 		EndIf
@@ -972,7 +972,7 @@ Event OnBimboThoughts(String _eventName, String _args, Float _argc = 1.0, Form _
  	EndIf
 
  	debugTrace(" Receiving 'Bimbo thought' event" )	
- 	fctUtil.tryRandomBimboThoughts()
+ 	fctUtil.tryRandomBimboThoughts(_args)
 
 endEvent
 
