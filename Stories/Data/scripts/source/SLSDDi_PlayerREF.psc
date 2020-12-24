@@ -88,6 +88,33 @@ Function _maintenance()
 
 	isSlifInstalled = Game.GetModbyName("SexLab Inflation Framework.esp") != 255
 
+	If Game.GetModbyName("Campfire.esm") != 255
+		Form Flame = Game.GetFormFromFile(0xA50C , "SexLab-StoriesDevious.esp")
+		If Flame 
+			FormList CampHeatSourcesAll = Game.GetFormFromFile(0x28F06, "Campfire.esm") as FormList
+			If CampHeatSourcesAll && !CampHeatSourcesAll.HasForm(Flame)
+				CampHeatSourcesAll.AddForm(Flame)
+				Debug.Trace("SexLab Stories Devious: Adding Flame to Campfire:CampHeatSourcesAll")
+			else
+				Debug.Trace("SexLab Stories Devious: Flame is already on Campfire:CampHeatSourcesAll")
+			EndIf
+			FormList CampHeatSourcesFire = Game.GetFormFromFile(0x2899F, "Campfire.esm") as FormList
+			If CampHeatSourcesFire && !CampHeatSourcesFire.HasForm(Flame)
+				CampHeatSourcesFire.AddForm(Flame)
+				Debug.Trace("SexLab Stories Devious: Adding Flame to Campfire:CampHeatSourcesFire")
+			else
+				Debug.Trace("SexLab Stories Devious: Flame is already on Campfire:CampHeatSourcesFire")
+			EndIf
+			FormList CampHeatSourcesFireMedium = Game.GetFormFromFile(0x28F03, "Campfire.esm") as FormList
+			If CampHeatSourcesFireMedium && !CampHeatSourcesFireMedium.HasForm(Flame)
+				CampHeatSourcesFireMedium.AddForm(Flame)
+				Debug.Trace("SexLab Stories Devious: Adding Flame to Campfire:CampHeatSourcesFireMedium")
+			else
+				Debug.Trace("SexLab Stories Devious: Flame is already on Campfire:CampHeatSourcesFireMedium")
+			EndIf
+		EndIf
+	EndIf
+
 	If (!StorageUtil.HasIntValue(none, "_SLS_iStoriesDevious"))
 		StorageUtil.SetIntValue(none, "_SLS_iStoriesDevious", 1)
 	EndIf
