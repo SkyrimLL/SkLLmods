@@ -8,6 +8,7 @@ SexLabFrameWork Property SexLab Auto
 ReferenceAlias Property PlayerAlias  Auto  
 ReferenceAlias Property SpiderEggInfectedAlias  Auto  
 ReferenceAlias Property ChaurusWormInfectedAlias  Auto  
+ReferenceAlias Property ChaurusQueenInfectedAlias  Auto  
 ReferenceAlias Property BarnaclesInfectedAlias  Auto  
 ReferenceAlias Property TentacleMonsterInfectedAlias  Auto  
 ReferenceAlias Property LivingArmorInfectedAlias  Auto  
@@ -47,6 +48,10 @@ Keyword Property _SLP_ParasiteSpiderEgg  Auto
 Keyword Property _SLP_ParasiteSpiderPenis  Auto  
 Keyword Property _SLP_ParasiteChaurusWorm  Auto  
 Keyword Property _SLP_ParasiteChaurusWormVag Auto  
+Keyword Property _SLP_ParasiteChaurusQueenGag Auto  
+Keyword Property _SLP_ParasiteChaurusQueenArmor Auto  
+Keyword Property _SLP_ParasiteChaurusQueenBody Auto  
+Keyword Property _SLP_ParasiteChaurusQueenVag Auto  
 Keyword Property _SLP_ParasiteTentacleMonster  Auto  
 Keyword Property _SLP_ParasiteLivingArmor  Auto  
 Keyword Property _SLP_ParasiteFaceHugger  Auto  
@@ -61,6 +66,10 @@ Armor Property SLP_plugChaurusWormRendered Auto         ; Internal Device
 Armor Property SLP_plugChaurusWormInventory Auto        	       ; Inventory Device
 Armor Property SLP_plugChaurusWormVagRendered Auto         ; Internal Device
 Armor Property SLP_plugChaurusWormVagInventory Auto        	       ; Inventory Device
+Armor Property SLP_plugChaurusQueenVagRendered Auto         ; Internal Device
+Armor Property SLP_plugChaurusQueenVagInventory Auto        	       ; Inventory Device
+Armor Property SLP_gagChaurusQueenRendered Auto         ; Internal Device
+Armor Property SLP_gagChaurusQueenInventory Auto        	       ; Inventory Device
 Armor Property SLP_harnessTentacleMonsterRendered Auto         ; Internal Device
 Armor Property SLP_harnessTentacleMonsterInventory Auto        	       ; Inventory Device
 Armor Property SLP_harnessLivingArmorRendered Auto         ; Internal Device
@@ -71,6 +80,10 @@ Armor Property SLP_harnessFaceHuggerGagRendered Auto         ; Internal Device
 Armor Property SLP_harnessFaceHuggerGagInventory Auto        	       ; Inventory Device
 Armor Property SLP_harnessBarnaclesRendered Auto         ; Internal Device
 Armor Property SLP_harnessBarnaclesInventory Auto        	       ; Inventory Device
+Armor Property SLP_harnessChaurusQueenArmorRendered Auto         ; Internal Device
+Armor Property SLP_harnessChaurusQueenArmorInventory Auto        	       ; Inventory Device
+Armor Property SLP_harnessChaurusQueenBodyRendered Auto         ; Internal Device
+Armor Property SLP_harnessChaurusQueenBodyInventory Auto        	       ; Inventory Device
 
 ; String                   Property NINODE_SCHLONG	 	= "NPC Genitals01 [Gen01]" AutoReadOnly
 string                   Property SLH_KEY               = "SexLab_Hormones.esp" AutoReadOnly
@@ -357,6 +370,18 @@ Armor Function getParasiteByKeyword(Keyword thisKeyword  )
 	Elseif (thisKeyword == _SLP_ParasiteChaurusWormVag)
 		thisArmor = SLP_plugChaurusWormVagInventory
 
+	Elseif (thisKeyword == _SLP_ParasiteChaurusQueenGag)
+		thisArmor = SLP_gagChaurusQueenInventory
+
+	Elseif (thisKeyword == _SLP_ParasiteChaurusQueenVag)
+		thisArmor = SLP_plugChaurusQueenVagInventory
+
+	Elseif (thisKeyword == _SLP_ParasiteChaurusQueenArmor)
+		thisArmor = SLP_harnessChaurusQueenArmorInventory
+
+	Elseif (thisKeyword == _SLP_ParasiteChaurusQueenBody)
+		thisArmor = SLP_harnessChaurusQueenBodyInventory
+
 	Elseif (thisKeyword == _SLP_ParasiteTentacleMonster)
 		thisArmor = SLP_harnessTentacleMonsterInventory
 
@@ -390,6 +415,18 @@ Armor Function getParasiteRenderedByKeyword(Keyword thisKeyword  )
 
 	Elseif (thisKeyword == _SLP_ParasiteChaurusWormVag)
 		thisArmor = SLP_plugChaurusWormVagRendered
+
+	Elseif (thisKeyword == _SLP_ParasiteChaurusQueenGag)
+		thisArmor = SLP_gagChaurusQueenRendered
+
+	Elseif (thisKeyword == _SLP_ParasiteChaurusQueenVag)
+		thisArmor = SLP_plugChaurusQueenVagRendered
+
+	Elseif (thisKeyword == _SLP_ParasiteChaurusQueenArmor)
+		thisArmor = SLP_harnessChaurusQueenArmorRendered
+
+	Elseif (thisKeyword == _SLP_ParasiteChaurusQueenBody)
+		thisArmor = SLP_harnessChaurusQueenBodyRendered
 
 	Elseif (thisKeyword == _SLP_ParasiteTentacleMonster)
 		thisArmor = SLP_harnessTentacleMonsterRendered
@@ -425,6 +462,18 @@ Keyword Function getDeviousKeywordByString(String deviousKeyword = ""  )
 		
 	elseif (deviousKeyword == "ChaurusWormVag" )  
 		thisKeyword = _SLP_ParasiteChaurusWormVag
+		
+	elseif (deviousKeyword == "ChaurusQueenGag" )  
+		thisKeyword = _SLP_ParasiteChaurusQueenGag
+		
+	elseif (deviousKeyword == "ChaurusQueenVag" )  
+		thisKeyword = _SLP_ParasiteChaurusQueenVag
+		
+	elseif (deviousKeyword == "ChaurusQueenArmor" )  
+		thisKeyword = _SLP_ParasiteChaurusQueenArmor
+		
+	elseif (deviousKeyword == "ChaurusQueenBody" )  
+		thisKeyword = _SLP_ParasiteChaurusQueenBody
 		
 	elseif (deviousKeyword == "TentacleMonster" )  
 		thisKeyword = _SLP_ParasiteTentacleMonster
@@ -1353,7 +1402,7 @@ Bool Function infectFaceHuggerGag( Actor kActor  )
   		kActor = PlayerActor
   	endIf
  
-	If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceFaceHugger" )==0.0)
+	If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceFaceHuggerGag" )==0.0)
 		Debug.Trace("[SLP]	Parasite disabled - Aborting")
 		Return False
 	Endif
@@ -1518,6 +1567,368 @@ Function cureBarnacles( Actor kActor, Bool bHarvestParasite = False   )
 	Else
 		; Reset variables if called after device is removed
 		StorageUtil.SetIntValue(kActor, "_SLP_toggleBarnacles", 0)
+	EndIf
+EndFunction
+
+;------------------------------------------------------------------------------
+Bool Function infectChaurusQueenVag( Actor kActor  )
+ 	Actor PlayerActor = Game.GetPlayer()
+ 
+  	if (kActor == None)
+  		kActor = PlayerActor
+  	endIf
+ 
+	If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceChaurusQueenVag" )==0.0)
+		Debug.Trace("[SLP]	Parasite disabled - Aborting")
+		Return False
+	Endif
+
+	If (isInfectedByString( kActor,  "ChaurusQueenVag" ))
+		Debug.Trace("[SLP]	Already infected - Aborting")
+		Return False
+	Endif
+
+	If (ActorHasKeywordByString( kActor, "PlugVaginal"  ))
+		Debug.Trace("[SLP]	Already wearing a vaginal plug - Aborting")
+		Return False
+	Endif
+
+	If (!isFemale( kActor))
+		Debug.Trace("[SLP]	Actor is not female - Aborting")
+		Return False
+	Endif
+	
+	equipParasiteNPCByString (kActor, "ChaurusQueenVag")
+
+	Return true ; Return applyChaurusWormVag( kActor  )
+
+EndFunction
+
+Bool Function applyChaurusQueenVag( Actor kActor  )
+ 	Actor PlayerActor = Game.GetPlayer()
+
+	If (kActor == PlayerActor)
+		ChaurusQueenInfectedAlias.ForceRefTo(PlayerActor)
+	endIf
+
+	; ApplyBodyChange( kActor, "ChaurusQueenVag", "Belly", 1.5, StorageUtil.GetFloatValue(PlayerActor, "_SLP_buttMaxChaurusWorm" ))
+
+	If !StorageUtil.HasIntValue(kActor, "_SLP_iChaurusQueenVagInfections")
+			StorageUtil.SetIntValue(kActor, "_SLP_iChaurusQueenVagInfections",  0)
+	EndIf
+
+	StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenVag", 1 )
+	StorageUtil.SetIntValue(kActor, "_SLP_iChaurusQueenVagDate", Game.QueryStat("Days Passed"))
+	StorageUtil.SetIntValue(kActor, "_SLP_iInfections",  StorageUtil.GetIntValue(kActor, "_SLP_iInfections") + 1)
+	StorageUtil.SetIntValue(kActor, "_SLP_iChaurusQueenVagInfections",  StorageUtil.GetIntValue(kActor, "_SLP_iChaurusQueenVagInfections") + 1)
+
+	If (kActor == PlayerActor)
+		_SLP_GV_numInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iInfections"))
+		; _SLP_GV_numChaurusWormVagInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iChaurusQueenVagInfections"))
+	endIf
+
+	SendModEvent("SLPChaurusQueenVagInfection")
+
+	; if (!KynesBlessingQuest.GetStageDone(20)) && (kActor == PlayerActor)
+	;	KynesBlessingQuest.SetStage(20)
+	; endif
+	
+	Return True
+EndFunction
+
+Function cureChaurusQueenVag( Actor kActor, Bool bHarvestParasite = False   )
+ 	Actor PlayerActor = Game.GetPlayer()
+ 
+  	if (kActor == None)
+  		kActor = PlayerActor
+  	endIf
+ 
+	If (isInfectedByString( kActor,  "ChaurusQueenVag" ))
+		StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenVag", 0)
+		clearParasiteNPCByString (kActor, "ChaurusQueenVag")
+		; ApplyBodyChange( kActor, "ChaurusQueenVag", "Belly", 1.0, StorageUtil.GetFloatValue(PlayerActor, "_SLP_buttMaxChaurusWorm" ))
+
+		If (bHarvestParasite)
+			PlayerActor.AddItem(SLP_plugChaurusQueenVagInventory,1)
+		Endif
+
+		If (kActor == PlayerActor)
+			ChaurusQueenInfectedAlias.ForceRefTo(DummyAlias)
+		endIf
+
+	Else
+		; Reset variables if called after device is removed
+		StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenVag", 0)
+	EndIf
+EndFunction
+
+
+;------------------------------------------------------------------------------
+Bool Function infectChaurusQueenGag( Actor kActor  )
+ 	Actor PlayerActor = Game.GetPlayer()
+
+  	if (kActor == None)
+  		kActor = PlayerActor
+  	endIf
+ 
+	If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceChaurusQueenGag" )==0.0)
+		Debug.Trace("[SLP]	Parasite disabled - Aborting")
+		Return False
+	Endif
+
+	If (isInfectedByString( kActor,  "ChaurusQueenGag" ))
+		Debug.Trace("[SLP]	Already infected - Aborting")
+		Return False
+	Endif
+
+	If (ActorHasKeywordByString( kActor, "Gag"  ))
+		Debug.Trace("[SLP]	Already wearing a gag - Aborting")
+		Return False
+	Endif
+
+	equipParasiteNPCByString (kActor, "ChaurusQueenGag")
+
+	Return  applyFaceHuggerGag( kActor )
+EndFunction
+
+Bool Function applyChaurusQueenGag( Actor kActor  )
+ 	Actor PlayerActor = Game.GetPlayer()
+
+	If (kActor == PlayerActor)
+		ChaurusQueenInfectedAlias.ForceRefTo(PlayerActor)
+	endIf
+
+	If !StorageUtil.HasIntValue(kActor, "_SLP_iChaurusQueenGagInfections")
+			StorageUtil.SetIntValue(kActor, "_SLP_iChaurusQueenGagInfections",  0)
+	EndIf
+
+	StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenGag", 1 )
+	StorageUtil.SetIntValue(kActor, "_SLP_iChaurusQueenGagDate", Game.QueryStat("Days Passed"))
+	StorageUtil.SetIntValue(kActor, "_SLP_iInfections",  StorageUtil.GetIntValue(kActor, "_SLP_iInfections") + 1)
+	StorageUtil.SetIntValue(kActor, "_SLP_iChaurusQueenGagInfections",  StorageUtil.GetIntValue(kActor, "_SLP_iChaurusQueenGagInfections") + 1)
+
+	If (kActor == PlayerActor)
+		_SLP_GV_numInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iInfections"))
+		; _SLP_GV_numFaceHuggerInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iChaurusQueenGagInfections"))
+	endIf
+
+	SendModEvent("SLPChaurusQueenGagInfection")
+
+	; if (!KynesBlessingQuest.GetStageDone(20)) && (kActor == PlayerActor)
+	;	KynesBlessingQuest.SetStage(20)
+	; endif
+	
+	Return True
+EndFunction
+
+Function cureChaurusQueenGag( Actor kActor, Bool bHarvestParasite = False   )
+ 	Actor PlayerActor = Game.GetPlayer()
+ 
+  	if (kActor == None)
+  		kActor = PlayerActor
+  	endIf
+  	
+	If (isInfectedByString( kActor,  "ChaurusQueenGag" ))
+		StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenGag", 0 )
+		clearParasiteNPCByString (kActor, "ChaurusQueenGag")
+		; ApplyBodyChange( kActor, "FaceHugger", "Belly", 1.0, StorageUtil.GetFloatValue(PlayerActor, "_SLP_bellyMaxFaceHugger" ))
+
+		If (bHarvestParasite)
+			PlayerActor.AddItem(SLP_gagChaurusQueenInventory,1)
+		Endif
+
+		If (kActor == PlayerActor) && !(isInfectedByString( kActor,  "ChaurusQueenGag" ))
+			ChaurusQueenInfectedAlias.ForceRefTo(DummyAlias)
+		endIf
+
+
+	Else
+		; Reset variables if called after device is removed
+		StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenGag", 0)
+	EndIf
+EndFunction
+
+
+
+;------------------------------------------------------------------------------
+Bool Function infectChaurusQueenArmor( Actor kActor  )
+ 	Actor PlayerActor = Game.GetPlayer()
+ 
+  	if (kActor == None)
+  		kActor = PlayerActor
+  	endIf
+ 
+	If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceChaurusQueenArmor" )==0.0)
+		Debug.Trace("[SLP]	Parasite disabled - Aborting")
+		Return False
+	Endif
+
+	If ((isInfectedByString( kActor,  "ChaurusQueenArmor" )) || (isInfectedByString( kActor,  "FaceHugger" )) )
+		Debug.Trace("[SLP]	Already infected - Aborting")
+		Return False
+	Endif
+
+	If ( (ActorHasKeywordByString( kActor, "Harness"  )) || (ActorHasKeywordByString( kActor, "Bra"  )))
+		Debug.Trace("[SLP]	Already wearing a harness- Aborting")
+		Return False
+	Endif
+
+	If (!isFemale( kActor))
+		Debug.Trace("[SLP]	Actor is not female - Aborting")
+		Return False
+	Endif
+	
+	equipParasiteNPCByString (kActor, "ChaurusQueenArmor")
+
+	Return true ; Return applyChaurusQueenArmor( kActor  )
+
+EndFunction
+
+Bool Function applyChaurusQueenArmor( Actor kActor  )
+ 	Actor PlayerActor = Game.GetPlayer()
+
+	If (kActor == PlayerActor)
+		ChaurusQueenInfectedAlias.ForceRefTo(PlayerActor)
+	endIf
+
+	If !StorageUtil.HasIntValue(kActor, "_SLP_iChaurusQueenArmorInfections")
+			StorageUtil.SetIntValue(kActor, "_SLP_iChaurusQueenArmorInfections",  0)
+	EndIf
+
+	StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenArmor", 1 )
+	StorageUtil.SetIntValue(kActor, "_SLP_iChaurusQueenArmorDate", Game.QueryStat("Days Passed"))
+	StorageUtil.SetIntValue(kActor, "_SLP_iInfections",  StorageUtil.GetIntValue(kActor, "_SLP_iInfections") + 1)
+	StorageUtil.SetIntValue(kActor, "_SLP_iChaurusQueenArmorInfections",  StorageUtil.GetIntValue(kActor, "_SLP_iChaurusQueenArmorInfections") + 1)
+
+	If (kActor == PlayerActor)
+		_SLP_GV_numInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iInfections"))
+		; _SLP_GV_numChaurusQueenArmorInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iChaurusQueenArmorInfections"))
+	endIf
+
+	SendModEvent("SLPChaurusQueenArmorInfection")
+
+	if (!KynesBlessingQuest.GetStageDone(20)) && (kActor == PlayerActor)
+		KynesBlessingQuest.SetStage(20)
+	endif
+	
+	Return True
+EndFunction
+
+Function cureChaurusQueenArmor( Actor kActor, Bool bHarvestParasite = False   )
+ 	Actor PlayerActor = Game.GetPlayer()
+ 
+  	if (kActor == None)
+  		kActor = PlayerActor
+  	endIf
+ 
+	If (isInfectedByString( kActor,  "ChaurusQueenArmor" ))
+		StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenArmor", 0 )
+		clearParasiteNPCByString (kActor, "ChaurusQueenArmor")
+		; ApplyBodyChange( kActor, "ChaurusQueenArmor", "Breast", 1.0, StorageUtil.GetFloatValue(PlayerActor, "_SLP_breastMaxChaurusQueenArmor" ))
+
+		If (bHarvestParasite)
+			PlayerActor.AddItem(SLP_harnessChaurusQueenArmorInventory,1)
+		Endif
+
+		If (kActor == PlayerActor)
+			ChaurusQueenInfectedAlias.ForceRefTo(DummyAlias)
+		endIf
+
+	Else
+		; Reset variables if called after device is removed
+		StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenArmor", 0)
+	EndIf
+EndFunction
+
+
+
+;------------------------------------------------------------------------------
+Bool Function infectChaurusQueenBody( Actor kActor  )
+ 	Actor PlayerActor = Game.GetPlayer()
+ 
+  	if (kActor == None)
+  		kActor = PlayerActor
+  	endIf
+ 
+	If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceChaurusQueenBody" )==0.0)
+		Debug.Trace("[SLP]	Parasite disabled - Aborting")
+		Return False
+	Endif
+
+	If ((isInfectedByString( kActor,  "ChaurusQueenBody" )) || (isInfectedByString( kActor,  "FaceHugger" )) )
+		Debug.Trace("[SLP]	Already infected - Aborting")
+		Return False
+	Endif
+
+	If ( (ActorHasKeywordByString( kActor, "Harness"  )) || (ActorHasKeywordByString( kActor, "Bra"  )))
+		Debug.Trace("[SLP]	Already wearing a harness- Aborting")
+		Return False
+	Endif
+
+	If (!isFemale( kActor))
+		Debug.Trace("[SLP]	Actor is not female - Aborting")
+		Return False
+	Endif
+	
+	equipParasiteNPCByString (kActor, "ChaurusQueenBody")
+
+	Return true ; Return applyChaurusQueenBody( kActor  )
+
+EndFunction
+
+Bool Function applyChaurusQueenBody( Actor kActor  )
+ 	Actor PlayerActor = Game.GetPlayer()
+
+	If (kActor == PlayerActor)
+		ChaurusQueenInfectedAlias.ForceRefTo(PlayerActor)
+	endIf
+
+	If !StorageUtil.HasIntValue(kActor, "_SLP_iChaurusQueenBodyInfections")
+			StorageUtil.SetIntValue(kActor, "_SLP_iChaurusQueenBodyInfections",  0)
+	EndIf
+
+	StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenBody", 1 )
+	StorageUtil.SetIntValue(kActor, "_SLP_iChaurusQueenBodyDate", Game.QueryStat("Days Passed"))
+	StorageUtil.SetIntValue(kActor, "_SLP_iInfections",  StorageUtil.GetIntValue(kActor, "_SLP_iInfections") + 1)
+	StorageUtil.SetIntValue(kActor, "_SLP_iChaurusQueenBodyInfections",  StorageUtil.GetIntValue(kActor, "_SLP_iChaurusQueenBodyInfections") + 1)
+
+	If (kActor == PlayerActor)
+		_SLP_GV_numInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iInfections"))
+		; _SLP_GV_numChaurusQueenBodyInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iChaurusQueenBodyInfections"))
+	endIf
+
+	SendModEvent("SLPChaurusQueenBodyInfection")
+
+	if (!KynesBlessingQuest.GetStageDone(20)) && (kActor == PlayerActor)
+		KynesBlessingQuest.SetStage(20)
+	endif
+	
+	Return True
+EndFunction
+
+Function cureChaurusQueenBody( Actor kActor, Bool bHarvestParasite = False   )
+ 	Actor PlayerActor = Game.GetPlayer()
+ 
+  	if (kActor == None)
+  		kActor = PlayerActor
+  	endIf
+ 
+	If (isInfectedByString( kActor,  "ChaurusQueenBody" ))
+		StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenBody", 0 )
+		clearParasiteNPCByString (kActor, "ChaurusQueenBody")
+		; ApplyBodyChange( kActor, "ChaurusQueenBody", "Breast", 1.0, StorageUtil.GetFloatValue(PlayerActor, "_SLP_breastMaxChaurusQueenBody" ))
+
+		If (bHarvestParasite)
+			PlayerActor.AddItem(SLP_harnessChaurusQueenBodyInventory,1)
+		Endif
+
+		If (kActor == PlayerActor)
+			ChaurusQueenInfectedAlias.ForceRefTo(DummyAlias)
+		endIf
+
+	Else
+		; Reset variables if called after device is removed
+		StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenBody", 0)
 	EndIf
 EndFunction
 

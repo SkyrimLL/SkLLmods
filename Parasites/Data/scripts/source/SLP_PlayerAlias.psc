@@ -116,6 +116,15 @@ Function _maintenance()
 	RegisterForModEvent("SLPInfectBarnacles",   "OnSLPInfectBarnacles")
 	RegisterForModEvent("SLPCureBarnacles",   "OnSLPCureBarnacles")
 
+	RegisterForModEvent("SLPInfectChaurusQueenVag",   "OnSLPInfectChaurusQueenVag")
+	RegisterForModEvent("SLPCureChaurusQueenVag",   "OnSLPCureChaurusQueenVag")
+	RegisterForModEvent("SLPInfectChaurusQueenGag",   "OnSLPInfectChaurusQueenGag")
+	RegisterForModEvent("SLPCureChaurusQueenGag",   "OnSLPCureChaurusQueenGag")
+	RegisterForModEvent("SLPInfectChaurusQueenArmor",   "OnSLPInfectChaurusQueenArmor")
+	RegisterForModEvent("SLPCureChaurusQueenArmor",   "OnSLPCureChaurusQueenArmor")
+	RegisterForModEvent("SLPInfectChaurusQueenBody",   "OnSLPInfectChaurusQueenBody")
+	RegisterForModEvent("SLPCureChaurusQueenBody",   "OnSLPCureChaurusQueenBody")
+
 	RegisterForModEvent("SLPInfectEstrusChaurusEgg",   "OnSLPInfectEstrusChaurusEgg")
 	RegisterForModEvent("SLPTriggerEstrusChaurusBirth",   "OnSLPTriggerEstrusChaurusBirth")
 
@@ -924,7 +933,150 @@ Event OnSLPCureBarnacles(String _eventName, String _args, Float _argc = 1.0, For
 	fctParasites.cureBarnacles( kActor   )
 
 EndEvent
+;------------------------------------------------------------------------------
+Event OnSLPInfectChaurusQueenVag(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+  	Actor PlayerActor = Game.GetPlayer()
 
+ 	If (kActor == None)
+ 		kActor = PlayerActor
+ 	Endif
+ 
+	Debug.Trace("[SLP] Receiving 'infect chaurus queen vaginal' event - Actor: " + kActor)
+
+	ActorBase pActorBase = kActor.GetActorBase()
+
+	if (pActorBase.GetSex()==0)
+		Debug.Trace("[SLP]  	Actor is male - aborting infection")
+		return
+	Endif
+
+	fctParasites.infectChaurusQueenVag( kActor   )
+	
+EndEvent
+
+Event OnSLPCureChaurusQueenVag(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+  	Actor PlayerActor = Game.GetPlayer()
+
+ 	If (kActor == None)
+ 		kActor = PlayerActor
+ 	Endif
+ 
+	Debug.Trace("[SLP] Receiving 'cure chaurus queen vaginal' event - Actor: " + kActor)
+
+	fctParasites.cureChaurusQueenVag( kActor   )
+
+EndEvent
+
+;------------------------------------------------------------------------------
+Event OnSLPInfectChaurusQueenGag(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+  	Actor PlayerActor = Game.GetPlayer()
+
+ 	If (kActor == None)
+ 		kActor = PlayerActor
+ 	Endif
+ 
+	Debug.Trace("[SLP] Receiving 'infect chaurus queen mask' event - Actor: " + kActor)
+
+	ActorBase pActorBase = kActor.GetActorBase()
+
+	if (pActorBase.GetSex()==0)
+		Debug.Trace("[SLP]  	Actor is male - aborting infection")
+		return
+	Endif
+
+	fctParasites.infectChaurusQueenGag( kActor   )
+	
+EndEvent
+
+Event OnSLPCureChaurusQueenGag(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+  	Actor PlayerActor = Game.GetPlayer()
+
+ 	If (kActor == None)
+ 		kActor = PlayerActor
+ 	Endif
+ 
+	Debug.Trace("[SLP] Receiving 'cure chaurus queen mask' event - Actor: " + kActor)
+
+	fctParasites.cureChaurusQueenGag( kActor   )
+
+EndEvent
+
+
+;------------------------------------------------------------------------------
+Event OnSLPInfectChaurusQueenArmor(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+  	Actor PlayerActor = Game.GetPlayer()
+
+ 	If (kActor == None)
+ 		kActor = PlayerActor
+ 	Endif
+ 
+	Debug.Trace("[SLP] Receiving 'infect chaurus queen armor' event - Actor: " + kActor)
+
+	ActorBase pActorBase = kActor.GetActorBase()
+
+	if (pActorBase.GetSex()==0)
+		Debug.Trace("[SLP]  	Actor is male - aborting infection")
+		return
+	Endif
+
+	fctParasites.infectChaurusQueenArmor( kActor   )
+	
+EndEvent
+
+Event OnSLPCureChaurusQueenArmor(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+  	Actor PlayerActor = Game.GetPlayer()
+
+ 	If (kActor == None)
+ 		kActor = PlayerActor
+ 	Endif
+ 
+	Debug.Trace("[SLP] Receiving 'cure chaurus queen armor' event - Actor: " + kActor)
+
+	fctParasites.cureChaurusQueenArmor( kActor   )
+
+EndEvent
+
+;------------------------------------------------------------------------------
+Event OnSLPInfectChaurusQueenBody(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+  	Actor PlayerActor = Game.GetPlayer()
+
+ 	If (kActor == None)
+ 		kActor = PlayerActor
+ 	Endif
+ 
+	Debug.Trace("[SLP] Receiving 'infect chaurus queen body' event - Actor: " + kActor)
+
+	ActorBase pActorBase = kActor.GetActorBase()
+
+	if (pActorBase.GetSex()==0)
+		Debug.Trace("[SLP]  	Actor is male - aborting infection")
+		return
+	Endif
+
+	fctParasites.infectChaurusQueenBody( kActor   )
+	
+EndEvent
+
+Event OnSLPCureChaurusQueenBody(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+  	Actor PlayerActor = Game.GetPlayer()
+
+ 	If (kActor == None)
+ 		kActor = PlayerActor
+ 	Endif
+ 
+	Debug.Trace("[SLP] Receiving 'cure chaurus queen body' event - Actor: " + kActor)
+
+	fctParasites.cureChaurusQueenBody( kActor   )
+
+EndEvent
 ;------------------------------------------------------------------------------
 Event OnSLPInfectEstrusChaurusEgg(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
@@ -1251,7 +1403,7 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 
 	if (kLocation)  
 
-		If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceBarnacles" )>0.0) && (kActorCell.IsInterior())
+		If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceBarnacles" )>0.0) 
 			If kLocation.IsSameLocation(SLP_BlackreachLocation) || kLocation.HasKeyword(SLP_FalmerHiveLocType) || kLocation.HasKeyword(SLP_CaveLocType) || kLocation.HasKeyword(SLP_DwarvenRuinLocType)
 				Debug.Trace("[SLP] Good location for Barnacles")
 				bLocationAllowed = True
@@ -1272,7 +1424,7 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 
 		if (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceFaceHuggerGag" )>0.0) && (kActorCell.IsInterior())
 			if kLocation.IsSameLocation(SLP_BlackreachLocation) || kLocation.HasKeyword(SLP_DraugrCryptLocType) || kLocation.HasKeyword(SLP_NordicRuinLocType) || kLocation.HasKeyword(SLP_MineLocType) || kLocation.HasKeyword(SLP_CaveLocType) || kLocation.HasKeyword(SLP_OutdoorLocType)
-				Debug.Trace("[SLP] Good location for Face hugger")
+				Debug.Trace("[SLP] Good location for Face hugger (gag)")
 				bLocationAllowed = True
 			else
 				Debug.Trace("[SLP] Not a good location for Face hugger (gag)")

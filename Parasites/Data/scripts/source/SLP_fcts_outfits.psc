@@ -6,10 +6,15 @@ ObjectReference Property DinyaBaluRef Auto
 ObjectReference Property MaramalRef Auto
 ObjectReference Property LortheimRef Auto
 ObjectReference Property JoraRef Auto
+ObjectReference Property FreirREF  Auto  
+ObjectReference Property RorlundREF  Auto  
+ObjectReference Property SilanaPetreiaREF  Auto  
 
 Outfit Property PriestWhiterunOutfit Auto
 Outfit Property PriestWindhelmOutfit Auto
 Outfit Property PriestRiftenOutfit Auto
+Outfit Property PriestSolitudeOutfit  Auto  
+
 
 Keyword Property ArmorCuirass  Auto  
 Keyword Property ClothingBody  Auto  
@@ -26,6 +31,9 @@ Function SetPriestOutfits()
 		(MaramalRef as Actor).SetOutfit(PriestRiftenOutfit)
 		(JoraRef as Actor).SetOutfit(PriestWindhelmOutfit)
 		(LortheimRef as Actor).SetOutfit(PriestWindhelmOutfit)
+		(FreirREF as Actor).SetOutfit(PriestSolitudeOutfit)
+		(RorlundREF as Actor).SetOutfit(PriestSolitudeOutfit)
+		(SilanaPetreiaREF as Actor).SetOutfit(PriestSolitudeOutfit)
 	Endif
 	
 EndFunction
@@ -40,4 +48,5 @@ Bool Function isActorNaked( Actor akActor )
 	
 	Return False
 EndFunction
+
 
