@@ -56,6 +56,8 @@ bool		_toggleChaurusQueenVag = true
 float		_chanceChaurusQueenVag = -1.0
 bool		_toggleChaurusQueenGag = true
 float		_chanceChaurusQueenGag = -1.0
+bool		_toggleChaurusQueenSkin = true
+float		_chanceChaurusQueenSkin = -1.0
 bool		_toggleChaurusQueenArmor = true
 float		_chanceChaurusQueenArmor = -1.0
 bool		_toggleChaurusQueenBody = true
@@ -121,7 +123,7 @@ event OnPageReset(string a_page)
 	; ActorBase pActorBase = PlayerActor.GetActorBase()
 
 
-	_resetTrigger = (0.1 + _chanceSpiderEgg) * (0.1 + _chanceSpiderPenis) * (0.1 + _chanceChaurusWorm) * (0.1 + _chanceChaurusWormVag) * (0.1 + _chanceEstrusTentacles) * (0.1 + _chanceTentacleMonster) * (0.1 + _chanceEstrusSlime) * (0.1 + _chanceLivingArmor) * (0.1 + _chanceFaceHugger) * (0.1 + _chanceBarnacles)  * (0.1 + _chanceChaurusQueenVag)   * (0.1 + _chanceChaurusQueenGag)   * (0.1 + _chanceChaurusQueenArmor)   * (0.1 + _chanceChaurusQueenBody) 
+	_resetTrigger = (0.1 + _chanceSpiderEgg) * (0.1 + _chanceSpiderPenis) * (0.1 + _chanceChaurusWorm) * (0.1 + _chanceChaurusWormVag) * (0.1 + _chanceEstrusTentacles) * (0.1 + _chanceTentacleMonster) * (0.1 + _chanceEstrusSlime) * (0.1 + _chanceLivingArmor) * (0.1 + _chanceFaceHugger) * (0.1 + _chanceBarnacles)  * (0.1 + _chanceChaurusQueenVag)   * (0.1 + _chanceChaurusQueenGag)   * (0.1 + _chanceChaurusQueenSkin)   * (0.1 + _chanceChaurusQueenArmor)   * (0.1 + _chanceChaurusQueenBody) 
 
 	If (StorageUtil.GetIntValue(none, "_SLP_initMCM" )!=1)
 		StorageUtil.SetIntValue(none, "_SLP_initMCM", 1 )
@@ -175,6 +177,8 @@ event OnPageReset(string a_page)
 	_chanceChaurusQueenVag = StorageUtil.GetFloatValue(kPlayer, "_SLP_chanceChaurusQueenVag" )
 	_toggleChaurusQueenGag = StorageUtil.GetIntValue(kPlayer, "_SLP_toggleChaurusQueenGag" )
 	_chanceChaurusQueenGag = StorageUtil.GetFloatValue(kPlayer, "_SLP_chanceChaurusQueenGag" )
+	_toggleChaurusQueenSkin = StorageUtil.GetIntValue(kPlayer, "_SLP_toggleChaurusQueenSkin" )
+	_chanceChaurusQueenSkin = StorageUtil.GetFloatValue(kPlayer, "_SLP_chanceChaurusQueenSkin" )
 	_toggleChaurusQueenArmor = StorageUtil.GetIntValue(kPlayer, "_SLP_toggleChaurusQueenArmor" )
 	_chanceChaurusQueenArmor = StorageUtil.GetFloatValue(kPlayer, "_SLP_chanceChaurusQueenArmor" )
 	_toggleChaurusQueenBody = StorageUtil.GetIntValue(kPlayer, "_SLP_toggleChaurusQueenBody" )
@@ -182,8 +186,6 @@ event OnPageReset(string a_page)
 	_bellyMaxChaurusQueen = StorageUtil.GetFloatValue(kPlayer, "_SLP_bellyMaxChaurusQueen" )
 
 	_togglePriestOutfits = StorageUtil.GetIntValue(none, "_SLP_togglePriestOutfits" )
-
-
 
 	If (a_page == "Parasites")
 
@@ -255,11 +257,22 @@ event OnPageReset(string a_page)
 		AddTextOption("     Lastelle Eggs: " + _SLP_GV_numChaurusEggsLastelle.GetValue() as Int, "", OPTION_FLAG_DISABLED)
 
 		AddHeaderOption(" Chaurus Queen ")
-		AddToggleOptionST("STATE_CHAURUSQUEENVAG_TOGGLE","Infect/Cure Vaginal Chaurus Queen", _toggleChaurusQueenVag as Float)
-		AddToggleOptionST("STATE_CHAURUSQUEENGAG_TOGGLE","Infect/Cure Chaurus Queen Mask", _toggleChaurusQueenGag as Float)
-		AddToggleOptionST("STATE_CHAURUSQUEENARMOR_TOGGLE","Infect/Cure Chaurus Queen Armor", _toggleChaurusQueenArmor as Float)
-		AddToggleOptionST("STATE_CHAURUSQUEENBODY_TOGGLE","Infect/Cure Chaurus Queen Full Body", _toggleChaurusQueenBody as Float)
-		AddSliderOptionST("STATE_CHAURUSQUEEN_BELLY","Max belly size (Chaurus Queen)", _bellyMaxChaurusQueen,"{1}")
+
+		if (StorageUtil.GetIntValue(kPlayer, "_SLP_iChaurusQueenStage")>=1)
+			AddToggleOptionST("STATE_CHAURUSQUEENVAG_TOGGLE","Infect/Cure Vaginal Chaurus Queen", _toggleChaurusQueenVag as Float)
+			AddToggleOptionST("STATE_CHAURUSQUEENGAG_TOGGLE","Infect/Cure Chaurus Queen Mask", _toggleChaurusQueenGag as Float)
+			AddToggleOptionST("STATE_CHAURUSQUEENSKIN_TOGGLE","Infect/Cure Chaurus Queen Skin", _toggleChaurusQueenSkin as Float)
+			AddToggleOptionST("STATE_CHAURUSQUEENARMOR_TOGGLE","Infect/Cure Chaurus Queen Armor", _toggleChaurusQueenArmor as Float)
+			AddToggleOptionST("STATE_CHAURUSQUEENBODY_TOGGLE","Infect/Cure Chaurus Queen Full Body", _toggleChaurusQueenBody as Float)
+			AddSliderOptionST("STATE_CHAURUSQUEEN_BELLY","Max belly size (Chaurus Queen)", _bellyMaxChaurusQueen,"{1}")
+		else
+			AddToggleOptionST("STATE_CHAURUSQUEENVAG_TOGGLE","Infect/Cure Vaginal Chaurus Queen", _toggleChaurusQueenVag as Float, OPTION_FLAG_DISABLED)
+			AddToggleOptionST("STATE_CHAURUSQUEENGAG_TOGGLE","Infect/Cure Chaurus Queen Mask", _toggleChaurusQueenGag as Float, OPTION_FLAG_DISABLED)
+			AddToggleOptionST("STATE_CHAURUSQUEENSKIN_TOGGLE","Infect/Cure Chaurus Queen Skin", _toggleChaurusQueenSkin as Float, OPTION_FLAG_DISABLED)
+			AddToggleOptionST("STATE_CHAURUSQUEENARMOR_TOGGLE","Infect/Cure Chaurus Queen Armor", _toggleChaurusQueenArmor as Float, OPTION_FLAG_DISABLED)
+			AddToggleOptionST("STATE_CHAURUSQUEENBODY_TOGGLE","Infect/Cure Chaurus Queen Full Body", _toggleChaurusQueenBody as Float, OPTION_FLAG_DISABLED)
+			AddSliderOptionST("STATE_CHAURUSQUEEN_BELLY","Max belly size (Chaurus Queen)", _bellyMaxChaurusQueen,"{1}", OPTION_FLAG_DISABLED)
+		endif
 
 	endIf
 endEvent
@@ -1011,6 +1024,37 @@ state STATE_CHAURUSQUEENGAG_TOGGLE ; TOGGLE
 
 endState
 
+; AddToggleOptionST("STATE_CHAURUSQUEENSKIN_TOGGLE","Chaurus Queen Armor", _toggleChaurusQueenSkin as Float, OPTION_FLAG_DISABLED)
+state STATE_CHAURUSQUEENSKIN_TOGGLE ; TOGGLE
+	event OnSelectST() 
+		Int toggle = Math.LogicalXor( 1, StorageUtil.GetIntValue(kPlayer, "_SLP_toggleChaurusQueenSkin" )   )
+		StorageUtil.SetIntValue(kPlayer, "_SLP_toggleChaurusQueenSkin", toggle as Int )
+
+		If (toggle ==1)
+			Debug.MessageBox("Infecting player with Chaurus Queen Skin")
+			kPlayer.SendModEvent("SLPInfectChaurusQueenSkin")
+		else
+			Debug.MessageBox("Curing player from Chaurus Queen Skin")
+			kPlayer.SendModEvent("SLPCureChaurusQueenSkin")
+		Endif
+
+		SetToggleOptionValueST( toggle as Bool )
+		ForcePageReset()
+	endEvent
+
+	event OnDefaultST()
+		StorageUtil.SetIntValue(kPlayer, "_SLP_toggleChaurusQueenSkin", 1 )
+		SetToggleOptionValueST( true )
+		ForcePageReset()
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Manually Infect/Cure Chaurus Queen Skin for roleplay or testing purposes.")
+	endEvent
+
+endState
+
+
 ; AddToggleOptionST("STATE_CHAURUSQUEENARMOR_TOGGLE","Chaurus Queen Armor", _toggleChaurusQueenArmor as Float, OPTION_FLAG_DISABLED)
 state STATE_CHAURUSQUEENARMOR_TOGGLE ; TOGGLE
 	event OnSelectST() 
@@ -1259,6 +1303,10 @@ Function _setParasiteSettings()
 	if (_chanceChaurusQueenGag==-1.0)
 		StorageUtil.SetIntValue(kPlayer, "_SLP_toggleChaurusQueenGag", 0 )
 		StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceChaurusQueenGag", 100.0 ) 
+	Endif
+	if (_chanceChaurusQueenSkin==-1.0)
+		StorageUtil.SetIntValue(kPlayer, "_SLP_toggleChaurusQueenSkin", 0 )
+		StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceChaurusQueenSkin", 100.0 ) 
 	Endif
 	if (_chanceChaurusQueenArmor==-1.0)
 		StorageUtil.SetIntValue(kPlayer, "_SLP_toggleChaurusQueenArmor", 0 )

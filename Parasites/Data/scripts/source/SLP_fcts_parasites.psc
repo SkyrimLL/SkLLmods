@@ -49,6 +49,7 @@ Keyword Property _SLP_ParasiteSpiderPenis  Auto
 Keyword Property _SLP_ParasiteChaurusWorm  Auto  
 Keyword Property _SLP_ParasiteChaurusWormVag Auto  
 Keyword Property _SLP_ParasiteChaurusQueenGag Auto  
+Keyword Property _SLP_ParasiteChaurusQueenSkin Auto  
 Keyword Property _SLP_ParasiteChaurusQueenArmor Auto  
 Keyword Property _SLP_ParasiteChaurusQueenBody Auto  
 Keyword Property _SLP_ParasiteChaurusQueenVag Auto  
@@ -80,10 +81,18 @@ Armor Property SLP_harnessFaceHuggerGagRendered Auto         ; Internal Device
 Armor Property SLP_harnessFaceHuggerGagInventory Auto        	       ; Inventory Device
 Armor Property SLP_harnessBarnaclesRendered Auto         ; Internal Device
 Armor Property SLP_harnessBarnaclesInventory Auto        	       ; Inventory Device
+Armor Property SLP_harnessChaurusQueenSkinRendered Auto         ; Internal Device
+Armor Property SLP_harnessChaurusQueenSkinInventory Auto        	       ; Inventory Device
 Armor Property SLP_harnessChaurusQueenArmorRendered Auto         ; Internal Device
 Armor Property SLP_harnessChaurusQueenArmorInventory Auto        	       ; Inventory Device
 Armor Property SLP_harnessChaurusQueenBodyRendered Auto         ; Internal Device
 Armor Property SLP_harnessChaurusQueenBodyInventory Auto        	       ; Inventory Device
+
+Ingredient Property GlowingMushrooms  Auto  
+
+GlobalVariable Property _SLP_GV_ZAPFuroTubOn  Auto  
+
+Package Property _SLP_PKG_ZapFuroTub  Auto  
 
 ; String                   Property NINODE_SCHLONG	 	= "NPC Genitals01 [Gen01]" AutoReadOnly
 string                   Property SLH_KEY               = "SexLab_Hormones.esp" AutoReadOnly
@@ -376,6 +385,9 @@ Armor Function getParasiteByKeyword(Keyword thisKeyword  )
 	Elseif (thisKeyword == _SLP_ParasiteChaurusQueenVag)
 		thisArmor = SLP_plugChaurusQueenVagInventory
 
+	Elseif (thisKeyword == _SLP_ParasiteChaurusQueenSkin)
+		thisArmor = SLP_harnessChaurusQueenSkinInventory
+
 	Elseif (thisKeyword == _SLP_ParasiteChaurusQueenArmor)
 		thisArmor = SLP_harnessChaurusQueenArmorInventory
 
@@ -421,6 +433,9 @@ Armor Function getParasiteRenderedByKeyword(Keyword thisKeyword  )
 
 	Elseif (thisKeyword == _SLP_ParasiteChaurusQueenVag)
 		thisArmor = SLP_plugChaurusQueenVagRendered
+
+	Elseif (thisKeyword == _SLP_ParasiteChaurusQueenSkin)
+		thisArmor = SLP_harnessChaurusQueenSkinRendered
 
 	Elseif (thisKeyword == _SLP_ParasiteChaurusQueenArmor)
 		thisArmor = SLP_harnessChaurusQueenArmorRendered
@@ -468,6 +483,9 @@ Keyword Function getDeviousKeywordByString(String deviousKeyword = ""  )
 		
 	elseif (deviousKeyword == "ChaurusQueenVag" )  
 		thisKeyword = _SLP_ParasiteChaurusQueenVag
+		
+	elseif (deviousKeyword == "ChaurusQueenSkin" )  
+		thisKeyword = _SLP_ParasiteChaurusQueenSkin
 		
 	elseif (deviousKeyword == "ChaurusQueenArmor" )  
 		thisKeyword = _SLP_ParasiteChaurusQueenArmor
@@ -574,9 +592,112 @@ Bool Function ActorHasKeywordByString(actor akActor, String deviousKeyword = "")
 	return libs.ActorHasKeyword(akActor, getDeviousKeywordByString( deviousKeyword ))
 EndFunction
 
-Bool Function isInfectedByString( Actor akActor,  String sParasiteString  )
+Bool Function isInfectedByString( Actor akActor,  String sParasite  )
+	Bool isInfected = False
 
-	Return akActor.WornHasKeyword(getDeviousKeywordByString(sParasiteString))
+	if ( akActor.WornHasKeyword(getDeviousKeywordByString(sParasite)) || (StorageUtil.GetIntValue(akActor, "_SLP_iHiddenParasite_" + sParasite)==1) || (StorageUtil.GetIntValue(akActor, "_SLP_iHiddenParasiteCount")>0))
+		isInfected = True
+	Endif
+
+	Return isInfected
+EndFunction
+
+Function applyHiddenParasiteEffect(Actor akActor, String sParasite = ""  )
+ 
+	if (sParasite == "SpiderEgg" )  
+		ApplyBodyChange( akActor, sParasite, "Belly", 2.0, 2.0 )
+
+	elseif (sParasite == "SpiderPenis" )  
+		; ApplyBodyChange( akActor, sParasite, "Belly", 2.0, 2.0 )
+
+	elseif (sParasite == "ChaurusWorm" )  
+		ApplyBodyChange( akActor, sParasite, "Butt", 2.0, 2.0 )
+		
+	elseif (sParasite == "ChaurusWormVag" )  
+		ApplyBodyChange( akActor, sParasite, "Belly", 2.0, 2.0 )
+		
+	elseif (sParasite == "ChaurusQueenGag" )  
+		; ApplyBodyChange( akActor, sParasite, "Belly", 2.0, 2.0 )
+		
+	elseif (sParasite == "ChaurusQueenVag" )  
+		ApplyBodyChange( akActor, sParasite, "Belly", 2.0, 2.0 )
+		
+	elseif (sParasite == "ChaurusQueenSkin" )  
+		ApplyBodyChange( akActor, sParasite, "Breast", 2.0, 2.0 )
+		
+	elseif (sParasite == "ChaurusQueenArmor" )  
+		ApplyBodyChange( akActor, sParasite, "Breast", 2.0, 2.0 )
+		
+	elseif (sParasite == "ChaurusQueenBody" )  
+		ApplyBodyChange( akActor, sParasite, "Breast", 2.0, 2.0 )
+		ApplyBodyChange( akActor, sParasite, "Belly", 2.0, 2.0 )
+		
+	elseif (sParasite == "TentacleMonster" )  
+		ApplyBodyChange( akActor, sParasite, "Belly", 2.0, 2.0 )
+		
+	elseif (sParasite == "LivingArmor" )  
+		ApplyBodyChange( akActor, sParasite, "Belly", 2.0, 2.0 )
+		
+	elseif (sParasite == "FaceHugger" )  
+		; ApplyBodyChange( akActor, sParasite, "Belly", 2.0, 2.0 )
+		
+	elseif (sParasite == "FaceHuggerGag" )  
+		; ApplyBodyChange( akActor, sParasite, "Belly", 2.0, 2.0 )
+		
+	elseif (sParasite == "Barnacles" )  
+		; ApplyBodyChange( akActor, sParasite, "Belly", 2.0, 2.0 )
+
+	endif
+
+EndFunction
+
+Function clearHiddenParasiteEffect(Actor akActor, String sParasite = ""  )
+ 
+	if (sParasite == "SpiderEgg" )  
+		ApplyBodyChange( akActor, sParasite, "Belly", 0.5, 2.0 )
+
+	elseif (sParasite == "SpiderPenis" )  
+		; ApplyBodyChange( akActor, sParasite, "Belly", 0.5, 2.0 )
+
+	elseif (sParasite == "ChaurusWorm" )  
+		ApplyBodyChange( akActor, sParasite, "Butt", 0.5, 2.0 )
+		
+	elseif (sParasite == "ChaurusWormVag" )  
+		ApplyBodyChange( akActor, sParasite, "Belly", 0.5, 2.0 )
+		
+	elseif (sParasite == "ChaurusQueenGag" )  
+		; ApplyBodyChange( akActor, sParasite, "Belly", 0.5, 2.0 )
+		
+	elseif (sParasite == "ChaurusQueenVag" )  
+		ApplyBodyChange( akActor, sParasite, "Belly", 0.5, 2.0 )
+		
+	elseif (sParasite == "ChaurusQueenSkin" )  
+		ApplyBodyChange( akActor, sParasite, "Breast", 0.5, 2.0 )
+		
+	elseif (sParasite == "ChaurusQueenArmor" )  
+		ApplyBodyChange( akActor, sParasite, "Breast", 0.5, 2.0 )
+		
+	elseif (sParasite == "ChaurusQueenBody" )  
+		ApplyBodyChange( akActor, sParasite, "Belly", 0.5, 2.0 )
+		ApplyBodyChange( akActor, sParasite, "Breast", 0.5, 2.0 )
+		
+	elseif (sParasite == "TentacleMonster" )  
+		ApplyBodyChange( akActor, sParasite, "Belly", 0.5, 2.0 )
+		
+	elseif (sParasite == "LivingArmor" )  
+		ApplyBodyChange( akActor, sParasite, "Belly", 0.5, 2.0 )
+		
+	elseif (sParasite == "FaceHugger" )  
+		; ApplyBodyChange( akActor, sParasite, "Belly", 0.5, 2.0 )
+		
+	elseif (sParasite == "FaceHuggerGag" )  
+		; ApplyBodyChange( akActor, sParasite, "Belly", 0.5, 2.0 )
+		
+	elseif (sParasite == "Barnacles" )  
+		; ApplyBodyChange( akActor, sParasite, "Belly", 0.5, 2.0 )
+
+	endif
+
 EndFunction
 
 ;------------------------------------------------------------------------------
@@ -1009,7 +1130,7 @@ Bool Function infectEstrusTentacles( Actor kActor  )
 	int ECTrap = ModEvent.Create("ECStartAnimation")  ; Int  Does not have to be named "ECTrap" any name would do
 
 	if (ECTrap) 
-	    ModEvent.PushForm(ECTrap, Game.GetPlayer())             ; Form (Some SendModEvent scripting "black magic" - required)
+	    ModEvent.PushForm(ECTrap, PlayerActor)             ; Form (Some SendModEvent scripting "black magic" - required)
 	    ModEvent.PushForm(ECTrap, kActor)  ; Form The animation target
 	    ModEvent.PushInt(ECTrap, 0)    			; Int The animation required -1 = Impregnation only with No Animation,
                                                 ; 0 = Tentacles, 1 = Machines 2 = Slime 3 = Ooze
@@ -1017,6 +1138,9 @@ Bool Function infectEstrusTentacles( Actor kActor  )
 	    ModEvent.Pushint(ECTrap, 500)           ; Int  Alarm radius in units (0 to disable) 
 	    ModEvent.PushBool(ECTrap, true)         ; Bool Use EC (basic) crowd control on hostiles 
 	    ModEvent.Send(ECtrap)
+	else
+		triggerFuroTub( PlayerActor, "")
+
 	endif
 
 	Return applyEstrusTentacles( kActor  )
@@ -1178,12 +1302,15 @@ Bool Function infectEstrusSlime( Actor kActor  )
 	if (ECTrap) 
 	    ModEvent.PushForm(ECTrap, Game.GetPlayer())             ; Form (Some SendModEvent scripting "black magic" - required)
 	    ModEvent.PushForm(ECTrap, kActor)  ; Form The animation target
-	    ModEvent.PushInt(ECTrap, Utility.randomInt(3,4))    	; Int The animation required -1 = Impregnation only with No Animation,
+	    ModEvent.PushInt(ECTrap, Utility.randomInt(2,3))    	; Int The animation required -1 = Impregnation only with No Animation,
                                                 ; 0 = Tentacles, 1 = Machines 2 = Slime 3 = Ooze
 	    ModEvent.PushBool(ECTrap, true)         ; Bool Apply the linked EC effect (Ovipostion for Tentacles, Exhaustion for Machine) 
 	    ModEvent.Pushint(ECTrap, 500)           ; Int  Alarm radius in units (0 to disable) 
 	    ModEvent.PushBool(ECTrap, true)         ; Bool Use EC (basic) crowd control on hostiles 
 	    ModEvent.Send(ECtrap)
+	else
+		triggerFuroTub( PlayerActor, "")
+
 	endif
 
 	Return applyEstrusSlime( kActor  )
@@ -1751,6 +1878,97 @@ EndFunction
 
 
 ;------------------------------------------------------------------------------
+Bool Function infectChaurusQueenSkin( Actor kActor  )
+ 	Actor PlayerActor = Game.GetPlayer()
+ 
+  	if (kActor == None)
+  		kActor = PlayerActor
+  	endIf
+ 
+	If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceChaurusQueenSkin" )==0.0)
+		Debug.Trace("[SLP]	Parasite disabled - Aborting")
+		Return False
+	Endif
+
+	If ((isInfectedByString( kActor,  "ChaurusQueenSkin" )) || (isInfectedByString( kActor,  "FaceHugger" )) )
+		Debug.Trace("[SLP]	Already infected - Aborting")
+		Return False
+	Endif
+
+	If ( (ActorHasKeywordByString( kActor, "Harness"  )) || (ActorHasKeywordByString( kActor, "Bra"  )))
+		Debug.Trace("[SLP]	Already wearing a harness- Aborting")
+		Return False
+	Endif
+
+	If (!isFemale( kActor))
+		Debug.Trace("[SLP]	Actor is not female - Aborting")
+		Return False
+	Endif
+	
+	equipParasiteNPCByString (kActor, "ChaurusQueenSkin")
+
+	Return true ; Return applyChaurusQueenSkin( kActor  )
+
+EndFunction
+
+Bool Function applyChaurusQueenSkin( Actor kActor  )
+ 	Actor PlayerActor = Game.GetPlayer()
+
+	If (kActor == PlayerActor)
+		ChaurusQueenInfectedAlias.ForceRefTo(PlayerActor)
+	endIf
+
+	If !StorageUtil.HasIntValue(kActor, "_SLP_iChaurusQueenSkinInfections")
+			StorageUtil.SetIntValue(kActor, "_SLP_iChaurusQueenSkinInfections",  0)
+	EndIf
+
+	StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenSkin", 1 )
+	StorageUtil.SetIntValue(kActor, "_SLP_iChaurusQueenSkinDate", Game.QueryStat("Days Passed"))
+	StorageUtil.SetIntValue(kActor, "_SLP_iInfections",  StorageUtil.GetIntValue(kActor, "_SLP_iInfections") + 1)
+	StorageUtil.SetIntValue(kActor, "_SLP_iChaurusQueenSkinInfections",  StorageUtil.GetIntValue(kActor, "_SLP_iChaurusQueenSkinInfections") + 1)
+
+	If (kActor == PlayerActor)
+		_SLP_GV_numInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iInfections"))
+		; _SLP_GV_numChaurusQueenSkinInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iChaurusQueenSkinInfections"))
+	endIf
+
+	SendModEvent("SLPChaurusQueenSkinInfection")
+
+	if (!KynesBlessingQuest.GetStageDone(20)) && (kActor == PlayerActor)
+		KynesBlessingQuest.SetStage(20)
+	endif
+	
+	Return True
+EndFunction
+
+Function cureChaurusQueenSkin( Actor kActor, Bool bHarvestParasite = False   )
+ 	Actor PlayerActor = Game.GetPlayer()
+ 
+  	if (kActor == None)
+  		kActor = PlayerActor
+  	endIf
+ 
+	If (isInfectedByString( kActor,  "ChaurusQueenSkin" ))
+		StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenSkin", 0 )
+		clearParasiteNPCByString (kActor, "ChaurusQueenSkin")
+		; ApplyBodyChange( kActor, "ChaurusQueenSkin", "Breast", 1.0, StorageUtil.GetFloatValue(PlayerActor, "_SLP_breastMaxChaurusQueenSkin" ))
+
+		If (bHarvestParasite)
+			PlayerActor.AddItem(SLP_harnessChaurusQueenSkinInventory,1)
+		Endif
+
+		If (kActor == PlayerActor)
+			ChaurusQueenInfectedAlias.ForceRefTo(DummyAlias)
+		endIf
+
+	Else
+		; Reset variables if called after device is removed
+		StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenSkin", 0)
+	EndIf
+EndFunction
+
+
+;------------------------------------------------------------------------------
 Bool Function infectChaurusQueenArmor( Actor kActor  )
  	Actor PlayerActor = Game.GetPlayer()
  
@@ -2038,6 +2256,26 @@ Function triggerEstrusChaurusBirth( Actor kActor, String  sParasite, Int iBirthI
 	Endif
 
 EndFunction
+
+;------------------------------------------------------------------------------
+Function triggerFuroTub( Actor kActor, String  sParasite)
+  	Actor PlayerActor = Game.GetPlayer()
+  	Form fBirthItem = None
+
+  	if (kActor == None)
+  		kActor = PlayerActor
+  	endIf
+
+	_SLP_GV_ZAPFuroTubOn.SetValue(1)
+	 
+	PlayerActor.EvaluatePackage()
+
+	Utility.Wait(10.0)
+
+	_SLP_GV_ZAPFuroTubOn.SetValue(0)
+
+EndFunction
+
 
 ;------------------------------------------------------------------------------
 Function refreshParasite(Actor kActor, String sParasite)
@@ -2390,4 +2628,4 @@ Function _resetParasiteSettings()
 	StorageUtil.SetIntValue(kPlayer, "_SLP_toggleBarnacles", 0 )
 	StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceBarnacles", 30.0 )
 EndFunction
-Ingredient Property GlowingMushrooms  Auto  
+

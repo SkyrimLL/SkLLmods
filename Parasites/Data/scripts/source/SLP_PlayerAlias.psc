@@ -120,6 +120,8 @@ Function _maintenance()
 	RegisterForModEvent("SLPCureChaurusQueenVag",   "OnSLPCureChaurusQueenVag")
 	RegisterForModEvent("SLPInfectChaurusQueenGag",   "OnSLPInfectChaurusQueenGag")
 	RegisterForModEvent("SLPCureChaurusQueenGag",   "OnSLPCureChaurusQueenGag")
+	RegisterForModEvent("SLPInfectChaurusQueenSkin",   "OnSLPInfectChaurusQueenSkin")
+	RegisterForModEvent("SLPCureChaurusQueenSkin",   "OnSLPCureChaurusQueenSkin")
 	RegisterForModEvent("SLPInfectChaurusQueenArmor",   "OnSLPInfectChaurusQueenArmor")
 	RegisterForModEvent("SLPCureChaurusQueenArmor",   "OnSLPCureChaurusQueenArmor")
 	RegisterForModEvent("SLPInfectChaurusQueenBody",   "OnSLPInfectChaurusQueenBody")
@@ -127,10 +129,14 @@ Function _maintenance()
 
 	RegisterForModEvent("SLPInfectEstrusChaurusEgg",   "OnSLPInfectEstrusChaurusEgg")
 	RegisterForModEvent("SLPTriggerEstrusChaurusBirth",   "OnSLPTriggerEstrusChaurusBirth")
+	RegisterForModEvent("SLPTriggerFuroTub",   "OnSLPTriggerFuroTub")
 
 	RegisterForModEvent("ArachnophobiaPlayerCaptured",   "OnArachnophobiaPlayerCaptured")
 	RegisterForModEvent("ECBirthStarted",   "OnECBirthCompleted")
 
+	RegisterForModEvent("SLPHideParasite",   "OnSLPHideParasite")
+	RegisterForModEvent("SLPShowParasite",   "OnSLPShowParasite")
+ 
 	RegisterForModEvent("SLPRefreshParasites",   "OnSLPRefreshParasites")
 	RegisterForModEvent("SLPClearParasites",   "OnSLPClearParasites")
 
@@ -1007,6 +1013,43 @@ EndEvent
 
 
 ;------------------------------------------------------------------------------
+Event OnSLPInfectChaurusQueenSkin(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+  	Actor PlayerActor = Game.GetPlayer()
+
+ 	If (kActor == None)
+ 		kActor = PlayerActor
+ 	Endif
+ 
+	Debug.Trace("[SLP] Receiving 'infect chaurus queen skin' event - Actor: " + kActor)
+
+	ActorBase pActorBase = kActor.GetActorBase()
+
+	if (pActorBase.GetSex()==0)
+		Debug.Trace("[SLP]  	Actor is male - aborting infection")
+		return
+	Endif
+
+	fctParasites.infectChaurusQueenSkin( kActor   )
+	
+EndEvent
+
+Event OnSLPCureChaurusQueenSkin(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+  	Actor PlayerActor = Game.GetPlayer()
+
+ 	If (kActor == None)
+ 		kActor = PlayerActor
+ 	Endif
+ 
+	Debug.Trace("[SLP] Receiving 'cure chaurus queen skin' event - Actor: " + kActor)
+
+	fctParasites.cureChaurusQueenSkin( kActor   )
+
+EndEvent
+
+
+;------------------------------------------------------------------------------
 Event OnSLPInfectChaurusQueenArmor(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
   	Actor PlayerActor = Game.GetPlayer()
@@ -1119,6 +1162,26 @@ Event OnSLPTriggerEstrusChaurusBirth(String _eventName, String _args, Float _arg
 	fctParasites.triggerEstrusChaurusBirth( kActor, sParasite, iBirthItemCount  )
 	
 EndEvent
+
+;------------------------------------------------------------------------------
+Event OnSLPTriggerFuroTub(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+  	Actor PlayerActor = Game.GetPlayer()
+ 	String sParasite = _args
+ 	Int iBirthItemCount = _argc as Int
+
+ 	If (kActor == None)
+ 		kActor = PlayerActor
+ 	Endif
+
+ 	; (sParasite == "SpiderEgg")
+	; (sParasite == "Barnacles")
+	
+	Debug.Trace("[SLP] Receiving 'trigger furo tub' event - Actor: " + PlayerActor)
+
+	fctParasites.triggerFuroTub( PlayerActor, "" )
+	
+EndEvent
 ;------------------------------------------------------------------------------
 Event OnSLPSexCure(String _eventName, String _args, Float _argc = 0.0, Form _sender)
  	Actor kActor = _sender as Actor
@@ -1205,6 +1268,8 @@ Event OnSLPSexCure(String _eventName, String _args, Float _argc = 0.0, Form _sen
  		sTags = "Oral"
  		kPlayer.RemoveItem(FireSalts,1)
 
+ 	ElseIf (sParasite != "")
+		sTags = sParasite
  	Else
 		sTags = "Sex"
   	endif
@@ -1319,6 +1384,47 @@ Event OnSLPClearParasites(String _eventName, String _args, Float _argc = 1.0, Fo
 
 EndEvent
 
+Event OnSLPHideParasite(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+  	Actor PlayerActor = Game.GetPlayer()
+ 	String sParasite = _args
+ 	Bool bHarvestParasite = False
+
+ 	If (kActor == None)
+ 		kActor = PlayerActor
+ 	Endif
+ 	
+	Debug.Trace("[SLP] Receiving 'hide parasite' event - Actor: " + kActor)
+
+	fctParasites.clearParasiteNPCByString(kActor, sParasite) 
+	StorageUtil.SetIntValue(kActor, "_SLP_iHiddenParasiteCount" , StorageUtil.GetIntValue(kActor, "_SLP_iHiddenParasiteCount") + 1)
+	StorageUtil.SetIntValue(kActor, "_SLP_iHiddenParasite_" + sParasite, 1)
+
+	fctParasites.applyHiddenParasiteEffect(kActor, sParasite) 
+
+EndEvent
+
+Event OnSLPShowParasite(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+  	Actor PlayerActor = Game.GetPlayer()
+ 	String sParasite = _args
+ 	Bool bHarvestParasite = False
+
+ 	If (kActor == None)
+ 		kActor = PlayerActor
+ 	Endif
+ 	
+	Debug.Trace("[SLP] Receiving 'show parasite' event - Actor: " + kActor)
+
+	fctParasites.equipParasiteNPCByString(kActor, sParasite) 
+	StorageUtil.SetIntValue(kActor, "_SLP_iHiddenParasiteCount" ,  StorageUtil.GetIntValue(kActor, "_SLP_iHiddenParasiteCount") - 1)
+	StorageUtil.SetIntValue(kActor, "_SLP_iHiddenParasite_" + sParasite, 0)
+
+	fctParasites.clearHiddenParasiteEffect(kActor, sParasite) 
+
+EndEvent
+
+
 Event OnSLPRefreshParasites(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
   	Actor PlayerActor = Game.GetPlayer()
@@ -1333,14 +1439,12 @@ Event OnSLPRefreshParasites(String _eventName, String _args, Float _argc = 1.0, 
 	; fctParasites.cureSpiderEgg(kActor,"All", bHarvestParasite)
 	; fctParasites.cureSpiderPenis(kActor,bHarvestParasite)
  	; fctParasites.cureChaurusWorm(kActor, bHarvestParasite)
- 	; fctParasites.cureChaurusWormVag(kActor, bHarvestParasite)
-	fctParasites.refreshParasite(kActor, "Barnacles")
+ 	; fctParasites.cureChaurusWormVag(kActor, bHarvestParasite) 
 	fctParasites.refreshParasite(kActor, "Barnacles")
 	fctParasites.refreshParasite(kActor, "FaceHugger")
 	fctParasites.refreshParasite(kActor, "FaceHuggerGag")
 	fctParasites.refreshParasite(kActor, "TentacleMonster")
-	fctParasites.refreshParasite(kActor, "LivingArmor")
-	fctParasites.refreshParasite(kActor, "Barnacles")
+	fctParasites.refreshParasite(kActor, "LivingArmor") 
 
 
 EndEvent
