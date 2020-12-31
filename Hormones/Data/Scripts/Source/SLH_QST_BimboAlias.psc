@@ -158,6 +158,7 @@ Event OnUpdate()
 	float bimboArousal = slaUtil.GetActorArousal(BimboActor) as float
 	Actor kPlayer = Game.GetPlayer()
 	Int rollFirstPerson 
+	Bool bAbortUpdate = false
 
 
 	if (StorageUtil.GetIntValue(kPlayer, "_SLH_iBimbo")==0)
@@ -203,8 +204,13 @@ Event OnUpdate()
     ; Debug.Notification( "[SLH] iDaysSinceLastCheck: " + iDaysSinceLastCheck )
 	rollFirstPerson = Utility.RandomInt(0,100)
 
+	; Compatiblity with Parasites - prevent update when full body armor is worn
+	if (StorageUtil.GetIntValue(kPlayer, "_SLP_toggleChaurusQueenSkin" )==1) || (StorageUtil.GetIntValue(kPlayer, "_SLP_toggleChaurusQueenArmor" )==1) || (StorageUtil.GetIntValue(kPlayer, "_SLP_toggleChaurusQueenBody" )==1) || (StorageUtil.GetIntValue(kPlayer, "_SLP_toggleLivingArmor" )==1) || (StorageUtil.GetIntValue(kPlayer, "_SLP_toggleTentacleMonster" )==1)
+		bAbortUpdate = true
+	endif
+
     ; Exit conditions
-    If (iDaysSinceLastCheck >= 1) && !(BimboActor.IsBleedingOut() || BimboActor.IsInCombat() || BimboActor.IsDead() || BimboActor.IsOnMount() || BimboActor.IsFlying() || BimboActor.IsTrespassing() || BimboActor.IsUnconscious())
+    If (iDaysSinceLastCheck >= 1) && !(BimboActor.IsBleedingOut() || BimboActor.IsInCombat() || BimboActor.IsDead() || BimboActor.IsOnMount() || BimboActor.IsFlying() || BimboActor.IsTrespassing() || BimboActor.IsUnconscious() || bAbortUpdate)
         bool IsPlayer = (kPlayer == BimboActor) ; Shuld be but just to be sure.
 		if (IsPlayer && !Game.IsMovementControlsEnabled()) || SexLab.IsActorActive(BimboActor)
 			RegisterForSingleUpdate(10)
