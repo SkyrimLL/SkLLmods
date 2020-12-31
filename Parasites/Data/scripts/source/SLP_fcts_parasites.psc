@@ -1815,7 +1815,7 @@ Bool Function infectChaurusQueenGag( Actor kActor  )
 
 	equipParasiteNPCByString (kActor, "ChaurusQueenGag")
 
-	Return  applyFaceHuggerGag( kActor )
+	Return  true; applyFaceHuggerGag( kActor )
 EndFunction
 
 Bool Function applyChaurusQueenGag( Actor kActor  )
