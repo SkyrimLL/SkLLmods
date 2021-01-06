@@ -10,7 +10,7 @@ event onRead()
 
 	; Mess with Hormone levels - similar to sex with Daedra
 	; This will move the player along toward a gradual transformation
-	kPlayer.SendModEvent("SLHModHormoneRandom")
+	kPlayer.SendModEvent("SLHModHormoneRandom","Bimbo", 1.5)
 
 	; Play a bimbo moan or thought - the "now" parameter is use to bypass the random thought throttling mechanism
 	kPlayer.SendModEvent("SLHBimboThoughts","now")
