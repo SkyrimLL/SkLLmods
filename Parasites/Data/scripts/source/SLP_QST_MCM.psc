@@ -258,7 +258,7 @@ event OnPageReset(string a_page)
 
 		AddHeaderOption(" Chaurus Queen ")
 
-		if (StorageUtil.GetIntValue(kPlayer, "_SLP_iChaurusQueenStage")>=1)
+		if (StorageUtil.GetIntValue(kPlayer, "_SLP_iChaurusQueenStage")>=0)
 			AddToggleOptionST("STATE_CHAURUSQUEENVAG_TOGGLE","Infect/Cure Vaginal Chaurus Queen", _toggleChaurusQueenVag as Float)
 			AddToggleOptionST("STATE_CHAURUSQUEENGAG_TOGGLE","Infect/Cure Chaurus Queen Mask", _toggleChaurusQueenGag as Float)
 			AddToggleOptionST("STATE_CHAURUSQUEENSKIN_TOGGLE","Infect/Cure Chaurus Queen Skin", _toggleChaurusQueenSkin as Float)

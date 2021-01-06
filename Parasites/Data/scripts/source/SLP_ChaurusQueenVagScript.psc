@@ -4,18 +4,22 @@ Scriptname SLP_ChaurusQueenVagScript extends zadPlugScript
 Message Property squeezeMsg Auto
 SLP_fcts_parasites Property fctParasites  Auto
 
-string strFailEquip =  "Try as you might, the belt you are wearing prevents you from inserting the slimy worm inside you."
+string strFailEquip =  "You can feel the parasite churn and push inside you, but he belt you are wearing is keeping it deep inside your womb."
 
 int Function OnEquippedFilter(actor akActor, bool silent=false)
 	; FTM optimization
 	if silent && akActor != libs.PlayerRef
-		return 0
+		return 2
+	EndIf
+	if !silent && akActor != libs.PlayerRef
+		libs.NotifyActor("Without the Seed Stone inside them, the parasite rejects " + akActor.GetLeveledActorBase().GetName() + " as a host.", akActor, true)
+		return 2
 	EndIf
 	if akActor.WornHasKeyword(zad_DeviousBelt)
 		if akActor == libs.PlayerRef && !silent
 			libs.NotifyActor(strFailEquip, akActor, true)
 		ElseIf  !silent
-			libs.NotifyActor("The belt " + akActor.GetLeveledActorBase().GetName() + " is wearing prevents you from inserting the slimy worm.", akActor, true)
+			libs.NotifyActor("Without the Seed Stone inside them, the parasite rejects " + akActor.GetLeveledActorBase().GetName() + " as a host.", akActor, true)
 		EndIf
 		return 2
 	Endif
@@ -26,16 +30,14 @@ Function OnEquippedPre(actor akActor, bool silent=false)
 	string msg = ""
 	if akActor == libs.PlayerRef
 		if Aroused.GetActorExposure(akActor) < libs.ArousalThreshold("Desire")
-			msg = "The worm fits snugly inside your hole, spreading a wave of pleasure deep into your belly."
+			msg = "The parasite in your womb stirs and fills your vagina snugly, leaving your lips slightly parted and wet."
 		elseif Aroused.GetActorExposure(akActor) < libs.ArousalThreshold("Horny")
-			msg = "You carefully let the worm crawl its way into your opening, your lust growing with every inch it slides in."
+			msg = "The parasite in your womb extends past your vagina and keeps your lips spread wide."
 		elseif Aroused.GetActorExposure(akActor) < libs.ArousalThreshold("Desperate")
-			msg = "You eagerly spread your lips to let the worm ease its way deep into your quivering hole, making you squeal with delight in the resulting waves of pleasure."
+			msg = "The parasite in your womb spreads your vagina wide open."
 		else
-			msg = "Barely in control of control your own body, you thrust the worm almost forcefully into your wet opening."
+			msg = "You can feel the parasite in your womb fill your vagina and squirm between your thighs."
 		endif
-	else
-		msg = akActor.GetLeveledActorBase().GetName() + " shudders as you let the worm crawl deep inside her."
 	EndIf
 	if !silent
 		libs.NotifyActor(msg, akActor, true)
@@ -81,7 +83,7 @@ EndFunction
 Function DeviceMenu(Int msgChoice = 0)
         msgChoice = zad_DeviceMsg.Show() ; display menu
 	if msgChoice==0 ; Not wearing a belt, no plugs
-		Debug.Notification("You choose to insert the worm inside you.")
+		Debug.Notification("You stroke yourself with the Seed and coax the parasite out of its confinement.")
 		libs.EquipDevice(libs.PlayerRef, deviceInventory, deviceRendered, zad_DeviousDevice)
 	elseif msgChoice==1 ; Wearing a belt, no plugs
 		Debug.MessageBox(strFailEquip)
@@ -92,32 +94,32 @@ Function DeviceMenu(Int msgChoice = 0)
 		; Debug.Notification("Arousal: " + Aroused.GetActorArousal(libs.PlayerRef))
 		if ( Aroused.GetActorArousal(libs.PlayerRef) <= 10 ) ; libs.ArousalThreshold("Desire")
 			If (Utility.RandomInt(0,100) < iDexterity) 
-				msg = "The worm squirms as it slides out your hole, leaving a slipery trail behind."
+				msg = "Pushing and prying with your fingers, you manage to push the parasite back inside your womb."
 				libs.NotifyPlayer(msg, true)
 				RemoveDevice(libs.PlayerRef)
 			else
-				msg = "Your fingers slip, causing the worm to retract deeper and making you wet in the process. You will have to give it another try when you are not so horny."
+				msg = "Your fingers slip, causing the parasite to extend and throb, and making you wet in the process. "
 				libs.NotifyPlayer(msg, true)
 			EndIf
 
 			libs.UpdateExposure(libs.PlayerRef,2)
 		else	
 			if ( Aroused.GetActorArousal(libs.PlayerRef) < 40 ) ; libs.ArousalThreshold("Horny")
-				msg = "As you tug at the slimy end of the worm, its teeth sink in deeper into your vaginal walls, feeding on your juices and shooting shards of pain and pleasure deep inside you."
+				msg = "As you keep pushing and tugging, the parasite keeps slipping away and growing thicker between your lips."
 				libs.UpdateExposure(libs.PlayerRef,2)
 
 			elseif ( Aroused.GetActorArousal(libs.PlayerRef) < 80 ) ; libs.ArousalThreshold("Desperate")
-				msg = "As you pull at the slimy worm through your now well lubricated opening, you can feel it inflate and occupy your whole vaginaly cavity, making it impossible to remove."
+				msg = "As you pull at the slimy worm through your now well lubricated opening, you can feel it inflate and occupy your whole vaginal cavity, making it impossible to push on."
 				libs.UpdateExposure(libs.PlayerRef,2)
 			else
-				msg = "You desperately try to pull the glistening worm out of your hole, only to feel your own vagina clenching around it and keeping it firmly inside you."
+				msg = "You desperately try to pull the glistening worm back inside your hole, only to feel your own vagina clenching around it and keeping it firmly inside you."
 				libs.UpdateExposure(libs.PlayerRef,2)
 			endif
 			libs.NotifyPlayer(msg, true)
 
 		endif
 	elseif msgChoice==3 ; Wearing a belt, plugs
-		NoKeyFailMessage(libs.PlayerRef)
+		Debug.MessageBox(strFailEquip)
 	Endif
 	DeviceMenuExt(msgChoice)
 	SyncInventory()
@@ -126,10 +128,10 @@ EndFunction
 
 Function NoKeyFailMessage(Actor akActor)
 	if ( Utility.RandomInt(0,120) > Aroused.GetActorArousal(libs.PlayerRef) ) 
-		libs.NotifyPlayer("You start pulling at the squirmy worm between your legs...", true)
+		libs.NotifyPlayer("The parasite reluctantly slide back inside you, leaving behind a small appendage similar to the seed stone.", true)
 		akActor.SendModEvent("SLPSexCure","ChaurusQueenVag",1)
 	else
-		libs.NotifyPlayer("The worm is too deep to be removed that easily.", true)
+		libs.NotifyPlayer("The worm is too slippery to be pushed back in that easily.", true)
 	endif
 
 EndFunction

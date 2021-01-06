@@ -6,9 +6,7 @@ SLP_fcts_parasites Property fctParasites  Auto
 Function OnEquippedPre(actor akActor, bool silent=false)
 	if !silent
 		if akActor == libs.PlayerRef
-			libs.NotifyActor("Glowing spores attach themselves to your skin and start throbbing as they exude sweet fluids.", akActor, true)
-		Else
-			libs.NotifyActor(GetMessageName(akActor) +" yelps as the glowing spores spread across her body.", akActor, true)
+			libs.NotifyActor("The parasite is spreading through your skin and invading your breasts. New glands appear on your chest and start exuding a sweet and sticky liquid.", akActor, true)
 			
 		EndIf
 	EndIf
@@ -31,7 +29,7 @@ int Function OnEquippedFilter(actor akActor, bool silent=false)
 			return 2
 		Endif
 		if (pActorBase.GetSex()==0)
-			libs.NotifyActor("The spores refuse to attach themselves around a male.", akActor, true)
+			; libs.NotifyActor("The spores refuse to attach themselves around a male.", akActor, true)
 			return 2
 		Endif
 	Endif

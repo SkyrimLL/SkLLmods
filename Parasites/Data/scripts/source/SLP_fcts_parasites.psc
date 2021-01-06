@@ -88,6 +88,8 @@ Armor Property SLP_harnessChaurusQueenArmorInventory Auto        	       ; Inven
 Armor Property SLP_harnessChaurusQueenBodyRendered Auto         ; Internal Device
 Armor Property SLP_harnessChaurusQueenBodyInventory Auto        	       ; Inventory Device
 
+Armor Property _SLP_skinChaurusQueenNaked Auto
+
 Ingredient Property GlowingMushrooms  Auto  
 
 GlobalVariable Property _SLP_GV_ZAPFuroTubOn  Auto  
@@ -1698,6 +1700,25 @@ Function cureBarnacles( Actor kActor, Bool bHarvestParasite = False   )
 EndFunction
 
 ;------------------------------------------------------------------------------
+Function applyBaseChaurusQueenSkin()
+ 	Actor PlayerActor = Game.GetPlayer()
+	ActorBase pActorBase = PlayerActor.GetActorBase()
+	ActorBase pLeveledActorBase = PlayerActor.GetLeveledActorBase()
+	Float fWeightOrig = pActorBase.GetWeight()
+	Float fWeight
+	Float NeckDelta
+
+	pLeveledActorBase.SetWeight(fWeightOrig)
+	pLeveledActorBase.SetSkin(_SLP_skinChaurusQueenNaked)
+	; fWeight = pLeveledActorBase.GetWeight()
+	; NeckDelta = (fWeightOrig / 100) - (fWeight / 100)
+	; PlayerActor.UpdateWeight(NeckDelta) ;Apply the changes.
+
+
+EndFunction
+
+
+;------------------------------------------------------------------------------
 Bool Function infectChaurusQueenVag( Actor kActor  )
  	Actor PlayerActor = Game.GetPlayer()
  
@@ -1753,6 +1774,8 @@ Bool Function applyChaurusQueenVag( Actor kActor  )
 		_SLP_GV_numInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iInfections"))
 		; _SLP_GV_numChaurusWormVagInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iChaurusQueenVagInfections"))
 	endIf
+
+	applyBaseChaurusQueenSkin()
 
 	SendModEvent("SLPChaurusQueenVagInfection")
 
@@ -1838,6 +1861,8 @@ Bool Function applyChaurusQueenGag( Actor kActor  )
 		_SLP_GV_numInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iInfections"))
 		; _SLP_GV_numFaceHuggerInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iChaurusQueenGagInfections"))
 	endIf
+
+	applyBaseChaurusQueenSkin()
 
 	SendModEvent("SLPChaurusQueenGagInfection")
 
@@ -1932,6 +1957,8 @@ Bool Function applyChaurusQueenSkin( Actor kActor  )
 		; _SLP_GV_numChaurusQueenSkinInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iChaurusQueenSkinInfections"))
 	endIf
 
+	applyBaseChaurusQueenSkin()
+
 	SendModEvent("SLPChaurusQueenSkinInfection")
 
 	if (!KynesBlessingQuest.GetStageDone(20)) && (kActor == PlayerActor)
@@ -2022,6 +2049,8 @@ Bool Function applyChaurusQueenArmor( Actor kActor  )
 		_SLP_GV_numInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iInfections"))
 		; _SLP_GV_numChaurusQueenArmorInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iChaurusQueenArmorInfections"))
 	endIf
+
+	applyBaseChaurusQueenSkin()
 
 	SendModEvent("SLPChaurusQueenArmorInfection")
 
@@ -2114,6 +2143,8 @@ Bool Function applyChaurusQueenBody( Actor kActor  )
 		_SLP_GV_numInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iInfections"))
 		; _SLP_GV_numChaurusQueenBodyInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iChaurusQueenBodyInfections"))
 	endIf
+
+	applyBaseChaurusQueenSkin()
 
 	SendModEvent("SLPChaurusQueenBodyInfection")
 
@@ -2466,6 +2497,10 @@ Bool function isFemale(actor kActor)
 	return bIsFemale
 EndFunction
 
+Bool function isMale(actor kActor)
+	return !isFemale(kActor)
+EndFunction
+
 ;------------------------------------------------------------------------------
 bool function isPregnantByEstrusChaurus(actor kActor)
   spell  ChaurusBreeder 
@@ -2567,7 +2602,7 @@ Function FalmerBlue(Actor kActor, Actor kTarget)
 
 
 		if (Utility.RandomInt(0,100)>90)
-			SendModEvent("SLHModHormoneRandom", "Chaurus")
+			SendModEvent("SLHModHormoneRandom", "Chaurus", 1.0)
 		else
 			SendModEvent("SLHModHormone", "Growth", 5.0)
 			SendModEvent("SLHModHormone", "Female", 10.0)

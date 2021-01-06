@@ -187,6 +187,8 @@ Event OnUpdate()
 	iDaysSinceLastCheck = (daysPassed - iGameDateLastCheck ) as Int
 
 	If (iDaysSinceLastCheck > 0)
+		; New day
+		
 		If (fctParasites.isInfectedByString( PlayerActor,  "SpiderPenis" ))
 			iParasiteDuration = Game.QueryStat("Days Passed") - StorageUtil.GetIntValue(PlayerActor, "_SLP_iSpiderPenisDate")
 			If (Utility.RandomInt(0,100) > (100 - (iParasiteDuration * 10) ) )
@@ -1534,6 +1536,11 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 				Debug.Trace("[SLP] Not a good location for Face hugger (gag)")
 			EndIf
 		endif
+
+		if kLocation.IsSameLocation(SLP_BlackreachLocation)
+			PlayerActor.SendModEvent("SLHModHormone", "Immunity", -1.0 * Utility.RandomFloat(1.0,10.0))
+		endif
+
 	else
 		Debug.Trace("[SLP] Sleep location is empty")
 	endIf
@@ -1594,6 +1601,33 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 			Debug.Trace("[SLP] Not a good location for Face hugger")
 		EndIf
 	endif
+
+	; Hormones compatibility
+	If (fctParasites.ActorHasKeywordByString(PlayerActor, "FaceHugger")) || (fctParasites.ActorHasKeywordByString(PlayerActor, "HipHugger")) || (fctParasites.ActorHasKeywordByString(PlayerActor, "ChaurusWorm"))
+		PlayerActor.SendModEvent("SLHModHormone", "Female", 10.0 + Utility.RandomFloat(0.0,10.0))
+		PlayerActor.SendModEvent("SLHModHormone", "SexDrive", 1.0 + Utility.RandomFloat(0.0,5.0))
+	endif 
+
+	If ( (fctParasites.ActorHasKeywordByString(PlayerActor, "SpiderEgg")) || (fctParasites.ActorHasKeywordByString(PlayerActor, "SpiderPenis")) ) 
+		if (fctParasites.isMale(PlayerActor)) 
+			PlayerActor.SendModEvent("SLHModHormone", "Male", 10.0 + Utility.RandomFloat(0.0,10.0))
+		endif
+		PlayerActor.SendModEvent("SLHModHormone", "SexDrive", 5.0 + Utility.RandomFloat(0.0,10.0))
+	endif 
+
+	If (fctParasites.ActorHasKeywordByString(PlayerActor, "LivingArmor"))
+		PlayerActor.SendModEvent("SLHModHormone", "Immunity", 1.0 * Utility.RandomFloat(0.0,10.0))
+		PlayerActor.SendModEvent("SLHModHormone", "Lactation", 10.0 + Utility.RandomFloat(0.0,10.0))
+	endif 
+
+	If (fctParasites.ActorHasKeywordByString(PlayerActor, "Barnacles"))
+		PlayerActor.SendModEvent("SLHModHormone", "Immunity", -1.0 * Utility.RandomFloat(0.0,10.0))
+		PlayerActor.SendModEvent("SLHModHormone", "Pheromones", 1.0 + Utility.RandomFloat(0.0,5.0))
+	endif 
+
+	If (fctParasites.ActorHasKeywordByString(PlayerActor, "ChaurusQueenVag"))
+		PlayerActor.SendModEvent("SLHModHormone", "Pheromones", 10.0 + Utility.RandomFloat(0.0,20.0))
+	endif 
 
 EndEvent
 
