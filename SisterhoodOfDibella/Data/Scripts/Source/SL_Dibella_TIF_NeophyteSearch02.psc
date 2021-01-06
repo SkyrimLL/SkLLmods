@@ -6,15 +6,19 @@ Scriptname SL_Dibella_TIF_NeophyteSearch02 Extends TopicInfo Hidden
 Function Fragment_1(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
+Actor kPlayer = Game.GetPlayer()
+
 Self.GetOwningQuest().SetStage(30)
 
-Game.GetPlayer().AddItem(WenchDress  , 1) 
+ kPlayer.AddItem(WenchDress  , 1) 
 
-Game.GetPlayer().AddItem(AgentOfDibellaDress  , 1) 
+ kPlayer.AddItem(AgentOfDibellaDress  , 1) 
 
-Game.GetPlayer().AddItem( TravellingSisterHood  , 1)
+ kPlayer.AddItem( TravellingSisterHood  , 1)
 
-InnerSanctumLockList.AddForm(Game.GetPlayer() as Form)
+InnerSanctumLockList.AddForm( kPlayer as Form)
+
+ kPlayer.AddToFaction(MarkarthTempleofDibellaFaction)
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -28,3 +32,5 @@ Armor Property AgentOfDibellaDress  Auto
 Armor Property TravellingSisterHood  Auto  
 
 FormList Property InnerSanctumLockList  Auto  
+
+Faction Property MarkarthTempleofDibellaFaction  Auto  
