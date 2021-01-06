@@ -399,7 +399,15 @@ function alterBodyAfterRest(Actor kActor)
 
 		; WEIGHT CHANGE ====================================================
 		fCurrentWeight = pActorBase.GetWeight()
-		fWeightGrowth = ( (StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneGrowth") + abs(StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneFemale") - StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneMale")) ) / 20.0) * (StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneMetabolism") / 100.0)
+
+		if (fWeightSwellMod>=0)
+			; (fWeightSwellMod>=0) means More Weight = More muscle
+			fWeightGrowth = ( (StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneGrowth") + abs(StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneFemale") - StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneMale")) ) / 20.0) * (StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneMetabolism") / 100.0)
+		else
+			; (fWeightSwellMod<0) means More Weight = More fat
+			fWeightGrowth = ( (StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneGrowth") + abs(StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneFemale") - StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneMale")) ) / 20.0) * ((100.0 - StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneMetabolism")) / 100.0)
+
+		endif
 		fWeight = fCurrentWeight + (fWeightGrowth * ( fSwellFactor/ 100.0 ) * fWeightSwellMod)
 		fWeight = fctUtil.fRange( fWeight  , fWeightMin, fWeightMax)
 
@@ -430,7 +438,7 @@ function alterBodyAfterRest(Actor kActor)
 					fBreast = fCurrentBreast
 				Else
 					fNodeMax = fBreastMax
-					fBreastGrowth = ( (StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneGrowth") + StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneFemale") ) / 200.0) * (StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneMetabolism") / 200.0) ; (fNodeMax + fBreastMin  - fCurrentBreast)  
+					fBreastGrowth = ( (StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneGrowth") + StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneFemale") ) / 200.0) * ((100.0 - StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneMetabolism")) / 200.0) ; (fNodeMax + fBreastMin  - fCurrentBreast)  
 					fBreast = fCurrentBreast + ( fBreastGrowth * ( fSwellFactor/ 100.0 ) * fBreastSwellMod )   
 				EndIf
 
@@ -470,7 +478,7 @@ function alterBodyAfterRest(Actor kActor)
 					fBelly = fCurrentBelly
 				Else
 					fNodeMax = fBellyMax
-					fBellyGrowth = ( (StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneGrowth") + StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneMale") ) / 600.0) * (StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneMetabolism") / 200.0) ; (fNodeMax + fBellyMin - fCurrentBelly)  
+					fBellyGrowth = ( (StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneGrowth") + StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneMale") ) / 600.0) * ((100.0 - StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneMetabolism")) / 200.0) ; (fNodeMax + fBellyMin - fCurrentBelly)  
 					fBelly = fCurrentBelly + ( fBellyGrowth * ( fSwellFactor/ 100.0 ) * fBellySwellMod ) 
 					; debug.notification("[SLH]  		fBellyGrowth:  " + fBellyGrowth)
 					debugTrace("  		fBellyGrowth:  " + fBellyGrowth)
@@ -496,7 +504,7 @@ function alterBodyAfterRest(Actor kActor)
 					fButt = fCurrentButt
 				Else
 					fNodeMax = fButtMax
-					fButtGrowth = ( (StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneGrowth") + StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneFemale") ) / 200.0) * (StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneMetabolism") / 200.0) ; (fNodeMax + fButtMin  - fCurrentButt)  
+					fButtGrowth = ( (StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneGrowth") + StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneFemale") ) / 200.0) * ((100.0 - StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneMetabolism")) / 200.0) ; (fNodeMax + fButtMin  - fCurrentButt)  
 					; debug.notification("[SLH]  		fButtGrowth:  " + fButtGrowth)
 					debugTrace("  		fButtGrowth:  " + fButtGrowth)
 					fButt = fCurrentButt + ( fButtGrowth * ( fSwellFactor/ 100.0 ) * fButtSwellMod )   

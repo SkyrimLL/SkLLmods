@@ -8,7 +8,7 @@ Event OnEffectStart(Actor Target, Actor Caster)
 	
 	; Mess with Hormone levels - similar to sex with Daedra
 	; This will move the player along toward a gradual transformation
-	kPlayer.SendModEvent("SLHModHormone", "Growth", 10 + Utility.RandomInt(0,10))
+	kPlayer.SendModEvent("SLHModHormone", "Growth", 10.0 + Utility.RandomFloat(0.0,10.0))
 
  
 EndEvent

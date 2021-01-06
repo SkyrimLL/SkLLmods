@@ -63,6 +63,8 @@ Int iGameDateLastSex   = -1
 Int iGameDateLastCheck   = -1
 Int iDaysSinceLastSex   = 0
 Int iDaysSinceLastCheck   = 0
+Int iCountSinceLastCheck   = 0
+Int iCurrentHourOfDay
  
 Message Property _SLH_Warning Auto
 
@@ -419,6 +421,12 @@ endEvent
  
 Event OnSleepStop(bool abInterrupted)
 	Bool bShapeChangeEvent = False
+	Int isPregnant = StorageUtil.GetIntValue(PlayerActor, "_SLH_isPregnant")
+	Int isSuccubus = StorageUtil.GetIntValue(PlayerActor, "_SLH_isSuccubus")
+	Int isLactating = StorageUtil.GetIntValue(PlayerActor, "_SLH_iLactating")
+	Int isBimbo = StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo")
+
+
 	fHoursSleep = (Utility.GetCurrentGameTime() - fDateSleep) * 24.0
 	debugTrace("Player woke up at: " + Utility.GameTimeToString(Utility.GetCurrentGameTime()))
 	debugTrace("Time slept: " + fHoursSleep)
@@ -433,9 +441,107 @@ Event OnSleepStop(bool abInterrupted)
 		bShapeChangeEvent = fctBodyShape.tryBimboEvent(PlayerActor,fHoursSleep)
 	Endif
 
+; See: https://www.creationkit.com/index.php?title=Talk:DamageActorValue_-_Actor
+;      https://www.creationkit.com/index.php?title=ModActorValue_-_Actor
+;      https://www.creationkit.com/index.php?title=Actor_Value_List
+
+; HealRate
+; MagickaRate
+; StaminaRate
+; Game.GetPlayer().ModActorValue("Stamina", 10.0)
+
+	float _SLH_fHormoneMetabolismToken = StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneMetabolismToken") 
+	float _SLH_fHormonePigmentationToken = StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormonePigmentationToken") 
+	float fStaminaRate = PlayerActor.GetActorValue("StaminaRate")
+
+	debug.trace("[SLH] OnSleep: StaminaRate = " + fStaminaRate)
+	debug.trace("[SLH] OnSleep: _SLH_fHormoneMetabolismToken = " + _SLH_fHormoneMetabolismToken)
+	debug.trace("[SLH] OnSleep: _SLH_fHormonePigmentationToken = " + _SLH_fHormonePigmentationToken)
+	debug.trace("[SLH] OnSleep: StaminaRate = " + PlayerActor.GetActorValue("StaminaRate"))
+	debug.trace("[SLH] OnSleep: HealRate = " + PlayerActor.GetActorValue("HealRate"))
+	debug.trace("[SLH] OnSleep: MagickaRate = " + PlayerActor.GetActorValue("MagickaRate"))
+
 	If abInterrupted
-		; sleep interrupted
+		; convert metabolism tokens from exercise into hormones - impact from interrupted sleep
+		PlayerActor.SendModEvent("SLHModHormone", "Metabolism", _SLH_fHormoneMetabolismToken / 100.0 )
+		PlayerActor.SendModEvent("SLHModHormone", "Stress", _SLH_fHormoneMetabolismToken / 100.0 )
+		PlayerActor.SendModEvent("SLHModHormone", "Mood", -1.0 * _SLH_fHormoneMetabolismToken / 100.0 )
+		PlayerActor.SendModEvent("SLHModHormone", "Male", _SLH_fHormoneMetabolismToken / 100.0 )
+		; convert pigmentation tokens from outdoor exposure into metabolism hormone - impact from interrupted sleep
+		if (_SLH_fHormonePigmentationToken>0)
+			PlayerActor.SendModEvent("SLHModHormone", "Pigmentation", 1.0 )
+		else
+			PlayerActor.SendModEvent("SLHModHormone", "Pigmentation", -1.0 )
+		endif
+
+		; sleep interrupted - Player is sluggish during day
+		debug.trace("[SLH]      sleep interrupted - Player is sluggish during day")
+		PlayerActor.ModActorValue("StaminaRate", -1.0 - (5.0 * (StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneSleep")/100.0)))
+		PlayerActor.ModActorValue("HealRate", -1.0 - (5.0 * (StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneStress")/100.0)))
+		PlayerActor.ModActorValue("MagickaRate", -1.0 - (5.0 * (StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneMood")/100.0)))
+
+		; sleep interrupted - increase sleep hormone
+		PlayerActor.SendModEvent("SLHModHormone", "Sleep", 10.0)
+
+	else
+		; convert metabolism tokens from exercise into hormones - full amount from well rested
+		PlayerActor.SendModEvent("SLHModHormone", "Metabolism", _SLH_fHormoneMetabolismToken / 50.0 )
+		PlayerActor.SendModEvent("SLHModHormone", "Stress", _SLH_fHormoneMetabolismToken / 50.0 )
+		PlayerActor.SendModEvent("SLHModHormone", "Mood", -1.0 * _SLH_fHormoneMetabolismToken / 50.0 )
+		PlayerActor.SendModEvent("SLHModHormone", "Male", _SLH_fHormoneMetabolismToken / 50.0 )
+		; convert pigmentation tokens from outdoor exposure into metabolism hormone - full amount from well rested
+		if (_SLH_fHormonePigmentationToken>0)
+			PlayerActor.SendModEvent("SLHModHormone", "Pigmentation", 10.0 )
+		else
+			PlayerActor.SendModEvent("SLHModHormone", "Pigmentation", -10.0 )
+		endif
+
+		; Player is rested
+		debug.trace("[SLH]      sleep not interrupted - Player is rested")
+		PlayerActor.ModActorValue("StaminaRate", 1.0 + (fHoursSleep / 9.0) * (StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneSleep")/100.0))
+		PlayerActor.ModActorValue("HealRate", 1.0 + (fHoursSleep / 9.0) * (StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneStress")/100.0))
+		PlayerActor.ModActorValue("MagickaRate", 1.0 + (fHoursSleep / 9.0) * (StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneMood")/100.0))
+
+		; well rested - decrease sleep hormone
+		PlayerActor.SendModEvent("SLHModHormone", "Sleep", -5.0)
+
 	EndIf
+	
+	if (isLactating)
+		PlayerActor.SendModEvent("SLHModHormone", "Lactation", 1.0 + Utility.RandomFloat(0.0,5.0))
+	endif
+
+	if (isPregnant)
+		PlayerActor.SendModEvent("SLHModHormone", "Female", 1.0 + Utility.RandomFloat(0.0,5.0))
+		PlayerActor.SendModEvent("SLHModHormone", "Lactation", 1.0 + Utility.RandomFloat(0.0,5.0))
+	endif
+
+	if (isSuccubus)
+		PlayerActor.SendModEvent("SLHModHormone", "Succubus",  1.0 + Utility.RandomFloat(0.0,5.0))
+		PlayerActor.SendModEvent("SLHModHormone", "Bimbo",  1.0 )
+		if (isLactating)
+			PlayerActor.SendModEvent("SLHModHormone", "Lactation", 1.0 )
+		endif
+	endif
+	
+	if (isBimbo)
+		PlayerActor.SendModEvent("SLHModHormone", "Bimbo", 1.0 + Utility.RandomFloat(0.0,5.0))
+		if (isLactating)
+			PlayerActor.SendModEvent("SLHModHormone", "Lactation", 1.0 )
+		endif
+	endif
+	
+	; Spriggan compatiblity - increase Pheromones after a day as Spriggan
+	if (StorageUtil.GetIntValue(PlayerActor, "_SD_iSprigganInfected")==1)
+		PlayerActor.SendModEvent("SLHModHormone", "Pheromones", 1.0 + (fHoursSleep / 3.0))
+	endif
+
+	debug.trace("[SLH] OnSleep: StaminaRate (modified) = " + PlayerActor.GetActorValue("StaminaRate"))
+	debug.trace("[SLH] OnSleep: HealRate (modified) = " + PlayerActor.GetActorValue("HealRate"))
+	debug.trace("[SLH] OnSleep: MagickaRate (modified) = " + PlayerActor.GetActorValue("MagickaRate"))
+
+	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fHormoneMetabolismToken", 0.0)
+	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fHormonePigmentationToken", 0.0)
 EndEvent
 
 Function _updatePlayerState()
@@ -574,7 +680,7 @@ Event OnUpdate()
 			PlayerActor.DispelSpell(_SLH_SexBoost)
 		EndIf
 
-		If (iDaysSinceLastSex>=1)
+		If (iDaysSinceLastSex==1)
 			debugTrace("  Sex focus effect after a day without sex")
 			_SLH_SexFocus.Cast(PlayerActor,PlayerActor)
 		EndIf
@@ -582,6 +688,11 @@ Event OnUpdate()
 		If (iDaysSinceLastSex>1)
 			debugTrace("  Sex starve effect after more than a day without sex")
 			_SLH_SexStarve.Cast(PlayerActor,PlayerActor)
+		endif
+
+		If (iDaysSinceLastSex>=1)
+			PlayerActor.SendModEvent("SLHModHormone", "SexDrive", -1.0 * (10.0 * (iDaysSinceLastSex as Float)))
+
 		Endif
 
 		fRefreshAfterSleep = 0.0
@@ -607,6 +718,9 @@ Event OnUpdate()
 		iOralCountToday   = 0
 		iAnalCountToday   = 0
 		iVaginalCountToday   = 0
+		iCurrentHourOfDay = GetCurrentHourOfDay()
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iSexCountToday", iSexCountToday) 
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iHourOfDaySinceLastSex", iCurrentHourOfDay)
 
 		If !( bExternalChangeModActive ) && (NextAllowed!= -1) && (GV_shapeUpdateOnTimer.GetValue()==1)
 			fctColor.applyColorChanges(PlayerActor)
@@ -614,6 +728,12 @@ Event OnUpdate()
 		EndIf
 
 	Else
+		; hoursSlept = Game.QueryStat("Hours Slept")
+		; hoursWaiting = Game.QueryStat("Hours Waiting")
+		; daysPassed = Game.QueryStat("Days Passed")
+
+		iCurrentHourOfDay = GetCurrentHourOfDay()
+
 		RandomNum = Utility.RandomInt(0,100)
 		rollFirstPerson = Utility.RandomInt(0,100)
 
@@ -795,6 +915,7 @@ Event OnUpdate()
 	iGameDateLastCheck = daysPassed  
 
 	RegisterForSingleUpdate(10)
+	; RegisterForSingleUpdateGameTime(0.25)
 EndEvent
 
 Event OnLocationChange(Location akOldLoc, Location akNewLoc)
@@ -1006,6 +1127,11 @@ Event OnModHormoneRandomEvent(String _eventName, String _args, Float _argc = 1.0
  	if (kActor == None)
  		kActor = Game.GetPlayer()
  	EndIf
+
+ 	if (_argc == 0.0 )
+ 		_argc = 1.0
+ 	endif
+ 	
 	debugTrace(" Receiving 'mod hormone random level' event. Tag: " + _args )
 
 	fctHormones.modHormoneLevel(kActor, "Pigmentation", Utility.RandomFloat(-1.0,2.0) * _argc )
@@ -1227,12 +1353,14 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 
 		If (iDaysSinceLastSex == 0)
 			iSexCountToday   = iSexCountToday + 1
+			StorageUtil.SetIntValue(PlayerActor, "_SLH_iSexCountToday", iSexCountToday) 
 		EndIf
 
 		iGameDateLastSex = Game.QueryStat("Days Passed")   
 
  		StorageUtil.SetIntValue(PlayerActor, "_SLH_iGameDateLastSex", iGameDateLastSex) 
 		StorageUtil.SetIntValue(PlayerActor, "_SLH_iDaysSinceLastSex", iDaysSinceLastSex) 
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iHourOfDaySinceLastSex", iCurrentHourOfDay) 
 
 		; Manage sex effect ==================================================
 		If (iSexCountToday>1)
@@ -1332,8 +1460,7 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 		; fctHormones.modHormoneLevel(PlayerActor, "Succubus", 1.0)
 
 
-		fctHormones.modHormoneLevel(PlayerActor, "Pigmentation", 1.5)
-		fctHormones.modHormoneLevel(PlayerActor, "SexDrive", 10.0)
+		fctHormones.modHormoneLevel(PlayerActor, "Pigmentation", 1.5) 
 
 		if (StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormonePheromones")>0)
 			fctHormones.modHormoneLevel(PlayerActor, "Pheromones", 0.2)
@@ -1796,17 +1923,31 @@ EndFunction
 ; pumping iron effect on skill improvement
 ;===========================================================================
 Event OnStoryIncreaseSkill(string asSkill)
+	Actor kPlayer = Game.getPlayer()
+
 	if asSkill == "LightArmor" || asSkill =="Marksman"
 		; PumpingIronSleep.train(0.2)	
+		kPlayer.SendModEvent("SLHModHormone", "Metabolism", 1.0 + Utility.RandomFloat(0.0,10.0))
+		kPlayer.SendModEvent("SLHModHormone", "Growth", 1.0 + Utility.RandomFloat(0.0,10.0))
+
 	elseif asSkill == "Block" || asSkill == "OneHanded" || asSkill == "Smithing" 
 		; PumpingIronSleep.train(0.25)
+		kPlayer.SendModEvent("SLHModHormone", "Metabolism", 10.0 + Utility.RandomFloat(0.0,10.0))
+		kPlayer.SendModEvent("SLHModHormone", "Growth", 10.0 + Utility.RandomFloat(0.0,10.0))
+
 	elseif asSkill == "HeavyArmor"
 		; PumpingIronSleep.train(0.33)
+		kPlayer.SendModEvent("SLHModHormone", "Metabolism", 20.0 + Utility.RandomFloat(0.0,10.0))
+		kPlayer.SendModEvent("SLHModHormone", "Growth", 20.0 + Utility.RandomFloat(0.0,10.0))
+
 	elseif asSkill == "TwoHanded"
 		; PumpingIronSleep.train(0.5)
+		kPlayer.SendModEvent("SLHModHormone", "Metabolism", 15.0 + Utility.RandomFloat(0.0,10.0))
+		kPlayer.SendModEvent("SLHModHormone", "Growth", 15.0 + Utility.RandomFloat(0.0,10.0))
+
 	endif 
 		  
-	DebugTrace(" Learning a new skill: " + asSkill)
+	DebugTrace("[SLH] Learning a new skill: " + asSkill)
 	; Stop()
 EndEvent
 
@@ -2256,6 +2397,15 @@ function setSuccubusState(Actor kActor, Bool bSuccubusState)
 	StorageUtil.SetIntValue(kActor, "_SLH_iSuccubus", iSuccubus as Int)
 endFunction
 
+
+int Function GetCurrentHourOfDay() 
+ 
+	Float fCurrentHourOfDay = Utility.GetCurrentGameTime()
+	fCurrentHourOfDay -= Math.Floor(fCurrentHourOfDay) ; Remove "previous in-game days passed" bit
+	fCurrentHourOfDay *= 24 ; Convert from fraction of a day to number of hours
+	Return fCurrentHourOfDay as Int
+ 
+EndFunction
 
 ;===========================================================================
 ; Debug functions

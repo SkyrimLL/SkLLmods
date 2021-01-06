@@ -655,13 +655,17 @@ event OnPageReset(string a_page)
 		AddToggleOptionST("STATE_DEBUG","Debug messages", _showDebug as Float)
 
 		AddHeaderOption(" Player status")
-		AddTextOption(" Days as a Bimbo: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_bimboTransformGameDays")  as Int, "", OPTION_FLAG_DISABLED)
+		Int iHoursSinceLastSex = GetCurrentHourOfDay() - StorageUtil.GetIntValue(PlayerActor, "_SLH_iHourOfDaySinceLastSex") 
+
+ 		AddTextOption(" Sex count today: " +  StorageUtil.GetIntValue(PlayerActor, "_SLH_iSexCountToday")   as Int, "", OPTION_FLAG_DISABLED)
+ 		AddTextOption(" Last sex (hour of day): " +  StorageUtil.GetIntValue(PlayerActor, "_SLH_iHourOfDaySinceLastSex")   as Int, "", OPTION_FLAG_DISABLED)
+ 		AddTextOption(" Hours since last sex: " +  iHoursSinceLastSex  as Int, "", OPTION_FLAG_DISABLED)
+ 		AddTextOption(" Days since last sex: " +  StorageUtil.GetIntValue(PlayerActor, "_SLH_iDaysSinceLastSex")   as Int, "", OPTION_FLAG_DISABLED)
+ 		AddTextOption(" Days as a Bimbo: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_bimboTransformGameDays")  as Int, "", OPTION_FLAG_DISABLED)
 		AddTextOption(" Cycles as a Bimbo: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_bimboTransformCycle")  as Int, "", OPTION_FLAG_DISABLED)
 		AddTextOption(" Bimbo Level: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_bimboTransformLevel")  as Int, "", OPTION_FLAG_DISABLED)		
 		AddTextOption(" Daedric Influence: " +  StorageUtil.GetIntValue(PlayerActor, "_SLH_iDaedricInfluence")   as Int, "", OPTION_FLAG_DISABLED)
 		AddTextOption(" Succubus Level: " +  StorageUtil.GetIntValue(PlayerActor, "_SLH_iSuccubusLevel")   as Int, "", OPTION_FLAG_DISABLED)
- 
-
 
 		if (StorageUtil.GetFormValue(PlayerActor, "_SLH_fOrigRace") !=  (pActorBase.GetRace() as Form)) 
 			AddTextOption("Warning: Current player race doesn't match original player race. Use the Set Default Shape menu option if you are not in a temporary transformation.", "", OPTION_FLAG_DISABLED) 
@@ -3122,3 +3126,11 @@ String function IntToHex (int dec)
 endFunction
 
 
+int Function GetCurrentHourOfDay() 
+ 
+	Float fCurrentHourOfDay = Utility.GetCurrentGameTime()
+	fCurrentHourOfDay -= Math.Floor(fCurrentHourOfDay) ; Remove "previous in-game days passed" bit
+	fCurrentHourOfDay *= 24 ; Convert from fraction of a day to number of hours
+	Return fCurrentHourOfDay as Int
+ 
+EndFunction

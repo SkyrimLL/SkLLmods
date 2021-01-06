@@ -386,6 +386,16 @@ function updateSexLabArousedExposure(Actor kActor, int iExposure)
 	slaUtil.UpdateActorExposure(kActor, iExposure, " Updated from SL Hormones")
 endFunction
 
+
+int Function GetCurrentHourOfDay() 
+ 
+	Float fCurrentHourOfDay = Utility.GetCurrentGameTime()
+	fCurrentHourOfDay -= Math.Floor(fCurrentHourOfDay) ; Remove "previous in-game days passed" bit
+	fCurrentHourOfDay *= 24 ; Convert from fraction of a day to number of hours
+	Return fCurrentHourOfDay as Int
+ 
+EndFunction
+
 ; ------- Bimbo thoughts
 
 
@@ -393,12 +403,17 @@ function tryRandomBimboThoughts(String sTag)
  	Actor PlayerActor = Game.GetPlayer()
 	Float fClumsyMod = StorageUtil.GetFloatValue(PlayerActor, "_SLH_fBimboClumsyMod" ) 
 	float bimboArousal = slaUtil.GetActorArousal(PlayerActor) as float
-	Int iBimboThreshold = ((bimboArousal * fClumsyMod) as Int)
+	Int iBimboThreshold ; = ((bimboArousal * fClumsyMod) as Int)
 	Int iBimboThrottle = StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimboThoughtsDelay")
+	Int iHoursSinceLastSex
 
 	if (iBimboThreshold < 10)
 		iBimboThreshold = 10
 	endif
+
+	iHoursSinceLastSex = GetCurrentHourOfDay() - StorageUtil.GetIntValue(PlayerActor, "_SLH_iHourOfDaySinceLastSex") 
+	iBimboThreshold = ((100-(iHoursSinceLastSex*10)) * fClumsyMod) as Int
+	Debug.Trace("[SLH] >>> chance of bimbo thoughts:" + iBimboThreshold)
 
 	if (iCommentThrottle > iBimboThrottle) || (sTag == "now")
 		if (Utility.RandomInt(0,100) < iBimboThreshold ) 
