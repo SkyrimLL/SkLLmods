@@ -501,8 +501,8 @@ Event OnSleepStop(bool abInterrupted)
 
 		; sleep interrupted - Player is sluggish during day
 		debug.trace("[SLH]      sleep interrupted - Player is sluggish during day")
-		PlayerActor.ModActorValue("StaminaRate", -1.0 * (fRateMod * (StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneSleep")/100.0)))
-		PlayerActor.ModActorValue("HealRate", -1.0 * (fRateMod * (StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneStress")/100.0)))
+		PlayerActor.ModActorValue("StaminaRate", -1.0 * (fRateMod * ((100.0 - StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneSleep"))/100.0)))
+		PlayerActor.ModActorValue("HealRate", -1.0 * (fRateMod * ((100.0 - StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneStress")/100.0))))
 		PlayerActor.ModActorValue("MagickaRate", -1.0 * (fRateMod * (StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneMood")/100.0)))
 
 		; sleep interrupted - increase sleep hormone
@@ -523,8 +523,8 @@ Event OnSleepStop(bool abInterrupted)
 
 		; Player is rested
 		debug.trace("[SLH]      sleep not interrupted - Player is rested")
-		PlayerActor.ModActorValue("StaminaRate", fRateMod * (fHoursSleep / 9.0) * (StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneSleep")/100.0))
-		PlayerActor.ModActorValue("HealRate", fRateMod * (fHoursSleep / 9.0) * (StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneStress")/100.0))
+		PlayerActor.ModActorValue("StaminaRate", fRateMod * (fHoursSleep / 9.0) * ((100.0 - StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneSleep"))/100.0))
+		PlayerActor.ModActorValue("HealRate", fRateMod * (fHoursSleep / 9.0) * ((100.0 - StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneStress"))/100.0))
 		PlayerActor.ModActorValue("MagickaRate", fRateMod * (fHoursSleep / 9.0) * (StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneMood")/100.0))
 
 		; well rested - decrease sleep hormone
