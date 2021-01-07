@@ -1603,7 +1603,7 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 	endif
 
 	; Hormones compatibility
-	If (fctParasites.ActorHasKeywordByString(PlayerActor, "FaceHugger")) || (fctParasites.ActorHasKeywordByString(PlayerActor, "HipHugger")) || (fctParasites.ActorHasKeywordByString(PlayerActor, "ChaurusWorm"))
+	If (fctParasites.ActorHasKeywordByString(PlayerActor, "FaceHugger")) || (fctParasites.ActorHasKeywordByString(PlayerActor, "FaceHuggerGag")) || (fctParasites.ActorHasKeywordByString(PlayerActor, "ChaurusWorm"))
 		PlayerActor.SendModEvent("SLHModHormone", "Female", 10.0 + Utility.RandomFloat(0.0,10.0))
 		PlayerActor.SendModEvent("SLHModHormone", "SexDrive", 1.0 + Utility.RandomFloat(0.0,5.0))
 	endif 

@@ -237,8 +237,8 @@ Function equipParasiteNPCByString ( Actor akActor, String sParasiteString = "", 
 	If (kwDeviceKeyword != None)
 
 		if !akActor.WornHasKeyword(kwDeviceKeyword)
-			Debug.Trace("[SLP] equipParasiteByString: " + sParasiteString)  
-			Debug.Trace("[SLP] 		keyword: " + kwDeviceKeyword)  
+			Debug.Trace("[SLP]equipParasiteByString: " + sParasiteString)  
+			Debug.Trace("[SLP]		keyword: " + kwDeviceKeyword)  
 
 			aWornDevice = getParasiteByKeyword(kwDeviceKeyword) ; libs.GetWornDevice(akActor, kwDeviceKeyword) as Armor
 			aRenderedDevice = getParasiteRenderedByKeyword(kwDeviceKeyword) ; libs.GetRenderedDevice(aWornDevice) as Armor
@@ -246,16 +246,16 @@ Function equipParasiteNPCByString ( Actor akActor, String sParasiteString = "", 
 			If (aRenderedDevice!=None)
 				equipParasiteNPC ( akActor, aWornDevice,  aRenderedDevice,  kwDeviceKeyword)
 			Else
-				Debug.Trace("[SLP]    Can't get worn device")
+				Debug.Trace("[SLP]   Can't get worn device")
 			endif
 
  
 		else
-			Debug.Trace("[SLP] player is already wearing: " + sParasiteString)  
+			Debug.Trace("[SLP]player is already wearing: " + sParasiteString)  
 		endIf
 
 	else
-		Debug.Trace("[SLP] unknown device to equip " )  
+		Debug.Trace("[SLP]unknown device to equip " )  
 
 	endif
 EndFunction
@@ -272,7 +272,7 @@ Function clearParasiteNPCByString ( Actor akActor, String sParasiteString = "", 
 	Armor aRenderedDevice = none 
 	Form kForm
 
-	Debug.Trace("[SLP] clearParasiteByString - NO override detected")  
+	Debug.Trace("[SLP]clearParasiteByString - NO override detected")  
 	kwDeviceKeyword = 	getDeviousKeywordByString(sParasiteString)
 	aWornDevice = none
 	aRenderedDevice = none 
@@ -282,8 +282,8 @@ Function clearParasiteNPCByString ( Actor akActor, String sParasiteString = "", 
 		if akActor.WornHasKeyword(kwDeviceKeyword)
 			; RemoveDevice(actor akActor, armor deviceInventory, armor deviceRendered, keyword zad_DeviousDevice, bool destroyDevice=false, bool skipEvents=false, bool skipMutex=false)
 
-			Debug.Trace("[SLP] clearing device string: " + sParasiteString)  
-			Debug.Trace("[SLP] clearing device keyword: " + kwDeviceKeyword)  
+			Debug.Trace("[SLP]clearing device string: " + sParasiteString)  
+			Debug.Trace("[SLP]clearing device keyword: " + kwDeviceKeyword)  
   
 			aWornDevice = getParasiteByKeyword(kwDeviceKeyword) ; libs.GetWornDevice(akActor, kwDeviceKeyword) as Armor
 			aRenderedDevice = libs.GetRenderedDevice(aWornDevice) as Armor ; getParasiteRenderedByKeyword(kwDeviceKeyword) 
@@ -291,18 +291,18 @@ Function clearParasiteNPCByString ( Actor akActor, String sParasiteString = "", 
 			If (aRenderedDevice!=None)
 				clearParasiteNPC ( akActor, aWornDevice,  aRenderedDevice,  kwDeviceKeyword)
 			Else
-				Debug.Trace("[SLP]    Can't get worn device")
+				Debug.Trace("[SLP]   Can't get worn device")
 			endif
 			
 			; libs.ManipulateGenericDeviceByKeyword(PlayerActor, kwDeviceKeyword, False, skipEvents,  skipMutex)
   
 
 		else
-			Debug.Trace("[SLP] player is not wearing: " + sParasiteString)  
+			Debug.Trace("[SLP]player is not wearing: " + sParasiteString)  
 		endIf
 
 	else
-		Debug.Trace("[SLP] unknown device to clear " )  
+		Debug.Trace("[SLP]unknown device to clear " )  
 
 	endif
 EndFunction
@@ -321,7 +321,7 @@ Bool Function equipParasiteNPC ( Actor akActor, Armor ddArmorInventory, Armor dd
 	Keyword kwWornKeyword
 	Bool bDeviceEquipSuccess = False
 
-	libs.Log("[SLP] equipParasite " )
+	libs.Log("[SLP]equipParasite " )
 
 	if (ddArmorKeyword != None)
 		if (!akActor.WornHasKeyword(ddArmorKeyword))
@@ -329,10 +329,10 @@ Bool Function equipParasiteNPC ( Actor akActor, Armor ddArmorInventory, Armor dd
 			bDeviceEquipSuccess = libs.equipDevice(akActor, ddArmorInventory , ddArmorRendered , ddArmorKeyword)
 			bDeviceEquipSuccess = True
 		Else
-			libs.Log("[SLP]   	skipped - device already equipped " )
+			libs.Log("[SLP]  	skipped - device already equipped " )
 		EndIf
 	Else
-		Debug.Notification("[SLP] equipParasite - bad keyword " )
+		Debug.Notification("[SLP]equipParasite - bad keyword " )
 	endIf
 
 	return bDeviceEquipSuccess
@@ -353,9 +353,9 @@ Bool Function clearParasiteNPC ( Actor akActor, Armor ddArmorInventory, Armor dd
 	Bool bDeviceRemoveSuccess = False
 
 	If (bDestroy)
-		libs.Log("[SLP] clearParasite - destroy: " + ddArmorKeyword )
+		libs.Log("[SLP]clearParasite - destroy: " + ddArmorKeyword )
 	Else
-		libs.Log("[SLP] clearParasite - remove: " + ddArmorKeyword  )
+		libs.Log("[SLP]clearParasite - remove: " + ddArmorKeyword  )
 	endIf
 
 	; RemoveDevice(actor akActor, armor deviceInventory, armor deviceRendered, keyword zad_DeviousDevice, bool destroyDevice=false, bool skipEvents=false, bool skipMutex=false)
@@ -583,8 +583,8 @@ Keyword Function getDeviousKeywordByString(String deviousKeyword = ""  )
 		thisKeyword = libs.zad_DeviousPiercingsVaginal
 
 	else
-		Debug.Notification("[SD] getDeviousKeywordByString: Unknown generic keyword: " + deviousKeyword)  
-		Debug.Trace("[SD] getDeviousKeywordByString: Unknown generic keyword: " + deviousKeyword)  
+		Debug.Notification("[SLP] getDeviousKeywordByString: Unknown generic keyword: " + deviousKeyword)  
+		Debug.Trace("[SLP] getDeviousKeywordByString: Unknown generic keyword: " + deviousKeyword)  
 	endIf
 
 	return thisKeyword
@@ -640,7 +640,7 @@ Function applyHiddenParasiteEffect(Actor akActor, String sParasite = ""  )
 	elseif (sParasite == "LivingArmor" )  
 		ApplyBodyChange( akActor, sParasite, "Belly", 2.0, 2.0 )
 		
-	elseif (sParasite == "FaceHugger" )  
+	elseif (sParasite == "FaceHugger" ) || (sParasite == "HipHugger" ) 
 		; ApplyBodyChange( akActor, sParasite, "Belly", 2.0, 2.0 )
 		
 	elseif (sParasite == "FaceHuggerGag" )  
@@ -689,7 +689,7 @@ Function clearHiddenParasiteEffect(Actor akActor, String sParasite = ""  )
 	elseif (sParasite == "LivingArmor" )  
 		ApplyBodyChange( akActor, sParasite, "Belly", 0.5, 2.0 )
 		
-	elseif (sParasite == "FaceHugger" )  
+	elseif (sParasite == "FaceHugger" )  || (sParasite == "HipHugger" )  
 		; ApplyBodyChange( akActor, sParasite, "Belly", 0.5, 2.0 )
 		
 	elseif (sParasite == "FaceHuggerGag" )  
@@ -1123,10 +1123,10 @@ Bool Function infectEstrusTentacles( Actor kActor  )
 				Debug.MessageBox("The ground shakes as slimy tentacles shoot up.")
 			endif
 	Else
-		Debug.Trace("[SLP] Tentacle Monster infection failed")
-		Debug.Trace("[SLP]   Vaginal Plug: " + ActorHasKeywordByString(kActor,  "PlugVaginal"))
-		Debug.Trace("[SLP]   TentacleMonster: " + isInfectedByString( kActor,  "TentacleMonster" ))
-		Debug.Trace("[SLP]   Chance infection: " + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceTentacleMonster" ))
+		Debug.Trace("[SLP]Tentacle Monster infection failed")
+		Debug.Trace("[SLP]  Vaginal Plug: " + ActorHasKeywordByString(kActor,  "PlugVaginal"))
+		Debug.Trace("[SLP]  TentacleMonster: " + isInfectedByString( kActor,  "TentacleMonster" ))
+		Debug.Trace("[SLP]  Chance infection: " + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceTentacleMonster" ))
 	EndIf
 
 	int ECTrap = ModEvent.Create("ECStartAnimation")  ; Int  Does not have to be named "ECTrap" any name would do
@@ -1293,10 +1293,10 @@ Bool Function infectEstrusSlime( Actor kActor  )
 				Debug.MessageBox("What looked like creepy clusters suddenly extends tentacles around.")
 			endif
 	Else
-		Debug.Trace("[SLP] Living Armor infection failed")
-		Debug.Trace("[SLP]   Harness: " + ActorHasKeywordByString(kActor,  "Harness"))
-		Debug.Trace("[SLP]   LivingArmor: " + isInfectedByString( kActor,  "LivingArmor" ))
-		Debug.Trace("[SLP]   Chance infection: " + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceLivingArmor" ))
+		Debug.Trace("[SLP]Living Armor infection failed")
+		Debug.Trace("[SLP]  Harness: " + ActorHasKeywordByString(kActor,  "Harness"))
+		Debug.Trace("[SLP]  LivingArmor: " + isInfectedByString( kActor,  "LivingArmor" ))
+		Debug.Trace("[SLP]  Chance infection: " + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceLivingArmor" ))
 	EndIf
 
 	int ECTrap = ModEvent.Create("ECStartAnimation")  ; Int  Does not have to be named "ECTrap" any name would do
@@ -2413,9 +2413,9 @@ Function ApplyBodyChange(Actor kActor, String sParasite, String sBodyPart, Float
 
 	if ( isNiOInstalled  )  
 
-		Debug.Trace("[SLP] Receiving body change: " + sBodyPart)
-		Debug.Trace("[SLP]  	Node string: " + sParasite)
-		Debug.Trace("[SLP]  	Max node: " + fValueMax)
+		Debug.Trace("[SLP]Receiving body change: " + sBodyPart)
+		Debug.Trace("[SLP] 	Node string: " + sParasite)
+		Debug.Trace("[SLP] 	Max node: " + fValueMax)
 
  		if (!isSlifInstalled)
 			if (fValue < 1.0)
@@ -2429,8 +2429,8 @@ Function ApplyBodyChange(Actor kActor, String sParasite, String sBodyPart, Float
 
 
 		if (( sBodyPart == "Breast"  ) && (pActorBase.GetSex()==1)) ; Female change
-			Debug.Trace("[SLP]     Applying breast change: " + NiOString)
-			Debug.Trace("[SLP]     Value: " + fValue)
+			Debug.Trace("[SLP]    Applying breast change: " + NiOString)
+			Debug.Trace("[SLP]    Value: " + fValue)
 
 			if (isSlifInstalled)
 				SLIF_inflateMax(kActor, "slif_breast", fValue, fValueMax, NiOString)
@@ -2440,8 +2440,8 @@ Function ApplyBodyChange(Actor kActor, String sParasite, String sBodyPart, Float
 			Endif
 
 		Elseif (( sBodyPart == "Belly"  ) && (pActorBase.GetSex()==1)) ; Female change
-			Debug.Trace("[SLP]     Applying belly change: " + NiOString)
-			Debug.Trace("[SLP]     Value: " + fValue)
+			Debug.Trace("[SLP]    Applying belly change: " + NiOString)
+			Debug.Trace("[SLP]    Value: " + fValue)
 
 			if (isSlifInstalled)
 				SLIF_inflateMax(kActor, "slif_belly", fValue, fValueMax, NiOString)
@@ -2451,8 +2451,8 @@ Function ApplyBodyChange(Actor kActor, String sParasite, String sBodyPart, Float
 
 
 		Elseif (( sBodyPart == "Butt"  )) 
-			Debug.Trace("[SLP]     Applying butt change: " + NiOString)
-			Debug.Trace("[SLP]     Value: " + fValue)
+			Debug.Trace("[SLP]    Applying butt change: " + NiOString)
+			Debug.Trace("[SLP]    Value: " + fValue)
 
 			if (isSlifInstalled)
 				SLIF_inflateMax(kActor, "slif_butt", fValue, fValueMax, NiOString)
@@ -2463,8 +2463,8 @@ Function ApplyBodyChange(Actor kActor, String sParasite, String sBodyPart, Float
 
 
 		Elseif (( sBodyPart == "Schlong"  ) ) 
-			Debug.Trace("[SLP]     Applying schlong change: " + NiOString)
-			Debug.Trace("[SLP]     Value: " + fValue)
+			Debug.Trace("[SLP]    Applying schlong change: " + NiOString)
+			Debug.Trace("[SLP]    Value: " + fValue)
 
 			if (isSlifInstalled)
 				SLIF_inflateMax(kActor, "slif_schlong", fValue, fValueMax, NiOString)
@@ -2474,7 +2474,7 @@ Function ApplyBodyChange(Actor kActor, String sParasite, String sBodyPart, Float
 
 		Endif
 	Else
-		; Debug.Notification("[SLP] Receiving body change: NiO not installed")
+		; Debug.Notification("[SLP]Receiving body change: NiO not installed")
 
 	EndIf
 
@@ -2484,9 +2484,9 @@ Bool function isFemale(actor kActor)
 	Bool bIsFemale
 	ActorBase kActorBase = kActor.GetActorBase()
 
-	Debug.Trace("[SLP] Checking actor gender")
-	Debug.Trace("[SLP]     kActor: " + kActor)
-	Debug.Trace("[SLP]     kActorBase: " + kActorBase)
+	Debug.Trace("[SLP]Checking actor gender")
+	Debug.Trace("[SLP]    kActor: " + kActor)
+	Debug.Trace("[SLP]    kActorBase: " + kActorBase)
 
 	if (kActorBase.GetSex() == 1) ; female
 		bIsFemale = True
