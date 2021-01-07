@@ -781,6 +781,6 @@ EndFunction
 
 Function debugTrace(string traceMsg)
 	if (StorageUtil.GetIntValue(none, "_SLH_debugTraceON")==1)
-		Debug.Trace("[SLH_fctColor]" + traceMsg)
+		; Debug.Trace("[SLH_fctColor]" + traceMsg)
 	endif
 endFunction

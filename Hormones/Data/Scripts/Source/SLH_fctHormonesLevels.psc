@@ -351,14 +351,12 @@ Float function updateActorSwellFactor(Actor kActor)
 	If (iSexCountToday <= 1) && (iDaysSinceLastSex >= sexActivityBuffer )
 	; Decrease
 		Debug.Notification("You feel more focused")
-		Debug.Notification("  baseShrinkFactor: " + fSwellFactor )
 
 		fSwellFactor = -1.0 * baseShrinkFactor
 
 	ElseIf ( iSexCountToday >1) && ( (iSexCountToday >= sexActivityThreshold) || (iDaysSinceLastSex <= sexActivityBuffer ) ) 
 	; Increase
-		Debug.Notification("You feel more voluptuous")
-		Debug.Notification("  baseSwellFactor: " + baseSwellFactor )
+		Debug.Notification("You feel more voluptuous") 
  
 		fSwellFactor    = baseSwellFactor
 
@@ -366,9 +364,11 @@ Float function updateActorSwellFactor(Actor kActor)
 	; Stable
 		Debug.Notification("You feel more balanced")
 		; No change
-		fSwellFactor    = 0.0
+		fSwellFactor    = baseSwellFactor / 10.0 ; simulate inertia - body keeps growing even when doing nothing
  
 	EndIf	
+		
+	Debug.Trace("  fSwellFactor: " + fSwellFactor )
 	
 	; fSwellFactor = fctUtil.fRange( fSwellFactor , -100.0, 100.0)
 
@@ -575,6 +575,6 @@ EndFunction
 
 Function debugTrace(string traceMsg)
 	if (StorageUtil.GetIntValue(none, "_SLH_debugTraceON")==1)
-		Debug.Trace("[SLH_fctHormonesLevels]" + traceMsg)
+		; Debug.Trace("[SLH_fctHormonesLevels]" + traceMsg)
 	endif
 endFunction
