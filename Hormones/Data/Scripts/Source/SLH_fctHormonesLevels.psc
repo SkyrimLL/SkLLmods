@@ -350,20 +350,23 @@ Float function updateActorSwellFactor(Actor kActor)
 
 	If (iSexCountToday <= 1) && (iDaysSinceLastSex >= sexActivityBuffer )
 	; Decrease
-		; Debug.Notification("You feel more focused")
+		Debug.Notification("You feel more focused")
+		Debug.Notification("  baseShrinkFactor: " + fSwellFactor )
 
 		fSwellFactor = -1.0 * baseShrinkFactor
 
 	ElseIf ( iSexCountToday >1) && ( (iSexCountToday >= sexActivityThreshold) || (iDaysSinceLastSex <= sexActivityBuffer ) ) 
 	; Increase
-		; Debug.Notification("You feel more voluptuous")
+		Debug.Notification("You feel more voluptuous")
+		Debug.Notification("  baseSwellFactor: " + baseSwellFactor )
  
 		fSwellFactor    = baseSwellFactor
 
 	Else   
 	; Stable
-		; Debug.Notification("You feel more balanced")
+		Debug.Notification("You feel more balanced")
 		; No change
+		fSwellFactor    = 0.0
  
 	EndIf	
 	

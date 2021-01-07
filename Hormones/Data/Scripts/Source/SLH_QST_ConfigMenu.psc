@@ -1314,7 +1314,7 @@ endState
 ; AddSliderOptionST("STATE_SHRINK_FACTOR","Base shrink factor", _baseShrinkFactor)
 state STATE_SHRINK_FACTOR ; SLIDER
 	event OnSliderOpenST()
-		SetSliderDialogStartValue( StorageUtil.GetIntValue(PlayerActor, "_SLH_fBaseShrinkFactor") )
+		SetSliderDialogStartValue( StorageUtil.GetFloatValue(PlayerActor, "_SLH_fBaseShrinkFactor") )
 		SetSliderDialogDefaultValue( 5.0 )
 		SetSliderDialogRange( 0.0, 100.0 )
 		SetSliderDialogInterval( 1.0 )

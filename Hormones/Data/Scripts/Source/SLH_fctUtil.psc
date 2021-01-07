@@ -412,15 +412,17 @@ function tryRandomBimboThoughts(String sTag)
 	endif
 
 	iHoursSinceLastSex = GetCurrentHourOfDay() - StorageUtil.GetIntValue(PlayerActor, "_SLH_iHourOfDaySinceLastSex") 
-	iBimboThreshold = ((100-(iHoursSinceLastSex*10)) * fClumsyMod) as Int
-	Debug.Trace("[SLH] >>> chance of bimbo thoughts:" + iBimboThreshold)
+	iBimboThreshold = (iHoursSinceLastSex * ((10.0 * fClumsyMod) as Int)) 
+	; Debug.Trace("[SLH] >>> iHoursSinceLastSex:" + iHoursSinceLastSex)
+	; Debug.Trace("[SLH] >>> fClumsyMod:" + fClumsyMod)
+	; Debug.Trace("[SLH] >>> chance of bimbo thoughts:" + iBimboThreshold)
 
 	if (iCommentThrottle > iBimboThrottle) || (sTag == "now")
 		if (Utility.RandomInt(0,100) < iBimboThreshold ) 
-			Debug.Trace("[SLH] Bimbo Thoughts:")
-			Debug.Trace("[SLH] fClumsyMod:" + fClumsyMod)
-			Debug.Trace("[SLH] bimboArousal:" + bimboArousal)
-			Debug.Trace("[SLH] iBimboThreshold:" + iBimboThreshold)
+			; Debug.Trace("[SLH] Bimbo Thoughts:")
+			; Debug.Trace("[SLH] fClumsyMod:" + fClumsyMod)
+			; Debug.Trace("[SLH] bimboArousal:" + bimboArousal)
+			; Debug.Trace("[SLH] iBimboThreshold:" + iBimboThreshold)
 			; Debug.Notification("[SLH] iCommentThrottle:" + iCommentThrottle)
 
 			bimboRandomThoughts(PlayerActor)

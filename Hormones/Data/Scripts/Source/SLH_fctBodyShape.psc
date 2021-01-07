@@ -413,6 +413,8 @@ function alterBodyAfterRest(Actor kActor)
 
 		; debug.notification("[SLH]   Weight growth: " + fWeightGrowth)
 		debug.trace("[SLH]   Weight growth: " + fWeightGrowth)
+		debug.trace("[SLH]   	fSwellFactor: " + fSwellFactor)
+		debug.trace("[SLH]   	fWeightSwellMod: " + fWeightSwellMod)
 		; debug.notification("[SLH]   Set weight to " + fWeight + " from " + fCurrentWeight )
 		debug.trace("[SLH]   Set weight to " + fWeight + " from " + fCurrentWeight)
 		alterWeight(kActor, fWeight  )
@@ -544,7 +546,7 @@ function alterBodyAfterRest(Actor kActor)
 		EndIf
 	EndIf
 
-	StorageUtil.SetFloatValue(kActor, "_SLH_fSwellFactor",  fSwellFactor) 
+	; StorageUtil.SetFloatValue(kActor, "_SLH_fSwellFactor",  fSwellFactor) 
  
 	
  	; _refreshBodyShape()
@@ -737,7 +739,7 @@ function alterBodyByPercent(Actor kActor, String sBodyPart, Float modFactor)
 	
 
  
-	StorageUtil.SetFloatValue(kActor, "_SLH_fSwellFactor",  modFactor) 
+	; StorageUtil.SetFloatValue(kActor, "_SLH_fSwellFactor",  modFactor) 
  
 EndFunction
 
@@ -836,7 +838,7 @@ function alterWeight(Actor kActor, float fNewWeight = 0.0)
 	ObjectReference kActorREF= kActor as ObjectReference
 	ActorBase pActorBase = kActor.GetActorBase()
  
-	Float fWeightSwellMod    = StorageUtil.GetFloatValue(kActor, "_SLH_fWeightSwellMod")
+	; Float fWeightSwellMod    = StorageUtil.GetFloatValue(kActor, "_SLH_fWeightSwellMod")
 	Float fWeightMax 		= StorageUtil.GetFloatValue(kActor, "_SLH_fWeightMax")
 	Float fWeightMin 		= StorageUtil.GetFloatValue(kActor, "_SLH_fWeightMin")
  
@@ -845,6 +847,11 @@ function alterWeight(Actor kActor, float fNewWeight = 0.0)
 
 
 	Float fManualWeightChange = StorageUtil.GetFloatValue(kActor, "_SLH_fManualWeightChange") 
+
+	If (StorageUtil.GetIntValue(none, "_SLH_iHormonesSleepInit")==0)
+		; Mod Init safety - sleep first
+		Return
+	Endif
 
 	if (fManualWeightChange != -1)
 	 	debugTrace(" Weight inconsistency - maybe after showracemenu? " + fManualWeightChange)
@@ -883,6 +890,11 @@ function alterBreastNode(Actor kActor, float fNewBreast = 0.0)
 	Float fApparelMod = 1.0
 	Bool bArmorOn = kActor.WornHasKeyword(ArmorOn)
 	Bool bClothingOn = kActor.WornHasKeyword(ClothingOn)
+
+	If (StorageUtil.GetIntValue(none, "_SLH_iHormonesSleepInit")==0)
+		; Mod Init safety - sleep first
+		Return
+	Endif
 
 	If (bArmorOn)
 		fApparelMod = GV_armorMod.GetValue() as Float
@@ -963,6 +975,11 @@ function alterBellyNode(Actor kActor, float fNewBelly = 0.0)
 	Bool bArmorOn = kActor.WornHasKeyword(ArmorOn)
 	Bool bClothingOn = kActor.WornHasKeyword(ClothingOn)
 
+	If (StorageUtil.GetIntValue(none, "_SLH_iHormonesSleepInit")==0)
+		; Mod Init safety - sleep first
+		Return
+	Endif
+
 	If (bArmorOn)
 		fApparelMod = GV_armorMod.GetValue() as Float
 	ElseIf (bClothingOn)
@@ -1019,6 +1036,11 @@ function alterButtNode(Actor kActor, float fNewButt = 0.0)
 	Bool bArmorOn = kActor.WornHasKeyword(ArmorOn)
 	Bool bClothingOn = kActor.WornHasKeyword(ClothingOn)
 
+	If (StorageUtil.GetIntValue(none, "_SLH_iHormonesSleepInit")==0)
+		; Mod Init safety - sleep first
+		Return
+	Endif
+
 	If (bArmorOn)
 		fApparelMod = GV_armorMod.GetValue() as Float
 	ElseIf (bClothingOn)
@@ -1071,6 +1093,11 @@ function alterSchlongNode(Actor kActor, float fNewSchlong = 0.0)
 	Float fSchlongSwellMod = StorageUtil.GetFloatValue(kActor, "_SLH_fSchlongSwellMod")
 	Float fSchlongMax 		= StorageUtil.GetFloatValue(kActor, "_SLH_fSchlongMax")
 	Float fSchlongMin 		= StorageUtil.GetFloatValue(kActor, "_SLH_fSchlongMin")
+
+	If (StorageUtil.GetIntValue(none, "_SLH_iHormonesSleepInit")==0)
+		; Mod Init safety - sleep first
+		Return
+	Endif
 
 	debugTrace("  Schlong Old: " + StorageUtil.GetFloatValue(kActor, "_SLH_fSchlong")  + " New: " + fNewSchlong + " Min: " + fSchlongMin + " - Max: " + fSchlongMax)
 
@@ -1342,8 +1369,13 @@ function applyBodyShapeChanges(Actor kActor)
 	Utility.Wait(1.0)
 endFunction
 
-Int function alterHeight(Actor kActor, float fNewHeight) 
+function alterHeight(Actor kActor, float fNewHeight) 
 	ObjectReference kActorREF = kActor as ObjectReference
+
+	If (StorageUtil.GetIntValue(none, "_SLH_iHormonesSleepInit")==0)
+		; Mod Init safety - sleep first
+		Return
+	Endif
 
 	kActorREF.SetScale(fNewHeight)
 	fHeight = fNewHeight

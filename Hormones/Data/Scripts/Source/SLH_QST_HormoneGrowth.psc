@@ -19,7 +19,6 @@ ObjectReference PlayerREF
 Actor PlayerActor
 ActorBase pActorBase 
 
-Int iVersionNumber = 20191019
 
 Bool	 bInit 
 String[] skillList
@@ -193,6 +192,14 @@ Function Maintenance()
 	maintenanceVersionEvents()
 	NextAllowed = -1.0
 
+
+	If (StorageUtil.GetIntValue(none, "_SLH_iHormonesSleepInit")==0)
+		; Mod Init safety - sleep first
+		Debug.Notification("[Hormones] Changes paused until next sleep.")
+	Else
+		Debug.Notification("[Hormones] Changes enabled.")		
+	Endif
+
 	; Loading shape and hormone state
 	fctBodyShape.initShapeConstants(PlayerActor)
 	; fctColor.initColorConstants(PlayerActor)
@@ -256,15 +263,15 @@ Function maintenanceVersionEvents()
 	PlayerActor= PlayerREF as Actor
 	pActorBase = PlayerActor.GetActorBase()
 	Int iBimbo = StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo") 
-
-	iVersionNumber = 20191213
+ 
+	Int iCurrentVersionNumber = 20210107
+	Int iVersionNumber = StorageUtil.GetIntValue(none, "_SLH_iHormonesVersion")	
 	
-	If (StorageUtil.GetIntValue(none, "_SLH_iHormonesVersion") != iVersionNumber)
-		StorageUtil.SetIntValue(none, "_SLH_iHormonesVersion", iVersionNumber)	
-		Debug.Notification("[SLH] Hormones " + iVersionNumber)
+	If (iVersionNumber != iCurrentVersionNumber)
+		Debug.Notification("[SLH] Upgrading Hormones to " + iCurrentVersionNumber)
 
 		If (iVersionNumber <= 20181214)
-			debug.MessageBox("[Hormones] This is a major update. Check your menu settings for changes to color swatches and NiNode updates options.")
+			; debug.MessageBox("[Hormones] This is a major update. Check your menu settings for changes to color swatches and NiNode updates options.")
 			StorageUtil.SetIntValue(none, "_SLH_NiNodeOverrideON", 1)
 			StorageUtil.SetIntValue(PlayerActor, "_SLH_iDefaultSkinColor", -1)
 			StorageUtil.SetIntValue(PlayerActor, "_SLH_iSexActivityThreshold",GV_sexActivityThreshold.GetValue() as Int)
@@ -282,9 +289,14 @@ Function maintenanceVersionEvents()
 		If 	(StorageUtil.GetIntValue(PlayerActor, "_SLH_iHormoneLevelsInit") != 1) 
 			fctHormones.initHormonesLevels(PlayerActor)
 		EndIf
+		If (iVersionNumber <= 20210107)
+			debug.MessageBox("[Hormones] To prevent unwanted changes on a first start Hormones changes have been stopped until you first sleep.")
+			StorageUtil.SetIntValue(none, "_SLH_iHormonesSleepInit", 0)
+		endif
+		StorageUtil.SetIntValue(none, "_SLH_iHormonesVersion", iCurrentVersionNumber)	
 	Endif
 
-	debugTrace(" Hormones " + iVersionNumber)
+	debugTrace(" Hormones " + iCurrentVersionNumber)
 	
 	UnregisterForAllModEvents()
 	debugTrace("  Reset SexLab events")
@@ -417,6 +429,8 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 
 	fRefreshAfterSleep = (afDesiredSleepEndTime - afSleepStartTime)
 	debugTrace("SexLab Hormones: fRefreshAfterSleep: " + fRefreshAfterSleep)
+
+	StorageUtil.SetIntValue(none, "_SLH_iHormonesSleepInit", 1)
 endEvent
  
 Event OnSleepStop(bool abInterrupted)
@@ -430,6 +444,8 @@ Event OnSleepStop(bool abInterrupted)
 	fHoursSleep = (Utility.GetCurrentGameTime() - fDateSleep) * 24.0
 	debugTrace("Player woke up at: " + Utility.GameTimeToString(Utility.GetCurrentGameTime()))
 	debugTrace("Time slept: " + fHoursSleep)
+
+	applyHormonalChanges(PlayerActor)
 
 	bShapeChangeEvent = fctBodyShape.tryTGEvent(PlayerActor,fHoursSleep)
 

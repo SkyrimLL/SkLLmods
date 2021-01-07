@@ -108,6 +108,11 @@ function alterColorFromHormone(Actor kActor)
 	Int iSuccubusBlueSkinColor =  StorageUtil.GetIntValue(PlayerActor, "_SLH_iBlueShiftColor")
 
 
+	If (StorageUtil.GetIntValue(none, "_SLH_iHormonesSleepInit")==0)
+		; Mod Init safety - sleep first
+		Return
+	Endif
+
 	if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iUseColors") == 1)
 		; skin
 		
@@ -176,6 +181,11 @@ function alterSkinToOrigin(Actor kActor = None, float fSwellFactor = 0.125)
 
 	Int iOrigSkinColor = StorageUtil.GetIntValue(PlayerActor, "_SLH_iDefaultSkinColor")
 	Int iSkinColor = StorageUtil.GetIntValue(PlayerActor, "_SLH_iSkinColor")
+
+	If (StorageUtil.GetIntValue(none, "_SLH_iHormonesSleepInit")==0)
+		; Mod Init safety - sleep first
+		Return
+	Endif
 		
 	debugTrace("  alterSkinToOrigin: iSkinColor BEFORE: " + fctUtil.IntToHex(iSkinColor) )
 
@@ -351,10 +361,15 @@ function sendSlaveTatModEvent(actor akActor, string sType, string sTatooName, in
 endfunction
 
 
-Int function alterHairColor(Actor kActor, int rgbacolor, HeadPart thisHair)
+function alterHairColor(Actor kActor, int rgbacolor, HeadPart thisHair)
 	Actor kPlayer = Game.GetPlayer()
 	ActorBase pActorBase = kActor.GetActorBase()
 	ActorBase pLeveledActorBase = kActor.GetLeveledActorBase()
+
+	If (StorageUtil.GetIntValue(none, "_SLH_iHormonesSleepInit")==0)
+		; Mod Init safety - sleep first
+		Return
+	Endif
 
 	if (StorageUtil.GetIntValue(kPlayer, "_SLH_iUseHairColors") == 1) && (StorageUtil.GetIntValue(kPlayer, "_SLH_iUseHair") == 1)
 
@@ -366,9 +381,14 @@ Int function alterHairColor(Actor kActor, int rgbacolor, HeadPart thisHair)
 
 EndFunction
 
-Int function alterEyesColor(Actor kActor, int rgbacolor, HeadPart thisEyes)
+function alterEyesColor(Actor kActor, int rgbacolor, HeadPart thisEyes)
  
 	; Find out how to change eyes color
+
+	If (StorageUtil.GetIntValue(none, "_SLH_iHormonesSleepInit")==0)
+		; Mod Init safety - sleep first
+		Return
+	Endif
 
 	kActor.ChangeHeadPart(thisEyes)
 
@@ -476,6 +496,11 @@ function setTintMask(int itype = 6, int irgbacolor = 0, int isetIndex = 0, Bool 
 	; Sets the tintMask color for the particular type and index
 	; r,g,b,a: 0-255 range
 
+	If (StorageUtil.GetIntValue(none, "_SLH_iHormonesSleepInit")==0)
+		; Mod Init safety - sleep first
+		Return
+	Endif
+
 	if (StorageUtil.GetIntValue(kPlayer, "_SLH_iUseColors") == 1)
 
 		; int color = Math.LeftShift(alpha, 24) + Math.LeftShift(red, 16) + Math.LeftShift(green, 8) + blue
@@ -504,6 +529,11 @@ EndFunction
 function setTintMaskColor(int itype = 6, int irgbacolor = 0, int isetIndex = 0, Bool bsetAll = False)
 	Actor kPlayer = Game.GetPlayer()
  	int index_count = Game.GetNumTintsByType(itype)
+
+	If (StorageUtil.GetIntValue(none, "_SLH_iHormonesSleepInit")==0)
+		; Mod Init safety - sleep first
+		Return
+	Endif
 
 	if (StorageUtil.GetIntValue(kPlayer, "_SLH_iUseColors") == 1)
 	 	debugTrace("  		NumTintsByType: " + index_count  + " - type: " + itype)
