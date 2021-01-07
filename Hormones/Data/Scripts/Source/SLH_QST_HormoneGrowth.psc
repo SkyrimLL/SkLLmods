@@ -477,7 +477,7 @@ Event OnSleepStop(bool abInterrupted)
 	endif
 
 	; Cap values of tokens to prevent excessive changes
-	_SLH_fHormoneMetabolismToken = fctUtil.fRange( _SLH_fHormoneMetabolismToken , -200.0, 200.0)
+	_SLH_fHormoneMetabolismToken = fctUtil.fRange( _SLH_fHormoneMetabolismToken , 50.0, 200.0) ; 50.0 = base metabolic rate - calories burnt doing nothing
 	_SLH_fHormonePigmentationToken = fctUtil.fRange( _SLH_fHormonePigmentationToken , -200.0, 200.0)
  
 	debug.trace("[SLH] OnSleep: _SLH_fHormoneMetabolismToken = " + _SLH_fHormoneMetabolismToken)
@@ -493,10 +493,10 @@ Event OnSleepStop(bool abInterrupted)
 		PlayerActor.SendModEvent("SLHModHormone", "Mood", -1.0 * _SLH_fHormoneMetabolismToken / 100.0 )
 		PlayerActor.SendModEvent("SLHModHormone", "Male", _SLH_fHormoneMetabolismToken / 100.0 )
 		; convert pigmentation tokens from outdoor exposure into metabolism hormone - impact from interrupted sleep
-		if (_SLH_fHormonePigmentationToken>0)
-			PlayerActor.SendModEvent("SLHModHormone", "Pigmentation", 1.0 )
+		if (_SLH_fHormonePigmentationToken>=0)
+			PlayerActor.SendModEvent("SLHModHormone", "Pigmentation", 2.0 )
 		else
-			PlayerActor.SendModEvent("SLHModHormone", "Pigmentation", -1.0 )
+			PlayerActor.SendModEvent("SLHModHormone", "Pigmentation", -2.0 )
 		endif
 
 		; sleep interrupted - Player is sluggish during day
