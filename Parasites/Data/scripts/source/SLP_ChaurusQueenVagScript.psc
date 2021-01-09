@@ -4,7 +4,7 @@ Scriptname SLP_ChaurusQueenVagScript extends zadPlugScript
 Message Property squeezeMsg Auto
 SLP_fcts_parasites Property fctParasites  Auto
 
-string strFailEquip =  "You can feel the parasite churn and push inside you, but he belt you are wearing is keeping it deep inside your womb."
+string strFailEquip =  "You can feel the Seed churn and push inside you, but the belt you are wearing is keeping it deep inside your womb."
 
 int Function OnEquippedFilter(actor akActor, bool silent=false)
 	; FTM optimization
@@ -15,11 +15,15 @@ int Function OnEquippedFilter(actor akActor, bool silent=false)
 		libs.NotifyActor("Without the Seed Stone inside them, the parasite rejects " + akActor.GetLeveledActorBase().GetName() + " as a host.", akActor, true)
 		return 2
 	EndIf
-	if akActor.WornHasKeyword(zad_DeviousBelt)
+	if akActor.WornHasKeyword(libs.zad_DeviousBelt)
 		if akActor == libs.PlayerRef && !silent
 			libs.NotifyActor(strFailEquip, akActor, true)
-		ElseIf  !silent
-			libs.NotifyActor("Without the Seed Stone inside them, the parasite rejects " + akActor.GetLeveledActorBase().GetName() + " as a host.", akActor, true)
+		EndIf
+		return 2
+	Endif
+	if akActor.WornHasKeyword(libs.zad_DeviousPlug)
+		if akActor == libs.PlayerRef && !silent
+			libs.NotifyActor("You can feel the Seed churn and push inside you, but your holes are already full.", akActor, true)
 		EndIf
 		return 2
 	Endif
@@ -30,13 +34,13 @@ Function OnEquippedPre(actor akActor, bool silent=false)
 	string msg = ""
 	if akActor == libs.PlayerRef
 		if Aroused.GetActorExposure(akActor) < libs.ArousalThreshold("Desire")
-			msg = "The parasite in your womb stirs and fills your vagina snugly, leaving your lips slightly parted and wet."
+			msg = "The Seed in your womb stirs and fills your vagina snugly, leaving your lips slightly parted and wet."
 		elseif Aroused.GetActorExposure(akActor) < libs.ArousalThreshold("Horny")
-			msg = "The parasite in your womb extends past your vagina and keeps your lips spread wide."
+			msg = "The Seed in your womb extends past your vagina and keeps your lips spread wide."
 		elseif Aroused.GetActorExposure(akActor) < libs.ArousalThreshold("Desperate")
-			msg = "The parasite in your womb spreads your vagina wide open."
+			msg = "The Seed in your womb spreads your vagina wide open."
 		else
-			msg = "You can feel the parasite in your womb fill your vagina and squirm between your thighs."
+			msg = "You can feel the Seed in your womb fill your vagina and squirm between your thighs."
 		endif
 	EndIf
 	if !silent
@@ -83,7 +87,7 @@ EndFunction
 Function DeviceMenu(Int msgChoice = 0)
         msgChoice = zad_DeviceMsg.Show() ; display menu
 	if msgChoice==0 ; Not wearing a belt, no plugs
-		Debug.Notification("You stroke yourself with the Seed and coax the parasite out of its confinement.")
+		Debug.Notification("You stroke yourself with the Seed and coax the Seed out of its confinement.")
 		libs.EquipDevice(libs.PlayerRef, deviceInventory, deviceRendered, zad_DeviousDevice)
 	elseif msgChoice==1 ; Wearing a belt, no plugs
 		Debug.MessageBox(strFailEquip)
@@ -94,18 +98,18 @@ Function DeviceMenu(Int msgChoice = 0)
 		; Debug.Notification("Arousal: " + Aroused.GetActorArousal(libs.PlayerRef))
 		if ( Aroused.GetActorArousal(libs.PlayerRef) <= 10 ) ; libs.ArousalThreshold("Desire")
 			If (Utility.RandomInt(0,100) < iDexterity) 
-				msg = "Pushing and prying with your fingers, you manage to push the parasite back inside your womb."
+				msg = "Pushing and prying with your fingers, you manage to push the Seed back inside your womb."
 				libs.NotifyPlayer(msg, true)
 				RemoveDevice(libs.PlayerRef)
 			else
-				msg = "Your fingers slip, causing the parasite to extend and throb, and making you wet in the process. "
+				msg = "Your fingers slip, causing the Seed to extend and throb, and making you wet in the process. "
 				libs.NotifyPlayer(msg, true)
 			EndIf
 
 			libs.UpdateExposure(libs.PlayerRef,2)
 		else	
 			if ( Aroused.GetActorArousal(libs.PlayerRef) < 40 ) ; libs.ArousalThreshold("Horny")
-				msg = "As you keep pushing and tugging, the parasite keeps slipping away and growing thicker between your lips."
+				msg = "As you keep pushing and tugging, the Seed keeps slipping away and growing thicker between your lips."
 				libs.UpdateExposure(libs.PlayerRef,2)
 
 			elseif ( Aroused.GetActorArousal(libs.PlayerRef) < 80 ) ; libs.ArousalThreshold("Desperate")

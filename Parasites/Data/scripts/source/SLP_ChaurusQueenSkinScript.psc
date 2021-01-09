@@ -6,7 +6,7 @@ SLP_fcts_parasites Property fctParasites  Auto
 Function OnEquippedPre(actor akActor, bool silent=false)
 	if !silent
 		if akActor == libs.PlayerRef
-			libs.NotifyActor("The parasite is spreading through your skin and invading your breasts. New glands appear on your chest and start exuding a sweet and sticky liquid.", akActor, true)
+			libs.NotifyActor("The Seed is spreading through your skin and invading your breasts. New glands appear on your chest and start exuding a sweet and sticky liquid.", akActor, true)
 			
 		EndIf
 	EndIf

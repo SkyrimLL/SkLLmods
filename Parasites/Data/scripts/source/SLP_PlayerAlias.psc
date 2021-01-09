@@ -56,6 +56,7 @@ Potion Property SLP_CritterSemen Auto
 int daysPassed
 int iGameDateLastCheck = -1
 int iDaysSinceLastCheck
+int iNextStageThrottle = 0
 
 Event OnInit()
 	_maintenance()
@@ -245,7 +246,19 @@ Event OnUpdate()
 			endIf
 		endif
 
+	else
+		; updates during the day
 
+		if (Utility.RandomInt(0,100) < (iNextStageThrottle/8))
+			debug.trace("[SLP] tryParasiteNextStage")
+
+		 	fctParasites.tryParasiteNextStage(PlayerActor, "ChaurusQueen")
+
+		 	iNextStageThrottle = 0
+		endif
+
+		iNextStageThrottle = iNextStageThrottle + 1
+ 
 	endIf
 
 	iGameDateLastCheck = daysPassed  

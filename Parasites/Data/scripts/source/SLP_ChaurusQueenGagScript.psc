@@ -17,9 +17,8 @@ import MfgConsoleFunc
 Function OnEquippedPre(actor akActor, bool silent=false)
 	if !silent
 		if akActor == libs.PlayerRef
-			zad_GagEquipMsg.Show()
-		Else
-			libs.NotifyActor("The creeper wraps itself into "+GetMessageName(akActor)+" mouth, and locks securely in place behind "+GetMessageName(akActor)+" head.", akActor, true)
+			; zad_GagEquipMsg.Show()
+			libs.NotifyPlayer("Thick scales quickly form a protective layer around your face.", true)
 		EndIf
 	EndIf
 	Parent.OnEquippedPre(akActor, silent)
@@ -43,35 +42,38 @@ EndFunction
 string Function DeviceMenuPickLockFail()
 	Actor akActor = libs.PlayerRef as Actor
 
-	if ( Utility.RandomInt(0,120) > Aroused.GetActorArousal(libs.PlayerRef) ) 
-		libs.NotifyPlayer("You yank the face hugger with all your strength...", true)
-		akActor.SendModEvent("SLPSexCure","FaceHuggerGag",1)
-	else
-		libs.PlayerRef.RemoveItem(Lockpick)
-		zad_GagPickLockFailMsg.Show()
+	; if ( Utility.RandomInt(0,120) > Aroused.GetActorArousal(libs.PlayerRef) ) 
+	;	libs.NotifyPlayer("You yank the face hugger with all your strength...", true)
+	;	akActor.SendModEvent("SLPSexCure","FaceHuggerGag",1)
+	;else
+	;	libs.PlayerRef.RemoveItem(Lockpick)
+	;	zad_GagPickLockFailMsg.Show()
+		libs.NotifyPlayer("The protective mask is fused to your face.", true)
 		return ""
-	endif
+	;endif
 EndFunction
 
 Function DeviceMenuPickLock()
-	if libs.PlayerRef.WornHasKeyword(libs.zad_DeviousArmbinder)
-		zad_GagArmsTiedMsg.Show()
-		return
-	EndIf
-	int unlockChance = libs.CheckDeviceEscape(libs.GetUnlockThreshold(), "Lockpicking")
-        if (unlockChance == -1)
-		DeviceMenuPickLockSuccess()
-	else
-		DeviceMenuPickLockFail()
-	endif
+	libs.NotifyPlayer("The organic layer doesn't have any lock to pick.", true)
+	; if libs.PlayerRef.WornHasKeyword(libs.zad_DeviousArmbinder)
+	;	zad_GagArmsTiedMsg.Show()
+	;	return
+	; EndIf
+	;int unlockChance = libs.CheckDeviceEscape(libs.GetUnlockThreshold(), "Lockpicking")
+    ;    if (unlockChance == -1)
+	;	DeviceMenuPickLockSuccess()
+	;else
+	;	DeviceMenuPickLockFail()
+	;endif
 EndFunction
 
 Function DeviceMenuBruteForce()
-	if libs.PlayerRef.WornHasKeyword(libs.zad_DeviousArmbinder)
-		zad_GagBruteForceArmsTiedMsg.Show()
-	Else
-		zad_GagBruteForceMsg.show()
-	EndIf
+	libs.NotifyPlayer("The protective mask is fused to your face.", true)
+	;if libs.PlayerRef.WornHasKeyword(libs.zad_DeviousArmbinder)
+	;	zad_GagBruteForceArmsTiedMsg.Show()
+	;Else
+	;	zad_GagBruteForceMsg.show()
+	;EndIf
 EndFunction
 
 

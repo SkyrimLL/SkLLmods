@@ -16,6 +16,7 @@ ReferenceAlias Property FaceHuggerInfectedAlias  Auto
 ReferenceAlias Property SpiderFollowerAlias  Auto  
 
 Quest Property KynesBlessingQuest  Auto 
+Quest Property QueenOfChaurusQuest  Auto 
 
 ObjectReference Property DummyAlias  Auto  
  
@@ -33,6 +34,7 @@ GlobalVariable Property _SLP_GV_numBarnaclesInfections  Auto
 Faction Property PlayerFollowerFaction Auto
 
 SPELL Property StomachRot Auto
+SPELL Property SeedFlare Auto
 
 Container Property EggSac  Auto  
 Ingredient  Property TrollFat Auto
@@ -706,6 +708,9 @@ EndFunction
 Bool Function infectSpiderEgg( Actor kActor )
  	Actor PlayerActor = Game.GetPlayer()
 
+ 	; Setting toggle back to 0 in case equip fails - the 'apply' function sets it to 1 if it succeeds
+	StorageUtil.SetIntValue(kActor, "_SLP_toggleSpiderEgg", 0 )
+
   	if (kActor == None)
   		kActor = PlayerActor
   	endIf
@@ -821,6 +826,9 @@ EndFunction
 Bool Function infectSpiderPenis( Actor kActor  )
  	Actor PlayerActor = Game.GetPlayer()
 
+ 	; Setting toggle back to 0 in case equip fails - the 'apply' function sets it to 1 if it succeeds
+	StorageUtil.SetIntValue(kActor, "_SLP_toggleSpiderPenis", 0 )
+
   	if (kActor == None)
   		kActor = PlayerActor
   	endIf
@@ -918,7 +926,10 @@ EndFunction
 ;------------------------------------------------------------------------------
 Bool Function infectChaurusWorm( Actor kActor  )
  	Actor PlayerActor = Game.GetPlayer()
- 
+
+ 	; Setting toggle back to 0 in case equip fails - the 'apply' function sets it to 1 if it succeeds
+	StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusWorm", 0 )
+
   	if (kActor == None)
   		kActor = PlayerActor
   	endIf
@@ -1005,6 +1016,9 @@ EndFunction
 ;------------------------------------------------------------------------------
 Bool Function infectChaurusWormVag( Actor kActor  )
  	Actor PlayerActor = Game.GetPlayer()
+
+ 	; Setting toggle back to 0 in case equip fails - the 'apply' function sets it to 1 if it succeeds
+	StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusWormVag", 0 )
  
   	if (kActor == None)
   		kActor = PlayerActor
@@ -1178,6 +1192,9 @@ EndFunction
 ;------------------------------------------------------------------------------
 Bool Function infectTentacleMonster( Actor kActor  )
  	Actor PlayerActor = Game.GetPlayer()
+
+ 	; Setting toggle back to 0 in case equip fails - the 'apply' function sets it to 1 if it succeeds
+	StorageUtil.SetIntValue(kActor, "_SLP_toggleTentacleMonster", 0 )
  
   	if (kActor == None)
   		kActor = PlayerActor
@@ -1348,6 +1365,9 @@ EndFunction
 ;------------------------------------------------------------------------------
 Bool Function infectLivingArmor( Actor kActor  )
  	Actor PlayerActor = Game.GetPlayer()
+
+ 	; Setting toggle back to 0 in case equip fails - the 'apply' function sets it to 1 if it succeeds
+	StorageUtil.SetIntValue(kActor, "_SLP_toggleLivingArmor", 0 )
  
   	if (kActor == None)
   		kActor = PlayerActor
@@ -1438,6 +1458,9 @@ EndFunction
 Bool Function infectFaceHugger( Actor kActor  )
  	Actor PlayerActor = Game.GetPlayer()
 
+ 	; Setting toggle back to 0 in case equip fails - the 'apply' function sets it to 1 if it succeeds
+	StorageUtil.SetIntValue(kActor, "_SLP_toggleFaceHugger", 0 )
+
   	if (kActor == None)
   		kActor = PlayerActor
   	endIf
@@ -1527,6 +1550,9 @@ EndFunction
 Bool Function infectFaceHuggerGag( Actor kActor  )
  	Actor PlayerActor = Game.GetPlayer()
 
+ 	; Setting toggle back to 0 in case equip fails - the 'apply' function sets it to 1 if it succeeds
+	StorageUtil.SetIntValue(kActor, "_SLP_toggleFaceHuggerGag", 0 )
+
   	if (kActor == None)
   		kActor = PlayerActor
   	endIf
@@ -1611,6 +1637,9 @@ EndFunction
 ;------------------------------------------------------------------------------
 Bool Function infectBarnacles( Actor kActor  )
  	Actor PlayerActor = Game.GetPlayer()
+
+ 	; Setting toggle back to 0 in case equip fails - the 'apply' function sets it to 1 if it succeeds
+	StorageUtil.SetIntValue(kActor, "_SLP_toggleSpiderEggBarnacles", 0 )
 
   	if (kActor == None)
   		kActor = PlayerActor
@@ -1721,6 +1750,9 @@ EndFunction
 ;------------------------------------------------------------------------------
 Bool Function infectChaurusQueenVag( Actor kActor  )
  	Actor PlayerActor = Game.GetPlayer()
+
+ 	; Setting toggle back to 0 in case equip fails - the 'apply' function sets it to 1 if it succeeds
+	StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenVag", 0 )
  
   	if (kActor == None)
   		kActor = PlayerActor
@@ -1745,7 +1777,8 @@ Bool Function infectChaurusQueenVag( Actor kActor  )
 		Debug.Trace("[SLP]	Actor is not female - Aborting")
 		Return False
 	Endif
-	
+
+	SeedFlare.Cast(kActor as ObjectReference, kActor as ObjectReference)	
 	equipParasiteNPCByString (kActor, "ChaurusQueenVag")
 
 	Return true ; Return applyChaurusWormVag( kActor  )
@@ -1817,6 +1850,9 @@ EndFunction
 Bool Function infectChaurusQueenGag( Actor kActor  )
  	Actor PlayerActor = Game.GetPlayer()
 
+ 	; Setting toggle back to 0 in case equip fails - the 'apply' function sets it to 1 if it succeeds
+	StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenGag", 0 )
+
   	if (kActor == None)
   		kActor = PlayerActor
   	endIf
@@ -1836,6 +1872,7 @@ Bool Function infectChaurusQueenGag( Actor kActor  )
 		Return False
 	Endif
 
+	SeedFlare.Cast(kActor as ObjectReference, kActor as ObjectReference)	
 	equipParasiteNPCByString (kActor, "ChaurusQueenGag")
 
 	Return  true; applyFaceHuggerGag( kActor )
@@ -1905,6 +1942,9 @@ EndFunction
 ;------------------------------------------------------------------------------
 Bool Function infectChaurusQueenSkin( Actor kActor  )
  	Actor PlayerActor = Game.GetPlayer()
+
+ 	; Setting toggle back to 0 in case equip fails - the 'apply' function sets it to 1 if it succeeds
+	StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenSkin", 0 )
  
   	if (kActor == None)
   		kActor = PlayerActor
@@ -1930,6 +1970,7 @@ Bool Function infectChaurusQueenSkin( Actor kActor  )
 		Return False
 	Endif
 	
+	SeedFlare.Cast(kActor as ObjectReference, kActor as ObjectReference)	
 	equipParasiteNPCByString (kActor, "ChaurusQueenSkin")
 
 	Return true ; Return applyChaurusQueenSkin( kActor  )
@@ -1998,6 +2039,9 @@ EndFunction
 ;------------------------------------------------------------------------------
 Bool Function infectChaurusQueenArmor( Actor kActor  )
  	Actor PlayerActor = Game.GetPlayer()
+
+ 	; Setting toggle back to 0 in case equip fails - the 'apply' function sets it to 1 if it succeeds
+	StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenArmor", 0 )
  
   	if (kActor == None)
   		kActor = PlayerActor
@@ -2023,6 +2067,7 @@ Bool Function infectChaurusQueenArmor( Actor kActor  )
 		Return False
 	Endif
 	
+	SeedFlare.Cast(kActor as ObjectReference, kActor as ObjectReference)	
 	equipParasiteNPCByString (kActor, "ChaurusQueenArmor")
 
 	Return true ; Return applyChaurusQueenArmor( kActor  )
@@ -2092,6 +2137,9 @@ EndFunction
 ;------------------------------------------------------------------------------
 Bool Function infectChaurusQueenBody( Actor kActor  )
  	Actor PlayerActor = Game.GetPlayer()
+
+ 	; Setting toggle back to 0 in case equip fails - the 'apply' function sets it to 1 if it succeeds
+	StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenBody", 0 )
  
   	if (kActor == None)
   		kActor = PlayerActor
@@ -2117,6 +2165,7 @@ Bool Function infectChaurusQueenBody( Actor kActor  )
 		Return False
 	Endif
 	
+	SeedFlare.Cast(kActor as ObjectReference, kActor as ObjectReference)	
 	equipParasiteNPCByString (kActor, "ChaurusQueenBody")
 
 	Return true ; Return applyChaurusQueenBody( kActor  )
@@ -2304,6 +2353,81 @@ Function triggerFuroTub( Actor kActor, String  sParasite)
 	Utility.Wait(10.0)
 
 	_SLP_GV_ZAPFuroTubOn.SetValue(0)
+
+EndFunction
+
+
+;------------------------------------------------------------------------------
+Function tryParasiteNextStage(Actor kActor, String sParasite)
+ 	Actor PlayerActor = Game.GetPlayer()
+
+ 	If (kActor == PlayerActor)
+ 		If (PlayerActor.IsBleedingOut() || PlayerActor.IsInCombat() || PlayerActor.IsDead() || PlayerActor.IsOnMount() || PlayerActor.IsFlying() || PlayerActor.IsUnconscious() || Game.IsActivateControlsEnabled() )
+ 			debug.notification("[SLP] tryParasiteNextStage failed  " )
+ 			debug.notification("[SLP]    Player is busy " )
+ 			debug.trace("[SLP]    Player is busy " )
+ 			debug.trace("[SLP]     IsBleedingOut: " + PlayerActor.IsBleedingOut()  )
+ 			debug.trace("[SLP]     IsInCombat: " + PlayerActor.IsInCombat()  )
+ 			debug.trace("[SLP]     IsDead: " + PlayerActor.IsDead()  )
+ 			debug.trace("[SLP]     IsOnMount: " + PlayerActor.IsOnMount()  )
+ 			debug.trace("[SLP]     IsFlying: " + PlayerActor.IsFlying()  )
+ 			debug.trace("[SLP]     IsUnconscious: " + PlayerActor.IsUnconscious()  )
+ 			debug.trace("[SLP]     Game.IsActivateControlsEnabled: " + Game.IsActivateControlsEnabled() )
+			Return ; Player is busy - try again later
+ 		Endif
+
+		If (sParasite == "ChaurusQueen") && (QueenOfChaurusQuest.GetStageDone(290))
+			Int itriggerNextStageChaurusQueen = StorageUtil.GetIntValue(kActor, "_SLP_triggerNextStageChaurusQueen")
+			debug.trace("[SLP]    itriggerNextStageChaurusQueen = " + itriggerNextStageChaurusQueen)
+
+			if (Utility.RandomInt(0,100) < itriggerNextStageChaurusQueen) 
+				; INCUBATION 
+				If (isInfectedByString( kActor,  "Barnacles" ))
+					; SeedFlare.RemoteCast(kActor as ObjectReference, kActor,kActor as ObjectReference)		
+					SeedFlare.Cast(kActor as ObjectReference, kActor as ObjectReference)	
+					debug.trace("[SLP]    Effect - cure Barnacles")
+					debug.Notification("The Seed inside you flushes the barnacles away from your skin.")
+					cureBarnacles( kActor  )
+					
+				elseIf (!isInfectedByString( kActor,  "ChaurusQueenVag" )) && (Utility.RandomInt(0,100)<30)
+					debug.trace("[SLP]    Effect - add Chaurus Queen Vag")
+					debug.Notification("The Seed stirs through your womb and extends a tentacle between your legs.")
+					infectChaurusQueenVag( kActor  )
+					
+				elseIf (isInfectedByString( kActor,  "ChaurusQueenVag" )) && (Utility.RandomInt(0,100)<10)
+					debug.trace("[SLP]    Effect - cure Chaurus Queen Vag")
+					debug.Notification("The tentacle receeds to the Seed inside your womb.")
+					cureChaurusQueenVag( kActor  )
+					
+				elseIf (!isInfectedByString( kActor,  "ChaurusQueenSkin" )) && (Utility.RandomInt(0,100)<20)
+					debug.trace("[SLP]    Effect - add Chaurus Queen Skin")
+					debug.Notification("The Seed flares up through your skin and your breasts.")
+					infectChaurusQueenSkin( kActor  )
+					
+				elseIf (isInfectedByString( kActor,  "ChaurusQueenSkin" )) && (Utility.RandomInt(0,100)<10)
+					debug.trace("[SLP]    Effect - cure Chaurus Queen Skin")
+					debug.Notification("The feelers in your breasts recced inside.")
+					cureChaurusQueenSkin( kActor  )
+					
+				else
+					SeedFlare.Cast(kActor as ObjectReference, kActor as ObjectReference)	
+					debug.trace("[SLP]    Effect - cramps")
+					debug.Notification("Sudden cramps flare up inside you as the Seed slowly rewires your body.")
+
+				endif
+
+				; HEAT
+
+				StorageUtil.SetIntValue(kActor, "_SLP_triggerNextStageChaurusQueen", 0)
+			else
+ 				debug.notification("[SLP] tryParasiteNextStage failed  " )
+ 				debug.notification("[SLP]    Bad luck - try again later : " + itriggerNextStageChaurusQueen)
+
+				itriggerNextStageChaurusQueen = itriggerNextStageChaurusQueen + Utility.RandomInt(10,30)
+				StorageUtil.SetIntValue(kActor, "_SLP_triggerNextStageChaurusQueen",itriggerNextStageChaurusQueen)
+			endif
+		endif
+	endif
 
 EndFunction
 

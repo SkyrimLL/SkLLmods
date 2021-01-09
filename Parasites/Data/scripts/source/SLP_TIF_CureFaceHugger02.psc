@@ -7,7 +7,7 @@ Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
 Actor kPlayer = Game.GetPlayer()
-kPlayer.SendModEvent("SLPSexCure","FaceHuggerGag")
+akspeaker.SendModEvent("SLPSexCure","FaceHuggerGag")
 KynesBlessingQuest.SetStage(50)
 KynesBlessingQuest.SetStage(21)
 ;END CODE
