@@ -349,22 +349,22 @@ Float function updateActorSwellFactor(Actor kActor)
 	StorageUtil.SetIntValue(kActor, "_SLH_iDaysSinceLastSex", iDaysSinceLastSex)
 
 	If (iSexCountToday <= 1) && (iDaysSinceLastSex >= sexActivityBuffer )
-	; Decrease
+	 ; Decrease if 0 or 1 sex act only today AND number of days since last sex is higher than the value in the menu slider
 		Debug.Notification("You feel more focused")
 
 		fSwellFactor = -1.0 * baseShrinkFactor
 
 	ElseIf ( iSexCountToday >1) && ( (iSexCountToday >= sexActivityThreshold) || (iDaysSinceLastSex <= sexActivityBuffer ) ) 
-	; Increase
+	; Increase if more than 1 sex act today AND ( number of sex acts is larger than value set in the menu or the last sex act happened under the limit of days set in the menu)
 		Debug.Notification("You feel more voluptuous") 
  
 		fSwellFactor    = baseSwellFactor
 
 	Else   
-	; Stable
+	; Stable - no particular sex activity. Weight should continue to grow at a slower rate to simulate inertia - body keeps growing even when doing nothing
 		Debug.Notification("You feel more balanced")
 		; No change
-		fSwellFactor    = baseSwellFactor / 10.0 ; simulate inertia - body keeps growing even when doing nothing
+		fSwellFactor    = baseSwellFactor / 10.0 
  
 	EndIf	
 		

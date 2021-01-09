@@ -1147,8 +1147,12 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 				SendModEvent("yps-LipstickEvent", "Bimbo", -1)  ; SendModEvent("yps-LipstickEvent", "Red", 0xFF0000)  
 				SendModEvent("yps-EyeshadowEvent", "Bimbo", -1) ; SendModEvent("yps-EyeshadowEvent", "Black", 0x000000)   
 
-				SendModEvent("yps-FingerNailsEvent", "", 29) 
 				SendModEvent("yps-HairColorBaseEvent", "Platinum Blonde", 0xCABFB1)
+				
+				if (!isBimboPermanent)
+					SendModEvent("yps-FingerNailsEvent", "", 29) 
+					SendModEvent("yps-ToeNailsEvent",  "", 29)		
+				endif				
 
 				if (hairLength<6)
 					SendModEvent("yps-SetHaircutEvent", "", 6)
@@ -1171,9 +1175,12 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 			;If (!isBimboPermanent) 
 				SendModEvent("yps-LipstickEvent", "Bimbo", -1)  ; SendModEvent("yps-LipstickEvent", "Red", 0xFF0000)  
 				SendModEvent("yps-EyeshadowEvent", "Bimbo", -1) ; SendModEvent("yps-EyeshadowEvent", "Black", 0x000000)   
+				
+				if (!isBimboPermanent)
+					SendModEvent("yps-FingerNailsEvent", "", 29) 
+					SendModEvent("yps-ToeNailsEvent",  "", 29)		
+				endif				
 
-				SendModEvent("yps-FingerNailsEvent", "", 29) 
-				SendModEvent("yps-ToeNailsEvent",  "", 29)
  
 				SendModEvent("yps-HairColorBaseEvent", "Platinum Blonde", 0xCABFB1)
 
@@ -1200,8 +1207,12 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 				SendModEvent("yps-EyeshadowEvent", "Bimbo", -1) ; SendModEvent("yps-EyeshadowEvent", "Black", 0x000000)   
 
 				SendModEvent("yps-HairColorBaseEvent", "Platinum Blonde", 0xCABFB1)
-				SendModEvent("yps-FingerNailsEvent", "", 29) 
-				SendModEvent("yps-ToeNailsEvent",  "", 29)				
+				
+				if (!isBimboPermanent)
+					SendModEvent("yps-FingerNailsEvent", "", 29) 
+					SendModEvent("yps-ToeNailsEvent",  "", 29)		
+				endif				
+			
 
 				if (hairLength<7)
 					SendModEvent("yps-SetHaircutEvent", "", 7)
@@ -1228,8 +1239,11 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 				SendModEvent("yps-EyeshadowEvent", "Bimbo", -1) ; SendModEvent("yps-EyeshadowEvent", "Black", 0x000000)   
  
 				SendModEvent("yps-HairColorBaseEvent", "Platinum Blonde", 0xCABFB1)
-				SendModEvent("yps-FingerNailsEvent", "", 29) 
-				SendModEvent("yps-ToeNailsEvent",  "", 29)				
+				
+				if (!isBimboPermanent)
+					SendModEvent("yps-FingerNailsEvent", "", 29) 
+					SendModEvent("yps-ToeNailsEvent",  "", 29)		
+				endif				
 
 				if (hairLength<8)
 					SendModEvent("yps-SetHaircutEvent", "", 8)
@@ -1252,8 +1266,12 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 				SendModEvent("yps-EyeshadowEvent", "Bimbo", -1) ; SendModEvent("yps-EyeshadowEvent", "Black", 0x000000)   
  
 				SendModEvent("yps-HairColorBaseEvent", "Platinum Blonde", 0xCABFB1)
-				SendModEvent("yps-FingerNailsEvent", "", 29) 
-				SendModEvent("yps-ToeNailsEvent",  "", 29)				
+				
+				if (!isBimboPermanent)
+					SendModEvent("yps-FingerNailsEvent", "", 29) 
+					SendModEvent("yps-ToeNailsEvent",  "", 29)		
+				endif				
+			
 
 				if (hairLength<8)
 					SendModEvent("yps-SetHaircutEvent", "", 8)
@@ -1276,8 +1294,12 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 				SendModEvent("yps-EyeshadowEvent", "Bimbo", -1) ; SendModEvent("yps-EyeshadowEvent", "Black", 0x000000)   
 
 				SendModEvent("yps-HairColorBaseEvent", "Platinum Blonde", 0xCABFB1)
-				SendModEvent("yps-FingerNailsEvent", "", 29) 
-				SendModEvent("yps-ToeNailsEvent",  "", 29)				
+				
+				if (!isBimboPermanent)
+					SendModEvent("yps-FingerNailsEvent", "", 29) 
+					SendModEvent("yps-ToeNailsEvent",  "", 29)		
+				endif				
+			
 
 				if (hairLength<9)
 					SendModEvent("yps-SetHaircutEvent", "", 9)
@@ -1300,8 +1322,12 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 				SendModEvent("yps-EyeshadowEvent", "Bimbo", -1) ; SendModEvent("yps-EyeshadowEvent", "Black", 0x000000)   
   
 				SendModEvent("yps-HairColorBaseEvent", "Platinum Blonde", 0xCABFB1)
-				SendModEvent("yps-FingerNailsEvent", "", 29) 
-				SendModEvent("yps-ToeNailsEvent",  "", 29)				
+				
+				if (!isBimboPermanent)
+					SendModEvent("yps-FingerNailsEvent", "", 29) 
+					SendModEvent("yps-ToeNailsEvent",  "", 29)		
+				endif				
+			
 
 				if (hairLength<9)
 					SendModEvent("yps-SetHaircutEvent", "", 9)
@@ -1324,8 +1350,12 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 				SendModEvent("yps-EyeshadowEvent", "Bimbo", -1) ; SendModEvent("yps-EyeshadowEvent", "Black", 0x000000)   
 
 				SendModEvent("yps-HairColorBaseEvent", "Platinum Blonde", 0xCABFB1)
-				SendModEvent("yps-FingerNailsEvent", "", 29) 
-				SendModEvent("yps-ToeNailsEvent",  "", 29)				
+				
+				if (!isBimboPermanent)
+					SendModEvent("yps-FingerNailsEvent", "", 29) 
+					SendModEvent("yps-ToeNailsEvent",  "", 29)		
+				endif				
+		
 					
 				if (hairLength<10)
 					SendModEvent("yps-SetHaircutEvent", "", 10)
@@ -1367,11 +1397,15 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 				SendModEvent("yps-EyeshadowEvent", "Bimbo", -1) ; SendModEvent("yps-EyeshadowEvent", "Black", 0x000000)   
 
 				SendModEvent("yps-HairColorBaseEvent", "Platinum Blonde", 0xCABFB1)
-				SendModEvent("yps-FingerNailsEvent", "", 29) 
-				SendModEvent("yps-ToeNailsEvent",  "", 29)				
+				
+				if (!isBimboPermanent)
+					SendModEvent("yps-FingerNailsEvent", "", 29) 
+					SendModEvent("yps-ToeNailsEvent",  "", 29)		
+				endif				
+			
 					
-				if (hairLength<10)
-					SendModEvent("yps-SetHaircutEvent", "", 10)
+				if (hairLength<11)
+					SendModEvent("yps-SetHaircutEvent", "", 11)
 				endif
 			;endif
 		EndIf
@@ -1412,11 +1446,15 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 				SendModEvent("yps-LipstickEvent", "Bimbo", -1)  ; SendModEvent("yps-LipstickEvent", "Red", 0xFF0000)  
 				SendModEvent("yps-EyeshadowEvent", "Bimbo", -1) ; SendModEvent("yps-EyeshadowEvent", "Black", 0x000000)   
 				SendModEvent("yps-HairColorBaseEvent", "Platinum Blonde", 0xCABFB1)
-				SendModEvent("yps-FingerNailsEvent", "", 29) 
-				SendModEvent("yps-ToeNailsEvent",  "", 29)				
+				
+				if (!isBimboPermanent)
+					SendModEvent("yps-FingerNailsEvent", "", 29) 
+					SendModEvent("yps-ToeNailsEvent",  "", 29)		
+				endif				
+		
 					
-				if (hairLength>11) || (hairLength<11)
-					SendModEvent("yps-SetHaircutEvent", "", 11)
+				if (hairLength<12)
+					SendModEvent("yps-SetHaircutEvent", "", 12)
 				endif
 			;endif
 		EndIf
@@ -1454,11 +1492,14 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 				SendModEvent("yps-LipstickEvent", "Bimbo", -1)  ; SendModEvent("yps-LipstickEvent", "Red", 0xFF0000)  
 				SendModEvent("yps-EyeshadowEvent", "Bimbo", -1) ; SendModEvent("yps-EyeshadowEvent", "Black", 0x000000)    
 				SendModEvent("yps-HairColorBaseEvent", "Platinum Blonde", 0xCABFB1)
-				SendModEvent("yps-FingerNailsEvent", "", 29) 
-				SendModEvent("yps-ToeNailsEvent",  "", 29)				
+
+				if (!isBimboPermanent)
+					SendModEvent("yps-FingerNailsEvent", "", 29) 
+					SendModEvent("yps-ToeNailsEvent",  "", 29)		
+				endif				
 					
-				if (hairLength>12) || (hairLength<12)
-					SendModEvent("yps-SetHaircutEvent", "", 12)
+				if (hairLength<13)
+					SendModEvent("yps-SetHaircutEvent", "", 13)
 				endif
 			;endif
 		EndIf
@@ -1477,12 +1518,14 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 				SendModEvent("yps-LipstickEvent", "Bimbo", -1)  ; SendModEvent("yps-LipstickEvent", "Red", 0xFF0000)  
 				SendModEvent("yps-EyeshadowEvent", "Bimbo", -1) ; SendModEvent("yps-EyeshadowEvent", "Black", 0x000000)   
 				SendModEvent("yps-HairColorBaseEvent", "Platinum Blonde", 0xCABFB1)
-				SendModEvent("yps-FingerNailsEvent", "", 29) 
-				SendModEvent("yps-ToeNailsEvent",  "", 29)				
+
+				if (!isBimboPermanent)
+					SendModEvent("yps-FingerNailsEvent", "", 29) 
+					SendModEvent("yps-ToeNailsEvent",  "", 29)		
+				endif		
 					
-				if (hairLength>13) || (hairLength<13)
-					SendModEvent("yps-SetHaircutEvent", "", 13)
-				endif
+				SendModEvent("yps-SetHaircutEvent", "", 13)
+
 			;endif
 		EndIf
 
@@ -1515,9 +1558,8 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 			SendModEvent("yps-DisableHairgrowthEvent")
 			SendModEvent("yps-DisableHairmakeoverEvent")
 			
-					if (hairLength>13) || (hairLength<13)
-						SendModEvent("yps-SetHaircutEvent", "", 13)
-					endif
+			SendModEvent("yps-SetHaircutEvent", "", 13)
+
 				
 					if (StorageUtil.GetIntValue(none, "ypsPubicHairEnabled") == 1)
 						SendModEvent("yps-SetPubicHairLengthEvent", "", 0)

@@ -614,9 +614,9 @@ function alterBodyByPercent(Actor kActor, String sBodyPart, Float modFactor)
 
 	if (GV_useWeight.GetValue() == 1) && (sBodyPart=="Weight")
 		; 2020-03-14 - force positive value of fWeightSwellMod - losing weight always means a decrease here
-		if (fWeightSwellMod<0)
-			fWeightSwellMod = -1.0 * fWeightSwellMod
-		endif
+		; if (fWeightSwellMod<0)
+		;	fWeightSwellMod = -1.0 * fWeightSwellMod
+		; endif
 
 		fCurrentWeight = pActorBase.GetWeight()
 
