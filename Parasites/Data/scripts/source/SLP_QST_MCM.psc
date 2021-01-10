@@ -274,6 +274,9 @@ event OnPageReset(string a_page)
 			AddSliderOptionST("STATE_CHAURUSQUEEN_BELLY","Max belly size (Chaurus Queen)", _bellyMaxChaurusQueen,"{1}", OPTION_FLAG_DISABLED)
 		endif
 
+		AddTextOption("     Chaurus Queen Stage: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iChaurusQueenStage") as Int, "", OPTION_FLAG_DISABLED)
+		AddTextOption("     Days since start: " + (Game.QueryStat("Days Passed") - StorageUtil.GetIntValue(kPlayer, "_SLP_iChaurusQueenDate")) as Int, "", OPTION_FLAG_DISABLED)
+
 	endIf
 endEvent
 

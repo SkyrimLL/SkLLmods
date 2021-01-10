@@ -20,7 +20,7 @@ Utility.Wait(2)
 	if (ECTrap) 
 	    ModEvent.PushForm(ECTrap, kPlayer)             ; Form (Some SendModEvent scripting "black magic" - required)
 	    ModEvent.PushForm(ECTrap, kPlayer)  ; Form The animation target
-	    ModEvent.PushInt(ECTrap, Utility.randomInt(3,4))    	; Int The animation required -1 = Impregnation only with No Animation,
+	    ModEvent.PushInt(ECTrap, Utility.randomInt(2,3))    	; Int The animation required -1 = Impregnation only with No Animation,
                                                 ; 0 = Tentacles, 1 = Machines 2 = Slime 3 = Ooze
 	    ModEvent.PushBool(ECTrap, true)         ; Bool Apply the linked EC effect (Ovipostion for Tentacles, Exhaustion for Machine) 
 	    ModEvent.Pushint(ECTrap, 500)           ; Int  Alarm radius in units (0 to disable) 
@@ -36,6 +36,7 @@ Utility.Wait(2)
 _SLP_WhiterunSanctuaryPlayerAltarEffect.Disable()
 
 StorageUtil.SetIntValue(kPlayer, "_SLP_iChaurusQueenStage",  1)
+StorageUtil.SetIntValue(kPlayer, "_SLP_iChaurusQueenDate", Game.QueryStat("Days Passed"))
 ;END CODE
 EndFunction
 ;END FRAGMENT

@@ -1810,6 +1810,10 @@ Bool Function applyChaurusQueenVag( Actor kActor  )
 
 	applyBaseChaurusQueenSkin()
 
+	if (StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusQueenStage")<2)
+		StorageUtil.SetIntValue(PlayerActor, "_SLP_iChaurusQueenStage",  2)
+	endif
+
 	SendModEvent("SLPChaurusQueenVagInfection")
 
 	; if (!KynesBlessingQuest.GetStageDone(20)) && (kActor == PlayerActor)
@@ -2000,10 +2004,14 @@ Bool Function applyChaurusQueenSkin( Actor kActor  )
 
 	applyBaseChaurusQueenSkin()
 
+	if (StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusQueenStage")<3)
+		StorageUtil.SetIntValue(PlayerActor, "_SLP_iChaurusQueenStage",  3)
+	endif
+
 	SendModEvent("SLPChaurusQueenSkinInfection")
 
-	if (!KynesBlessingQuest.GetStageDone(20)) && (kActor == PlayerActor)
-		KynesBlessingQuest.SetStage(20)
+	if (!QueenOfChaurusQuest.GetStageDone(300)) && (kActor == PlayerActor)
+		QueenOfChaurusQuest.SetStage(300)
 	endif
 	
 	Return True
@@ -2097,11 +2105,15 @@ Bool Function applyChaurusQueenArmor( Actor kActor  )
 
 	applyBaseChaurusQueenSkin()
 
+	if (StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusQueenStage")<4)
+		StorageUtil.SetIntValue(PlayerActor, "_SLP_iChaurusQueenStage",  4)
+	endif
+
 	SendModEvent("SLPChaurusQueenArmorInfection")
 
-	if (!KynesBlessingQuest.GetStageDone(20)) && (kActor == PlayerActor)
-		KynesBlessingQuest.SetStage(20)
-	endif
+	; if (!KynesBlessingQuest.GetStageDone(20)) && (kActor == PlayerActor)
+	; 	KynesBlessingQuest.SetStage(20)
+	; endif
 	
 	Return True
 EndFunction
@@ -2195,11 +2207,15 @@ Bool Function applyChaurusQueenBody( Actor kActor  )
 
 	applyBaseChaurusQueenSkin()
 
+	if (StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusQueenStage")<5)
+		StorageUtil.SetIntValue(PlayerActor, "_SLP_iChaurusQueenStage",  5)
+	endif
+
 	SendModEvent("SLPChaurusQueenBodyInfection")
 
-	if (!KynesBlessingQuest.GetStageDone(20)) && (kActor == PlayerActor)
-		KynesBlessingQuest.SetStage(20)
-	endif
+	; if (!KynesBlessingQuest.GetStageDone(20)) && (kActor == PlayerActor)
+	;	KynesBlessingQuest.SetStage(20)
+	; endif
 	
 	Return True
 EndFunction
@@ -2358,26 +2374,28 @@ EndFunction
 
 
 ;------------------------------------------------------------------------------
-Function tryParasiteNextStage(Actor kActor, String sParasite)
+Bool Function tryParasiteNextStage(Actor kActor, String sParasite)
  	Actor PlayerActor = Game.GetPlayer()
+ 	Bool bSuccess = False
+ 	Int iChaurusQueenStage = StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusQueenStage")
 
  	If (kActor == PlayerActor)
- 		If (PlayerActor.IsBleedingOut() || PlayerActor.IsInCombat() || PlayerActor.IsDead() || PlayerActor.IsOnMount() || PlayerActor.IsFlying() || PlayerActor.IsUnconscious() || Game.IsActivateControlsEnabled() )
+ 		If (PlayerActor.IsBleedingOut() || PlayerActor.IsDead() || PlayerActor.IsOnMount() || PlayerActor.IsFlying() || PlayerActor.IsUnconscious() || !Game.IsActivateControlsEnabled() || SexLab.IsActorActive(PlayerActor) )
  			debug.notification("[SLP] tryParasiteNextStage failed  " )
  			debug.notification("[SLP]    Player is busy " )
  			debug.trace("[SLP]    Player is busy " )
  			debug.trace("[SLP]     IsBleedingOut: " + PlayerActor.IsBleedingOut()  )
- 			debug.trace("[SLP]     IsInCombat: " + PlayerActor.IsInCombat()  )
  			debug.trace("[SLP]     IsDead: " + PlayerActor.IsDead()  )
  			debug.trace("[SLP]     IsOnMount: " + PlayerActor.IsOnMount()  )
  			debug.trace("[SLP]     IsFlying: " + PlayerActor.IsFlying()  )
  			debug.trace("[SLP]     IsUnconscious: " + PlayerActor.IsUnconscious()  )
  			debug.trace("[SLP]     Game.IsActivateControlsEnabled: " + Game.IsActivateControlsEnabled() )
-			Return ; Player is busy - try again later
+ 			debug.trace("[SLP]     SexLab.IsActorActive: " + SexLab.IsActorActive(PlayerActor) )
+			Return bSuccess; Player is busy - try again later
  		Endif
 
 		If (sParasite == "ChaurusQueen") && (QueenOfChaurusQuest.GetStageDone(290))
-			Int itriggerNextStageChaurusQueen = StorageUtil.GetIntValue(kActor, "_SLP_triggerNextStageChaurusQueen")
+			Int itriggerNextStageChaurusQueen = StorageUtil.GetIntValue(kActor, "_SLP_triggerNextStageChaurusQueen") +  (iChaurusQueenStage * 10)
 			debug.trace("[SLP]    itriggerNextStageChaurusQueen = " + itriggerNextStageChaurusQueen)
 
 			if (Utility.RandomInt(0,100) < itriggerNextStageChaurusQueen) 
@@ -2388,47 +2406,66 @@ Function tryParasiteNextStage(Actor kActor, String sParasite)
 					debug.trace("[SLP]    Effect - cure Barnacles")
 					debug.Notification("The Seed inside you flushes the barnacles away from your skin.")
 					cureBarnacles( kActor  )
-					
-				elseIf (!isInfectedByString( kActor,  "ChaurusQueenVag" )) && (Utility.RandomInt(0,100)<30)
+					bSuccess = True
+
+				endif 
+
+				If (!isInfectedByString( kActor,  "ChaurusQueenVag" )) && (Utility.RandomInt(0,100)<60)
 					debug.trace("[SLP]    Effect - add Chaurus Queen Vag")
-					debug.Notification("The Seed stirs through your womb and extends a tentacle between your legs.")
-					infectChaurusQueenVag( kActor  )
+					if (iChaurusQueenStage==1)
+						debug.MessageBox("The Seed stirs through your womb and extends a tentacle between your legs.")
+					else
+						debug.Notification("The Seed stirs through your womb and extends a tentacle between your legs.")
+					endif
+					infectChaurusQueenVag( kActor  ) 
+					bSuccess = True
 					
-				elseIf (isInfectedByString( kActor,  "ChaurusQueenVag" )) && (Utility.RandomInt(0,100)<10)
+				elseIf (isInfectedByString( kActor,  "ChaurusQueenVag" )) && (Utility.RandomInt(0,100)<40)
 					debug.trace("[SLP]    Effect - cure Chaurus Queen Vag")
 					debug.Notification("The tentacle receeds to the Seed inside your womb.")
 					cureChaurusQueenVag( kActor  )
-					
-				elseIf (!isInfectedByString( kActor,  "ChaurusQueenSkin" )) && (Utility.RandomInt(0,100)<20)
+					bSuccess = True
+
+				endif 
+				
+				If (!isInfectedByString( kActor,  "ChaurusQueenSkin" )) && (Utility.RandomInt(0,100)<80) && (iChaurusQueenStage>=2)
 					debug.trace("[SLP]    Effect - add Chaurus Queen Skin")
-					debug.Notification("The Seed flares up through your skin and your breasts.")
+					if (iChaurusQueenStage==2)
+						debug.MessageBox("The Seed flares up through your skin and your breasts.")
+					else
+						debug.Notification("The Seed flares up through your skin and your breasts.")
+					endif
 					infectChaurusQueenSkin( kActor  )
+					bSuccess = True
 					
-				elseIf (isInfectedByString( kActor,  "ChaurusQueenSkin" )) && (Utility.RandomInt(0,100)<10)
+				elseIf (isInfectedByString( kActor,  "ChaurusQueenSkin" )) && (Utility.RandomInt(0,100)<40)
 					debug.trace("[SLP]    Effect - cure Chaurus Queen Skin")
 					debug.Notification("The feelers in your breasts recced inside.")
 					cureChaurusQueenSkin( kActor  )
+					bSuccess = True
 					
 				else
 					SeedFlare.Cast(kActor as ObjectReference, kActor as ObjectReference)	
 					debug.trace("[SLP]    Effect - cramps")
-					debug.Notification("Sudden cramps flare up inside you as the Seed slowly rewires your body.")
+					debug.Notification("Sudden cramps flare up inside you.")
+					bSuccess = True
 
 				endif
 
 				; HEAT
 
-				StorageUtil.SetIntValue(kActor, "_SLP_triggerNextStageChaurusQueen", 0)
+				StorageUtil.SetIntValue(kActor, "_SLP_triggerNextStageChaurusQueen", iChaurusQueenStage * 10)
 			else
  				debug.notification("[SLP] tryParasiteNextStage failed  " )
  				debug.notification("[SLP]    Bad luck - try again later : " + itriggerNextStageChaurusQueen)
 
-				itriggerNextStageChaurusQueen = itriggerNextStageChaurusQueen + Utility.RandomInt(10,30)
+				itriggerNextStageChaurusQueen = itriggerNextStageChaurusQueen +  (iChaurusQueenStage * 10)
 				StorageUtil.SetIntValue(kActor, "_SLP_triggerNextStageChaurusQueen",itriggerNextStageChaurusQueen)
 			endif
 		endif
 	endif
 
+	return bSuccess
 EndFunction
 
 

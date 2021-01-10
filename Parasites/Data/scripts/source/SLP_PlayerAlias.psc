@@ -58,6 +58,10 @@ int iGameDateLastCheck = -1
 int iDaysSinceLastCheck
 int iNextStageThrottle = 0
 
+Int iChaurusQueenStage 
+Int	iChaurusQueenDate
+Int iChaurusQueenFlaresFrequency
+
 Event OnInit()
 	_maintenance()
 
@@ -82,6 +86,11 @@ Function _maintenance()
 		StorageUtil.SetIntValue(none, "_SLP_iSexLabParasites", 1)
 		fctParasites._resetParasiteSettings()
 	EndIf
+
+	; Set Seed Stone ritual to today if missing
+	if (StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusQueenStage")==1) && (StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusQueenDate")==0)
+		StorageUtil.SetIntValue(PlayerActor, "_SLP_iChaurusQueenDate", Game.QueryStat("Days Passed"))
+	endif
 
 	UnregisterForAllModEvents()
 	Debug.Trace("SexLab Parasites: Reset SexLab events")
@@ -248,13 +257,28 @@ Event OnUpdate()
 
 	else
 		; updates during the day
+		iChaurusQueenStage = StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusQueenStage")
+		iChaurusQueenDate = StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusQueenDate")
+		iChaurusQueenFlaresFrequency = 10 - (Game.QueryStat("Days Passed") - iChaurusQueenDate)
 
-		if (Utility.RandomInt(0,100) < (iNextStageThrottle/8))
-			debug.trace("[SLP] tryParasiteNextStage")
+		if (iChaurusQueenStage>=1) 
+			(StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusQueenDate")==0)
 
-		 	fctParasites.tryParasiteNextStage(PlayerActor, "ChaurusQueen")
+			if (Utility.RandomInt(0,100) < (iNextStageThrottle / iChaurusQueenFlaresFrequency))
+				debug.trace("[SLP] tryParasiteNextStage")
+				debug.trace("[SLP]    iChaurusQueenFlaresFrequency: " + iChaurusQueenFlaresFrequency)
+				debug.trace("[SLP]    iNextStageThrottle: " + iNextStageThrottle)
+				debug.trace("[SLP]    threshold: " + (iNextStageThrottle / iChaurusQueenFlaresFrequency))
 
-		 	iNextStageThrottle = 0
+			 	if (fctParasites.tryParasiteNextStage(PlayerActor, "ChaurusQueen"))
+			 		; next stage happened - reset counter
+			 		iNextStageThrottle = 0
+			 	else
+			 		; next stage didn't happen - set back counter and try again soon
+			 		iNextStageThrottle = iNextStageThrottle - (iNextStageThrottle / 4)
+			 	endif
+
+			endif
 		endif
 
 		iNextStageThrottle = iNextStageThrottle + 1

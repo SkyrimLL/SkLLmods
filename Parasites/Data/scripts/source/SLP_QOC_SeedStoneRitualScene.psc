@@ -85,6 +85,7 @@ Utility.Wait(2)
 
 
 	StorageUtil.SetIntValue(kPlayer, "_SLP_iChaurusQueenStage",  1)
+	StorageUtil.SetIntValue(kPlayer, "_SLP_iChaurusQueenDate", Game.QueryStat("Days Passed"))
 	_SLP_QueenOfChaurusQuest.SetStage(289)
 ;END CODE
 EndFunction
