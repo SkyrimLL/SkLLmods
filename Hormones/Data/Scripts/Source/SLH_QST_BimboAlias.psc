@@ -234,9 +234,9 @@ Event OnUpdate()
 
         ;[mod] progressive tf - start
         ; if (daysSinceEnslavement<=15) ; !(_SLH_QST_Bimbo.IsStageDone(18) || _SLH_QST_Bimbo.IsStageDone(16) )
-		if !IsPlayer || Game.IsActivateControlsEnabled() ; Check if have the hands too tied for compatibility reasons
-        	bimboDailyProgressiveTransformation(BimboActor, GV_isTG.GetValue() == 1)
-		endIf
+        
+        bimboDailyProgressiveTransformation(BimboActor, GV_isTG.GetValue() == 1)
+
         ; endif
         ;[mod] progressive tf - end
 

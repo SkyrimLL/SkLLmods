@@ -661,9 +661,16 @@ event OnPageReset(string a_page)
  		AddTextOption(" Last sex (hour of day): " +  StorageUtil.GetIntValue(PlayerActor, "_SLH_iHourOfDaySinceLastSex")   as Int, "", OPTION_FLAG_DISABLED)
  		AddTextOption(" Hours since last sex: " +  iHoursSinceLastSex  as Int, "", OPTION_FLAG_DISABLED)
  		AddTextOption(" Days since last sex: " +  StorageUtil.GetIntValue(PlayerActor, "_SLH_iDaysSinceLastSex")   as Int, "", OPTION_FLAG_DISABLED)
+ 		AddTextOption(" StaminaRate = " + PlayerActor.GetActorValue("StaminaRate")  as Float, "", OPTION_FLAG_DISABLED)
+ 		AddTextOption(" HealRate = " + PlayerActor.GetActorValue("HealRate")  as Float, "", OPTION_FLAG_DISABLED)
+ 		AddTextOption(" MagickaRate = " + PlayerActor.GetActorValue("MagickaRate")  as Float, "", OPTION_FLAG_DISABLED)
+		AddEmptyOption()
+
  		AddTextOption(" Days as a Bimbo: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_bimboTransformGameDays")  as Int, "", OPTION_FLAG_DISABLED)
 		AddTextOption(" Cycles as a Bimbo: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_bimboTransformCycle")  as Int, "", OPTION_FLAG_DISABLED)
 		AddTextOption(" Bimbo Level: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_bimboTransformLevel")  as Int, "", OPTION_FLAG_DISABLED)		
+		AddEmptyOption()
+		
 		AddTextOption(" Daedric Influence: " +  StorageUtil.GetIntValue(PlayerActor, "_SLH_iDaedricInfluence")   as Int, "", OPTION_FLAG_DISABLED)
 		AddTextOption(" Succubus Level: " +  StorageUtil.GetIntValue(PlayerActor, "_SLH_iSuccubusLevel")   as Int, "", OPTION_FLAG_DISABLED)
 
