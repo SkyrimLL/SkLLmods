@@ -3,6 +3,7 @@ Scriptname SLP_SpiderEggScript extends zadPlugScript
 
 Message Property squeezeMsg Auto
 SLP_fcts_parasites Property fctParasites  Auto
+Ingredient  Property DwarvenOil Auto
 
 string strFailEquip =  "Try as you might, the belt you are wearing prevents you from inserting the slimy eggs inside you."
 
@@ -78,6 +79,8 @@ EndFunction
 
 
 Function DeviceMenu(Int msgChoice = 0)
+	Actor kPlayer = Game.getPlayer()
+
         msgChoice = zad_DeviceMsg.Show() ; display menu
 	if msgChoice==0 ; Not wearing a belt, no plugs
 		Debug.Notification("You choose to insert the eggs inside you.")
@@ -86,34 +89,48 @@ Function DeviceMenu(Int msgChoice = 0)
 		Debug.MessageBox(strFailEquip)
 	elseif msgChoice==2 ; Not wearing a belt, plugs
 		string msg = ""
-		int iDexterity = 10 + (Game.GetPlayer().GetAV("Pickpocket") as Int) / 10
+		int iDexterity = 10 + (kPlayer.GetAV("Pickpocket") as Int) / 10
 		Debug.Notification("Dexterity: " + iDexterity )
-		; Debug.Notification("Arousal: " + Aroused.GetActorArousal(libs.PlayerRef))
-		if ( Aroused.GetActorArousal(libs.PlayerRef) <= 10 ) ; libs.ArousalThreshold("Desire")
-			If (Utility.RandomInt(0,100) < iDexterity) 
-				msg = "The eggs pop out of your hole one in rapid succession, kept together with foamy and slippery lubrication."
-				libs.NotifyPlayer(msg, true)
-				RemoveDevice(libs.PlayerRef)
-			else
-				msg = "Your fingers slip, causing the eggs to burrow deeper inside you and making you slippery in the process. You will have to give it another try when you are not so horny."
-				libs.NotifyPlayer(msg, true)
-			EndIf
-			libs.UpdateExposure(libs.PlayerRef,2)		
-		else	
-			if ( Aroused.GetActorArousal(libs.PlayerRef) < 40 ) ; libs.ArousalThreshold("Horny")
-				msg = "As you gently nudge the first egg, the others cluster together around your finger, blocking your hole and sending waves of pain and pleasure deep inside you."
-				libs.UpdateExposure(libs.PlayerRef,2)
 
-			elseif ( Aroused.GetActorArousal(libs.PlayerRef) < 80 ) ; libs.ArousalThreshold("Desperate")
-				msg = "As you try scooping the slimy eggs through your tight opening, you can feel them stretch and occupy more of your vagina, making them impossible to remove."
-				libs.UpdateExposure(libs.PlayerRef,2)
+		If (StorageUtil.GetIntValue(kPlayer, "_SLP_iSpiderEggsKnown")==1)
+			if (kPlayer.GetItemCount(DwarvenOil) == 0)
+				msg = "Your attempt at removing the eggs is pointless without Dwarven Oil"
+				libs.NotifyPlayer(msg, true)
 			else
-				msg = "You desperately try to pull the glistening eggs out of your abused hole, only to feel your own womb clenching painfully around it and keeping them deeply buried inside you."
-				libs.UpdateExposure(libs.PlayerRef,2)
+
+				; Debug.Notification("Arousal: " + Aroused.GetActorArousal(libs.PlayerRef))
+				if ( Aroused.GetActorArousal(libs.PlayerRef) <= 10 ) ; libs.ArousalThreshold("Desire")
+					If (Utility.RandomInt(0,100) < iDexterity) 
+						msg = "The eggs pop out of your hole one in rapid succession, kept together with foamy and slippery lubrication."
+						libs.NotifyPlayer(msg, true)
+						kPlayer.RemoveItem(DwarvenOil,1)
+						RemoveDevice(libs.PlayerRef)
+					else
+						msg = "Your fingers slip, causing the eggs to burrow deeper inside you and making you slippery in the process. You will have to give it another try when you are not so horny."
+						libs.NotifyPlayer(msg, true)
+					EndIf
+					libs.UpdateExposure(libs.PlayerRef,2)		
+				else	
+					if ( Aroused.GetActorArousal(libs.PlayerRef) < 40 ) ; libs.ArousalThreshold("Horny")
+						msg = "As you gently nudge the first egg, the others cluster together around your finger, blocking your hole and sending waves of pain and pleasure deep inside you."
+						libs.UpdateExposure(libs.PlayerRef,2)
+
+					elseif ( Aroused.GetActorArousal(libs.PlayerRef) < 80 ) ; libs.ArousalThreshold("Desperate")
+						msg = "As you try scooping the slimy eggs through your tight opening, you can feel them stretch and occupy more of your vagina, making them impossible to remove."
+						libs.UpdateExposure(libs.PlayerRef,2)
+					else
+						msg = "You desperately try to pull the glistening eggs out of your abused hole, only to feel your own womb clenching painfully around it and keeping them deeply buried inside you."
+						libs.UpdateExposure(libs.PlayerRef,2)
+					endif
+					libs.NotifyPlayer(msg, true)
+
+				endif
 			endif
+		else 
+			msg = "As you gently nudge the first egg, the others cluster together around your finger, blocking your hole and sending waves of pain and pleasure deep inside you."
 			libs.NotifyPlayer(msg, true)
-
 		endif
+
 	elseif msgChoice==3 ; Wearing a belt, plugs
 		NoKeyFailMessage(libs.PlayerRef)
 	Endif

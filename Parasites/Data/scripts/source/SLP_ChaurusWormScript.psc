@@ -3,6 +3,7 @@ Scriptname SLP_ChaurusWormScript extends zadPlugScript
  
 Message Property squeezeMsg Auto
 SLP_fcts_parasites Property fctParasites  Auto
+Ingredient  Property TrollFat Auto
 
 string strFailEquip =  "Try as you might, the belt you are wearing prevents you from inserting the slimy worm inside you."
 
@@ -85,35 +86,49 @@ Function DeviceMenu(Int msgChoice = 0)
 	elseif msgChoice==1 ; Wearing a belt, no plugs
 		Debug.MessageBox(strFailEquip)
 	elseif msgChoice==2 ; Not wearing a belt, plugs
+		Actor kPlayer = Game.getPlayer()
 		string msg = ""
-		int iDexterity = 10 + (Game.GetPlayer().GetAV("Pickpocket") as Int) / 10
+		int iDexterity = 10 + (kPlayer.GetAV("Pickpocket") as Int) / 10
 		Debug.Notification("Dexterity: " + iDexterity )
-		; Debug.Notification("Arousal: " + Aroused.GetActorArousal(libs.PlayerRef))
-		if ( Aroused.GetActorArousal(libs.PlayerRef) <= 10 ) ; libs.ArousalThreshold("Desire")
-			If (Utility.RandomInt(0,100) < iDexterity) 
-				msg = "The worm squirms as it slides out your hole, leaving a slipery trail behind."
-				libs.NotifyPlayer(msg, true)
-				RemoveDevice(libs.PlayerRef)
-			else
-				msg = "Your fingers slip, causing the worm to retract deeper and making you wet in the process. You will have to give it another try when you are not so horny."
-				libs.NotifyPlayer(msg, true)
-			EndIf
 
-			libs.UpdateExposure(libs.PlayerRef,2)
-		else	
-			if ( Aroused.GetActorArousal(libs.PlayerRef) < 40 ) ; libs.ArousalThreshold("Horny")
-				msg = "As you tug at the slimy end of the worm, its teeth sink in deeper into your vaginal walls, feeding on your juices and shooting shards of pain and pleasure deep inside you."
-				libs.UpdateExposure(libs.PlayerRef,2)
-
-			elseif ( Aroused.GetActorArousal(libs.PlayerRef) < 80 ) ; libs.ArousalThreshold("Desperate")
-				msg = "As you pull at the slimy worm through your now well lubricated opening, you can feel it inflate and occupy your whole vaginaly cavity, making it impossible to remove."
-				libs.UpdateExposure(libs.PlayerRef,2)
+		If (StorageUtil.GetIntValue(kPlayer, "_SLP_iChaurusWormKnown")==1)
+			if (kPlayer.GetItemCount(TrollFat) == 0)
+				msg = "You can't possibly remove the worm without Troll fat"
+				libs.NotifyPlayer(msg, true)
 			else
-				msg = "You desperately try to pull the glistening worm out of your hole, only to feel your own vagina clenching around it and keeping it firmly inside you."
-				libs.UpdateExposure(libs.PlayerRef,2)
+
+				; Debug.Notification("Arousal: " + Aroused.GetActorArousal(libs.PlayerRef))
+				if ( Aroused.GetActorArousal(libs.PlayerRef) <= 10 ) ; libs.ArousalThreshold("Desire")
+					If (Utility.RandomInt(0,100) < iDexterity) 
+						msg = "The worm squirms as it slides out your hole, leaving a slipery trail behind."
+						libs.NotifyPlayer(msg, true)
+						kPlayer.RemoveItem(TrollFat,1)
+						RemoveDevice(libs.PlayerRef)
+					else
+						msg = "Your fingers slip, causing the worm to retract deeper and making you wet in the process. You will have to give it another try when you are not so horny."
+						libs.NotifyPlayer(msg, true)
+					EndIf
+
+					libs.UpdateExposure(libs.PlayerRef,2)
+				else	
+					if ( Aroused.GetActorArousal(libs.PlayerRef) < 40 ) ; libs.ArousalThreshold("Horny")
+						msg = "As you tug at the slimy end of the worm, its teeth sink in deeper into your vaginal walls, feeding on your juices and shooting shards of pain and pleasure deep inside you."
+						libs.UpdateExposure(libs.PlayerRef,2)
+
+					elseif ( Aroused.GetActorArousal(libs.PlayerRef) < 80 ) ; libs.ArousalThreshold("Desperate")
+						msg = "As you pull at the slimy worm through your now well lubricated opening, you can feel it inflate and occupy your whole vaginaly cavity, making it impossible to remove."
+						libs.UpdateExposure(libs.PlayerRef,2)
+					else
+						msg = "You desperately try to pull the glistening worm out of your hole, only to feel your own vagina clenching around it and keeping it firmly inside you."
+						libs.UpdateExposure(libs.PlayerRef,2)
+					endif
+					libs.NotifyPlayer(msg, true)
+
+				endif
 			endif
+		else 
+			msg = "As you tug at the slimy end of the worm, its teeth sink in deeper into your vaginal walls, feeding on your juices and shooting shards of pain and pleasure deep inside you."
 			libs.NotifyPlayer(msg, true)
-
 		endif
 	elseif msgChoice==3 ; Wearing a belt, plugs
 		NoKeyFailMessage(libs.PlayerRef)

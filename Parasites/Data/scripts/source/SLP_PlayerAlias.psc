@@ -92,6 +92,15 @@ Function _maintenance()
 		StorageUtil.SetIntValue(PlayerActor, "_SLP_iChaurusQueenDate", Game.QueryStat("Days Passed"))
 	endif
 
+	; Set flags about known methods to remove parasites
+ 	StorageUtil.SetIntValue(PlayerActor, "_SLP_iSpiderEggsKnown", KynesBlessingQuest.GetStageDone(30) as Int)
+ 	StorageUtil.SetIntValue(PlayerActor, "_SLP_iChaurusWormKnown", KynesBlessingQuest.GetStageDone(40) as Int)
+ 	StorageUtil.SetIntValue(PlayerActor, "_SLP_iHuggersKnown", KynesBlessingQuest.GetStageDone(50) as Int)
+ 	StorageUtil.SetIntValue(PlayerActor, "_SLP_iTentacleMonsterKnown", KynesBlessingQuest.GetStageDone(60) as Int)
+ 	StorageUtil.SetIntValue(PlayerActor, "_SLP_iLivingArmorKnown", KynesBlessingQuest.GetStageDone(70) as Int)
+ 	StorageUtil.SetIntValue(PlayerActor, "_SLP_iBarnaclesKnown", KynesBlessingQuest.GetStageDone(80) as Int)
+
+
 	UnregisterForAllModEvents()
 	Debug.Trace("SexLab Parasites: Reset SexLab events")
 	RegisterForModEvent("AnimationStart", "OnSexLabStart")
