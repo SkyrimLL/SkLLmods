@@ -815,6 +815,9 @@ Function cureSpiderEgg( Actor kActor, String _args, Bool bHarvestParasite = Fals
 				PlayerActor.AddItem(SmallSpiderEgg,iNumSpiderEggsRemoved)
 			Endif
 		elseif (_args == "None") 
+			If (kActor == PlayerActor)
+				SpiderEggInfectedAlias.ForceRefTo(DummyAlias)
+			endIf
 			; clear parasite only - no harvest - for use with birth scene
 			iNumSpiderEggs = 0
 			StorageUtil.SetIntValue(kActor, "_SLP_iSpiderEggCount", 0 )
