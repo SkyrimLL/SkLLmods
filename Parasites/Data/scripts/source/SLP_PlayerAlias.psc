@@ -268,9 +268,15 @@ Event OnUpdate()
 		; updates during the day
 		iChaurusQueenStage = StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusQueenStage")
 		iChaurusQueenDate = StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusQueenDate")
-		iChaurusQueenFlaresFrequency = 10 - (Game.QueryStat("Days Passed") - iChaurusQueenDate)
 
 		if (iChaurusQueenStage>=1) 
+			if (fctParasites.isPlayerInHeat())
+				iChaurusQueenFlaresFrequency = 10 - (Game.QueryStat("Days Passed") - iChaurusQueenDate)
+			else
+				; reduce frequency of flares if player isn't in heat
+				iChaurusQueenFlaresFrequency = 100
+			endif
+
 			(StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusQueenDate")==0)
 
 			if (Utility.RandomInt(0,100) < (iNextStageThrottle / iChaurusQueenFlaresFrequency))

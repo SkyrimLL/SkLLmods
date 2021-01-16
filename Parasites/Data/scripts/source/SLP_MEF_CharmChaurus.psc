@@ -5,11 +5,35 @@ SLP_fcts_parasites Property fctParasites  Auto
 ReferenceAlias Property ChaurusFollowerAlias  Auto  
 GlobalVariable Property SLP_numCharmChaurus Auto
 
+Spell Property _SLP_SP_SeedTrack Auto
+Spell Property _SLP_SP_SeedCalm Auto
+Spell Property _SLP_SP_SeedChaurusBreeding Auto
+
+Quest Property QueenOfChaurusQuest  Auto 
+
+
 Event OnEffectStart(Actor Target, Actor Caster)
+	Actor kPlayer = Game.GetPlayer()
+ 	Int iChaurusQueenStage = StorageUtil.GetIntValue(kPlayer, "_SLP_iChaurusQueenStage")
+
+	if (QueenOfChaurusQuest.GetStageDone(330)) 
+	 	if (iChaurusQueenStage==3) && (!kPlayer.HasSpell( _SLP_SP_SeedChaurusBreeding ))
+	 		kPlayer.AddSpell( _SLP_SP_SeedTrack )
+	 		kPlayer.AddSpell( _SLP_SP_SeedCalm )
+	 		kPlayer.AddSpell( _SLP_SP_SeedChaurusBreeding )
+	 		debug.messagebox("The Seed blooms inside you from the influence of the Chaurus pheromones. The pincers extend a hungry mouth for the chaurus to mate with, making your skin tingles with power and giving you a new understanding of the Chaurus biology.")
+		endif
+	endif
+
+	If (fctParasites.isInfectedByString( kPlayer,  "ChaurusQueenVag" ))  
+		debug.Notification("The tentacle retracts inside you.")
+		fctParasites.cureChaurusQueenVag( kPlayer  )
+	endif
+
     ;   Debug.Messagebox(" Chaurus Pheromone charm spell started")    
 	ChaurusFollowerAlias.ForceRefTo(Target as objectReference)
 	SLP_numCharmChaurus.Mod(1.0)
-	fctParasites.ParasiteSex(Game.GetPlayer(), Target)
+	fctParasites.ParasiteSex(kPlayer, Target)
 EndEvent
 
 Event OnEffectFinish(Actor akTarget, Actor akCaster)        

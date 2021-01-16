@@ -30,18 +30,23 @@ GlobalVariable Property _SLP_GV_numEstrusSlimeInfections  Auto
 GlobalVariable Property _SLP_GV_numLivingArmorInfections  Auto 
 GlobalVariable Property _SLP_GV_numFaceHuggerInfections  Auto 
 GlobalVariable Property _SLP_GV_numBarnaclesInfections  Auto 
+GlobalVariable Property _SLP_GV_ZAPFuroTubOn  Auto  
 
 Faction Property PlayerFollowerFaction Auto
 
 SPELL Property StomachRot Auto
 SPELL Property SeedFlare Auto
+SPELL Property SeedSpawnSpider Auto
 
-Container Property EggSac  Auto  
+Container Property EggSac  Auto
+
 Ingredient  Property TrollFat Auto
 Ingredient  Property IngredientChaurusWorm Auto
 
 Ingredient  Property SmallSpiderEgg Auto
 Ingredient  Property BarnaclesCluster Auto
+Ingredient Property ChaurusEgg  Auto  
+Ingredient Property GlowingMushrooms  Auto  
 
 Keyword Property ArmorCuirass  Auto  
 Keyword Property ClothingBody  Auto  
@@ -91,10 +96,6 @@ Armor Property SLP_harnessChaurusQueenBodyRendered Auto         ; Internal Devic
 Armor Property SLP_harnessChaurusQueenBodyInventory Auto        	       ; Inventory Device
 
 Armor Property _SLP_skinChaurusQueenNaked Auto
-
-Ingredient Property GlowingMushrooms  Auto  
-
-GlobalVariable Property _SLP_GV_ZAPFuroTubOn  Auto  
 
 Package Property _SLP_PKG_ZapFuroTub  Auto  
 
@@ -786,15 +787,17 @@ EndFunction
 Function cureSpiderEgg( Actor kActor, String _args, Bool bHarvestParasite = False   )
   	Actor PlayerActor = Game.GetPlayer()
  	Int iNumSpiderEggs
+ 	Int iNumSpiderEggsRemoved
  
   	if (kActor == None)
   		kActor = PlayerActor
   	endIf
  
 	If (isInfectedByString( kActor,  "SpiderEgg" ))
-		iNumSpiderEggs = StorageUtil.GetIntValue(kActor, "_SLP_iSpiderEggCount") - Utility.RandomInt(2,8)
+		iNumSpiderEggsRemoved = Utility.RandomInt(2,8)
+		iNumSpiderEggs = StorageUtil.GetIntValue(kActor, "_SLP_iSpiderEggCount") - iNumSpiderEggsRemoved
 
-		if (iNumSpiderEggs < 0) || (_args == "All")
+		if (iNumSpiderEggs < 0) || (_args == "All") || (bHarvestParasite)
 			If (kActor == PlayerActor)
 				SpiderEggInfectedAlias.ForceRefTo(DummyAlias)
 			endIf
@@ -808,7 +811,22 @@ Function cureSpiderEgg( Actor kActor, String _args, Bool bHarvestParasite = Fals
 
 			If (bHarvestParasite)
 				PlayerActor.AddItem(SLP_plugSpiderEggInventory,1)
+			else
+				PlayerActor.AddItem(SmallSpiderEgg,iNumSpiderEggsRemoved)
 			Endif
+		elseif (_args == "None") 
+			; clear parasite only - no harvest - for use with birth scene
+			iNumSpiderEggs = 0
+			StorageUtil.SetIntValue(kActor, "_SLP_iSpiderEggCount", 0 )
+
+			kActor.DispelSpell(StomachRot)
+
+			StorageUtil.SetIntValue(kActor, "_SLP_toggleSpiderEgg", 0)
+			clearParasiteNPCByString (kActor, "SpiderEgg")
+			
+		else
+			debug.notification("Some eggs detached from the cluster... more remain inside you.")
+			PlayerActor.AddItem(SmallSpiderEgg,iNumSpiderEggsRemoved)
 		Endif
 
 		ApplyBodyChange( kActor, "SpiderEgg", "Belly", 1.0 + (4.0 * (iNumSpiderEggs as Float) / StorageUtil.GetFloatValue(PlayerActor, "_SLP_bellyMaxSpiderEgg" )), StorageUtil.GetFloatValue(PlayerActor, "_SLP_bellyMaxSpiderEgg" ) )
@@ -2310,7 +2328,8 @@ EndFunction
 
 ;------------------------------------------------------------------------------
 Function triggerEstrusChaurusBirth( Actor kActor, String  sParasite, Int iBirthItemCount  )
-  	Actor PlayerActor = Game.GetPlayer()
+  	ObjectReference PlayerRef = Game.GetPlayer()
+  	Actor PlayerActor = PlayerRef as Actor
   	Form fBirthItem = None
 
   	if (kActor == None)
@@ -2344,6 +2363,10 @@ Function triggerEstrusChaurusBirth( Actor kActor, String  sParasite, Int iBirthI
 		    ModEvent.Send(ECBirth)
 		else
 		    ;EC is not installed
+            Debug.SendAnimationEvent(PlayerRef, "bleedOutStart")
+            utility.wait(4)
+            Debug.SendAnimationEvent(PlayerRef, "IdleForceDefaultState")
+		    PlayerRef.PlaceAtMe(SmallSpiderEgg, iBirthItemCount)
 		endIf
 		;
 		;   **NB** The birth event will not fire if the actor is already infected with the Chaurus Parasite effect
@@ -2381,8 +2404,8 @@ Bool Function tryParasiteNextStage(Actor kActor, String sParasite)
 
  	If (kActor == PlayerActor)
  		If (PlayerActor.IsBleedingOut() || PlayerActor.IsDead() || PlayerActor.IsOnMount() || PlayerActor.IsFlying() || PlayerActor.IsUnconscious() || !Game.IsActivateControlsEnabled() || SexLab.IsActorActive(PlayerActor) )
- 			debug.notification("[SLP] tryParasiteNextStage failed  " )
- 			debug.notification("[SLP]    Player is busy " )
+ 			debug.trace("[SLP] tryParasiteNextStage failed  " )
+ 			;debug.notification("[SLP]    Player is busy " )
  			debug.trace("[SLP]    Player is busy " )
  			debug.trace("[SLP]     IsBleedingOut: " + PlayerActor.IsBleedingOut()  )
  			debug.trace("[SLP]     IsDead: " + PlayerActor.IsDead()  )
@@ -2440,7 +2463,7 @@ Bool Function tryParasiteNextStage(Actor kActor, String sParasite)
 					
 				elseIf (isInfectedByString( kActor,  "ChaurusQueenSkin" )) && (Utility.RandomInt(0,100)<40)
 					debug.trace("[SLP]    Effect - cure Chaurus Queen Skin")
-					debug.Notification("The feelers in your breasts recced inside.")
+					debug.Notification("The feelers in your breasts receed inside.")
 					cureChaurusQueenSkin( kActor  )
 					bSuccess = True
 					
@@ -2452,12 +2475,21 @@ Bool Function tryParasiteNextStage(Actor kActor, String sParasite)
 
 				endif
 
+				if (iChaurusQueenStage>=3) && (isInfectedByString( kActor,  "SpiderEgg" )) && (QueenOfChaurusQuest.GetStageDone(320)) && (Utility.RandomInt(0,100)<40)
+					if (!kActor.HasSpell( SeedSpawnSpider ))
+				 		kActor.AddSpell( SeedSpawnSpider ) 
+				 		debug.messagebox("The Seed throbs deep inside you and forces the now fertilized eggs out of your womb. In a sudden flash of understanding, you realize you hold power over your newly spawned eggs.")
+				 	endif
+					cureSpiderEgg( kActor, "None", false )
+				 	triggerEstrusChaurusBirth(  kActor, "SpiderEgg", RandomInt(5,15)  )
+				endif
+
 				; HEAT
 
 				StorageUtil.SetIntValue(kActor, "_SLP_triggerNextStageChaurusQueen", iChaurusQueenStage * 10)
 			else
- 				debug.notification("[SLP] tryParasiteNextStage failed  " )
- 				debug.notification("[SLP]    Bad luck - try again later : " + itriggerNextStageChaurusQueen)
+ 				debug.trace("[SLP] tryParasiteNextStage failed  " )
+ 				debug.trace("[SLP]    Bad luck - try again later : " + itriggerNextStageChaurusQueen)
 
 				itriggerNextStageChaurusQueen = itriggerNextStageChaurusQueen +  (iChaurusQueenStage * 10)
 				StorageUtil.SetIntValue(kActor, "_SLP_triggerNextStageChaurusQueen",itriggerNextStageChaurusQueen)
@@ -2468,7 +2500,33 @@ Bool Function tryParasiteNextStage(Actor kActor, String sParasite)
 	return bSuccess
 EndFunction
 
+Bool Function isPlayerInHeat()
+ 	Actor PlayerActor = Game.GetPlayer()
+ 	Bool bSuccess = true
+ 	Int iChaurusQueenStage = StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusQueenStage")
 
+ 	; Add detection of nearby spiders or chaurus
+
+	If (isInfectedByString( PlayerActor,  "SpiderEgg" ))
+		bSuccess = false
+	endif
+
+	if (PlayerActor.GetItemCount(SmallSpiderEgg) != 0) && (QueenOfChaurusQuest.GetStageDone(320))
+		bSuccess = false
+	endif
+
+	if (PlayerActor.GetItemCount(ChaurusEgg) != 0) && (QueenOfChaurusQuest.GetStageDone(335))
+		bSuccess = false
+	endif
+
+	; if (bSuccess)
+ 	;	debug.notification("[SLP] Player is in heat " )
+ 	; else
+ 	;	debug.notification("[SLP] Player is NOT in heat " )
+ 	; endif
+
+ 	Return bSuccess
+ Endfunction
 ;------------------------------------------------------------------------------
 Function refreshParasite(Actor kActor, String sParasite)
 
@@ -2824,4 +2882,5 @@ Function _resetParasiteSettings()
 	StorageUtil.SetIntValue(kPlayer, "_SLP_toggleBarnacles", 0 )
 	StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceBarnacles", 30.0 )
 EndFunction
+
 
