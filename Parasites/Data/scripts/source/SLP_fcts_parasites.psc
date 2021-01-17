@@ -37,6 +37,7 @@ Faction Property PlayerFollowerFaction Auto
 SPELL Property StomachRot Auto
 SPELL Property SeedFlare Auto
 SPELL Property SeedSpawnSpider Auto
+SPELL Property SeedSpawnChaurus Auto
 
 Container Property EggSac  Auto
 
@@ -1810,7 +1811,7 @@ Bool Function applyChaurusQueenVag( Actor kActor  )
  	Actor PlayerActor = Game.GetPlayer()
 
 	If (kActor == PlayerActor)
-		ChaurusQueenInfectedAlias.ForceRefTo(PlayerActor)
+	;	ChaurusQueenInfectedAlias.ForceRefTo(PlayerActor)
 	endIf
 
 	; ApplyBodyChange( kActor, "ChaurusQueenVag", "Belly", 1.5, StorageUtil.GetFloatValue(PlayerActor, "_SLP_buttMaxChaurusWorm" ))
@@ -1907,7 +1908,7 @@ Bool Function applyChaurusQueenGag( Actor kActor  )
  	Actor PlayerActor = Game.GetPlayer()
 
 	If (kActor == PlayerActor)
-		ChaurusQueenInfectedAlias.ForceRefTo(PlayerActor)
+	;	ChaurusQueenInfectedAlias.ForceRefTo(PlayerActor)
 	endIf
 
 	If !StorageUtil.HasIntValue(kActor, "_SLP_iChaurusQueenGagInfections")
@@ -2006,7 +2007,7 @@ Bool Function applyChaurusQueenSkin( Actor kActor  )
  	Actor PlayerActor = Game.GetPlayer()
 
 	If (kActor == PlayerActor)
-		ChaurusQueenInfectedAlias.ForceRefTo(PlayerActor)
+	;	ChaurusQueenInfectedAlias.ForceRefTo(PlayerActor)
 	endIf
 
 	If !StorageUtil.HasIntValue(kActor, "_SLP_iChaurusQueenSkinInfections")
@@ -2347,6 +2348,9 @@ Function triggerEstrusChaurusBirth( Actor kActor, String  sParasite, Int iBirthI
 	If (sParasite == "SpiderEgg")
 		fBirthItem = SmallSpiderEgg as Form
 
+	ElseIf (sParasite == "ChaurusEgg")
+		fBirthItem = ChaurusEgg as Form
+
 	ElseIf (sParasite == "Barnacles")
 		fBirthItem = BarnaclesCluster as Form
 
@@ -2404,6 +2408,7 @@ Bool Function tryParasiteNextStage(Actor kActor, String sParasite)
  	Actor PlayerActor = Game.GetPlayer()
  	Bool bSuccess = False
  	Int iChaurusQueenStage = StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusQueenStage")
+ 	Int iChaurusEggsCount = PlayerActor.GetItemCount(ChaurusEgg)
 
  	If (kActor == PlayerActor)
  		If (PlayerActor.IsBleedingOut() || PlayerActor.IsDead() || PlayerActor.IsOnMount() || PlayerActor.IsFlying() || PlayerActor.IsUnconscious() || !Game.IsActivateControlsEnabled() || SexLab.IsActorActive(PlayerActor) )
@@ -2478,13 +2483,18 @@ Bool Function tryParasiteNextStage(Actor kActor, String sParasite)
 
 				endif
 
-				if (iChaurusQueenStage>=3) && (isInfectedByString( kActor,  "SpiderEgg" )) && (QueenOfChaurusQuest.GetStageDone(320)) && (Utility.RandomInt(0,100)<40)
-					if (!kActor.HasSpell( SeedSpawnSpider ))
-				 		kActor.AddSpell( SeedSpawnSpider ) 
-				 		debug.messagebox("The Seed throbs deep inside you and forces the now fertilized eggs out of your womb. In a sudden flash of understanding, you realize you hold power over your newly spawned eggs.")
+				; check if player reached the Spider stage of the Chaurus Queen tranformation
+				tryPlayerSpiderStage()
+
+				; producing new eggs as a queen - revisit later
+				; decrease chance of eggs with number of days since last sex with chaurus
+				if (iChaurusQueenStage>=3) && (QueenOfChaurusQuest.GetStageDone(400)) && (Utility.RandomInt(0,100)<10)
+				 	if (iChaurusEggsCount>5)
+				 		triggerEstrusChaurusBirth(  kActor, "ChaurusEgg", 5  )
+				 	elseif (iChaurusEggsCount>0)
+				 		triggerEstrusChaurusBirth(  kActor, "ChaurusEgg", iChaurusEggsCount  )
 				 	endif
-					cureSpiderEgg( kActor, "None", false )
-				 	triggerEstrusChaurusBirth(  kActor, "SpiderEgg", RandomInt(5,15)  )
+				 	
 				endif
 
 				; HEAT
@@ -2530,6 +2540,33 @@ Bool Function isPlayerInHeat()
 
  	Return bSuccess
  Endfunction
+
+Function tryPlayerSpiderStage()
+ 	Actor PlayerActor = Game.GetPlayer()
+  	Int iChaurusQueenStage = StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusQueenStage")
+
+	if (iChaurusQueenStage>=3) && (isInfectedByString( PlayerActor,  "SpiderEgg" )) && (QueenOfChaurusQuest.GetStageDone(320))  
+		if (!PlayerActor.HasSpell( SeedSpawnSpider ))
+	 		PlayerActor.AddSpell( SeedSpawnSpider ) 
+	 		debug.messagebox("The Seed throbs deep inside you and forces the now fertilized eggs out of your womb. In a sudden flash of understanding, you realize you hold power over your newly spawned eggs.")
+	 	endif
+		cureSpiderEgg( PlayerActor, "None", false )
+	 	triggerEstrusChaurusBirth(  PlayerActor, "SpiderEgg", RandomInt(5,15)  )
+
+	endif
+EndFunction
+
+Function tryPlayerChaurusStage()
+ 	Actor PlayerActor = Game.GetPlayer()
+  	Int iChaurusQueenStage = StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusQueenStage")
+
+	if (iChaurusQueenStage>=3) && (QueenOfChaurusQuest.GetStageDone(350))
+		if (!PlayerActor.HasSpell( SeedSpawnChaurus ))
+	 		PlayerActor.AddSpell( SeedSpawnChaurus ) 
+	 		debug.messagebox("The Seed expands inside you in response to the chaurus, flooding your mind with strange symbols and visions of alien skies. Your womb aches from the urge to fertilize and spawn chaurus eggs.")
+	 	endif 	
+	endif
+EndFunction
 ;------------------------------------------------------------------------------
 Function refreshParasite(Actor kActor, String sParasite)
 

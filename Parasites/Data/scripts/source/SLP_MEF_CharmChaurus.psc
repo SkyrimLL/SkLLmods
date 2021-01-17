@@ -25,12 +25,12 @@ Event OnEffectStart(Actor Target, Actor Caster)
 		endif
 	endif
 
-	If (fctParasites.isInfectedByString( kPlayer,  "ChaurusQueenVag" ))  
-		debug.Notification("The tentacle retracts inside you.")
-		fctParasites.cureChaurusQueenVag( kPlayer  )
+	if (QueenOfChaurusQuest.GetStageDone(340)) && (!QueenOfChaurusQuest.GetStageDone(350)) 
+		QueenOfChaurusQuest.SetStage(350)
 	endif
 
     ;   Debug.Messagebox(" Chaurus Pheromone charm spell started")    
+    Target.StopCombat()   
 	ChaurusFollowerAlias.ForceRefTo(Target as objectReference)
 	SLP_numCharmChaurus.Mod(1.0)
 	fctParasites.ParasiteSex(kPlayer, Target)

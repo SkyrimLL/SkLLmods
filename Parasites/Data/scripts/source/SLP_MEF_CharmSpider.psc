@@ -23,16 +23,12 @@ Event OnEffectStart(Actor Target, Actor Caster)
  		debug.messagebox("The Seed reacts strongly to the influence of the Spider pheromones and inflames your senses. As the pincers spread your vagina into a gaping hole for the spider to mate with, you feel your mind expand to new possibilities.")
 	endif
 
-	if (!QueenOfChaurusQuest.GetStageDone(320)) 
+	if (QueenOfChaurusQuest.GetStageDone(310)) && (!QueenOfChaurusQuest.GetStageDone(320)) 
 		QueenOfChaurusQuest.SetStage(320)
 	endif
 
-	If (fctParasites.isInfectedByString( kPlayer,  "ChaurusQueenVag" ))  
-		debug.Notification("The tentacle retracts inside you.")
-		fctParasites.cureChaurusQueenVag( kPlayer  )
-	endif
-
-    ;   Debug.Messagebox(" Spider Pheromone charm spell started")    
+    ;   Debug.Messagebox(" Spider Pheromone charm spell started") 
+    Target.StopCombat()   
 	SpiderFollowerAlias.ForceRefTo(Target as objectReference)
 	SLP_numCharmSpider.Mod(1.0)
 	fctParasites.ParasiteSex(kPlayer, Target)
