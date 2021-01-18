@@ -20,6 +20,7 @@ Quest Property QueenOfChaurusQuest  Auto
 
 ObjectReference Property DummyAlias  Auto  
 
+Sound Property SummonSoundFX  Auto
 
 Actor Property EncChaurusActor Auto 
 Actor Property EncChaurusSpawnActor Auto 
@@ -2398,6 +2399,7 @@ EndFunction
 
 
 Actor Function getRandomChaurusSpawn(Actor kActor)
+	Actor kPlayer = Game.Getplayer()
 	Actor kChaurusSpawn
 	ActorBase ChaurusSpawnActorBase
  	Int iChaurusSpawnLevel
@@ -2406,7 +2408,7 @@ Actor Function getRandomChaurusSpawn(Actor kActor)
 	ObjectReference kActorRef  
     Float afDistance = 150.0
     Float afZOffset = 0.0
-    
+
 	if (iRandomNum>90)
 		ChaurusSpawnActorBase = EncChaurusHunterActor.GetBaseObject() as ActorBase
 		iChaurusSpawnLevel = 4
@@ -2421,6 +2423,7 @@ Actor Function getRandomChaurusSpawn(Actor kActor)
 	arPortal = kActorRef.PlaceAtMe(Game.GetFormFromFile(0x000EBEB5, "Skyrim.ESM")) ; FXNecroTendrilRing 
 
 	arPortal.MoveTo(kActorRef, Math.Sin(kActorRef.GetAngleZ()) * afDistance, Math.Cos(kActorRef.GetAngleZ()) * afDistance, afZOffset)
+    SummonSoundFX.Play(kPlayer as ObjectReference)
 	Utility.Wait(0.6)
 
 	kChaurusSpawn = kActorRef.PlaceActorAtMe(ChaurusSpawnActorBase, iChaurusSpawnLevel)

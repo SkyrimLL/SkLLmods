@@ -6,7 +6,7 @@ Quest Property QueenOfChaurusQuest  Auto
 ObjectReference Property pocketDimensionRef Auto
 
 Activator Property arPortalFX Auto
-
+Sound Property SummonSoundFX  Auto
 
 Event OnEffectStart(Actor Target, Actor Caster)
     ;   Debug.Messagebox(" Spider Pheromone charm spell started")    
@@ -43,7 +43,7 @@ Event OnEffectStart(Actor Target, Actor Caster)
 
 		i += 1
 	endwhile
-	
+
 	fctParasites.displayChaurusSpawnList()
 
 EndEvent
@@ -73,6 +73,7 @@ Function dismissChaurusSpawn(ObjectReference ChaurusSpawnRef)
 
         ElseIf aiStage == 3 ; Move portal in front of summoner
                 arPortal.MoveTo(pocketDimensionRef, Math.Sin(pocketDimensionRef.GetAngleZ()) * afDistance, Math.Cos(pocketDimensionRef.GetAngleZ()) * afDistance, afZOffset)
+                SummonSoundFX.Play(akSummoner)
         ElseIf aiStage == 4 ; Move summon to portal
                 ChaurusSpawnRef.MoveTo(arPortal)
 
