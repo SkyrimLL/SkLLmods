@@ -16,27 +16,31 @@ Event OnEffectStart(Actor Target, Actor Caster)
 	int i = 0
 	Form thisActorForm
 	Actor thisActor
+	ActorBase thisActorBase
  	ObjectReference thisActorRef
+ 	Actor kChaurusSpawn
 
  	debug.notification("[SLP] summonChaurusSpawnList (" + valueCount + " actors)")
  	debug.trace("[SLP] summonChaurusSpawnList (" + valueCount + " actors)")
 
 	while(i < valueCount)
 		thisActorForm = StorageUtil.FormListGet(none, "_SLP_lChaurusSpawnsList", i)
+		thisActor = thisActorForm as Actor
+		thisActorRef = thisActor as ObjectReference
 
 		if (thisActorRef==None)
-			Debug.Trace("	Actor [" + i + "] = "+ thisActorForm )
-			Debug.Trace("		Actor is None - removing from list")
-			StorageUtil.FormListRemoveAt(none, "_SLP_lChaurusSpawnsList", i)
-			Debug.Trace("		Calling a replacement actor") 
-			fctParasites.getRandomChaurusSpawn(kPlayer)
+			Debug.Trace("[SLP] 	Actor [" + i + "] = "+ thisActorForm )
+			Debug.Trace("[SLP] 		Actor is None - Calling a replacement actor") 
+			kChaurusSpawn = fctParasites.getRandomChaurusSpawn(kPlayer)
+			
+			debug.trace("[SLP] Adding actor to _SLP_lChaurusSpawnsList - " + kChaurusSpawn )
+			StorageUtil.FormListAdd( none, "_SLP_lChaurusSpawnsList", kChaurusSpawn as Form )
+
 		else
-			Debug.Trace("	Actor [" + i + "] = "+ thisActorForm +" - " + thisActorForm.GetName())
-			thisActor = thisActorForm as Actor
-			thisActorRef = thisActor as ObjectReference
+			Debug.Trace("[SLP] 	Actor [" + i + "] = "+ thisActorForm +" - " + thisActorForm.GetName())
 
 			if (thisActorRef.GetDistance(kPlayerRef) > 100.0)
-				Debug.Trace("		Moving Actor to player [" + i + "] = "+ thisActorForm +" - " + thisActorForm.GetName())
+				Debug.Trace("[SLP] 		Moving Actor to player [" + i + "] = "+ thisActorForm +" - " + thisActorForm.GetName())
 				summonChaurusSpawn(thisActorRef)
 			endif
 
@@ -48,6 +52,9 @@ Event OnEffectStart(Actor Target, Actor Caster)
 
 		i += 1
 	endwhile
+
+	fctParasites.displayChaurusSpawnList()
+
 EndEvent
 
 

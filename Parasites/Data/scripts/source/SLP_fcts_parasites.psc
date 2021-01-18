@@ -2348,7 +2348,12 @@ Function displayChaurusSpawnList()
 
 	while(i < valueCount)
 		thisActorForm = StorageUtil.FormListGet(none, "_SLP_lChaurusSpawnsList", i)
-		Debug.Trace("	Actor [" + i + "] = "+ thisActorForm +" - " + thisActorForm.GetName())
+
+		if (thisActorForm==None)
+			Debug.Trace("	Actor [" + i + "] = "+ thisActorForm )
+		else
+			Debug.Trace("	Actor [" + i + "] = "+ thisActorForm +" - " + thisActorForm.GetName())
+		endif
 
 		; if (StorageUtil.FormListFind( kActor, "_SD_lActivePunishmentDevices", kwDeviceKeyword as Form) <0)
 		;	StorageUtil.FormListAdd( kActor, "_SD_lActivePunishmentDevices", kwDeviceKeyword as Form )
@@ -2376,7 +2381,7 @@ Function cleanChaurusSpawnList()
 		thisActorRef = thisActor as ObjectReference
 
 		if (thisActor.IsDead()) || (thisActorRef.IsDisabled())
-			StorageUtil.FormListRemoveAt(none, "_SLP_lChaurusSpawnsList", i)
+			StorageUtil.FormListSet(none, "_SLP_lChaurusSpawnsList", i, None)
 		endif
 
 		; if (StorageUtil.FormListFind( kActor, "_SD_lActivePunishmentDevices", kwDeviceKeyword as Form) <0)
@@ -2392,12 +2397,16 @@ Function cleanChaurusSpawnList()
 EndFunction
 
 
-Function getRandomChaurusSpawn(Actor kActor)
+Actor Function getRandomChaurusSpawn(Actor kActor)
 	Actor kChaurusSpawn
 	ActorBase ChaurusSpawnActorBase
  	Int iChaurusSpawnLevel
 	Int iRandomNum = utility.randomint(0,100)
-
+	ObjectReference arPortal  
+	ObjectReference kActorRef  
+    Float afDistance = 150.0
+    Float afZOffset = 0.0
+    
 	if (iRandomNum>90)
 		ChaurusSpawnActorBase = EncChaurusHunterActor.GetBaseObject() as ActorBase
 		iChaurusSpawnLevel = 4
@@ -2409,11 +2418,19 @@ Function getRandomChaurusSpawn(Actor kActor)
 		iChaurusSpawnLevel = 2
 	endif
 
-	kChaurusSpawn = kActor.PlaceActorAtMe(ChaurusSpawnActorBase, iChaurusSpawnLevel)
+	arPortal = kActorRef.PlaceAtMe(Game.GetFormFromFile(0x000EBEB5, "Skyrim.ESM")) ; FXNecroTendrilRing 
 
- 	debug.notification("[SLP] Adding actor to _SLP_lChaurusSpawnsList - " + kChaurusSpawn )
-	StorageUtil.FormListAdd( none, "_SLP_lChaurusSpawnsList", kChaurusSpawn as Form )
+	arPortal.MoveTo(kActorRef, Math.Sin(kActorRef.GetAngleZ()) * afDistance, Math.Cos(kActorRef.GetAngleZ()) * afDistance, afZOffset)
+	Utility.Wait(0.6)
 
+	kChaurusSpawn = kActorRef.PlaceActorAtMe(ChaurusSpawnActorBase, iChaurusSpawnLevel)
+	Utility.Wait(0.6)
+
+	arPortal.MoveTo(kActorRef)
+	Utility.Wait(0.6)
+
+	arPortal.disable()
+	return kChaurusSpawn
 EndFunction
 
 

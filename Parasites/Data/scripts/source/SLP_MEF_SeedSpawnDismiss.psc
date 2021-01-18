@@ -23,17 +23,17 @@ Event OnEffectStart(Actor Target, Actor Caster)
 
 	while(i < valueCount)
 		thisActorForm = StorageUtil.FormListGet(none, "_SLP_lChaurusSpawnsList", i)
+		thisActor = thisActorForm as Actor
+		thisActorRef = thisActor as ObjectReference
 
 		if (thisActorRef==None)
-			Debug.Trace("	Dismiss actor [" + i + "] = "+ thisActorForm )
-			Debug.Trace("		Actor is None - skipping")
+			Debug.Trace("[SLP] 	Dismiss actor [" + i + "] = "+ thisActorForm )
+			Debug.Trace("[SLP] 		Actor is None - skipping")
 		else
 
 			; Debug.Trace("	Actor [" + i + "] = "+ thisActorForm +" - " + thisActorForm.GetName())
-			thisActor = thisActorForm as Actor
-			thisActorRef = thisActor as ObjectReference
 
-			Debug.Trace("	Dismiss actor [" + i + "] = "+ thisActorForm +" - " + thisActorForm.GetName())
+			Debug.Trace("[SLP] 	Dismiss actor [" + i + "] = "+ thisActorForm +" - " + thisActorForm.GetName())
 			dismissChaurusSpawn(thisActorRef)
 
 			; if (StorageUtil.FormListFind( kActor, "_SD_lActivePunishmentDevices", kwDeviceKeyword as Form) <0)
@@ -43,6 +43,9 @@ Event OnEffectStart(Actor Target, Actor Caster)
 
 		i += 1
 	endwhile
+	
+	fctParasites.displayChaurusSpawnList()
+
 EndEvent
 
 Function dismissChaurusSpawn(ObjectReference ChaurusSpawnRef)

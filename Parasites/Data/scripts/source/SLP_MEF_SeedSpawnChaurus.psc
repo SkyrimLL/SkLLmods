@@ -22,6 +22,7 @@ Spell Property DismissSpawns Auto
 Event OnEffectStart(Actor Target, Actor Caster)
 	Actor kPlayer = Game.GetPlayer()
 	Actorbase EncChaurusActorBase
+	Actor kChaurusSpawn 
 
  	Int iRandomNum = utility.randomint(0,100)
  	Int iChaurusQueenStage = StorageUtil.GetIntValue(kPlayer, "_SLP_iChaurusQueenStage")
@@ -82,7 +83,11 @@ Event OnEffectStart(Actor Target, Actor Caster)
 					; if the list isn't full, add the chaurus
 					
 					kPlayer.RemoveItem(ChaurusEgg, iChaurusSpawnCount)
-					fctParasites.getRandomChaurusSpawn(kPlayer)
+					kChaurusSpawn = fctParasites.getRandomChaurusSpawn(kPlayer)
+
+					debug.trace("[SLP] Adding actor to _SLP_lChaurusSpawnsList - " + kChaurusSpawn )
+					StorageUtil.FormListAdd( none, "_SLP_lChaurusSpawnsList", kChaurusSpawn as Form )
+
 				endif
 
 				; Debug
