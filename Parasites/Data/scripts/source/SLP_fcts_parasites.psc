@@ -1870,7 +1870,7 @@ Function cureChaurusQueenVag( Actor kActor, Bool bHarvestParasite = False   )
 		Endif
 
 		If (kActor == PlayerActor)
-			ChaurusQueenInfectedAlias.ForceRefTo(DummyAlias)
+		;	ChaurusQueenInfectedAlias.ForceRefTo(DummyAlias)
 		endIf
 
 	Else
@@ -1961,7 +1961,7 @@ Function cureChaurusQueenGag( Actor kActor, Bool bHarvestParasite = False   )
 		Endif
 
 		If (kActor == PlayerActor) && !(isInfectedByString( kActor,  "ChaurusQueenGag" ))
-			ChaurusQueenInfectedAlias.ForceRefTo(DummyAlias)
+		;	ChaurusQueenInfectedAlias.ForceRefTo(DummyAlias)
 		endIf
 
 
@@ -2064,7 +2064,7 @@ Function cureChaurusQueenSkin( Actor kActor, Bool bHarvestParasite = False   )
 		Endif
 
 		If (kActor == PlayerActor)
-			ChaurusQueenInfectedAlias.ForceRefTo(DummyAlias)
+		;	ChaurusQueenInfectedAlias.ForceRefTo(DummyAlias)
 		endIf
 
 	Else
