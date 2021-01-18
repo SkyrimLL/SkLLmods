@@ -1,15 +1,15 @@
-Scriptname SLP_MEF_SeedSpawnDismiss extends ActiveMagicEffect  
+Scriptname SLP_MEF_SeedSpawnCall extends ActiveMagicEffect  
 
 SLP_fcts_parasites Property fctParasites  Auto 
 
 Quest Property QueenOfChaurusQuest  Auto 
 ObjectReference Property pocketDimensionRef Auto
 
-Activator Property arPortalFX Auto
-
+Activator Property arPortalFX Auto 
 
 Event OnEffectStart(Actor Target, Actor Caster)
     ;   Debug.Messagebox(" Spider Pheromone charm spell started")    
+
 	Actor kPlayer = Game.GetPlayer()
 	ObjectReference kPlayerRef
 	int valueCount = StorageUtil.FormListCount(none, "_SLP_lChaurusSpawnsList")
@@ -18,34 +18,40 @@ Event OnEffectStart(Actor Target, Actor Caster)
 	Actor thisActor
  	ObjectReference thisActorRef
 
- 	debug.notification("[SLP] dismissChaurusSpawnList (" + valueCount + " actors)")
- 	debug.trace("[SLP] dismissChaurusSpawnList (" + valueCount + " actors)")
+ 	debug.notification("[SLP] summonChaurusSpawnList (" + valueCount + " actors)")
+ 	debug.trace("[SLP] summonChaurusSpawnList (" + valueCount + " actors)")
 
 	while(i < valueCount)
 		thisActorForm = StorageUtil.FormListGet(none, "_SLP_lChaurusSpawnsList", i)
 
 		if (thisActorRef==None)
-			Debug.Trace("	Dismiss actor [" + i + "] = "+ thisActorForm )
-			Debug.Trace("		Actor is None - skipping")
+			Debug.Trace("	Actor [" + i + "] = "+ thisActorForm )
+			Debug.Trace("		Actor is None - removing from list")
+			StorageUtil.FormListRemoveAt(none, "_SLP_lChaurusSpawnsList", i)
+			Debug.Trace("		Calling a replacement actor") 
+			fctParasites.getRandomChaurusSpawn(kPlayer)
 		else
-
-			; Debug.Trace("	Actor [" + i + "] = "+ thisActorForm +" - " + thisActorForm.GetName())
+			Debug.Trace("	Actor [" + i + "] = "+ thisActorForm +" - " + thisActorForm.GetName())
 			thisActor = thisActorForm as Actor
 			thisActorRef = thisActor as ObjectReference
 
-			Debug.Trace("	Dismiss actor [" + i + "] = "+ thisActorForm +" - " + thisActorForm.GetName())
-			dismissChaurusSpawn(thisActorRef)
+			if (thisActorRef.GetDistance(kPlayerRef) > 100.0)
+				Debug.Trace("		Moving Actor to player [" + i + "] = "+ thisActorForm +" - " + thisActorForm.GetName())
+				summonChaurusSpawn(thisActorRef)
+			endif
 
-			; if (StorageUtil.FormListFind( kActor, "_SD_lActivePunishmentDevices", kwDeviceKeyword as Form) <0)
-			;	StorageUtil.FormListAdd( kActor, "_SD_lActivePunishmentDevices", kwDeviceKeyword as Form )
-			; endif
 		endif
+
+		; if (StorageUtil.FormListFind( kActor, "_SD_lActivePunishmentDevices", kwDeviceKeyword as Form) <0)
+		;	StorageUtil.FormListAdd( kActor, "_SD_lActivePunishmentDevices", kwDeviceKeyword as Form )
+		; endif
 
 		i += 1
 	endwhile
 EndEvent
 
-Function dismissChaurusSpawn(ObjectReference ChaurusSpawnRef)
+
+Function summonChaurusSpawn(ObjectReference ChaurusSpawnRef)
     ObjectReference akSummoner = Game.getPlayer()  as ObjectReference
     ObjectReference arPortal = None
 
@@ -57,7 +63,7 @@ Function dismissChaurusSpawn(ObjectReference ChaurusSpawnRef)
         aiStage += 1
         If aiStage == 1 ; Shroud summon with portal
         		; Use this for burrow effect? find better FX activator
-                arPortal = ChaurusSpawnRef.PlaceAtMe(arPortalFX as Form) ; SummonTargetFXActivator 
+                arPortal = akSummoner.PlaceAtMe(arPortalFX as Form) ; SummonTargetFXActivator 
                 ; arPortal = akSummoner.PlaceAtMe(Game.GetFormFromFile(0x0007CD55, "Skyrim.ESM")) ; SummonTargetFXActivator 
                 ; arPortal = akSummoner.PlaceAtMe(Game.GetFormFromFile(0x0000481A, "Dragonborn.ESM")) ; FXDraugrEmergeGround01
                 ; arPortal = akSummoner.PlaceAtMe(Game.GetFormFromFile(0x0000001B, "Skyrim.ESM")) ; DefaultAshPile1 
@@ -69,7 +75,7 @@ Function dismissChaurusSpawn(ObjectReference ChaurusSpawnRef)
                 ChaurusSpawnRef.Disable()  
 
         ElseIf aiStage == 3 ; Move portal in front of summoner
-                arPortal.MoveTo(pocketDimensionRef, Math.Sin(pocketDimensionRef.GetAngleZ()) * afDistance, Math.Cos(pocketDimensionRef.GetAngleZ()) * afDistance, afZOffset)
+                arPortal.MoveTo(akSummoner, Math.Sin(akSummoner.GetAngleZ()) * afDistance, Math.Cos(akSummoner.GetAngleZ()) * afDistance, afZOffset)
         ElseIf aiStage == 4 ; Move summon to portal
                 ChaurusSpawnRef.MoveTo(arPortal)
 
@@ -84,6 +90,8 @@ Function dismissChaurusSpawn(ObjectReference ChaurusSpawnRef)
         Utility.Wait(0.6)
     EndWhile
 EndFunction
+
+
 
 Event OnEffectFinish(Actor akTarget, Actor akCaster)        
     ;   Debug.Messagebox(" spell ended")    

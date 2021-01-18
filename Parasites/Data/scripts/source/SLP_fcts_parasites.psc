@@ -19,6 +19,13 @@ Quest Property KynesBlessingQuest  Auto
 Quest Property QueenOfChaurusQuest  Auto 
 
 ObjectReference Property DummyAlias  Auto  
+
+
+Actor Property EncChaurusActor Auto 
+Actor Property EncChaurusSpawnActor Auto 
+Actor Property EncChaurusFledgelingActor Auto 
+Actor Property EncChaurusHunterActor Auto 
+
  
 GlobalVariable Property _SLP_GV_numInfections  Auto 
 GlobalVariable Property _SLP_GV_numSpiderEggInfections  Auto 
@@ -2329,6 +2336,86 @@ Bool Function applyEstrusChaurusEgg( Actor kActor  )
 
 	Return True
 EndFunction
+
+
+;------------------------------------------------------------------------------
+Function displayChaurusSpawnList()
+	int valueCount = StorageUtil.FormListCount(none, "_SLP_lChaurusSpawnsList")
+	int i = 0
+	Form thisActorForm
+ 
+ 	debug.trace("[SLP] displayChaurusSpawnList (" + valueCount + " actors)")
+
+	while(i < valueCount)
+		thisActorForm = StorageUtil.FormListGet(none, "_SLP_lChaurusSpawnsList", i)
+		Debug.Trace("	Actor [" + i + "] = "+ thisActorForm +" - " + thisActorForm.GetName())
+
+		; if (StorageUtil.FormListFind( kActor, "_SD_lActivePunishmentDevices", kwDeviceKeyword as Form) <0)
+		;	StorageUtil.FormListAdd( kActor, "_SD_lActivePunishmentDevices", kwDeviceKeyword as Form )
+		; endif
+
+		i += 1
+	endwhile
+EndFunction
+
+Function cleanChaurusSpawnList()
+	int valueCount = StorageUtil.FormListCount(none, "_SLP_lChaurusSpawnsList")
+	int i = 0
+	Form thisActorForm
+	Actor thisActor
+ 	ObjectReference thisActorRef
+ 
+ 	debug.trace("[SLP] cleanChaurusSpawnList (" + valueCount + " actors)")
+
+	while(i < valueCount)
+		thisActorForm = StorageUtil.FormListGet(none, "_SLP_lChaurusSpawnsList", i)
+
+		Debug.Trace("	Actor [" + i + "] = "+ thisActorForm +" - " + thisActorForm.GetName())
+
+		thisActor = thisActorForm as Actor
+		thisActorRef = thisActor as ObjectReference
+
+		if (thisActor.IsDead()) || (thisActorRef.IsDisabled())
+			StorageUtil.FormListRemoveAt(none, "_SLP_lChaurusSpawnsList", i)
+		endif
+
+		; if (StorageUtil.FormListFind( kActor, "_SD_lActivePunishmentDevices", kwDeviceKeyword as Form) <0)
+		;	StorageUtil.FormListAdd( kActor, "_SD_lActivePunishmentDevices", kwDeviceKeyword as Form )
+		; endif
+
+		i += 1
+	endwhile
+
+	valueCount = StorageUtil.FormListCount(none, "_SLP_lChaurusSpawnsList")
+ 	debug.trace("[SLP] cleanChaurusSpawnList (" + valueCount + " actors) after clean up ")
+
+EndFunction
+
+
+Function getRandomChaurusSpawn(Actor kActor)
+	Actor kChaurusSpawn
+	ActorBase ChaurusSpawnActorBase
+ 	Int iChaurusSpawnLevel
+	Int iRandomNum = utility.randomint(0,100)
+
+	if (iRandomNum>90)
+		ChaurusSpawnActorBase = EncChaurusHunterActor.GetBaseObject() as ActorBase
+		iChaurusSpawnLevel = 4
+	elseif (iRandomNum>60)
+		ChaurusSpawnActorBase = EncChaurusSpawnActor.GetBaseObject() as ActorBase
+		iChaurusSpawnLevel = 3
+	else
+		ChaurusSpawnActorBase = EncChaurusFledgelingActor.GetBaseObject() as ActorBase
+		iChaurusSpawnLevel = 2
+	endif
+
+	kChaurusSpawn = kActor.PlaceActorAtMe(ChaurusSpawnActorBase, iChaurusSpawnLevel)
+
+ 	debug.notification("[SLP] Adding actor to _SLP_lChaurusSpawnsList - " + kChaurusSpawn )
+	StorageUtil.FormListAdd( none, "_SLP_lChaurusSpawnsList", kChaurusSpawn as Form )
+
+EndFunction
+
 
 ;------------------------------------------------------------------------------
 Function triggerEstrusChaurusBirth( Actor kActor, String  sParasite, Int iBirthItemCount  )
