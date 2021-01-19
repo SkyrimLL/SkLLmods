@@ -1,15 +1,15 @@
 ;BEGIN FRAGMENT CODE - Do not edit anything between this and the end comment
-;NEXT FRAGMENT INDEX 64
+;NEXT FRAGMENT INDEX 67
 Scriptname SLP_QST_QueenOfChaurus Extends Quest Hidden
+
+;BEGIN ALIAS PROPERTY _SLP_ChaurusStudPlayer
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SLP_ChaurusStudPlayer Auto
+;END ALIAS PROPERTY
 
 ;BEGIN ALIAS PROPERTY _SLP_QOF_PlayerRef
 ;ALIAS PROPERTY TYPE ReferenceAlias
 ReferenceAlias Property Alias__SLP_QOF_PlayerRef Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SLP_DanicaSanctuaryFollower
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SLP_DanicaSanctuaryFollower Auto
 ;END ALIAS PROPERTY
 
 ;BEGIN ALIAS PROPERTY _SLP_LastelleRef
@@ -17,14 +17,14 @@ ReferenceAlias Property Alias__SLP_DanicaSanctuaryFollower Auto
 ReferenceAlias Property Alias__SLP_LastelleRef Auto
 ;END ALIAS PROPERTY
 
-;BEGIN ALIAS PROPERTY _SLP_ChaurusStudPlayer
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SLP_ChaurusStudPlayer Auto
-;END ALIAS PROPERTY
-
 ;BEGIN ALIAS PROPERTY _SLP_ChaurusStudLastelle
 ;ALIAS PROPERTY TYPE ReferenceAlias
 ReferenceAlias Property Alias__SLP_ChaurusStudLastelle Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SLP_DanicaSanctuaryFollower
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SLP_DanicaSanctuaryFollower Auto
 ;END ALIAS PROPERTY
 
 ;BEGIN ALIAS PROPERTY _SLP_SpiderFollower
@@ -32,44 +32,13 @@ ReferenceAlias Property Alias__SLP_ChaurusStudLastelle Auto
 ReferenceAlias Property Alias__SLP_SpiderFollower Auto
 ;END ALIAS PROPERTY
 
-;BEGIN FRAGMENT Fragment_57
-Function Fragment_57()
+;BEGIN FRAGMENT Fragment_63
+Function Fragment_63()
 ;BEGIN CODE
-SetObjectiveDisplayed(310, false)
-SetObjectiveDisplayed(320)
-;END CODE
-EndFunction
-;END FRAGMENT
+ShroudedGroveMapMarker.AddToMap()
 
-;BEGIN FRAGMENT Fragment_28
-Function Fragment_28()
-;BEGIN CODE
-ObjectReference kPlayerRef = Game.GetPlayer()
-Actor akPlayer = kPlayerRef  as Actor
-
-if (kPlayerRef.GetItemCount(_SLP_MotherSeed) == 0)
-  akPlayer.additem(_SLP_MotherSeed, 1)
-  Debug.Messagebox("As you pick up the notebook, you notice a strange star shaped stone is bound to the cover with a thin strip of leather.")
-Endif
-
-SetObjectiveDisplayed(140, false)
-SetObjectiveDisplayed(150)
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_38
-Function Fragment_38()
-;BEGIN CODE
-SetObjectiveDisplayed(220, false)
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_3
-Function Fragment_3()
-;BEGIN CODE
-SetObjectiveDisplayed(20)
+SetObjectiveDisplayed(355, false)
+SetObjectiveDisplayed(360)
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -84,6 +53,53 @@ SetObjectiveDisplayed(220)
 EndFunction
 ;END FRAGMENT
 
+;BEGIN FRAGMENT Fragment_49
+Function Fragment_49()
+;BEGIN CODE
+SetObjectiveDisplayed(270, false)
+SetObjectiveDisplayed(276, false)
+SetObjectiveDisplayed(280)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_46
+Function Fragment_46()
+;BEGIN CODE
+SetObjectiveDisplayed(260, false)
+SetObjectiveDisplayed(270)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_4
+Function Fragment_4()
+;BEGIN CODE
+SetObjectiveDisplayed(5,false)
+SetObjectiveDisplayed(6,false)
+SetObjectiveDisplayed(15,false)
+SetObjectiveDisplayed(20)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_57
+Function Fragment_57()
+;BEGIN CODE
+SetObjectiveDisplayed(310, false)
+SetObjectiveDisplayed(320)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_12
+Function Fragment_12()
+;BEGIN CODE
+SetObjectiveDisplayed(50,false)
+;END CODE
+EndFunction
+;END FRAGMENT
+
 ;BEGIN FRAGMENT Fragment_16
 Function Fragment_16()
 ;BEGIN CODE
@@ -93,29 +109,27 @@ SetObjectiveDisplayed(20,false)
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_62
-Function Fragment_62()
+;BEGIN FRAGMENT Fragment_13
+Function Fragment_13()
 ;BEGIN CODE
-SetObjectiveDisplayed(350, false)
-SetObjectiveDisplayed(355)
+SetObjectiveDisplayed(30,false)
 ;END CODE
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_33
-Function Fragment_33()
+;BEGIN FRAGMENT Fragment_26
+Function Fragment_26()
 ;BEGIN CODE
-SetObjectiveDisplayed(230, false)
-SetObjectiveDisplayed(240)
+SetObjectiveDisplayed(120, false)
+SetObjectiveDisplayed(130)
 ;END CODE
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_2
-Function Fragment_2()
+;BEGIN FRAGMENT Fragment_14
+Function Fragment_14()
 ;BEGIN CODE
-SetObjectiveDisplayed(10)
-SetObjectiveDisplayed(11)
+SetObjectiveDisplayed(60)
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -140,35 +154,37 @@ SetObjectiveDisplayed(210)
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_14
-Function Fragment_14()
+;BEGIN FRAGMENT Fragment_38
+Function Fragment_38()
 ;BEGIN CODE
-SetObjectiveDisplayed(60)
+SetObjectiveDisplayed(220, false)
 ;END CODE
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_44
-Function Fragment_44()
+;BEGIN FRAGMENT Fragment_35
+Function Fragment_35()
 ;BEGIN CODE
-SetObjectiveDisplayed(250, false)
-SetObjectiveDisplayed(252, false)
+SetObjectiveDisplayed(240, false)
+SetObjectiveDisplayed(250)
+SetObjectiveDisplayed(252)
 ;END CODE
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_15
-Function Fragment_15()
+;BEGIN FRAGMENT Fragment_55
+Function Fragment_55()
 ;BEGIN CODE
-; stage moved to 71 for backward compatilibty
+SetObjectiveDisplayed(300)
 ;END CODE
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_23
-Function Fragment_23()
+;BEGIN FRAGMENT Fragment_56
+Function Fragment_56()
 ;BEGIN CODE
-SetObjectiveDisplayed(100)
+SetObjectiveDisplayed(300, false)
+SetObjectiveDisplayed(310)
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -177,6 +193,23 @@ EndFunction
 Function Fragment_47()
 ;BEGIN CODE
 SetObjectiveDisplayed(276)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_60
+Function Fragment_60()
+;BEGIN CODE
+SetObjectiveDisplayed(330, false)
+SetObjectiveDisplayed(340)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_54
+Function Fragment_54()
+;BEGIN CODE
+SetObjectiveDisplayed(289, false)
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -193,14 +226,6 @@ SetObjectiveDisplayed(30)
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_17
-Function Fragment_17()
-;BEGIN CODE
-SetObjectiveDisplayed(70,false)
-;END CODE
-EndFunction
-;END FRAGMENT
-
 ;BEGIN FRAGMENT Fragment_32
 Function Fragment_32()
 ;BEGIN CODE
@@ -210,84 +235,19 @@ SetObjectiveDisplayed(230)
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_4
-Function Fragment_4()
+;BEGIN FRAGMENT Fragment_28
+Function Fragment_28()
 ;BEGIN CODE
-SetObjectiveDisplayed(5,false)
-SetObjectiveDisplayed(6,false)
-SetObjectiveDisplayed(15,false)
-SetObjectiveDisplayed(20)
-;END CODE
-EndFunction
-;END FRAGMENT
+ObjectReference kPlayerRef = Game.GetPlayer()
+Actor akPlayer = kPlayerRef  as Actor
 
-;BEGIN FRAGMENT Fragment_49
-Function Fragment_49()
-;BEGIN CODE
-SetObjectiveDisplayed(270, false)
-SetObjectiveDisplayed(276, false)
-SetObjectiveDisplayed(280)
-;END CODE
-EndFunction
-;END FRAGMENT
+if (kPlayerRef.GetItemCount(_SLP_MotherSeed) == 0)
+  akPlayer.additem(_SLP_MotherSeed, 1)
+  Debug.Messagebox("As you pick up the notebook, you notice a strange star shaped stone is bound to the cover with a thin strip of leather.")
+Endif
 
-;BEGIN FRAGMENT Fragment_5
-Function Fragment_5()
-;BEGIN CODE
-Actor kLastelle = Alias__SLP_LastelleRef.GetReference() as Actor
-fctParasites.infectTentacleMonster( kLastelle )
-fctParasites.infectEstrusChaurusEgg( kLastelle )
-
-EggSackOutsideMarker.disable()
-EggSackInsideMarker.enable()
-_SLP_BroodCaveEntranceMarker.disable()
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_46
-Function Fragment_46()
-;BEGIN CODE
-SetObjectiveDisplayed(260, false)
-SetObjectiveDisplayed(270)
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_18
-Function Fragment_18()
-;BEGIN CODE
-SetObjectiveDisplayed(5,false)
-SetObjectiveDisplayed(10,false)
-SetObjectiveDisplayed(11,false)
-SetObjectiveDisplayed(15)
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_24
-Function Fragment_24()
-;BEGIN CODE
-SetObjectiveDisplayed(100, false)
-SetObjectiveDisplayed(110)
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_53
-Function Fragment_53()
-;BEGIN CODE
-SetObjectiveDisplayed(280, false)
-SetObjectiveDisplayed(285)
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_8
-Function Fragment_8()
-;BEGIN CODE
-EggSackOutsideMarker.enable()
-SetObjectiveDisplayed(40)
+SetObjectiveDisplayed(140, false)
+SetObjectiveDisplayed(150)
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -302,20 +262,55 @@ SetObjectiveDisplayed(260)
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_54
-Function Fragment_54()
+;BEGIN FRAGMENT Fragment_15
+Function Fragment_15()
 ;BEGIN CODE
-SetObjectiveDisplayed(289, false)
+; stage moved to 71 for backward compatilibty
 ;END CODE
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_35
-Function Fragment_35()
+;BEGIN FRAGMENT Fragment_64
+Function Fragment_64()
 ;BEGIN CODE
-SetObjectiveDisplayed(240, false)
-SetObjectiveDisplayed(250)
-SetObjectiveDisplayed(252)
+FrostflowAbyssMapMarker.AddToMap()
+
+SetObjectiveDisplayed(360, false)
+SetObjectiveDisplayed(370)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_17
+Function Fragment_17()
+;BEGIN CODE
+SetObjectiveDisplayed(70,false)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_23
+Function Fragment_23()
+;BEGIN CODE
+SetObjectiveDisplayed(100)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_53
+Function Fragment_53()
+;BEGIN CODE
+SetObjectiveDisplayed(280, false)
+SetObjectiveDisplayed(285)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_44
+Function Fragment_44()
+;BEGIN CODE
+SetObjectiveDisplayed(250, false)
+SetObjectiveDisplayed(252, false)
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -328,19 +323,38 @@ SetObjectiveDisplayed(5)
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_56
-Function Fragment_56()
+;BEGIN FRAGMENT Fragment_27
+Function Fragment_27()
 ;BEGIN CODE
-SetObjectiveDisplayed(300, false)
-SetObjectiveDisplayed(310)
+SetObjectiveDisplayed(130, false)
+SetObjectiveDisplayed(140)
 ;END CODE
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_55
-Function Fragment_55()
+;BEGIN FRAGMENT Fragment_33
+Function Fragment_33()
 ;BEGIN CODE
-SetObjectiveDisplayed(300)
+SetObjectiveDisplayed(230, false)
+SetObjectiveDisplayed(240)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_8
+Function Fragment_8()
+;BEGIN CODE
+EggSackOutsideMarker.enable()
+SetObjectiveDisplayed(40)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_24
+Function Fragment_24()
+;BEGIN CODE
+SetObjectiveDisplayed(100, false)
+SetObjectiveDisplayed(110)
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -354,18 +368,11 @@ SetObjectiveDisplayed(70)
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_40
-Function Fragment_40()
+;BEGIN FRAGMENT Fragment_25
+Function Fragment_25()
 ;BEGIN CODE
-SetObjectiveDisplayed(252, false)
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_12
-Function Fragment_12()
-;BEGIN CODE
-SetObjectiveDisplayed(50,false)
+SetObjectiveDisplayed(110, false)
+SetObjectiveDisplayed(120)
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -379,6 +386,15 @@ SetObjectiveDisplayed(330)
 EndFunction
 ;END FRAGMENT
 
+;BEGIN FRAGMENT Fragment_51
+Function Fragment_51()
+;BEGIN CODE
+SetObjectiveDisplayed(285, false)
+SetObjectiveDisplayed(289)
+;END CODE
+EndFunction
+;END FRAGMENT
+
 ;BEGIN FRAGMENT Fragment_9
 Function Fragment_9()
 ;BEGIN CODE
@@ -387,27 +403,13 @@ SetObjectiveDisplayed(50)
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_0
-Function Fragment_0()
+;BEGIN FRAGMENT Fragment_18
+Function Fragment_18()
 ;BEGIN CODE
-;
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_36
-Function Fragment_36()
-;BEGIN CODE
-SetObjectiveDisplayed(220, false)
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_26
-Function Fragment_26()
-;BEGIN CODE
-SetObjectiveDisplayed(120, false)
-SetObjectiveDisplayed(130)
+SetObjectiveDisplayed(5,false)
+SetObjectiveDisplayed(10,false)
+SetObjectiveDisplayed(11,false)
+SetObjectiveDisplayed(15)
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -426,39 +428,16 @@ SetObjectiveDisplayed(200)
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_25
-Function Fragment_25()
+;BEGIN FRAGMENT Fragment_5
+Function Fragment_5()
 ;BEGIN CODE
-SetObjectiveDisplayed(110, false)
-SetObjectiveDisplayed(120)
-;END CODE
-EndFunction
-;END FRAGMENT
+Actor kLastelle = Alias__SLP_LastelleRef.GetReference() as Actor
+fctParasites.infectTentacleMonster( kLastelle )
+fctParasites.infectEstrusChaurusEgg( kLastelle )
 
-;BEGIN FRAGMENT Fragment_63
-Function Fragment_63()
-;BEGIN CODE
-ShroudedGroveMapMarker.AddToMap()
-
-SetObjectiveDisplayed(355, false)
-SetObjectiveDisplayed(360)
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_60
-Function Fragment_60()
-;BEGIN CODE
-SetObjectiveDisplayed(330, false)
-SetObjectiveDisplayed(340)
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_21
-Function Fragment_21()
-;BEGIN CODE
-SetObjectiveDisplayed(45)
+EggSackOutsideMarker.disable()
+EggSackInsideMarker.enable()
+_SLP_BroodCaveEntranceMarker.disable()
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -472,10 +451,28 @@ SetObjectiveDisplayed(350)
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_13
-Function Fragment_13()
+;BEGIN FRAGMENT Fragment_2
+Function Fragment_2()
 ;BEGIN CODE
-SetObjectiveDisplayed(30,false)
+SetObjectiveDisplayed(10)
+SetObjectiveDisplayed(11)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_3
+Function Fragment_3()
+;BEGIN CODE
+SetObjectiveDisplayed(20)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_66
+Function Fragment_66()
+;BEGIN CODE
+SetObjectiveDisplayed(370, false)
+SetObjectiveDisplayed(380)
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -489,20 +486,43 @@ SetObjectiveDisplayed(45,false)
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_51
-Function Fragment_51()
+;BEGIN FRAGMENT Fragment_62
+Function Fragment_62()
 ;BEGIN CODE
-SetObjectiveDisplayed(285, false)
-SetObjectiveDisplayed(289)
+SetObjectiveDisplayed(350, false)
+SetObjectiveDisplayed(355)
 ;END CODE
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_27
-Function Fragment_27()
+;BEGIN FRAGMENT Fragment_21
+Function Fragment_21()
 ;BEGIN CODE
-SetObjectiveDisplayed(130, false)
-SetObjectiveDisplayed(140)
+SetObjectiveDisplayed(45)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_40
+Function Fragment_40()
+;BEGIN CODE
+SetObjectiveDisplayed(252, false)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_36
+Function Fragment_36()
+;BEGIN CODE
+SetObjectiveDisplayed(220, false)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_0
+Function Fragment_0()
+;BEGIN CODE
+;
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -529,3 +549,5 @@ Outfit Property BarnaclesOutfit  Auto
 Armor Property SkinBarnaclesArmor  Auto  
 
 ObjectReference Property ShroudedGroveMapMarker  Auto  
+
+ObjectReference Property FrostflowAbyssMapMarker  Auto  
