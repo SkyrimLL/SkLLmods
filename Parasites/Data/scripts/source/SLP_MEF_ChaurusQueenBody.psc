@@ -17,7 +17,7 @@ Event OnEffectStart(Actor Target, Actor Caster)
 	;	iChaurusSpawnCount = iChaurusEggsCount 
 	endif
 
-	if (!fctParasites.isInfectedByString( kPlayer,  "ChaurusQueenArmor" ))
+	if (!fctParasites.isInfectedByString( kPlayer,  "ChaurusQueenBody" ))
 
 		if (iChaurusSpawnCount>0)
 			kPlayer.RemoveItem(ChaurusEgg, iChaurusSpawnCount)
