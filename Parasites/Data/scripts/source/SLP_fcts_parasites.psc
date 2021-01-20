@@ -2436,6 +2436,12 @@ Actor Function getRandomChaurusSpawn(Actor kActor)
 	return kChaurusSpawn
 EndFunction
 
+Function getRandomChaurusEggs(Actor kActor, int iMinEggs = 0, int iMaxEggs = 20 )
+	Int iRandomNum = utility.randomint(iMinEggs,iMaxEggs)
+
+	kActor.AddItem(ChaurusEgg, iRandomNum)
+EndFunction
+
 
 ;------------------------------------------------------------------------------
 Function triggerEstrusChaurusBirth( Actor kActor, String  sParasite, Int iBirthItemCount  )

@@ -442,6 +442,10 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 				Endif
 
 			EndIf
+
+			if (StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusQueenStage")>=5)
+				fctParasites.getRandomChaurusEggs(PlayerActor, 0, 20)
+			endif
 		EndIf
 
 		if animation.HasTag("Spider") ; && (_SDGVP_enable_parasites.GetValue() == 1)

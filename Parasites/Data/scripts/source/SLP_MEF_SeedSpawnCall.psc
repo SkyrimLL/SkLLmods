@@ -20,6 +20,7 @@ Event OnEffectStart(Actor Target, Actor Caster)
 	ActorBase thisActorBase
  	ObjectReference thisActorRef
  	Actor kChaurusSpawn
+ 	Int iChaurusSpawnListMax = 10
 
  	debug.notification("[SLP] summonChaurusSpawnList (" + valueCount + " actors)")
  	debug.trace("[SLP] summonChaurusSpawnList (" + valueCount + " actors)")
@@ -36,7 +37,7 @@ Event OnEffectStart(Actor Target, Actor Caster)
 			
 			if (kChaurusSpawn != None)
 				debug.trace("[SLP] Adding actor to _SLP_lChaurusSpawnsList - " + kChaurusSpawn )
-				StorageUtil.FormListAdd( none, "_SLP_lChaurusSpawnsList", kChaurusSpawn as Form )
+				StorageUtil.FormListSet( none, "_SLP_lChaurusSpawnsList", i, kChaurusSpawn as Form )
 			else
 				debug.trace("[SLP]    Problem with fctParasites.getRandomChaurusSpawn - returned a None actor" )
 			endif
