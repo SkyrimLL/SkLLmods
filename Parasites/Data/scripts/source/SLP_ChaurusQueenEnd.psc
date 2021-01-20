@@ -16,6 +16,8 @@ Event OnDeath(Actor akKiller)
 
  	QueenOfChaurusQuest.SetStage(400)
 
+ 	DimensionalRiftRef.disable()
+
  	kPlayer.AddSpell(ChaurusBody)
 
  	fctParasites.getRandomChaurusEggs(kPlayer, 6, 10)
