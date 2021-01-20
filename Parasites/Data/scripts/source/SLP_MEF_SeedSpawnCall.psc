@@ -34,8 +34,12 @@ Event OnEffectStart(Actor Target, Actor Caster)
 			Debug.Trace("[SLP] 		Actor is None - Calling a replacement actor") 
 			kChaurusSpawn = fctParasites.getRandomChaurusSpawn(kPlayer)
 			
-			debug.trace("[SLP] Adding actor to _SLP_lChaurusSpawnsList - " + kChaurusSpawn )
-			StorageUtil.FormListAdd( none, "_SLP_lChaurusSpawnsList", kChaurusSpawn as Form )
+			if (kChaurusSpawn != None)
+				debug.trace("[SLP] Adding actor to _SLP_lChaurusSpawnsList - " + kChaurusSpawn )
+				StorageUtil.FormListAdd( none, "_SLP_lChaurusSpawnsList", kChaurusSpawn as Form )
+			else
+				debug.trace("[SLP]    Problem with fctParasites.getRandomChaurusSpawn - returned a None actor" )
+			endif
 
 		else
 			Debug.Trace("[SLP] 	Actor [" + i + "] = "+ thisActorForm +" - " + thisActorForm.GetName())

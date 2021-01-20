@@ -2400,12 +2400,12 @@ EndFunction
 
 Actor Function getRandomChaurusSpawn(Actor kActor)
 	Actor kPlayer = Game.Getplayer()
+	ObjectReference kActorRef = kPlayer as ObjectReference
 	Actor kChaurusSpawn
 	ActorBase ChaurusSpawnActorBase
  	Int iChaurusSpawnLevel
 	Int iRandomNum = utility.randomint(0,100)
 	ObjectReference arPortal  
-	ObjectReference kActorRef  
     Float afDistance = 150.0
     Float afZOffset = 0.0
 
