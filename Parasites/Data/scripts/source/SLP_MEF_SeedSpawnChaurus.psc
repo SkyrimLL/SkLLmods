@@ -28,7 +28,12 @@ Event OnEffectStart(Actor Target, Actor Caster)
  	Int iChaurusQueenStage = StorageUtil.GetIntValue(kPlayer, "_SLP_iChaurusQueenStage")
  	Int iChaurusSpawnCount
  	Int iChaurusEggsCount = kPlayer.GetItemCount(ChaurusEgg)
- 	Int iChaurusSpawnListMax = 10
+ 	Int iChaurusSpawnListMax = StorageUtil.GetIntValue(kPlayer, "_SLP_maxBroodSpawns" )
+
+ 	if (iChaurusSpawnListMax<1)
+ 		StorageUtil.SetIntValue(kPlayer, "_SLP_maxBroodSpawns" , 1)
+ 	endif
+
 
 	if (!kPlayer.HasSpell( CallSpawns ))
 		kPlayer.AddSpell( CallSpawns ) 

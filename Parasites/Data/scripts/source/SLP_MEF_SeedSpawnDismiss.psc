@@ -18,7 +18,7 @@ Event OnEffectStart(Actor Target, Actor Caster)
 	Actor thisActor
  	ObjectReference thisActorRef
 
- 	debug.notification("[SLP] dismissChaurusSpawnList (" + valueCount + " actors)")
+ 	; debug.notification("[SLP] dismissChaurusSpawnList (" + valueCount + " actors)")
  	debug.trace("[SLP] dismissChaurusSpawnList (" + valueCount + " actors)")
 
 	while(i < valueCount)

@@ -20,9 +20,13 @@ Event OnEffectStart(Actor Target, Actor Caster)
 	ActorBase thisActorBase
  	ObjectReference thisActorRef
  	Actor kChaurusSpawn
- 	Int iChaurusSpawnListMax = 10
+ 	Int iChaurusSpawnListMax = StorageUtil.GetIntValue(kPlayer, "_SLP_maxBroodSpawns" )
 
- 	debug.notification("[SLP] summonChaurusSpawnList (" + valueCount + " actors)")
+ 	if (iChaurusSpawnListMax<1)
+ 		StorageUtil.SetIntValue(kPlayer, "_SLP_maxBroodSpawns" , 1)
+ 	endif
+
+ 	; debug.notification("[SLP] summonChaurusSpawnList (" + valueCount + " actors)")
  	debug.trace("[SLP] summonChaurusSpawnList (" + valueCount + " actors)")
 
 	while(i < valueCount)
@@ -47,6 +51,15 @@ Event OnEffectStart(Actor Target, Actor Caster)
 
 			if (thisActorRef.GetDistance(kPlayerRef) > 100.0)
 				Debug.Trace("[SLP] 		Moving Actor to player [" + i + "] = "+ thisActorForm +" - " + thisActorForm.GetName())
+
+				if (thisActor.IsDisabled())
+					thisActor.Enable()
+				endif
+
+				if (thisActor.IsDead())
+					thisActor.Resurrect()
+				endif
+
 				summonChaurusSpawn(thisActorRef)
 			endif
 

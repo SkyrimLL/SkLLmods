@@ -62,7 +62,8 @@ bool		_toggleChaurusQueenArmor = true
 float		_chanceChaurusQueenArmor = -1.0
 bool		_toggleChaurusQueenBody = true
 float		_chanceChaurusQueenBody = -1.0
-float		_bellyMaxChaurusQueen = 1.0
+float		_bellyMaxChaurusQueen = -1.0
+float		_maxBroodSpawns = -1.0
 
 bool		_toggleRefreshAll = false
 bool		_toggleClearAll = false
@@ -133,7 +134,7 @@ event OnPageReset(string a_page)
  		_setParasiteSettings()
  	; Endif
 
-	StorageUtil.SetIntValue(none, "_SLP_versionMCM", 20201223 )
+	StorageUtil.SetIntValue(none, "_SLP_versionMCM", 20210121 )
 
 	_toggleSpiderEgg = StorageUtil.GetIntValue(kPlayer, "_SLP_toggleSpiderEgg" )
 	_chanceSpiderEgg = StorageUtil.GetFloatValue(kPlayer, "_SLP_chanceSpiderEgg" )
@@ -184,6 +185,7 @@ event OnPageReset(string a_page)
 	_toggleChaurusQueenBody = StorageUtil.GetIntValue(kPlayer, "_SLP_toggleChaurusQueenBody" )
 	_chanceChaurusQueenBody = StorageUtil.GetFloatValue(kPlayer, "_SLP_chanceChaurusQueenBody" )
 	_bellyMaxChaurusQueen = StorageUtil.GetFloatValue(kPlayer, "_SLP_bellyMaxChaurusQueen" )
+	_maxBroodSpawns = StorageUtil.GetIntValue(kPlayer, "_SLP_maxBroodSpawns" ) as Float
 
 	_togglePriestOutfits = StorageUtil.GetIntValue(none, "_SLP_togglePriestOutfits" )
 
@@ -265,6 +267,7 @@ event OnPageReset(string a_page)
 			AddToggleOptionST("STATE_CHAURUSQUEENARMOR_TOGGLE","Infect/Cure Chaurus Queen Armor", _toggleChaurusQueenArmor as Float)
 			AddToggleOptionST("STATE_CHAURUSQUEENBODY_TOGGLE","Infect/Cure Chaurus Queen Full Body", _toggleChaurusQueenBody as Float)
 			AddSliderOptionST("STATE_CHAURUSQUEEN_BELLY","Max belly size (Chaurus Queen)", _bellyMaxChaurusQueen,"{1}")
+			AddSliderOptionST("STATE_MAX_BROODSPAWNS","Brood size", _maxBroodSpawns ,"{1}")
 		else
 			AddToggleOptionST("STATE_CHAURUSQUEENVAG_TOGGLE","Infect/Cure Vaginal Chaurus Queen", _toggleChaurusQueenVag as Float, OPTION_FLAG_DISABLED)
 			AddToggleOptionST("STATE_CHAURUSQUEENGAG_TOGGLE","Infect/Cure Chaurus Queen Mask", _toggleChaurusQueenGag as Float, OPTION_FLAG_DISABLED)
@@ -272,6 +275,7 @@ event OnPageReset(string a_page)
 			AddToggleOptionST("STATE_CHAURUSQUEENARMOR_TOGGLE","Infect/Cure Chaurus Queen Armor", _toggleChaurusQueenArmor as Float, OPTION_FLAG_DISABLED)
 			AddToggleOptionST("STATE_CHAURUSQUEENBODY_TOGGLE","Infect/Cure Chaurus Queen Full Body", _toggleChaurusQueenBody as Float, OPTION_FLAG_DISABLED)
 			AddSliderOptionST("STATE_CHAURUSQUEEN_BELLY","Max belly size (Chaurus Queen)", _bellyMaxChaurusQueen,"{1}", OPTION_FLAG_DISABLED)
+			AddSliderOptionST("STATE_MAX_BROODSPAWNS","Brood size", _maxBroodSpawns ,"{1}", OPTION_FLAG_DISABLED)
 		endif
 
 		AddTextOption("     Chaurus Queen Stage: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iChaurusQueenStage") as Int, "", OPTION_FLAG_DISABLED)
@@ -1146,6 +1150,31 @@ state STATE_CHAURUSQUEEN_BELLY ; SLIDER
 	endEvent
 endState
 
+; AddSliderOptionST("STATE_MAX_BROODSPAWNS","Max number of spawns in your brood", _maxBroodSpawns ,"{0}")
+state STATE_MAX_BROODSPAWNS ; SLIDER
+	event OnSliderOpenST()
+		SetSliderDialogStartValue( StorageUtil.GetIntValue(kPlayer, "_SLP_maxBroodSpawns" ) as Float)
+		SetSliderDialogDefaultValue( 10.0 )
+		SetSliderDialogRange( 1.0, 20.0 )
+		SetSliderDialogInterval( 1.0 )
+	endEvent
+
+	event OnSliderAcceptST(float value)
+		float thisValue = value 
+		StorageUtil.SetIntValue(kPlayer, "_SLP_maxBroodSpawns", thisValue as Int )
+		SetSliderOptionValueST( thisValue,"{1}" ) 
+	endEvent
+
+	event OnDefaultST()
+		StorageUtil.SetIntValue(kPlayer, "_SLP_maxBroodSpawns", 1 )
+		SetSliderOptionValueST( 10.0,"{1}" )
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Max number of spawns in your Brood. Adjust depending on your memory and script lag.")
+	endEvent
+endState
+
 ; AddToggleOptionST("STATE_REFRESH_ALL","Refresh equipped parasites", _toggleRefreshAll, OPTION_FLAG_DISABLED)
 state STATE_REFRESH_ALL ; TOGGLE
 	event OnSelectST() 
@@ -1318,7 +1347,11 @@ Function _setParasiteSettings()
 	if (_chanceChaurusQueenBody==-1.0)
 		StorageUtil.SetIntValue(kPlayer, "_SLP_toggleChaurusQueenBody", 0 )
 		StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceChaurusQueenBody", 100.0 ) 
+	Endif 
+	if (_maxBroodSpawns==-1.0)
+		StorageUtil.SetIntValue(kPlayer, "_SLP_maxBroodSpawns", 10 ) 
 	Endif
+
 
 
 EndFunction
