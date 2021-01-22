@@ -171,17 +171,35 @@ Function _maintenance()
 		idx -= 1
 		modName = Game.GetModName(idx)
 		if modName == "EstrusChaurus.esp"
+			debug.trace("[SLP] 'EstrusChaurus.esp' detected")
 			StorageUtil.SetIntValue(none, "_SLS_isEstrusChaurusON",  1) 
 			StorageUtil.SetFormValue(none, "_SLS_getEstrusChaurusBreederSpell",  Game.GetFormFromFile(0x00019121, modName)) ; as Spell
 
 		elseif modName == "BeeingFemale.esm"
+			debug.trace("[SLP] 'BeeingFemale.esm' detected")
 			StorageUtil.SetIntValue(none, "_SLS_isBeeingFemaleON",  1) 
 			StorageUtil.SetFormValue(none, "_SLS_getBeeingFemalePregnancySpell",  Game.GetFormFromFile(0x000028A0, modName)) ; as Spell
 
 		elseif modName == "CagedFollowers.esp"
+			debug.trace("[SLP] 'CagedFollowers.esp' detected")
 			StorageUtil.SetIntValue(none, "_SLS_isCagedFollowerON",  1) 
 			StorageUtil.SetFormValue(none, "_SLS_getCagedFollowerQuestKeyword",  Game.GetFormFromFile(0x0000184d, modName)) ; as Keyword
 
+		elseif modName == "Animated Dragon Wings.esp"
+			debug.trace("[SLP] 'Animated Dragon Wings.esp' detected")
+			StorageUtil.SetIntValue(none, "_SLP_isAnimatedDragonWings",  1) 
+			debug.trace("[SLP] 		Friendly Wings Potion: " + Game.GetFormFromFile(0x0000388B, modName))
+			debug.trace("[SLP] 		Dispel Wings Potion: " + Game.GetFormFromFile(0x000022F5, modName))
+			StorageUtil.SetFormValue(none, "_SLS_getDragonWingsFriendlyPotion",  Game.GetFormFromFile(0x0000388B, modName))  
+			StorageUtil.SetFormValue(none, "_SLS_getDragonWingsDispelPotion",  Game.GetFormFromFile(0x000022F5, modName))  
+
+		elseif modName == "Real Flying.esp"
+			debug.trace("[SLP] 'Real Flying.esp' detected")
+			StorageUtil.SetIntValue(none, "_SLP_isRealFlying",  1) 
+			debug.trace("[SLP] 		Real Flying Potion: " + Game.GetFormFromFile(0x00000D65, modName))
+			debug.trace("[SLP] 		Real Flying Cure Potion: " + Game.GetFormFromFile(0x000022F2, modName))
+			StorageUtil.SetFormValue(none, "_SLS_getRealFlyingPotion",  Game.GetFormFromFile(0x00000D65, modName))  
+			StorageUtil.SetFormValue(none, "_SLS_getRealFlyingCurePotion",  Game.GetFormFromFile(0x000022F2, modName))  
 		endif
 	endWhile
 
