@@ -26,6 +26,8 @@ Event OnEffectStart(Actor Target, Actor Caster)
  		StorageUtil.SetIntValue(kPlayer, "_SLP_maxBroodSpawns" , 1)
  	endif
 
+    SummonSoundFX.Play(kPlayer)
+
  	; debug.notification("[SLP] summonChaurusSpawnList (" + valueCount + " actors)")
  	debug.trace("[SLP] summonChaurusSpawnList (" + valueCount + " actors)")
 

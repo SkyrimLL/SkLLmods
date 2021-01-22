@@ -11,7 +11,8 @@ Event OnTriggerEnter(ObjectReference akActionRef)
  	ObjectReference kPlayerRef = kPlayer as ObjectReference
 
     if (akActionRef == kPlayerRef) 
-		if (fctParasites.isInfectedByString( kPlayer,  "ChaurusQueenArmor" )) && (fctParasites.isInfectedByString( kPlayer,  "ChaurusQueenGag" )) && (QueenOfChaurusQuest.GetStageDone(380)==1) && (QueenOfChaurusQuest.GetStageDone(390)==0)
+		if (fctParasites.isInfectedByString( kPlayer,  "ChaurusQueenArmor" )) && (fctParasites.isInfectedByString( kPlayer,  "ChaurusQueenGag" )) && (QueenOfChaurusQuest.GetStageDone(380)==1) && (QueenOfChaurusQuest.GetStageDone(400)==0)
+			; 380 - After jumping into the Abyss and 400 - before closing the portal
 			DimensionalRiftDoorMarkerRef.enable()
 		else
 			DimensionalRiftDoorMarkerRef.disable()

@@ -130,10 +130,6 @@ event OnPageReset(string a_page)
 		StorageUtil.SetIntValue(none, "_SLP_initMCM", 1 )
 	EndIf
 
- 	; If (StorageUtil.GetIntValue(none, "_SLP_versionMCM" ) == 0) || (_resetTrigger<0.0)
- 		_setParasiteSettings()
- 	; Endif
-
 	StorageUtil.SetIntValue(none, "_SLP_versionMCM", 20210121 )
 
 	_toggleSpiderEgg = StorageUtil.GetIntValue(kPlayer, "_SLP_toggleSpiderEgg" )
@@ -188,6 +184,10 @@ event OnPageReset(string a_page)
 	_maxBroodSpawns = StorageUtil.GetIntValue(kPlayer, "_SLP_maxBroodSpawns" ) as Float
 
 	_togglePriestOutfits = StorageUtil.GetIntValue(none, "_SLP_togglePriestOutfits" )
+
+ 	; If (StorageUtil.GetIntValue(none, "_SLP_versionMCM" ) == 0) || (_resetTrigger<0.0)
+ 		_setParasiteSettings()
+ 	; Endif
 
 	If (a_page == "Parasites")
 
@@ -1348,8 +1348,9 @@ Function _setParasiteSettings()
 		StorageUtil.SetIntValue(kPlayer, "_SLP_toggleChaurusQueenBody", 0 )
 		StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceChaurusQueenBody", 100.0 ) 
 	Endif 
-	if (_maxBroodSpawns==-1.0)
+	if (_maxBroodSpawns==-1.0) || (StorageUtil.GetIntValue(kPlayer, "_SLP_maxBroodSpawns" ) == 0 )
 		StorageUtil.SetIntValue(kPlayer, "_SLP_maxBroodSpawns", 10 ) 
+		_maxBroodSpawns = 10
 	Endif
 
 

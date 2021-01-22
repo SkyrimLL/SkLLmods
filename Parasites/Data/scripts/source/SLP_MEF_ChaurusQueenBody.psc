@@ -3,6 +3,9 @@ Scriptname SLP_MEF_ChaurusQueenBody extends activemagiceffect
 SLP_fcts_parasites Property fctParasites  Auto
 Ingredient  Property ChaurusEgg Auto
   
+SPELL Property ChaurusSpit Auto
+SPELL Property ChaurusAcid Auto
+
 
 Event OnEffectStart(Actor Target, Actor Caster)
 	Actor kPlayer = Game.GetPlayer()
@@ -15,6 +18,11 @@ Event OnEffectStart(Actor Target, Actor Caster)
 		iChaurusSpawnCount = 6
 	; elseif (iChaurusEggsCount>0)
 	;	iChaurusSpawnCount = iChaurusEggsCount 
+	endif
+
+	if (!kPlayer.HasSpell( ChaurusSpit ))
+		kPlayer.AddSpell( ChaurusSpit )  
+		kPlayer.AddSpell( ChaurusAcid )  
 	endif
 
 	if (!fctParasites.isInfectedByString( kPlayer,  "ChaurusQueenBody" ))

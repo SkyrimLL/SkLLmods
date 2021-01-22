@@ -18,6 +18,8 @@ Event OnEffectStart(Actor Target, Actor Caster)
 	Actor thisActor
  	ObjectReference thisActorRef
 
+    SummonSoundFX.Play(kPlayer)
+
  	; debug.notification("[SLP] dismissChaurusSpawnList (" + valueCount + " actors)")
  	debug.trace("[SLP] dismissChaurusSpawnList (" + valueCount + " actors)")
 
