@@ -17,8 +17,13 @@ GlobalVariable Property NPCVictimActive  Auto
 Actor Property AliciaNPCVictim  Auto  
 
 SexLabFramework Property SexLab  Auto  
+
 ReferenceAlias Property Alias_Alicia  Auto  
 ReferenceAlias Property Alias_AliciaDaedric  Auto  
+
+ObjectReference Property AliciaRef  Auto  
+ObjectReference Property AliciaDaedricRef  Auto  
+
 
 Quest Property AliciaKeepClothesOnQuest Auto
 
@@ -43,7 +48,7 @@ Quest Property ControlQuest  Auto
 
 
 Function UpdateAliciaStats()
-	Actor AliciaActor= Alias_Alicia.GetReference() as Actor
+	Actor AliciaActor= AliciaRef as Actor
 
 	Int iAliciaCutCountValue = AliciaCutCount.Getvalue() as Int
 	Float  fAliciaCutCountValue = AliciaCutCount.Getvalue() as Float
@@ -102,8 +107,7 @@ Function UpdateAliciaStats()
 EndFunction
 
 Function CheckAliciaLust()
-	Actor AliciaActor= Alias_Alicia.GetReference() as Actor
-	ObjectReference AliciaRef = Alias_Alicia.GetReference()
+	Actor AliciaActor= AliciaRef as Actor
 
 	Int daysSinceLastVictim
 	Int AliciaLustValue = AliciaLustLevel.Getvalue() as Int
@@ -276,7 +280,7 @@ Function CheckAliciaLust()
 EndFunction
 
 Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
-	ObjectReference AliciaREF = Alias_Alicia.GetReference()
+
 	; Debug.Trace("Player went to sleep at: " + Utility.GameTimeToString(afSleepStartTime))
 	; Debug.Trace("Player wants to wake up at: " + Utility.GameTimeToString(afDesiredSleepEndTime))
 
@@ -294,8 +298,7 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 	EndIf
 endEvent
 
-Event OnSleepStop(bool abInterrupted)
-	ObjectReference AliciaREF = Alias_Alicia.GetReference()
+Event OnSleepStop(bool abInterrupted) 
 
 	if abInterrupted
 	    ; Debug.Trace("Player was woken by something!")
@@ -310,8 +313,7 @@ Event OnSleepStop(bool abInterrupted)
 	EndIf
 endEvent
 
-Event OnInit()
-	ObjectReference AliciaREF = Alias_Alicia.GetReference()
+Event OnInit() 
 	Actor AliciaActor= AliciaREF as Actor
 
 	AliciaActor.IgnoreFriendlyHits(true)
@@ -360,7 +362,7 @@ Event OnUnload()
 EndEvent
 
 Event OnCombatStateChanged(Actor akTarget, int aeCombatState)
-	Actor AliciaActor= Alias_Alicia.GetReference() as Actor
+	Actor AliciaActor= AliciaRef as Actor
 	Int AliciaLustValue = AliciaLustLevel.Getvalue() as Int
 	Int undressTrigger
 
@@ -451,7 +453,7 @@ Event OnCombatStateChanged(Actor akTarget, int aeCombatState)
 EndEvent
 
 Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile, bool abPowerAttack, bool abSneakAttack, bool abBashAttack, bool abHitBlocked)
-	Actor AliciaActor= Alias_Alicia.GetReference() as Actor
+	Actor AliciaActor= AliciaRef as Actor
 	Actor kPlayer = Game.GetPlayer()
 
 	Float GameDaysPassedValue = GameDaysPassed.Getvalue() as Float

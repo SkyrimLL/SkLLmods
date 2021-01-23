@@ -16,8 +16,12 @@ GlobalVariable Property NPCVictimDays  Auto
 GlobalVariable Property NPCVictimActive  Auto 
 
 SexLabFramework Property SexLab  Auto  
+
 ReferenceAlias Property Alias_Alicia  Auto  
 ReferenceAlias Property Alias_AliciaDaedric  Auto  
+
+ObjectReference Property AliciaRef  Auto  
+ObjectReference Property AliciaDaedricRef  Auto  
 
 Quest Property AliciaKeepClothesOnQuest Auto
 
@@ -41,7 +45,7 @@ Quest Property BackStoryQuest  Auto
 Quest Property ControlQuest  Auto  
 
 Function UpdateAliciaStats()
-	Actor AliciaActor= Alias_AliciaDaedric.GetReference() as Actor
+	Actor AliciaDaedricActor= AliciaDaedricRef as Actor
 
 	Int iAliciaCutCountValue = AliciaCutCount.Getvalue() as Int
 	Float  fAliciaCutCountValue = AliciaCutCount.Getvalue() as Float
@@ -53,17 +57,16 @@ Function UpdateAliciaStats()
 EndFunction
 
 Function CheckAliciaLust()
-	Actor AliciaActor= Alias_AliciaDaedric.GetReference() as Actor
-	ObjectReference AliciaRef = Alias_AliciaDaedric.GetReference()
+	Actor AliciaDaedricActor= AliciaDaedricRef as Actor
 
 	Int daysSinceLastVictim
 	Int AliciaLustValue = AliciaLustLevel.Getvalue() as Int
-	int avHealthLevel = ( AliciaActor.GetAVPercentage("Health") * 100) as Int
+	int avHealthLevel = ( AliciaDaedricActor.GetAVPercentage("Health") * 100) as Int
 	int sexTrigger = 150 - AliciaLustValue - (100 - avHealthLevel)
 	int daedricTrigger
 
-	If !(StorageUtil.HasIntValue(AliciaActor, "_SD_iRelationshipType"))
-		StorageUtil.SetIntValue(AliciaActor, "_SD_iRelationshipType" , -5 )
+	If !(StorageUtil.HasIntValue(AliciaDaedricActor, "_SD_iRelationshipType"))
+		StorageUtil.SetIntValue(AliciaDaedricActor, "_SD_iRelationshipType" , -5 )
 	EndIf		
 
 	; Disable orgasm effects when both Alicia and Ali are in Misty Grove
@@ -75,7 +78,7 @@ Function CheckAliciaLust()
 	; Debug.Notification( "Sex trigger:" + sexTrigger  )
 	; Debug.Notification( "." )
 
-	If ( (Utility.RandomInt(0,100)>sexTrigger) && (SexLab.ValidateActor(AliciaActor) > 0) )
+	If ( (Utility.RandomInt(0,100)>sexTrigger) && (SexLab.ValidateActor(AliciaDaedricActor) > 0) )
 		; Debug.Notification( "Alicia lust:"  + AliciaLustValue)
 
 		; Chance Alicia will turn back into her normal self on orgasm
@@ -90,12 +93,12 @@ Function CheckAliciaLust()
 		EndIf
 
 		Debug.Trace( "Alicia twin daedric trigger:"  + daedricTrigger)
-		If ((Utility.RandomInt(0,100)>daedricTrigger) && (!AliciaActor.IsInCombat()))
+		If ((Utility.RandomInt(0,100)>daedricTrigger) && (!AliciaDaedricActor.IsInCombat()))
 			; Release
 			AliciaLustLevel.Setvalue(AliciaLustValue - Utility.RandomInt(50,90))
 
 			; Debug.Notification( "Alicia slips away to Oblivion" )
-			AliciaDaedricChange.RemoteCast(AliciaREF , AliciaActor ,AliciaREF )
+			AliciaDaedricChange.RemoteCast(AliciaDaedricRef , AliciaDaedricActor ,AliciaDaedricRef )
 			return
 		Else
 			; Debug.Notification( "Alicia shudders... still here" )
@@ -104,60 +107,60 @@ Function CheckAliciaLust()
 		int randomNum = Utility.RandomInt(0,100)
 
 		If (randomNum >95)
-			AliciaActor.IgnoreFriendlyHits(false)
+			AliciaDaedricActor.IgnoreFriendlyHits(false)
 			
 		ElseIf (randomNum >90)
-			If  (SexLab.ValidateActor( SexLab.PlayerRef ) > 0) &&  (SexLab.ValidateActor(AliciaActor) > 0) 
+			If  (SexLab.ValidateActor( SexLab.PlayerRef ) > 0) &&  (SexLab.ValidateActor(AliciaDaedricActor) > 0) 
 				Debug.Notification( "Alicia pins you down..." )
 
-				SexLab.QuickStart(SexLab.PlayerRef, AliciaActor, Victim = SexLab.PlayerRef, AnimationTags = "Aggressive")
+				SexLab.QuickStart(SexLab.PlayerRef, AliciaDaedricActor, Victim = SexLab.PlayerRef, AnimationTags = "Aggressive")
 
 			EndIf
 
 			; Release
 			AliciaLustLevel.Setvalue(AliciaLustValue - Utility.RandomInt(20,40))
-			AliciaActor.IgnoreFriendlyHits(true)
+			AliciaDaedricActor.IgnoreFriendlyHits(true)
 
-		ElseIf (randomNum >80) && (AliciaActor.IsInCombat())
+		ElseIf (randomNum >80) && (AliciaDaedricActor.IsInCombat())
 			Debug.Notification( "Alicia cries out and goes on a rampage..." )
-			RaceOrcBerserk.RemoteCast(AliciaRef , AliciaActor ,AliciaRef )
+			RaceOrcBerserk.RemoteCast(AliciaDaedricRef , AliciaDaedricActor ,AliciaDaedricRef )
 
 			; Release
 			AliciaLustLevel.Setvalue(AliciaLustValue - Utility.RandomInt(50,90))
-			AliciaActor.IgnoreFriendlyHits(true)
+			AliciaDaedricActor.IgnoreFriendlyHits(true)
 
-		ElseIf (randomNum >70) && (AliciaActor.IsInCombat())
+		ElseIf (randomNum >70) && (AliciaDaedricActor.IsInCombat())
 			Debug.Notification( "Alicia's screams are terrifying" )
-			Hysteria.RemoteCast(AliciaRef , AliciaActor ,AliciaRef )
+			Hysteria.RemoteCast(AliciaDaedricRef , AliciaDaedricActor ,AliciaDaedricRef )
 
 			; Release
 			AliciaLustLevel.Setvalue(AliciaLustValue - Utility.RandomInt(50,90))
-			AliciaActor.IgnoreFriendlyHits(true)
+			AliciaDaedricActor.IgnoreFriendlyHits(true)
 
-		ElseIf (randomNum >60) && (AliciaActor.IsInCombat())
+		ElseIf (randomNum >60) && (AliciaDaedricActor.IsInCombat())
 			Debug.Notification( "Alicia's screams cause confusion and chaos around her" )
-			Mayhem.RemoteCast(AliciaRef , AliciaActor ,AliciaRef )
+			Mayhem.RemoteCast(AliciaDaedricRef , AliciaDaedricActor ,AliciaDaedricRef )
 
 			; Release
 			AliciaLustLevel.Setvalue(AliciaLustValue - Utility.RandomInt(50,90))
-			AliciaActor.IgnoreFriendlyHits(true)
+			AliciaDaedricActor.IgnoreFriendlyHits(true)
 
-		ElseIf (randomNum >50) && (AliciaActor.IsInCombat())
+		ElseIf (randomNum >50) && (AliciaDaedricActor.IsInCombat())
 			Debug.Notification( "Alicia's moans are awe inspiring..." )
-			Rally.RemoteCast(AliciaRef , AliciaActor ,AliciaRef )
+			Rally.RemoteCast(AliciaDaedricRef , AliciaDaedricActor ,AliciaDaedricRef )
 
 			; Release
 			AliciaLustLevel.Setvalue(AliciaLustValue - Utility.RandomInt(50,90))
-			AliciaActor.IgnoreFriendlyHits(true)
+			AliciaDaedricActor.IgnoreFriendlyHits(true)
 
 		ElseIf (randomNum >40)
 
 			if (Utility.RandomInt(0,100)>90)
-				If  (SexLab.ValidateActor(AliciaActor) > 0) 
+				If  (SexLab.ValidateActor(AliciaDaedricActor) > 0) 
 					Debug.Notification( "Alicia screams in ecstasy..." )
 
 					sslThreadModel Thread = SexLab.NewThread()
-					Thread.AddActor(AliciaActor) ; // IsVictim = true
+					Thread.AddActor(AliciaDaedricActor) ; // IsVictim = true
 					Thread.SetAnimations(SexLab.GetAnimationsByTags(1, "Solo,F","Estrus,Dwemer"))
 					Thread.StartThread()
 				EndIf
@@ -167,34 +170,34 @@ Function CheckAliciaLust()
 
 			; Release
 			AliciaLustLevel.Setvalue(AliciaLustValue - Utility.RandomInt(30,60))
-			AliciaActor.IgnoreFriendlyHits(true)
+			AliciaDaedricActor.IgnoreFriendlyHits(true)
 
 		Else
 			Debug.Notification( "Alicia shakes and cries out..." )
-			; Calm.RemoteCast(AliciaRef , AliciaActor ,AliciaRef )
+			; Calm.RemoteCast(AliciaDaedricRef , AliciaDaedricActor ,AliciaDaedricRef )
 
-			; AliciaActor.StopCombat()
+			; AliciaDaedricActor.StopCombat()
 
-			; Stagger.RemoteCast(AliciaRef , AliciaActor ,AliciaRef )
+			; Stagger.RemoteCast(AliciaDaedricRef , AliciaDaedricActor ,AliciaDaedricRef )
 
-			Debug.SendAnimationEvent(AliciaActor as ObjectReference, "bleedOutStart")
+			Debug.SendAnimationEvent(AliciaDaedricActor as ObjectReference, "bleedOutStart")
 			Utility.Wait(5)
-			Debug.SendAnimationEvent(AliciaActor as ObjectReference, "IdleForceDefaultState")
+			Debug.SendAnimationEvent(AliciaDaedricActor as ObjectReference, "IdleForceDefaultState")
 
 			; Attempt at bleedout effect - revisit later with solution for duration of bleedout
 			If (Utility.RandomInt(0,100)>30)
-				AliciaActor.SetAV("Health", Utility.RandomInt(5,10)) 
+				AliciaDaedricActor.SetAV("Health", Utility.RandomInt(5,10)) 
 			Else
-				; AliciaActor.SetAV("Health", 0) 
+				; AliciaDaedricActor.SetAV("Health", 0) 
 			EndIf
 
 			; Release
 			AliciaLustLevel.Setvalue(AliciaLustValue - Utility.RandomInt(50,90))
-			AliciaActor.IgnoreFriendlyHits(true)
+			AliciaDaedricActor.IgnoreFriendlyHits(true)
 
 		EndIf
 
-		SexLab.ApplyCum(AliciaActor, 1)
+		SexLab.ApplyCum(AliciaDaedricActor, 1)
 	Else
 		; Debug.Notification( "Ali lust:"  + AliciaLustValue)
 		; Debug.Notification( "Ali groans .. so close..." )
@@ -227,7 +230,6 @@ Function CheckAliciaLust()
 EndFunction
 
 Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
-	ObjectReference AliciaDaedricREF = Alias_Alicia.GetReference()
 	; Debug.Trace("Player went to sleep at: " + Utility.GameTimeToString(afSleepStartTime))
 	; Debug.Trace("Player wants to wake up at: " + Utility.GameTimeToString(afDesiredSleepEndTime))
 
@@ -247,7 +249,6 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 endEvent
 
 Event OnSleepStop(bool abInterrupted)
-	ObjectReference AliciaDaedricREF = Alias_Alicia.GetReference()
 
 	if abInterrupted
 	    ; Debug.Trace("Player was woken by something!")
@@ -258,19 +259,18 @@ Event OnSleepStop(bool abInterrupted)
 endEvent
 
 Event OnInit()
-	ObjectReference AliciaREF= Alias_AliciaDaedric.GetReference() 
-	Actor AliciaActor= AliciaREF as Actor
+	Actor AliciaDaedricActor= AliciaDaedricRef as Actor
 
-	AliciaActor.IgnoreFriendlyHits(true)
-	AliciaActor.AllowBleedoutDialogue(true)
-	AliciaActor.ForceAV("HealRate", 0.1)
-	AliciaActor.unequipall()
+	AliciaDaedricActor.IgnoreFriendlyHits(true)
+	AliciaDaedricActor.AllowBleedoutDialogue(true)
+	AliciaDaedricActor.ForceAV("HealRate", 0.1)
+	AliciaDaedricActor.unequipall()
 
 	AliciaDaedricInWorld.SetValue(0)
 
-	StorageUtil.SetIntValue(AliciaActor, "_SD_iCanBeStripped", -1)
+	StorageUtil.SetIntValue(AliciaDaedricActor, "_SD_iCanBeStripped", -1)
 
-	AliciaActor.SetAv("WaitingForPlayer", 1) 
+	AliciaDaedricActor.SetAv("WaitingForPlayer", 1) 
 	;follower will wait 3 days
 	Alias_AliciaDaedric.RegisterForUpdateGameTime(72)	
 
@@ -308,7 +308,7 @@ Event OnUnload()
 EndEvent
 
 Event OnCombatStateChanged(Actor akTarget, int aeCombatState)
-	Actor AliciaActor= Alias_AliciaDaedric.GetReference() as Actor
+	Actor AliciaDaedricActor= AliciaDaedricRef as Actor
 	Int AliciaLustValue = AliciaLustLevel.Getvalue() as Int
 
 	If (akTarget == Game.GetPlayer())
@@ -377,7 +377,7 @@ Event OnCombatStateChanged(Actor akTarget, int aeCombatState)
 EndEvent
 
 Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile, bool abPowerAttack, bool abSneakAttack, bool abBashAttack, bool abHitBlocked)
-	Actor AliciaActor= Alias_AliciaDaedric.GetReference() as Actor
+	Actor AliciaDaedricActor= AliciaDaedricRef as Actor
 	Actor kPlayer = Game.GetPlayer()
 
 	Float GameDaysPassedValue = GameDaysPassed.Getvalue() as Float
@@ -396,7 +396,7 @@ Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile,
 		  	; Debug.Trace("Magic effect was started on " + akTarget)
 			; StorageUtil.SetIntValue(Game.GetPlayer(), "Puppet_SpellON", 1)
 			StorageUtil.SetIntValue(kPlayer, "Puppet_CastTarget", 1)
-			StorageUtil.SetFormValue(kPlayer, "Puppet_NewTarget", AliciaActor)
+			StorageUtil.SetFormValue(kPlayer, "Puppet_NewTarget", AliciaDaedricActor)
 		endif
 		; SexLab Alicia: Use this to add bonus on friendly fire
 
@@ -407,7 +407,7 @@ Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile,
 		; Debug.Notification( "Alicia cuts count:"  + AliciaCutCountValue )
 
 		; Progression of Lust is slower when she wears armor
-		if  ((AliciaActor.WornHasKeyword(ClothKeyword)) || (AliciaActor.WornHasKeyword(ArmorKeyword)))
+		if  ((AliciaDaedricActor.WornHasKeyword(ClothKeyword)) || (AliciaDaedricActor.WornHasKeyword(ArmorKeyword)))
 			AliciaLustValueIncrement = AliciaLustValueIncrement / 2
 		EndIf
 
@@ -421,8 +421,8 @@ Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile,
 		EndIf
 
 		; Change of wake up if hit by Master
-		If ( (AliciaActor.IsUnconscious())  || (AliciaActor.IsBleedingOut()) ) && (Utility.RandomInt(0,100)>60)
-			AliciaActor.RestoreAV("Health", Utility.RandomInt(5,10)) 
+		If ( (AliciaDaedricActor.IsUnconscious())  || (AliciaDaedricActor.IsBleedingOut()) ) && (Utility.RandomInt(0,100)>60)
+			AliciaDaedricActor.RestoreAV("Health", Utility.RandomInt(5,10)) 
 		EndIf
 
  		; compare to previous day count - if difference >0 reduce number of cut counts
@@ -454,7 +454,7 @@ Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile,
 			; Variable increase in lust
 
 			; Progression of Lust is slower when she wears armor
-			if  ((AliciaActor.WornHasKeyword(ClothKeyword)) || (AliciaActor.WornHasKeyword(ArmorKeyword)))
+			if  ((AliciaDaedricActor.WornHasKeyword(ClothKeyword)) || (AliciaDaedricActor.WornHasKeyword(ArmorKeyword)))
 				AliciaLustLevel.Setvalue(AliciaLustValue + 1 )
 			Else
 				AliciaLustLevel.Setvalue(AliciaLustValue + 2 )

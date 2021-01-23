@@ -2,6 +2,7 @@ Scriptname Alicia_QF_Maintenance extends Quest
 
 Spell Property AliciaBanish Auto
 
+Quest Property AliciaController Auto
 Quest Property AliciaScenes Auto
 Quest Property AliciaDaedricScenes Auto
 Quest Property AliciaStory Auto
@@ -13,11 +14,12 @@ GlobalVariable Property AliciaInit  Auto
 
 GlobalVariable Property AliciaInWorld  Auto  
 GlobalVariable Property AliciaDaedricInWorld  Auto  
-
-Float fVersion
+ 
+Int iVersion
 
 Event OnInit()
-	Maintenance() ; OnPlayerLoadGame will not fire the first time
+; Maintenance() ; OnPlayerLoadGame will not fire the first time
+; Call for Init moved to new PlayerAlias script
 EndEvent
  
 Function Maintenance()
@@ -26,14 +28,15 @@ Function Maintenance()
 
 	ObjectReference AliciaRef = Alias_Alicia.GetReference()
 	Actor AliciaActor= AliciaRef as Actor
+ 
+	Debug.Trace("[Alicia] AliciaActor : " + AliciaActor)
+	Debug.Trace("[Alicia] AliciaDaedricActor : " + AliciaDaedricActor)
 
-	If (!StorageUtil.HasIntValue(none, "_SLA_iAlicia"))
-		StorageUtil.SetIntValue(none, "_SLA_iAlicia", 1)
-	EndIf
-	
-	If fVersion < 3.0 ; <--- Edit this value when updating
-		fVersion = 3.0 ; and this
-		Debug.Notification("Updating to SexLab Alicia Painslut version: " + fVersion)
+	If (iVersion != StorageUtil.GetIntValue(none, "_SLA_iAliciaVersion"))
+		iVersion = StorageUtil.GetIntValue(none, "_SLA_iAliciaVersion")
+
+		Debug.Notification("[Alicia] Updating to version : " + iVersion)
+		Debug.Trace("[Alicia] Alicia_QF_Maintenance - Updating to version : " + iVersion)
 		; Update Code
 
 		; Disabling Alicia if welcome already happened
@@ -81,6 +84,11 @@ Function Maintenance()
 			; Utility.Wait(0.6)
 			; AliciaDaedricScenes.Start()			
 		EndIf
+	else
+		iVersion = StorageUtil.GetIntValue(none, "_SLA_iAliciaVersion")
+
+		Debug.trace("[Alicia] Loading version : " + iVersion)
+
 	EndIf
 
 		; Start main story if not started
