@@ -45,7 +45,17 @@ Event OnTriggerEnter(ObjectReference akActionRef)
 
 
 		else
-			; DimensionalRiftDoorMarkerRef.disable()
+            SummonSoundFX.Play(kPlayer)
+
+   			Utility.wait(1.0)				
+				
+            SummonSoundFX.Play(kPlayer)
+
+			Debug.Messagebox("Without the chaurus armor and mask, you cannot understand what the Queen is trying to tell you.")
+
+   			Utility.wait(1.0)				
+				
+            SummonSoundFX.Play(kPlayer)
 		endif
  
 	EndIf
