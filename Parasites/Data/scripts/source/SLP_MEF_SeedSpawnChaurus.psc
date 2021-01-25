@@ -12,6 +12,7 @@ Ingredient  Property ChaurusEgg Auto
 Ingredient  Property SwampFungalPod01 Auto ; mind control spiders
 Ingredient  Property DwarvenOil Auto ; oil spiders
 Ingredient  Property FireflyThorax Auto ; glow spiders
+Ingredient  Property ChaurusParasiteEgg Auto
 
 SPELL Property ChaurusArmor Auto
 SPELL Property ChaurusMask Auto
@@ -28,6 +29,7 @@ Event OnEffectStart(Actor Target, Actor Caster)
  	Int iChaurusQueenStage = StorageUtil.GetIntValue(kPlayer, "_SLP_iChaurusQueenStage")
  	Int iChaurusSpawnCount
  	Int iChaurusEggsCount = kPlayer.GetItemCount(ChaurusEgg)
+ 	Int iChaurusParasiteEggsCount = 0
  	Int iChaurusSpawnListMax = StorageUtil.GetIntValue(kPlayer, "_SLP_maxBroodSpawns" )
 
  	if (iChaurusSpawnListMax<1)
@@ -38,6 +40,17 @@ Event OnEffectStart(Actor Target, Actor Caster)
 	if (!kPlayer.HasSpell( CallSpawns ))
 		kPlayer.AddSpell( CallSpawns ) 
 		kPlayer.AddSpell( DismissSpawns ) 
+	endif
+
+	If (StorageUtil.GetIntValue(none, "_SLS_isEstrusChaurusON") ==  1) 
+		ChaurusParasiteEgg = StorageUtil.GetFormValue(none, "_SLS_getEstrusChaurusParasiteEgg") as Ingredient
+		iChaurusParasiteEggsCount = kPlayer.GetItemCount(ChaurusParasiteEgg)
+
+		if (iChaurusParasiteEggsCount>0)
+			Debug.notification("[SLP] Estrus Chaurus parasite eggs detected") 
+			kPlayer.RemoveItem(ChaurusParasiteEgg, iChaurusParasiteEggsCount, false)
+			kPlayer.AddItem(ChaurusEgg, iChaurusParasiteEggsCount, false)
+		endif
 	endif
 
 	if (iChaurusEggsCount>5)

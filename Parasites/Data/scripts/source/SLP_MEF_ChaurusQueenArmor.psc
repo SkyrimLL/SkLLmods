@@ -2,7 +2,8 @@ Scriptname SLP_MEF_ChaurusQueenArmor extends activemagiceffect
 
 SLP_fcts_parasites Property fctParasites  Auto
 Ingredient  Property ChaurusEgg Auto
- 
+SPELL Property ChaurusAcid Auto
+
 Event OnEffectStart(Actor Target, Actor Caster)
 	Actor kPlayer = Game.GetPlayer()
  	Int iChaurusQueenStage = StorageUtil.GetIntValue(kPlayer, "_SLP_iChaurusQueenStage")
@@ -15,6 +16,9 @@ Event OnEffectStart(Actor Target, Actor Caster)
 	;	iChaurusSpawnCount = iChaurusEggsCount 
 	endif
 
+	if (!kPlayer.HasSpell( ChaurusAcid ))
+		kPlayer.AddSpell( ChaurusAcid )  
+	endif
 
 	if (!fctParasites.isInfectedByString( kPlayer,  "ChaurusQueenArmor" ))
 

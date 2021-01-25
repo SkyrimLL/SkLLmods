@@ -174,6 +174,8 @@ Function _maintenance()
 			debug.trace("[SLP] 'EstrusChaurus.esp' detected")
 			StorageUtil.SetIntValue(none, "_SLS_isEstrusChaurusON",  1) 
 			StorageUtil.SetFormValue(none, "_SLS_getEstrusChaurusBreederSpell",  Game.GetFormFromFile(0x00019121, modName)) ; as Spell
+			StorageUtil.SetFormValue(none, "_SLS_getEstrusChaurusParasiteEgg",  Game.GetFormFromFile(0x0000EA27, modName)) ; as Ingredient
+			debug.trace("[SLP] 		Chaurus Parasite Eggs: " + Game.GetFormFromFile(0x0000EA27, modName))
 
 		elseif modName == "BeeingFemale.esm"
 			debug.trace("[SLP] 'BeeingFemale.esm' detected")

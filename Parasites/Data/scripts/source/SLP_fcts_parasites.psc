@@ -2408,14 +2408,19 @@ Function cleanChaurusSpawnList()
 	while(i < valueCount)
 		thisActorForm = StorageUtil.FormListGet(none, "_SLP_lChaurusSpawnsList", i)
 
-		Debug.Trace("	Actor [" + i + "] = "+ thisActorForm +" - " + thisActorForm.GetName())
+		if (thisActorForm==None)
+			Debug.Trace("	Actor [" + i + "] = "+ thisActorForm )
+		else
+			Debug.Trace("	Actor [" + i + "] = "+ thisActorForm +" - " + thisActorForm.GetName())
 
-		thisActor = thisActorForm as Actor
-		thisActorRef = thisActor as ObjectReference
+			thisActor = thisActorForm as Actor
+			thisActorRef = thisActor as ObjectReference
 
-		if (thisActor.IsDead()) || (thisActorRef.IsDisabled())
-			StorageUtil.FormListSet(none, "_SLP_lChaurusSpawnsList", i, None)
+			if (thisActor.IsDead()) || (thisActorRef.IsDisabled())
+				StorageUtil.FormListSet(none, "_SLP_lChaurusSpawnsList", i, None)
+			endif
 		endif
+
 
 		; if (StorageUtil.FormListFind( kActor, "_SD_lActivePunishmentDevices", kwDeviceKeyword as Form) <0)
 		;	StorageUtil.FormListAdd( kActor, "_SD_lActivePunishmentDevices", kwDeviceKeyword as Form )
