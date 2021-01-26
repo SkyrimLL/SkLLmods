@@ -64,6 +64,7 @@ bool		_toggleChaurusQueenBody = true
 float		_chanceChaurusQueenBody = -1.0
 float		_bellyMaxChaurusQueen = -1.0
 float		_maxBroodSpawns = -1.0
+bool		_autoRemoveDragonWings = false
 
 bool		_toggleRefreshAll = false
 bool		_toggleClearAll = false
@@ -268,6 +269,8 @@ event OnPageReset(string a_page)
 			AddToggleOptionST("STATE_CHAURUSQUEENBODY_TOGGLE","Infect/Cure Chaurus Queen Full Body", _toggleChaurusQueenBody as Float)
 			AddSliderOptionST("STATE_CHAURUSQUEEN_BELLY","Max belly size (Chaurus Queen)", _bellyMaxChaurusQueen,"{1}")
 			AddSliderOptionST("STATE_MAX_BROODSPAWNS","Brood size", _maxBroodSpawns ,"{1}")
+			AddToggleOptionST("STATE_AUTO_REMOVE_WINGS","Auto Remove Wings", _autoRemoveDragonWings as Float)
+
 		else
 			AddToggleOptionST("STATE_CHAURUSQUEENVAG_TOGGLE","Infect/Cure Vaginal Chaurus Queen", _toggleChaurusQueenVag as Float, OPTION_FLAG_DISABLED)
 			AddToggleOptionST("STATE_CHAURUSQUEENGAG_TOGGLE","Infect/Cure Chaurus Queen Mask", _toggleChaurusQueenGag as Float, OPTION_FLAG_DISABLED)
@@ -276,10 +279,23 @@ event OnPageReset(string a_page)
 			AddToggleOptionST("STATE_CHAURUSQUEENBODY_TOGGLE","Infect/Cure Chaurus Queen Full Body", _toggleChaurusQueenBody as Float, OPTION_FLAG_DISABLED)
 			AddSliderOptionST("STATE_CHAURUSQUEEN_BELLY","Max belly size (Chaurus Queen)", _bellyMaxChaurusQueen,"{1}", OPTION_FLAG_DISABLED)
 			AddSliderOptionST("STATE_MAX_BROODSPAWNS","Brood size", _maxBroodSpawns ,"{1}", OPTION_FLAG_DISABLED)
+			AddToggleOptionST("STATE_AUTO_REMOVE_WINGS","Auto Remove Wings", _autoRemoveDragonWings as Float, OPTION_FLAG_DISABLED)
 		endif
 
 		AddTextOption("     Chaurus Queen Stage: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iChaurusQueenStage") as Int, "", OPTION_FLAG_DISABLED)
 		AddTextOption("     Days since start: " + (Game.QueryStat("Days Passed") - StorageUtil.GetIntValue(kPlayer, "_SLP_iChaurusQueenDate")) as Int, "", OPTION_FLAG_DISABLED)
+
+		if (StorageUtil.GetIntValue(none, "_SLP_isAnimatedDragonWings") ==  1) 
+			AddTextOption("     Animated Dragon Wings detected", "", OPTION_FLAG_DISABLED)
+		endif
+
+		if (StorageUtil.GetIntValue(none, "_SLP_isRealFlying") ==  1) 
+			AddTextOption("     Real Flying detected", "", OPTION_FLAG_DISABLED)
+		endif
+
+		if (StorageUtil.GetIntValue(none, "_SLP_isAnimatedWingsUltimate") ==  1) 
+			AddTextOption("     Animated Wings Ultimate detected", "", OPTION_FLAG_DISABLED)
+		endif
 
 	endIf
 endEvent
@@ -1174,6 +1190,29 @@ state STATE_MAX_BROODSPAWNS ; SLIDER
 		SetInfoText("Max number of spawns in your Brood. Adjust depending on your memory and script lag.")
 	endEvent
 endState
+
+; AddToggleOptionST("STATE_AUTO_REMOVE_WINGS","Clear equiped wings", _autoRemoveDragonWings, OPTION_FLAG_DISABLED)
+state STATE_AUTO_REMOVE_WINGS ; TOGGLE
+	event OnSelectST() 
+		Int toggle = Math.LogicalXor( 1,  StorageUtil.GetIntValue(none, "_SLP_autoRemoveWings" )  )  
+		_autoRemoveDragonWings = toggle
+		StorageUtil.SetIntValue(none, "_SLP_autoRemoveWings", _autoRemoveDragonWings as Int )
+		SetToggleOptionValueST( toggle as Bool ) 
+		ForcePageReset()
+	endEvent
+
+	event OnDefaultST()
+		StorageUtil.SetIntValue(none, "_SLP_autoRemoveWings", 0 )
+		SetToggleOptionValueST( false )
+		ForcePageReset()
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Automatically remove equipped wings when removing the Queen Body if a compatible mod is detected (unchecked means the wings will remain equipped after the Queen Body is removed).")
+	endEvent
+endState
+
+
 
 ; AddToggleOptionST("STATE_REFRESH_ALL","Refresh equipped parasites", _toggleRefreshAll, OPTION_FLAG_DISABLED)
 state STATE_REFRESH_ALL ; TOGGLE

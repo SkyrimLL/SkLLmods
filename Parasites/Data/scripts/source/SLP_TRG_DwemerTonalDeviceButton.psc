@@ -33,7 +33,9 @@ Event OnActivate(ObjectReference akActionRef)
     	endif
 
     	if (dunBlackreachDragonQST.GetStageDone(10))
-    		
+            ; Unused for now
+        endif		
+
     	dunBlackreachDragonQST.SetStage(10)
 
     	DwemerTonalDeviceEffectsRef.disable()

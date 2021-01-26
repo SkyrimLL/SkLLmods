@@ -27,9 +27,15 @@ endSTATE
 ;==============================================
 
 FUNCTION stageHandling()
-	If (MyQuest.GetStage() == preReqStage || preReqStage == -1)
+	;If (MyQuest.GetStage() == preReqStage || preReqStage == -1)
 		; utility.wait(0.1)
-		MyQuest.SetStage(StageToSet)	
+	;	MyQuest.SetStage(StageToSet)	
+	;	gotoState("Done")
+	;Endif	
+
+	if (MyQuest.GetStageDone(preReqStage)) && (!MyQuest.GetStageDone(StageToSet)) 
+		MyQuest.SetStage(StageToSet)
 		gotoState("Done")
-	Endif	
+	endif
+
 endFUNCTION
