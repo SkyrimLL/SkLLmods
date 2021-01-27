@@ -215,9 +215,9 @@ Function _maintenance()
 		elseif modName == "Animated Wings Ultimate.esp"
 			debug.trace("[SLP] 'Animated Wings Ultimate.esp' detected")
 			StorageUtil.SetIntValue(none, "_SLP_isAnimatedWingsUltimate",  1) 
-			debug.trace("[SLP] 		Animated Wings Ultimate Potion: " + Game.GetFormFromFile(0x00000CA1, modName))
+			debug.trace("[SLP] 		Animated Wings Ultimate Potion: " + Game.GetFormFromFile(0x00000CA2, modName))
 			debug.trace("[SLP] 		Animated Wings Ultimate Cure Potion: " + Game.GetFormFromFile(0x00000B21, modName))
-			StorageUtil.SetFormValue(none, "_SLS_getAnimatedWingsUltimatePotion",  Game.GetFormFromFile(0x00000CA1, modName))  
+			StorageUtil.SetFormValue(none, "_SLS_getAnimatedWingsUltimatePotion",  Game.GetFormFromFile(0x00000CA2, modName))  
 			StorageUtil.SetFormValue(none, "_SLS_getAnimatedWingsUltimateCurePotion",  Game.GetFormFromFile(0x00000B21, modName))  
 		endif
 	endWhile
