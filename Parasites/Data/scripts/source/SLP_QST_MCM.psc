@@ -52,6 +52,7 @@ float		_bellyMaxFaceHugger = 1.0
 bool		_toggleBarnacles = true
 float		_chanceBarnacles = -1.0 
 
+bool		_toggleChaurusQueenDebug = false
 bool		_toggleChaurusQueenVag = true
 float		_chanceChaurusQueenVag = -1.0
 bool		_toggleChaurusQueenGag = true
@@ -171,6 +172,7 @@ event OnPageReset(string a_page)
 	_toggleBarnacles = StorageUtil.GetIntValue(kPlayer, "_SLP_toggleBarnacles" )
 	_chanceBarnacles = StorageUtil.GetFloatValue(kPlayer, "_SLP_chanceBarnacles" ) 
 
+	_toggleChaurusQueenDebug = StorageUtil.GetIntValue(kPlayer, "_SLP_toggleChaurusQueenDebug" )
 	_toggleChaurusQueenVag = StorageUtil.GetIntValue(kPlayer, "_SLP_toggleChaurusQueenVag" )
 	_chanceChaurusQueenVag = StorageUtil.GetFloatValue(kPlayer, "_SLP_chanceChaurusQueenVag" )
 	_toggleChaurusQueenGag = StorageUtil.GetIntValue(kPlayer, "_SLP_toggleChaurusQueenGag" )
@@ -260,24 +262,40 @@ event OnPageReset(string a_page)
 		AddTextOption("     Lastelle Eggs: " + _SLP_GV_numChaurusEggsLastelle.GetValue() as Int, "", OPTION_FLAG_DISABLED)
 
 		AddHeaderOption(" Chaurus Queen ")
+		AddToggleOptionST("STATE_CHAURUSQUEENDEBUG_TOGGLE","Unlock Chaurus Queen items", _toggleChaurusQueenDebug as Float)
 
-		if (StorageUtil.GetIntValue(kPlayer, "_SLP_iChaurusQueenStage")>=0)
-			AddToggleOptionST("STATE_CHAURUSQUEENVAG_TOGGLE","Infect/Cure Vaginal Chaurus Queen", _toggleChaurusQueenVag as Float)
-			AddToggleOptionST("STATE_CHAURUSQUEENGAG_TOGGLE","Infect/Cure Chaurus Queen Mask", _toggleChaurusQueenGag as Float)
-			AddToggleOptionST("STATE_CHAURUSQUEENSKIN_TOGGLE","Infect/Cure Chaurus Queen Skin", _toggleChaurusQueenSkin as Float)
-			AddToggleOptionST("STATE_CHAURUSQUEENARMOR_TOGGLE","Infect/Cure Chaurus Queen Armor", _toggleChaurusQueenArmor as Float)
-			AddToggleOptionST("STATE_CHAURUSQUEENBODY_TOGGLE","Infect/Cure Chaurus Queen Full Body", _toggleChaurusQueenBody as Float)
+
+		Int iChaurusQueenStage = StorageUtil.GetIntValue(kPlayer, "_SLP_iChaurusQueenStage")
+		
+		if (_toggleChaurusQueenDebug) || (iChaurusQueenStage>0)
 			AddSliderOptionST("STATE_CHAURUSQUEEN_BELLY","Max belly size (Chaurus Queen)", _bellyMaxChaurusQueen,"{1}")
+			AddToggleOptionST("STATE_CHAURUSQUEENVAG_TOGGLE","Infect/Cure Vaginal Chaurus Queen", _toggleChaurusQueenVag as Float)
+		else
+			AddSliderOptionST("STATE_CHAURUSQUEEN_BELLY","Max belly size (Chaurus Queen)", _bellyMaxChaurusQueen,"{1}", OPTION_FLAG_DISABLED)
+			AddToggleOptionST("STATE_CHAURUSQUEENVAG_TOGGLE","Infect/Cure Vaginal Chaurus Queen", _toggleChaurusQueenVag as Float, OPTION_FLAG_DISABLED)
+		endif
+
+		if (_toggleChaurusQueenDebug) || (iChaurusQueenStage>=3)
+			AddToggleOptionST("STATE_CHAURUSQUEENSKIN_TOGGLE","Infect/Cure Chaurus Queen Skin", _toggleChaurusQueenSkin as Float)
+		else
+			AddToggleOptionST("STATE_CHAURUSQUEENSKIN_TOGGLE","Infect/Cure Chaurus Queen Skin", _toggleChaurusQueenSkin as Float, OPTION_FLAG_DISABLED)
+		endif
+
+		if (_toggleChaurusQueenDebug) || (iChaurusQueenStage>=4)
+			AddToggleOptionST("STATE_CHAURUSQUEENGAG_TOGGLE","Infect/Cure Chaurus Queen Mask", _toggleChaurusQueenGag as Float)
+			AddToggleOptionST("STATE_CHAURUSQUEENARMOR_TOGGLE","Infect/Cure Chaurus Queen Armor", _toggleChaurusQueenArmor as Float)
+		else
+			AddToggleOptionST("STATE_CHAURUSQUEENGAG_TOGGLE","Infect/Cure Chaurus Queen Mask", _toggleChaurusQueenGag as Float, OPTION_FLAG_DISABLED)
+			AddToggleOptionST("STATE_CHAURUSQUEENARMOR_TOGGLE","Infect/Cure Chaurus Queen Armor", _toggleChaurusQueenArmor as Float, OPTION_FLAG_DISABLED)
+		endif
+
+
+		if (_toggleChaurusQueenDebug) || (iChaurusQueenStage>=5)
+			AddToggleOptionST("STATE_CHAURUSQUEENBODY_TOGGLE","Infect/Cure Chaurus Queen Full Body", _toggleChaurusQueenBody as Float)
 			AddSliderOptionST("STATE_MAX_BROODSPAWNS","Brood size", _maxBroodSpawns ,"{1}")
 			AddToggleOptionST("STATE_AUTO_REMOVE_WINGS","Auto Remove Wings", _autoRemoveDragonWings as Float)
-
 		else
-			AddToggleOptionST("STATE_CHAURUSQUEENVAG_TOGGLE","Infect/Cure Vaginal Chaurus Queen", _toggleChaurusQueenVag as Float, OPTION_FLAG_DISABLED)
-			AddToggleOptionST("STATE_CHAURUSQUEENGAG_TOGGLE","Infect/Cure Chaurus Queen Mask", _toggleChaurusQueenGag as Float, OPTION_FLAG_DISABLED)
-			AddToggleOptionST("STATE_CHAURUSQUEENSKIN_TOGGLE","Infect/Cure Chaurus Queen Skin", _toggleChaurusQueenSkin as Float, OPTION_FLAG_DISABLED)
-			AddToggleOptionST("STATE_CHAURUSQUEENARMOR_TOGGLE","Infect/Cure Chaurus Queen Armor", _toggleChaurusQueenArmor as Float, OPTION_FLAG_DISABLED)
 			AddToggleOptionST("STATE_CHAURUSQUEENBODY_TOGGLE","Infect/Cure Chaurus Queen Full Body", _toggleChaurusQueenBody as Float, OPTION_FLAG_DISABLED)
-			AddSliderOptionST("STATE_CHAURUSQUEEN_BELLY","Max belly size (Chaurus Queen)", _bellyMaxChaurusQueen,"{1}", OPTION_FLAG_DISABLED)
 			AddSliderOptionST("STATE_MAX_BROODSPAWNS","Brood size", _maxBroodSpawns ,"{1}", OPTION_FLAG_DISABLED)
 			AddToggleOptionST("STATE_AUTO_REMOVE_WINGS","Auto Remove Wings", _autoRemoveDragonWings as Float, OPTION_FLAG_DISABLED)
 		endif
@@ -986,6 +1004,35 @@ state STATE_BARNACLES_CHANCE ; SLIDER
 		SetInfoText("Chance of attacks by Barnacles")
 	endEvent
 endState
+
+; AddToggleOptionST("STATE_CHAURUSQUEENDEBUG_TOGGLE","Chaurus Queen Debug override", _toggleChaurusQueenDebug as Float, OPTION_FLAG_DISABLED)
+state STATE_CHAURUSQUEENDEBUG_TOGGLE ; TOGGLE
+	event OnSelectST() 
+		Int toggle = Math.LogicalXor( 1, StorageUtil.GetIntValue(kPlayer, "_SLP_toggleChaurusQueenDebug" )   )
+		StorageUtil.SetIntValue(kPlayer, "_SLP_toggleChaurusQueenDebug", toggle as Int )
+
+		If (toggle ==1)
+			Debug.MessageBox("The options to manually add or remove the Queen of Churus armor elements should be used for testing purposes only. They may break the main quest if you use them too early.") 
+		else
+			Debug.MessageBox("Chaurus Queen Debug override is disabled") 
+		Endif
+
+		SetToggleOptionValueST( toggle as Bool )
+		ForcePageReset()
+	endEvent
+
+	event OnDefaultST()
+		StorageUtil.SetIntValue(kPlayer, "_SLP_toggleChaurusQueenDebug", 1 )
+		SetToggleOptionValueST( true )
+		ForcePageReset()
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Overrides the quest based locks of various armor elements for the Queen of Chaurus. Use only for testing purposes as activating the armor elements too eary may break the quest.")
+	endEvent
+
+endState
+
 
 ; AddToggleOptionST("STATE_CHAURUSQUEENVAG_TOGGLE","Chaurus Queen Vaginal", _toggleChaurusQueenVag as Float, OPTION_FLAG_DISABLED)
 state STATE_CHAURUSQUEENVAG_TOGGLE ; TOGGLE
