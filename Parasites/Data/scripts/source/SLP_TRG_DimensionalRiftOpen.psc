@@ -2,6 +2,8 @@ Scriptname SLP_TRG_DimensionalRiftOpen extends ObjectReference
 
 ObjectReference Property DimensionalRiftDoorMarkerRef  Auto  
 
+ObjectReference Property DimensionalRiftQueenMarkerRef  Auto  
+
 SLP_fcts_parasites Property fctParasites  Auto
 
 Quest Property QueenOfChaurusQuest  Auto 
@@ -41,6 +43,7 @@ Event OnTriggerEnter(ObjectReference akActionRef)
 		elseif (QueenOfChaurusQuest.GetStageDone(400)==1)
 
 			DimensionalRiftDoorMarkerRef.disable()
+			DimensionalRiftQueenMarkerRef.Disable()
 
 			Debug.notification("The Rift seems to be closed for good.")
 

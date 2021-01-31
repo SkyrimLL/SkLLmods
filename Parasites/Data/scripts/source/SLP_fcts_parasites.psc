@@ -2629,8 +2629,10 @@ Bool Function tryParasiteNextStage(Actor kActor, String sParasite)
 				If (!isInfectedByString( kActor,  "ChaurusQueenVag" )) && (Utility.RandomInt(0,100)<60)
 					debug.trace("[SLP]    Effect - add Chaurus Queen Vag")
 					if (iChaurusQueenStage==1)
+						; First time: stage = 1
 						debug.MessageBox("The Seed stirs through your womb and extends a tentacle between your legs.")
 					else
+						; Stage >= 2
 						debug.Notification("The Seed stirs through your womb and extends a tentacle between your legs.")
 					endif
 					infectChaurusQueenVag( kActor  ) 
@@ -2647,8 +2649,10 @@ Bool Function tryParasiteNextStage(Actor kActor, String sParasite)
 				If (!isInfectedByString( kActor,  "ChaurusQueenSkin" )) && (Utility.RandomInt(0,100)<80) && (iChaurusQueenStage>=2)
 					debug.trace("[SLP]    Effect - add Chaurus Queen Skin")
 					if (iChaurusQueenStage==2)
+						; First time: stage = 2
 						debug.MessageBox("The Seed flares up through your skin and your breasts.")
 					else
+						; Stage >= 3
 						debug.Notification("The Seed flares up through your skin and your breasts.")
 					endif
 					infectChaurusQueenSkin( kActor  )

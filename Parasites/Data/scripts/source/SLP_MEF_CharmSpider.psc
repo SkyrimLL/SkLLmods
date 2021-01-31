@@ -16,7 +16,7 @@ Event OnEffectStart(Actor Target, Actor Caster)
 	Actor kPlayer = Game.GetPlayer()
  	Int iChaurusQueenStage = StorageUtil.GetIntValue(kPlayer, "_SLP_iChaurusQueenStage")
 
- 	if (iChaurusQueenStage==3) && (!kPlayer.HasSpell( _SLP_SP_SeedSpiderBreeding ))
+ 	if (iChaurusQueenStage>=3) && (!kPlayer.HasSpell( _SLP_SP_SeedSpiderBreeding ))
  		kPlayer.AddSpell( _SLP_SP_SeedTrack )
  		kPlayer.AddSpell( _SLP_SP_SeedCalm )
  		kPlayer.AddSpell( _SLP_SP_SeedSpiderBreeding )

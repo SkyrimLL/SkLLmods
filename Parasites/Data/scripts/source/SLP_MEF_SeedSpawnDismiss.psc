@@ -53,6 +53,7 @@ EndEvent
 Function dismissChaurusSpawn(ObjectReference ChaurusSpawnRef)
     ObjectReference akSummoner = Game.getPlayer()  as ObjectReference
     ObjectReference arPortal = None
+    Actor kChaurusSpawn = ChaurusSpawnRef as Actor
 
     Float afDistance = 150.0
     Float afZOffset = 0.0
@@ -71,6 +72,7 @@ Function dismissChaurusSpawn(ObjectReference ChaurusSpawnRef)
                 ; arPortal = akSummoner.PlaceAtMe(Game.GetFormFromFile(0x000EBEB5, "Skyrim.ESM")) ; FXNecroTendrilRing 
                 ; arPortal = akSummoner.PlaceAtMe(Game.GetFormFromFile(0x0010D6EF, "Skyrim.ESM")) ; DefaultAshPileGhostBlack 
         ElseIf aiStage == 2 ; Disable Summon
+                kChaurusSpawn.Kill()  
                 ChaurusSpawnRef.Disable()  
 
         ElseIf aiStage == 3 ; Move portal in front of summoner
@@ -80,6 +82,7 @@ Function dismissChaurusSpawn(ObjectReference ChaurusSpawnRef)
                 ChaurusSpawnRef.MoveTo(arPortal)
 
         ElseIf (aiStage == 5)
+                kChaurusSpawn.Resurrect()
                 ChaurusSpawnRef.Enable()
                 arPortal.disable()
 
