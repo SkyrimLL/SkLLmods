@@ -1,7 +1,12 @@
 ### RELEASE NOTES for milestone [Parasites 2021-01-31](https://github.com/SkyrimLL/SkLLmods/milestone/80?closed=1) 
 **Enhancements:** 
+- [Adjusted navmesh around large crystals at Lastelle's camp](https://github.com/SkyrimLL/SkLLmods/issues/1016)
+- [Sleep by campfire to force Lastelle to return to camp](https://github.com/SkyrimLL/SkLLmods/issues/1015)
+- [Prevent Lastelle from wandering off](https://github.com/SkyrimLL/SkLLmods/issues/1014)
+- [Add chaurus reaper pheromones potion](https://github.com/SkyrimLL/SkLLmods/issues/1013)
 - [Add MCM option to unlock manual toggles of Chaurus Queen armors](https://github.com/SkyrimLL/SkLLmods/issues/1005)
 - [Add MCM option to automatically remove wings with Chaurus Queen Body armor](https://github.com/SkyrimLL/SkLLmods/issues/1003)
+- [Add support for Animated Wings Ultimate](https://github.com/SkyrimLL/SkLLmods/issues/1002)
 - [Add detection of Parasite Eggs from Estrus Chaurus](https://github.com/SkyrimLL/SkLLmods/issues/1000)
 - [Added random spider cocoon to Digestive Acid spell](https://github.com/SkyrimLL/SkLLmods/issues/999)
 - [Moved Digestive Acid effect to Spider stage of Chaurus Queen transformation](https://github.com/SkyrimLL/SkLLmods/issues/998)
@@ -24,6 +29,12 @@
 - [Move chaurus queen from Stories into Parasites](https://github.com/SkyrimLL/SkLLmods/issues/547)
 
 **Bug Fixes:** 
+- [Disable or kill Brood spawns when not in use](https://github.com/SkyrimLL/SkLLmods/issues/1018)
+- [Chaurus ignore pheromone if they are already friendly with the player](https://github.com/SkyrimLL/SkLLmods/issues/1012)
+- [Lastelle doesn't accept a chaurus/stud follower](https://github.com/SkyrimLL/SkLLmods/issues/1011)
+- [Chaurus spawns appear in LAL starting cell](https://github.com/SkyrimLL/SkLLmods/issues/1008)
+- [Bad condition for racial checks in Chaurus Pheromone effect](https://github.com/SkyrimLL/SkLLmods/issues/1007)
+- [Chaurus followers appear at game creation time](https://github.com/SkyrimLL/SkLLmods/issues/1006)
 - [(Parasites) Reading Sinderion's Field Notes skips quest stages](https://github.com/SkyrimLL/SkLLmods/issues/989)
 - [Asking Danica to cure a parasite should trigger a scene with her and not a solo scene](https://github.com/SkyrimLL/SkLLmods/issues/970)
 - [MCM option shouldn't update if Parasites fails to equip ](https://github.com/SkyrimLL/SkLLmods/issues/969)
