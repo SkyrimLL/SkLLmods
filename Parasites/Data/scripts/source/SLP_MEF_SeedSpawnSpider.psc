@@ -19,10 +19,12 @@ Ingredient  Property SmallSpiderEgg Auto
 Ingredient  Property FireSalts Auto ; fire cloak spiders
 Ingredient  Property FrostSalts Auto ; frost cloak spiders
 Ingredient  Property VoidSalts Auto ; shock spiders
-Ingredient  Property DeathBell Auto ; poison spiders
-Ingredient  Property SwampFungalPod01 Auto ; mind control spiders
-Ingredient  Property DwarvenOil Auto ; oil spiders
-Ingredient  Property FireflyThorax Auto ; glow spiders
+Ingredient  Property DeathBell Auto ; poison spiders - replaced by Salt Piles
+
+Ingredient  Property SwampFungalPod01 Auto ; mind control spiders - moved to Chaurus Spawn
+Ingredient  Property DwarvenOil Auto ; oil spiders - moved to Chaurus Spawn
+Ingredient  Property FireflyThorax Auto ; glow spiders - moved to Chaurus Spawn
+
 
 Event OnEffectStart(Actor Target, Actor Caster)
 	Actor kPlayer = Game.GetPlayer()
