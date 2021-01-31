@@ -29,7 +29,7 @@ Event OnEffectStart(Actor Target, Actor Caster)
 		QueenOfChaurusQuest.SetStage(350)
 	endif
 
-    ;   Debug.Messagebox(" Chaurus Pheromone charm spell started")    
+    ; Debug.Messagebox(" Chaurus Pheromone charm spell started")    
     Target.StopCombat()   
 	ChaurusFollowerAlias.ForceRefTo(Target as objectReference)
 	SLP_numCharmChaurus.Mod(1.0)

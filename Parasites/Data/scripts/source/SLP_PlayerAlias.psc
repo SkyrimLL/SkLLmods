@@ -1766,6 +1766,8 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 		PlayerActor.SendModEvent("SLHModHormone", "Pheromones", 10.0 + Utility.RandomFloat(0.0,20.0))
 	endif 
 
+	; Bring Lastelle where she belongs if needed
+	fctParasites.resetLastellePosition()
 EndEvent
 
 Event OnSleepStop(bool abInterrupted)

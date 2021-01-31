@@ -19,6 +19,8 @@ Quest Property KynesBlessingQuest  Auto
 Quest Property QueenOfChaurusQuest  Auto 
 
 ObjectReference Property DummyAlias  Auto  
+ObjectReference Property LastelleRef  Auto  
+ObjectReference Property LastelleCampOutside  Auto  
 
 Sound Property SummonSoundFX  Auto
 
@@ -2750,6 +2752,17 @@ Function tryPlayerChaurusStage()
 	 	endif 	
 	endif
 EndFunction
+;------------------------------------------------------------------------------
+; Special function to keep Lastelle from wandering
+Function resetLastellePosition()
+	if (QueenOfChaurusQuest.GetStageDone(30)) && (!QueenOfChaurusQuest.GetStageDone(65))
+		Actor kLastelle = LastelleRef as Actor
+
+		debug.trace("[SLP] Lastelle came back while you were sleeping...")
+		LastelleRef.moveto(LastelleCampOutside)
+		kLastelle.EvaluatePackage()
+	endif
+Endfunction
 ;------------------------------------------------------------------------------
 Function refreshParasite(Actor kActor, String sParasite)
 

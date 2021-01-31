@@ -176,8 +176,8 @@ Event OnPlayerBroodMaiden(String _eventName, String _args, Float _argc = -1.0, F
 	PlayerActor.RemoveAllItems(akTransferTo = SLP_PlayerBroodMaidenStorage, abKeepOwnership = True)
 
 	pActorBase.SetWeight(0.0) 
-	fctParasites.infectEstrusTentacles( LastelleActor   )
-	fctParasites.infectEstrusChaurusEgg( LastelleActor )
+	; fctParasites.infectEstrusTentacles( LastelleActor   )
+	; fctParasites.infectEstrusChaurusEgg( LastelleActor )
 	; fctParasites.infectChaurusWormVag( LastelleActor   )
 
 	SLP_PlayerChaurusQueenQuest.SetStage(20)
