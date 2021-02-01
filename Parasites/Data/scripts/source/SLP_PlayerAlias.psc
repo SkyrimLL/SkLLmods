@@ -103,9 +103,9 @@ Function _maintenance()
 
 	UnregisterForAllModEvents()
 	Debug.Trace("SexLab Parasites: Reset SexLab events")
-	RegisterForModEvent("AnimationStart", "OnSexLabStart")
-	RegisterForModEvent("AnimationEnd",   "OnSexLabEnd")
-	RegisterForModEvent("OrgasmStart",    "OnSexLabOrgasm")
+	RegisterForModEvent("HookAnimationStart", "OnSexLabStart")
+	RegisterForModEvent("HookAnimationEnd",   "OnSexLabEnd")
+	RegisterForModEvent("HookOrgasmStart",    "OnSexLabOrgasm")
  	RegisterForModEvent("SexLabOrgasmSeparate",    "OnSexLabOrgasmSeparate")
 
 	RegisterForModEvent("SLPSexCure",   "OnSLPSexCure")
@@ -343,30 +343,9 @@ Event OnUpdate()
 EndEvent
 
 
-Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
-	ObjectReference PlayerREF= PlayerAlias.GetReference()
-	Actor PlayerActor= PlayerAlias.GetReference() as Actor
-	Float fBreastScale 
-	Int iProlactinLevel 
-
-	if !Self || !SexLab 
-		Debug.Trace("SexLab Parasites: Critical error on SexLab Start")
-		Return
-	EndIf
-	
-	; Debug.Notification("[SLP] Sex start")
-	; Debug.Trace("[SLP] Sex start")
-
-	Actor[] actors = SexLab.HookActors(_args)
-	Actor   victim = SexLab.HookVictim(_args)
-	Actor[] victims = new Actor[1]
-	victims[0] = victim
-	
-	; Debug.Notification("[SLP]  Has player: " + _hasPlayer(actors))
-	; Debug.Trace("[SLP]  Has player: " + _hasPlayer(actors))
-	; Debug.Notification("Arousal trigger: " + (slaUtil.GetActorExposure(akRef = PlayerActor) / 3))
-
-	If (_hasPlayer(actors))
+Event OnSexLabStart(int threadID, bool HasPlayer)
+	If HasPlayer
+		Actor PlayerActor= PlayerAlias.GetReference() as Actor
 		If (fctParasites.isInfectedByString( PlayerActor,  "SpiderEgg" ))
 			slaUtil.UpdateActorExposure(akRef = PlayerActor, val = 2, debugMsg = "Aroused from sex while carrying spider eggs.")
 		ElseIf (fctParasites.isInfectedByString( PlayerActor,  "SpiderPenis" ))
@@ -375,334 +354,225 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 			slaUtil.UpdateActorExposure(akRef = PlayerActor, val = 10, debugMsg = "Aroused from sex while carrying chaurus worm.")
 		Endif
 	endif
-
-	; Debug.Notification("SexLab Hormones: Forced refresh flag: " + StorageUtil.GetIntValue(none, "_SLH_iForcedRefresh"))
-	
-	If victim	;none consensual
-		;
-
-	Else        ;consensual
-		;
-		
-	EndIf
-
-
 EndEvent
 
-Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
-	ObjectReference PlayerREF= PlayerAlias.GetReference()
+Event OnSexLabEnd(int threadID, bool HasPlayer)
 	Actor PlayerActor= PlayerAlias.GetReference() as Actor
 	ActorBase pActorBase = PlayerActor.GetActorBase()
-    sslBaseAnimation animation = SexLab.HookAnimation(_args)
-    Float fBreastScale 
-    Float fChanceChaurusWorm
-    Float fChanceChaurusWormVag
-    Float fChanceSpiderPenis
-    Float fChanceSpiderEgg
-    Actor kSexPartner 
+	sslThreadController controller = SexLab.GetController(threadID)
+	sslBaseAnimation animation = controller.Animation
+	Float fBreastScale
+	Float fChanceChaurusWorm
+	Float fChanceChaurusWormVag
+	Float fChanceSpiderPenis
+	Float fChanceSpiderEgg
+	Actor kSexPartner
 
-	if !Self || !SexLab 
-		Debug.Trace("SexLab Parasites: Critical error on SexLab End")
-		Return
-	EndIf
+	Actor[] actors = controller.Positions
 
-
-	Actor[] actors  = SexLab.HookActors(_args)
-	Actor   victim  = SexLab.HookVictim(_args)
-	Actor[] victims = new Actor[1]
-	victims[0] = victim
-
-	; Debug.Notification("[SLP] Sex end")
-	; Debug.Trace("[SLP] Sex end")
-
-	; if config.bDebugMsg
-	; 	_listActors("End: ", actors)
-	; EndIf
-
-	; If (_hasPlayer(actors))
-		;
-	; EndIf
-	If (_hasPlayer(actors))
-		; Debug.Notification("[SLP] Player in animation")
+	If HasPlayer
 		Debug.Trace("[SLP] OnSexLabEnd: Player in animation")
 
- 		iChaurusQueenStage = StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusQueenStage")
-    	fChanceChaurusWorm = StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceChaurusWorm" )
-    	fChanceChaurusWormVag = StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceChaurusWormVag" )
-     	fChanceSpiderPenis = StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceSpiderPenis" )
-     	fChanceSpiderEgg = StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceSpiderEgg" )
+		iChaurusQueenStage = StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusQueenStage")
+		fChanceChaurusWorm = StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceChaurusWorm")
+		fChanceChaurusWormVag = StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceChaurusWormVag")
+		fChanceSpiderPenis = StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceSpiderPenis")
+		fChanceSpiderEgg = StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceSpiderEgg")
 
-		If (fctParasites.isInfectedByString( PlayerActor,  "ChaurusQueenVag" ))  
+		If (fctParasites.isInfectedByString(PlayerActor,  "ChaurusQueenVag"))
 			; Player is more receptive if the vaginal pincer is extended
-	    	fChanceChaurusWorm = fChanceChaurusWorm + 50.0
-	    	fChanceChaurusWormVag = fChanceChaurusWormVag + 50.0
-	     	fChanceSpiderPenis = 0.0
-	     	fChanceSpiderEgg = fChanceSpiderEgg + 50.0
-   			debug.Notification("The tentacle retracts inside you.")
-			fctParasites.cureChaurusQueenVag( PlayerActor  )
-
-		ElseIf (fctParasites.isInfectedByString( PlayerActor,  "ChaurusQueenSkin" ))  
+			fChanceChaurusWorm = fChanceChaurusWorm + 50.0
+			fChanceChaurusWormVag = fChanceChaurusWormVag + 50.0
+			fChanceSpiderPenis = 0.0
+			fChanceSpiderEgg = fChanceSpiderEgg + 50.0
+			debug.Notification("The tentacle retracts inside you.")
+			fctParasites.cureChaurusQueenVag(PlayerActor)
+		ElseIf (fctParasites.isInfectedByString(PlayerActor, "ChaurusQueenSkin"))
 			; Player is more receptive if the breast feelers are extended
-	    	fChanceChaurusWorm = fChanceChaurusWorm + 20.0
-	    	fChanceChaurusWormVag = fChanceChaurusWormVag + 20.0
-	     	fChanceSpiderPenis = 0.0
-	     	fChanceSpiderEgg = fChanceSpiderEgg + 20.0
-
+			fChanceChaurusWorm = fChanceChaurusWorm + 20.0
+			fChanceChaurusWormVag = fChanceChaurusWormVag + 20.0
+			fChanceSpiderPenis = 0.0
+			fChanceSpiderEgg = fChanceSpiderEgg + 20.0
 		elseif (iChaurusQueenStage>=3)
 			; Player is a little more receptive if carrying the Seed Stone
-	    	fChanceChaurusWorm = fChanceChaurusWorm + 10.0
-	    	fChanceChaurusWormVag = fChanceChaurusWormVag + 10.0
-	     	fChanceSpiderPenis = fChanceSpiderPenis / 2.0
-	     	fChanceSpiderEgg = fChanceSpiderEgg + 10.0
+			fChanceChaurusWorm = fChanceChaurusWorm + 10.0
+			fChanceChaurusWormVag = fChanceChaurusWormVag + 10.0
+			fChanceSpiderPenis = fChanceSpiderPenis / 2.0
+			fChanceSpiderEgg = fChanceSpiderEgg + 10.0
 		endif
 
-		if animation.HasTag("Chaurus") ; && (_SDGVP_enable_parasites.GetValue() == 1)
+		if animation.HasTag("Chaurus")
 			; check if player reached the Chaurus stage of the Chaurus Queen tranformation
 			fctParasites.tryPlayerChaurusStage()
 
 			If (!fctParasites.ActorHasKeywordByString(PlayerActor, "Belt")) && (!fctParasites.ActorHasKeywordByString(PlayerActor, "PlugAnal"))
-
 				if (Utility.RandomInt(1,100)<= (fChanceChaurusWorm as Int) )
 					; PlayerActor.SendModEvent("SLPInfectChaurusWorm")
-					if (fctParasites.infectChaurusWorm( PlayerActor   ))
+					if (fctParasites.infectChaurusWorm(PlayerActor))
 						iNextStageThrottle = 0
 						Debug.MessageBox("You moan helplessly as a thick worm forces itself inside your guts.")
 					Endif
 				Endif
-
 				if (Utility.RandomInt(1,100)<= (fChanceChaurusWormVag as Int) )
 					; PlayerActor.SendModEvent("SLPInfectChaurusWormVag")
-					if (fctParasites.infectChaurusWormVag( PlayerActor   ))
+					if (fctParasites.infectChaurusWormVag(PlayerActor))
 						iNextStageThrottle = 0
 						Debug.MessageBox("You shudder deeply as a squirming worm forces itself inside your womb.")
 					Endif
 				Endif
-
 			EndIf
 
 			if (StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusQueenStage")>=5)
 				fctParasites.getRandomChaurusEggs(PlayerActor, 0, 20)
 			endif
 		EndIf
-
-		if animation.HasTag("Spider") ; && (_SDGVP_enable_parasites.GetValue() == 1)
-			; Debug.Notification("[SLP] Sex with spider")
-			; Debug.Trace("[SLP] Sex with spider")
-
+		if animation.HasTag("Spider")
 			If (!fctParasites.ActorHasKeywordByString(PlayerActor, "Belt")) && (!fctParasites.ActorHasKeywordByString(PlayerActor, "PlugVaginal"))
-				; Debug.Notification("[SLP] Player vulnerable to spider")
-				; Debug.Trace("[SLP] Player vulnerable to spider")
-
 				if (Utility.RandomInt(1,100)<= (fChanceSpiderPenis as Int) )
-					; Debug.Notification("[SLP] Receiving spider penis")
-					; Debug.Trace("[SLP] Receiving spider penis")
-
-					; PlayerActor.SendModEvent("SLPInfectSpiderPenis")
-					if (fctParasites.infectSpiderPenis( PlayerActor   ))
+					if (fctParasites.infectSpiderPenis(PlayerActor))
 						iNextStageThrottle = 0
 						kSexPartner = _firstNotPlayer(actors)
 						SpiderFollowerAlias.ForceRefTo(kSexPartner)
-
 						Debug.MessageBox("You gasp as the spider fills your womb with a string of slimy eggs. Unfortunately, the penis of the spider remains firmly lodged inside you after the act.")
 					Endif
-
 				elseif (Utility.RandomInt(1,100)<= (fChanceSpiderEgg as Int) )
-					; Debug.Notification("[SLP] Receiving spider eggs")
-					; Debug.Trace("[SLP] Receiving spider eggs")
-					; PlayerActor.SendModEvent("SLPInfectSpiderEgg")
-					if (fctParasites.infectSpiderEgg( PlayerActor   ))
+					if (fctParasites.infectSpiderEgg(PlayerActor))
 						iNextStageThrottle = 0
 						Debug.MessageBox("You gasp as the spider fills your womb with a string of slimy eggs.")
 					Endif
-
-				else
-					Debug.Trace("[SLP] OnSexLabEnd: Sex didn't result in eggs - better luck next time")
 				endif
-			Else
-				Debug.Trace("[SLP] OnSexLabEnd: Player wearing a Belt or Vaginal plug - aborting")
 			EndIf
 		EndIf
-	Else
-		; Debug.Notification("[SLP] Player NOT in animation")
-		Debug.Trace("[SLP] OnSexLabEnd: Player NOT in animation")
 	Endif
 
 	int idx = 0
 	while idx < actors.Length
-		if (actors[idx]) && ( actors[idx] != PlayerActor) && ( actors[idx].IsInFaction(PlayerFollowerFaction))
+		if (actors[idx] != PlayerActor) && (actors[idx].IsInFaction(PlayerFollowerFaction))
 			Debug.Trace("[SLP] Checking follower for parasites")
-			if animation.HasTag("Chaurus") ; && (_SDGVP_enable_parasites.GetValue() == 1)
+			if animation.HasTag("Chaurus")
 				If (!fctParasites.ActorHasKeywordByString(actors[idx], "Belt")) && (!fctParasites.ActorHasKeywordByString(actors[idx], "PlugAnal"))
-
 					if (Utility.RandomInt(1,100)< (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceChaurusWorm" ) as Int) )
 						; actors[idx].SendModEvent("SLPInfectChaurusWorm")
-						fctParasites.infectChaurusWorm( actors[idx]   )
+						fctParasites.infectChaurusWorm(actors[idx])
 					Endif
-
 					if (Utility.RandomInt(1,100)< (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceChaurusWormVag" ) as Int) )
 						; actors[idx].SendModEvent("SLPInfectChaurusWormVag")
-						fctParasites.infectChaurusWormVag( actors[idx]   )
+						fctParasites.infectChaurusWormVag(actors[idx])
 					Endif
-
 				EndIf
 			EndIf
-
-			if animation.HasTag("Spider") ; && (_SDGVP_enable_parasites.GetValue() == 1)
+			if animation.HasTag("Spider")
 				If (!fctParasites.ActorHasKeywordByString(actors[idx], "Belt")) && (!fctParasites.ActorHasKeywordByString(actors[idx], "PlugVaginal"))
-
 					if (Utility.RandomInt(1,100)<= (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceSpiderPenis" ) as Int) )
 						; actors[idx].SendModEvent("SLPInfectSpiderPenis")
-						fctParasites.infectSpiderPenis( actors[idx]   )
-
+						fctParasites.infectSpiderPenis(actors[idx])
 					elseif (Utility.RandomInt(1,100)<= (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceSpiderEgg" ) as Int) )
 						; actors[idx].SendModEvent("SLPInfectSpiderEgg")
-						fctParasites.infectSpiderEgg( actors[idx]   )
+						fctParasites.infectSpiderEgg(actors[idx])
 					endif
 				EndIf
 			EndIf
 		endIf
 		idx += 1
 	endwhile
-	; Debug.Trace("[SLP] Sex end - end")
-EndEvent 
+EndEvent
 
-Event OnSexLabOrgasm(String _eventName, String _args, Float _argc, Form _sender)
-	ObjectReference PlayerREF= PlayerAlias.GetReference()
-	Actor PlayerActor= PlayerAlias.GetReference() as Actor
-    sslBaseAnimation animation = SexLab.HookAnimation(_args)
- 
-	if !Self || !SexLab 
-		Debug.Trace("SexLab Parasites: Critical error on SexLab Orgasm")
-		Return
-	EndIf
+Event OnSexLabOrgasm(int threadID, bool HasPlayer)
+	Actor PlayerActor = PlayerAlias.GetReference() as Actor
+	sslThreadController controller = SexLab.GetController(threadID)
+	sslBaseAnimation animation = controller.Animation
 
-	Actor[] actors  = SexLab.HookActors(_args)
-	Actor   victim  = SexLab.HookVictim(_args)
-	Actor[] victims = new Actor[1]
-	victims[0] = victim
+	Actor[] actors = controller.Positions
 
-	; Debug.Notification("[SLP] Orgasm")
-	; Debug.Trace("[SLP] Orgasm")
-	; 
-	if (_hasPlayer(actors))
-		if animation.HasTag("Spider")  
-	 
-			if (fctParasites.isInfectedByString( PlayerActor,  "SpiderEgg" )) && (Utility.RandomInt(2,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceSpiderEgg" ) / 4))
+	if HasPlayer
+		if animation.HasTag("Spider")
+			if (fctParasites.isInfectedByString(PlayerActor, "SpiderEgg" )) && (Utility.RandomInt(2,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceSpiderEgg" ) / 4))
 				Debug.MessageBox("As you lay on the floor, still panting, you realize the spider extracted the fertilized eggs out of your exhausted body.")
 				; PlayerActor.SendModEvent("SLPCureSpiderEgg","All")
 				fctParasites.cureSpiderEgg( PlayerActor, "All"  )
 				PlayerActor.PlaceAtMe(EggSac)
 			endIf
-	 
 		EndIf
 
-		If (fctParasites.isInfectedByString( PlayerActor,  "ChaurusWorm" )) && (Utility.RandomInt(2,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceChaurusWorm" ) / 5))
-				Debug.MessageBox("The power of your orgasm is enough to expel the worm from your bowels, making you nearly black out from the added stimulation.")
-				; PlayerActor.SendModEvent("SLPCureChaurusWorm")
-				fctParasites.cureChaurusWorm( PlayerActor  )
+		If (fctParasites.isInfectedByString( PlayerActor, "ChaurusWorm" )) && (Utility.RandomInt(2,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceChaurusWorm" ) / 5))
+			Debug.MessageBox("The power of your orgasm is enough to expel the worm from your bowels, making you nearly black out from the added stimulation.")
+			; PlayerActor.SendModEvent("SLPCureChaurusWorm")
+			fctParasites.cureChaurusWorm(PlayerActor)
 		EndIf
-
-		If (fctParasites.isInfectedByString( PlayerActor,  "ChaurusWormVag" )) && (Utility.RandomInt(2,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceChaurusWormVag" ) / 5))
-				Debug.MessageBox("The power of your orgasm is enough to expel the worm, making you nearly black out from the added stimulation.")
-				; PlayerActor.SendModEvent("SLPCureChaurusWormVag")
-				fctParasites.cureChaurusWormVag( PlayerActor  ) 
+		If (fctParasites.isInfectedByString( PlayerActor, "ChaurusWormVag" )) && (Utility.RandomInt(2,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceChaurusWormVag" ) / 5))
+			Debug.MessageBox("The power of your orgasm is enough to expel the worm, making you nearly black out from the added stimulation.")
+			; PlayerActor.SendModEvent("SLPCureChaurusWormVag")
+			fctParasites.cureChaurusWormVag(PlayerActor)
 		EndIf
 	endif
 
 	int idx = 0
 	while idx < actors.Length
-		if (actors[idx]) && ( actors[idx] != PlayerActor) 
-			if animation.HasTag("Spider")  
+		if (actors[idx] != PlayerActor)
+			if animation.HasTag("Spider")
 				if (fctParasites.isInfectedByString( actors[idx],  "SpiderEgg" )) && (Utility.RandomInt(2,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceSpiderEgg" ) / 4))
 					; actors[idx].SendModEvent("SLPCureSpiderEgg","All")
-					fctParasites.cureSpiderEgg( actors[idx], "All"  )
+					fctParasites.cureSpiderEgg( actors[idx], "All" )
 					actors[idx].PlaceAtMe(EggSac)
 				endIf
 			endif
 
-			If (fctParasites.isInfectedByString( actors[idx],  "ChaurusWorm" )) && (Utility.RandomInt(1,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceChaurusWorm" ) / 5))
-					; actors[idx].SendModEvent("SLPCureChaurusWorm")
-					fctParasites.cureChaurusWorm( actors[idx]  ) 
+			If (fctParasites.isInfectedByString( actors[idx], "ChaurusWorm" )) && (Utility.RandomInt(1,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceChaurusWorm" ) / 5))
+				; actors[idx].SendModEvent("SLPCureChaurusWorm")
+				fctParasites.cureChaurusWorm( actors[idx])
 			EndIf
-
-			If (fctParasites.isInfectedByString( actors[idx],  "ChaurusWormVag" )) && (Utility.RandomInt(1,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceChaurusWormVag" ) / 5))
-					; actors[idx].SendModEvent("SLPCureChaurusWormVag")
-					fctParasites.cureChaurusWormVag( actors[idx]  ) 
+			If (fctParasites.isInfectedByString(actors[idx], "ChaurusWormVag" )) && (Utility.RandomInt(1,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceChaurusWormVag" ) / 5))
+				; actors[idx].SendModEvent("SLPCureChaurusWormVag")
+				fctParasites.cureChaurusWormVag(actors[idx])
 			EndIf
-
 		endIf
 		idx += 1
 	endwhile
-	; Debug.Trace("[SLP] Orgasm - end")
 EndEvent
 
 Event OnSexLabOrgasmSeparate(Form ActorRef, Int Thread)
+	Actor kActor = ActorRef as actor
+	Actor PlayerActor = PlayerAlias.GetReference() as Actor
+	sslBaseAnimation animation = SexLab.GetController(Thread).Animation
 
-    string _args = Thread as string
-    actor kActor = ActorRef as actor
-    ObjectReference PlayerREF= PlayerAlias.GetReference()
-    Actor PlayerActor= PlayerAlias.GetReference() as Actor
-    sslBaseAnimation animation = SexLab.HookAnimation(_args)
- 
-    if !Self || !SexLab 
-        Debug.Trace("SexLab Parasites: Critical error on SexLab Orgasm")
-        Return
-    EndIf
+	if kActor == PlayerActor
+		if animation.HasTag("Spider")
+			if (fctParasites.isInfectedByString( PlayerActor, "SpiderEgg" )) && (Utility.RandomInt(2,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceSpiderEgg" ) / 4))
+				Debug.MessageBox("As you lay on the floor, still panting, you realize the spider extracted the fertilized eggs out of your exhausted body.")
+				; PlayerActor.SendModEvent("SLPCureSpiderEgg","All")
+				fctParasites.cureSpiderEgg( PlayerActor, "All" )
+				PlayerActor.PlaceAtMe(EggSac)
+			endIf
+		EndIf
 
-    Actor[] actors  = SexLab.HookActors(_args)
-    Actor   victim  = SexLab.HookVictim(_args)
-    Actor[] victims = new Actor[1]
-    victims[0] = victim
-
-    ; Debug.Notification("[SLP] Orgasm")
-    ; Debug.Trace("[SLP] Orgasm")
-    ; 
-    if (_hasPlayer(actors) && kActor == PlayerActor)
-        if animation.HasTag("Spider")  
-     
-            if (fctParasites.isInfectedByString( PlayerActor,  "SpiderEgg" )) && (Utility.RandomInt(2,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceSpiderEgg" ) / 4))
-                Debug.MessageBox("As you lay on the floor, still panting, you realize the spider extracted the fertilized eggs out of your exhausted body.")
-                ; PlayerActor.SendModEvent("SLPCureSpiderEgg","All")
-                fctParasites.cureSpiderEgg( PlayerActor, "All"  )
-                PlayerActor.PlaceAtMe(EggSac)
-            endIf
-     
-        EndIf
-
-        If (fctParasites.isInfectedByString( PlayerActor,  "ChaurusWorm" )) && (Utility.RandomInt(2,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceChaurusWorm" ) / 5))
-                Debug.MessageBox("The power of your orgasm is enough to expel the worm from your bowels, making you nearly black out from the added stimulation.")
-                ; PlayerActor.SendModEvent("SLPCureChaurusWorm")
-                fctParasites.cureChaurusWorm( PlayerActor  )
-        EndIf
-
-        If (fctParasites.isInfectedByString( PlayerActor,  "ChaurusWormVag" )) && (Utility.RandomInt(2,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceChaurusWormVag" ) / 5))
-                Debug.MessageBox("The power of your orgasm is enough to expel the worm, making you nearly black out from the added stimulation.")
-                ; PlayerActor.SendModEvent("SLPCureChaurusWormVag")
-                fctParasites.cureChaurusWormVag( PlayerActor  ) 
-        EndIf
-    endif
-
-	if (kActor) && ( kActor != PlayerActor) 
-		if animation.HasTag("Spider")  
-			if (fctParasites.isInfectedByString( kActor,  "SpiderEgg" )) && (Utility.RandomInt(2,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceSpiderEgg" ) / 4))
+		If (fctParasites.isInfectedByString( PlayerActor, "ChaurusWorm" )) && (Utility.RandomInt(2,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceChaurusWorm" ) / 5))
+			Debug.MessageBox("The power of your orgasm is enough to expel the worm from your bowels, making you nearly black out from the added stimulation.")
+			; PlayerActor.SendModEvent("SLPCureChaurusWorm")
+			fctParasites.cureChaurusWorm(PlayerActor)
+		EndIf
+		If (fctParasites.isInfectedByString( PlayerActor, "ChaurusWormVag" )) && (Utility.RandomInt(2,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceChaurusWormVag" ) / 5))
+			Debug.MessageBox("The power of your orgasm is enough to expel the worm, making you nearly black out from the added stimulation.")
+			; PlayerActor.SendModEvent("SLPCureChaurusWormVag")
+			fctParasites.cureChaurusWormVag(PlayerActor)
+		EndIf
+	Else
+		if animation.HasTag("Spider")
+			if (fctParasites.isInfectedByString( kActor, "SpiderEgg" )) && (Utility.RandomInt(2,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceSpiderEgg" ) / 4))
 				; kActor.SendModEvent("SLPCureSpiderEgg","All")
-				fctParasites.cureSpiderEgg( kActor, "All"  )
+				fctParasites.cureSpiderEgg( kActor, "All" )
 				kActor.PlaceAtMe(EggSac)
 			endIf
 		endif
 
-		If (fctParasites.isInfectedByString( kActor,  "ChaurusWorm" )) && (Utility.RandomInt(1,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceChaurusWorm" ) / 5))
-				; kActor.SendModEvent("SLPCureChaurusWorm")
-				fctParasites.cureChaurusWorm( kActor  ) 
+		If (fctParasites.isInfectedByString( kActor, "ChaurusWorm" )) && (Utility.RandomInt(1,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceChaurusWorm" ) / 5))
+			; kActor.SendModEvent("SLPCureChaurusWorm")
+			fctParasites.cureChaurusWorm(kActor)
 		EndIf
-
-		If (fctParasites.isInfectedByString( kActor,  "ChaurusWormVag" )) && (Utility.RandomInt(1,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceChaurusWormVag" ) / 5))
-				; kActor.SendModEvent("SLPCureChaurusWormVag")
-				fctParasites.cureChaurusWormVag( kActor  ) 
+		If (fctParasites.isInfectedByString( kActor, "ChaurusWormVag" )) && (Utility.RandomInt(1,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceChaurusWormVag" ) / 5))
+			; kActor.SendModEvent("SLPCureChaurusWormVag")
+			fctParasites.cureChaurusWormVag(kActor)
 		EndIf
-
 	endIf
-    ; Debug.Trace("[SLP] Orgasm - end")
 EndEvent
 
 Event OnArachnophobiaPlayerCaptured(String _eventName, String _args, Float _argc = 1.0, Form _sender)
