@@ -27,4 +27,6 @@ For the Skyrim Special Edition (SSE) versions, head over to my [SSE Conversion d
 * [SexLab Parasites (Kyne's Blessing) SE](https://www.loverslab.com/topic/120107-skyrimlldeepbluefrog-mods-conversion-to-sse/?do=findComment&comment=3273414)
 * [SexLab Dibella Sisterhood and Sisters customization add-on SE](https://www.loverslab.com/topic/120107-skyrimlldeepbluefrog-mods-conversion-to-sse/?do=findComment&comment=3273115)
 * [SexLab Alicia Painslut SE](https://www.loverslab.com/topic/120107-skyrimlldeepbluefrog-mods-conversion-to-sse/?do=findComment&comment=3272102)
+* [SexLab Hormones SE](https://www.loverslab.com/topic/120107-skyrimlldeepbluefrog-mods-conversion-to-sse/?do=findComment&comment=3243073)
+* [SexLab Stories and Stories Devious SE](https://www.loverslab.com/topic/120107-skyrimlldeepbluefrog-mods-conversion-to-sse/?do=findComment&comment=3243073)
 
