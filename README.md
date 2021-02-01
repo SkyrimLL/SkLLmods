@@ -18,5 +18,13 @@ Another way to look at it is, if you are going to import files from a github rep
 
 This way, all the files you need will be extracted already.
 
+## Special Edition conversions
 
+The mods in this repository are designed for Vanilla Skyrim, or Skyrim Legendary Edition (LE).
+
+For the Skyrim Special Edition (SSE) versions, head over to my [SSE Conversion discussion at Lovers Lab](https://www.loverslab.com/topic/120107-skyrimlldeepbluefrog-mods-conversion-to-sse/), or follow the links below:
+
+* [SexLab Parasites (Kyne's Blessing) SE](https://www.loverslab.com/topic/120107-skyrimlldeepbluefrog-mods-conversion-to-sse/?do=findComment&comment=3273414)
+* [SexLab Dibella Sisterhood and Sisters customization add-on SE](https://www.loverslab.com/topic/120107-skyrimlldeepbluefrog-mods-conversion-to-sse/?do=findComment&comment=3273115)
+* [SexLab Alicia Painslut SE](https://www.loverslab.com/topic/120107-skyrimlldeepbluefrog-mods-conversion-to-sse/?do=findComment&comment=3272102)
 
