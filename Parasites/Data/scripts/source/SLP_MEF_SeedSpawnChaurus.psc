@@ -37,10 +37,8 @@ Event OnEffectStart(Actor Target, Actor Caster)
  	endif
 
 
-	if (!kPlayer.HasSpell( CallSpawns ))
-		kPlayer.AddSpell( CallSpawns ) 
-		kPlayer.AddSpell( DismissSpawns ) 
-	endif
+	kPlayer.AddSpell( CallSpawns )
+	kPlayer.AddSpell( DismissSpawns )
 
 	If (StorageUtil.GetIntValue(none, "_SLS_isEstrusChaurusON") ==  1) 
 		ChaurusParasiteEgg = StorageUtil.GetFormValue(none, "_SLS_getEstrusChaurusParasiteEgg") as Ingredient

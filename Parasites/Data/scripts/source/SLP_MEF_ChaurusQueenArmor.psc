@@ -16,9 +16,7 @@ Event OnEffectStart(Actor Target, Actor Caster)
 	;	iChaurusSpawnCount = iChaurusEggsCount 
 	endif
 
-	if (!kPlayer.HasSpell( ChaurusAcid ))
-		kPlayer.AddSpell( ChaurusAcid )  
-	endif
+	kPlayer.AddSpell( ChaurusAcid )  
 
 	if (!fctParasites.isInfectedByString( kPlayer,  "ChaurusQueenArmor" ))
 
