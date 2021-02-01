@@ -29,6 +29,7 @@ For the Skyrim Special Edition (SSE) versions, head over to my [SSE Conversion d
 * [SexLab Alicia Painslut SE](https://www.loverslab.com/topic/120107-skyrimlldeepbluefrog-mods-conversion-to-sse/?do=findComment&comment=3272102)
 * [SexLab Hormones SE](https://www.loverslab.com/topic/120107-skyrimlldeepbluefrog-mods-conversion-to-sse/?do=findComment&comment=3243073)
 * [SexLab Stories and Stories Devious SE](https://www.loverslab.com/topic/120107-skyrimlldeepbluefrog-mods-conversion-to-sse/?do=findComment&comment=3243073)
+* [Mind Control SE](https://www.loverslab.com/topic/120107-skyrimlldeepbluefrog-mods-conversion-to-sse/)
 
 ### [Sanguine Debauchery SE](https://www.loverslab.com/topic/120107-skyrimlldeepbluefrog-mods-conversion-to-sse/?do=findComment&comment=3272102)
 * [SexLab Dialogues SE](https://www.loverslab.com/topic/120107-skyrimlldeepbluefrog-mods-conversion-to-sse/)
