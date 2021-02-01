@@ -86,7 +86,7 @@ Function DeviceMenu(Int msgChoice = 0)
 		Debug.MessageBox(strFailEquip)
 	elseif msgChoice==2 ; Not wearing a belt, plugs
 		string msg = ""
-		int iDexterity = 10 + (Game.GetPlayer().GetAV("Pickpocket") as Int) / 10
+		int iDexterity = 10 + (libs.PlayerRef.GetActorValue("Pickpocket") as Int) / 10
 		Debug.Notification("Dexterity: " + iDexterity )
 		; Debug.Notification("Arousal: " + Aroused.GetActorArousal(libs.PlayerRef))
 		if ( Aroused.GetActorArousal(libs.PlayerRef) <= 10 ) ; libs.ArousalThreshold("Desire")

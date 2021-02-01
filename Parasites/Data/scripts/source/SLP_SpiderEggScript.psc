@@ -79,8 +79,6 @@ EndFunction
 
 
 Function DeviceMenu(Int msgChoice = 0)
-	Actor kPlayer = Game.getPlayer()
-
         msgChoice = zad_DeviceMsg.Show() ; display menu
 	if msgChoice==0 ; Not wearing a belt, no plugs
 		Debug.Notification("You choose to insert the eggs inside you.")
@@ -89,11 +87,11 @@ Function DeviceMenu(Int msgChoice = 0)
 		Debug.MessageBox(strFailEquip)
 	elseif msgChoice==2 ; Not wearing a belt, plugs
 		string msg = ""
-		int iDexterity = 10 + (kPlayer.GetAV("Pickpocket") as Int) / 10
+		int iDexterity = 10 + (libs.PlayerRef.GetActorValue("Pickpocket") as Int) / 10
 		Debug.Notification("Dexterity: " + iDexterity )
 
-		If (StorageUtil.GetIntValue(kPlayer, "_SLP_iSpiderEggsKnown")==1)
-			if (kPlayer.GetItemCount(DwarvenOil) == 0)
+		If (StorageUtil.GetIntValue(libs.PlayerRef, "_SLP_iSpiderEggsKnown")==1)
+			if (libs.PlayerRef.GetItemCount(DwarvenOil) == 0)
 				msg = "Your attempt at removing the eggs is pointless without Dwarven Oil"
 				libs.NotifyPlayer(msg, true)
 			else
@@ -103,7 +101,7 @@ Function DeviceMenu(Int msgChoice = 0)
 					If (Utility.RandomInt(0,100) < iDexterity) 
 						msg = "The eggs pop out of your hole one in rapid succession, kept together with foamy and slippery lubrication."
 						libs.NotifyPlayer(msg, true)
-						kPlayer.RemoveItem(DwarvenOil,1)
+						libs.PlayerRef.RemoveItem(DwarvenOil,1)
 						RemoveDevice(libs.PlayerRef)
 					else
 						msg = "Your fingers slip, causing the eggs to burrow deeper inside you and making you slippery in the process. You will have to give it another try when you are not so horny."
