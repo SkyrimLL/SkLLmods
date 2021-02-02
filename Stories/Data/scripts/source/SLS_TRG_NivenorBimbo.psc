@@ -53,7 +53,7 @@ Event OnTriggerEnter(ObjectReference akActionRef)
 		StorageUtil.SetIntValue(kNivenor, "_SD_iRelationshipType" , 10 )
 
 		if ( bBreastEnabled && isNiOInstalled  ) 
-			fBreast  = 3.0
+			fBreast  = 2.0
 
 			XPMSELib.SetNodeScale(kNivenor, true, NINODE_LEFT_BREAST, fBreast, SLS_KEY)
 			XPMSELib.SetNodeScale(kNivenor, true, NINODE_RIGHT_BREAST, fBreast, SLS_KEY)

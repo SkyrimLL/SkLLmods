@@ -13,11 +13,12 @@ _SLS_PCSexWithTG.Mod(1)
 _SLS_PCPaidForTG.SetValue(0)
 
 If ( Utility.RandomInt(0,100) > 80)
-
 	Game.AddPerkPoints(1)
 	RedeemFX.Cast(kPlayer,kPlayer)
 
 EndIf
+
+SendModEvent("SLHModHormoneRandom","Succubus", 1.0)
 
 If ( Utility.RandomInt(0,100) > 95 )
 	kPlayer.SendModEvent("SLHCastBimboCurse", "Dremora")
