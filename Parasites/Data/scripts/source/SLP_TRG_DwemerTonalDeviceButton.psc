@@ -11,6 +11,9 @@ ObjectReference Property DwemerTonalDeviceEffectsRef Auto
 ObjectReference Property SilentCityOrbRef Auto 
 ObjectReference Property SilentCityOrbShoutTriggerRef Auto 
 
+ReferenceAlias Property ChaurusQueenInfectedAlias  Auto  
+ObjectReference Property DummyAlias  Auto  
+
 Actor Property ChaurusQueenDragon Auto
 
 Quest Property dunBlackreachDragonQST  Auto  
@@ -18,7 +21,9 @@ Quest Property dunBlackreachDragonQST  Auto
 Event OnActivate(ObjectReference akActionRef) 
 
 	if (QueenOfChaurusQuest.GetStageDone(390)==1) && (StorageUtil.GetIntValue(none, "_SLP_toggleTonalKey")==1)
-    	Debug.MessageBox("[The button blinks rapidly]")
+    	Debug.Notification("[The button blinks rapidly]")
+
+        ; Add shaking ground and falling debris to enabled marker
 
     	DwemerTonalDeviceEffectsRef.enable()
 
@@ -40,7 +45,13 @@ Event OnActivate(ObjectReference akActionRef)
 
     	DwemerTonalDeviceEffectsRef.disable()
 
+        ChaurusQueenInfectedAlias.ForceRefTo(DummyAlias)
+
+        QueenOfChaurusQuest.SetStage(395)
+
+        Debug.MessageBox("The energy pulse from the device echoes through the caves. Before closing the Rift, the device briefly expands the doorway between world and lets the Queen go free. There can be only one Queen of the Chaurus. As long as you live, you will be a threat to the rightful Queen.")
+
     else
-    	Debug.MessageBox("[The button flashes red]")
+    	Debug.Notification("[The button flashes red]")
     endif
 EndEvent

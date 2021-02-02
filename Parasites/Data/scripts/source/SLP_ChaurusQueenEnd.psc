@@ -4,7 +4,7 @@ Quest Property QueenOfChaurusQuest  Auto
 
 SLP_fcts_parasites Property fctParasites  Auto
 
-SPELL Property ChaurusBody Auto
+SPELL Property ChaurusBody Auto 
 
 ObjectReference Property DimensionalRiftRef Auto
 

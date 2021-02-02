@@ -10,7 +10,7 @@ Event OnTriggerEnter(ObjectReference akActionRef)
  	Actor kPlayer = Game.GetPlayer()
  	ObjectReference kPlayerRef = kPlayer as ObjectReference
 
-    if (akActionRef == kPlayerRef) 
+    if (akActionRef == kPlayerRef) && (!QueenOfChaurusQuest.GetStageDone(400))
 		if (fctParasites.isInfectedByString( kPlayer,  "ChaurusQueenArmor" )) && (fctParasites.isInfectedByString( kPlayer,  "ChaurusQueenGag" ))
 			; DimensionalRiftDoorMarkerRef.enable()
 

@@ -2120,7 +2120,12 @@ Bool Function applyChaurusQueenArmor( Actor kActor  )
  	Actor PlayerActor = Game.GetPlayer()
 
 	If (kActor == PlayerActor)
-		ChaurusQueenInfectedAlias.ForceRefTo(PlayerActor)
+		if (QueenOfChaurusQuest.GetStageDone(395)) && (!QueenOfChaurusQuest.GetStageDone(400)) 
+			; Do nothing - Queen privileges are suspended
+			ChaurusQueenInfectedAlias.ForceRefTo(DummyAlias)
+		else
+			ChaurusQueenInfectedAlias.ForceRefTo(PlayerActor)
+		endif
 	endIf
 
 	If !StorageUtil.HasIntValue(kActor, "_SLP_iChaurusQueenArmorInfections")
@@ -2224,7 +2229,12 @@ Bool Function applyChaurusQueenBody( Actor kActor  )
  	Potion DragonWingsPotion = None 
 
 	If (kActor == PlayerActor)
-		ChaurusQueenInfectedAlias.ForceRefTo(PlayerActor)
+		if (QueenOfChaurusQuest.GetStageDone(395)) && (!QueenOfChaurusQuest.GetStageDone(400)) 
+			; Do nothing - Queen privileges are suspended
+			ChaurusQueenInfectedAlias.ForceRefTo(DummyAlias)
+		else
+			ChaurusQueenInfectedAlias.ForceRefTo(PlayerActor)
+		endif
 	endIf
 
 	If !StorageUtil.HasIntValue(kActor, "_SLP_iChaurusQueenBodyInfections")
