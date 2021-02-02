@@ -16,12 +16,11 @@ Event OnDeath(Actor akKiller)
 
  	QueenOfChaurusQuest.SetStage(400)
 
- 	DimensionalRiftRef.disable()
+ 	; Code moved into Quest Stage 400 of main quest
 
- 	kPlayer.AddSpell(ChaurusBody)
-
- 	fctParasites.getRandomChaurusEggs(kPlayer, 6, 10)
-
- 	ChaurusBody.cast(kPlayerRef, kPlayerRef)
+ 	; DimensionalRiftRef.disable()
+ 	; kPlayer.AddSpell(ChaurusBody)
+ 	; fctParasites.getRandomChaurusEggs(kPlayer, 6, 10)
+ 	; ChaurusBody.cast(kPlayerRef, kPlayerRef)
 		
 EndEvent
