@@ -40,7 +40,7 @@ Event OnTriggerEnter(ObjectReference akActionRef)
 
 			Debug.notification("There is something unnatural about this place.")
 
-		elseif (QueenOfChaurusQuest.GetStageDone(400)==1)
+		elseif (QueenOfChaurusQuest.GetStageDone(395)==1) || (QueenOfChaurusQuest.GetStageDone(400)==1)
 
 			DimensionalRiftDoorMarkerRef.disable()
 			DimensionalRiftQueenMarkerRef.Disable()
