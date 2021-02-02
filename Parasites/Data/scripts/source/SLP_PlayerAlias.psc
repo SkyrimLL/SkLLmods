@@ -1767,7 +1767,7 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 	endif 
 
 	; Bring Lastelle where she belongs if needed
-	fctParasites.resetLastellePosition()
+	fctParasites.resetOnSleep()
 EndEvent
 
 Event OnSleepStop(bool abInterrupted)

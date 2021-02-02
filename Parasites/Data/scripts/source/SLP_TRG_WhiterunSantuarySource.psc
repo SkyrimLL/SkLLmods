@@ -13,9 +13,10 @@ Event OnContainerChanged(ObjectReference akNewContainer, ObjectReference akOldCo
 		    Debug.Messagebox("Using Nettlebane, you manage to dislodge the rusted saw from the ancient roots. The roots above you emit a crystaline sound, almost of relief. The poisonous gas is evacuated quickly as the ground starts shaking.")
 
 		    DanicaPurespring.SendModEvent("SLPCureFaceHuggerGag")
+		    akPlayer.SendModEvent("SLPCureFaceHuggerGag")
 		 	CorruptionOffSpell.cast(WhiterunSancturaryCorruptionActivator, akNewContainer)
 		 	WhiterunSancturaryCorruptionMarker.disable()
-		 	fctParasites.infectEstrusTentacles( akNewContainer as Actor  )
+		 	fctParasites.infectEstrusTentacles( akPlayer  )
 		 	QueenOfChaurusQuest.SetStage(255)
 		endif
 

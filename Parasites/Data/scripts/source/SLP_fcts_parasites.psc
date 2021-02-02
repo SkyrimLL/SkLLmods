@@ -49,6 +49,8 @@ SPELL Property SeedFlare Auto
 SPELL Property SeedSpawnSpider Auto
 SPELL Property SeedSpawnChaurus Auto
 
+ImageSpaceModifier Property FalmerBlueImod  Auto  
+
 Container Property EggSac  Auto
 
 Ingredient  Property TrollFat Auto
@@ -2757,8 +2759,8 @@ Function tryPlayerChaurusStage()
 	endif
 EndFunction
 ;------------------------------------------------------------------------------
-; Special function to keep Lastelle from wandering
-Function resetLastellePosition()
+; Maintenance function to keep Lastelle from wandering and clear visual effects on sleep
+Function resetOnSleep()
 	if (QueenOfChaurusQuest.GetStageDone(30)) && (!QueenOfChaurusQuest.GetStageDone(65))
 		Actor kLastelle = LastelleRef as Actor
 
@@ -2766,6 +2768,9 @@ Function resetLastellePosition()
 		LastelleRef.moveto(LastelleCampOutside)
 		kLastelle.EvaluatePackage()
 	endif
+
+	; Clear visual effect from Falmer Blue potion
+	FalmerBlueImod.Remove( )
 Endfunction
 ;------------------------------------------------------------------------------
 Function refreshParasite(Actor kActor, String sParasite)
@@ -3022,6 +3027,8 @@ Function FalmerBlue(Actor kActor, Actor kTarget)
 		Int iFalmerSkinColor = Math.LeftShift(255, 24) + Math.LeftShift(100, 16) + Math.LeftShift(200, 8) + 255
 		Float breastMod = 0.05
 		Float weightMod = 2.0
+
+		FalmerBlueImod.Apply( )
 
 		If (Utility.RandomInt(0,100)>60)
 			Int randomNum = Utility.RandomInt(0,100)
