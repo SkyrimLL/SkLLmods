@@ -1,5 +1,9 @@
 ### RELEASE NOTES for milestone [Parasites 2021-01-31](https://github.com/SkyrimLL/SkLLmods/milestone/80?closed=1) 
 **Enhancements:** 
+- [Added state where Rift is closed and Queen is trapped in Blackreach](https://github.com/SkyrimLL/SkLLmods/issues/1032)
+- [Force Danica to stay in the Sanctuary until the corrupting item is found](https://github.com/SkyrimLL/SkLLmods/issues/1029)
+- [Improve design of Rift](https://github.com/SkyrimLL/SkLLmods/issues/1025)
+- [Add enchantments to unique Dwemer Explorer Armor](https://github.com/SkyrimLL/SkLLmods/issues/1024)
 - [Adjusted navmesh around large crystals at Lastelle's camp](https://github.com/SkyrimLL/SkLLmods/issues/1016)
 - [Sleep by campfire to force Lastelle to return to camp](https://github.com/SkyrimLL/SkLLmods/issues/1015)
 - [Prevent Lastelle from wandering off](https://github.com/SkyrimLL/SkLLmods/issues/1014)
@@ -29,6 +33,7 @@
 - [Move chaurus queen from Stories into Parasites](https://github.com/SkyrimLL/SkLLmods/issues/547)
 
 **Bug Fixes:** 
+- [Fix removal of Falmer Blue visual effect on sleep](https://github.com/SkyrimLL/SkLLmods/issues/1030)
 - [Disable or kill Brood spawns when not in use](https://github.com/SkyrimLL/SkLLmods/issues/1018)
 - [Chaurus ignore pheromone if they are already friendly with the player](https://github.com/SkyrimLL/SkLLmods/issues/1012)
 - [Lastelle doesn't accept a chaurus/stud follower](https://github.com/SkyrimLL/SkLLmods/issues/1011)
