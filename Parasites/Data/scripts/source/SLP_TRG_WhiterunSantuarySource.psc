@@ -5,7 +5,7 @@ Event OnContainerChanged(ObjectReference akNewContainer, ObjectReference akOldCo
 	Form RightHandWeapon 
 	Form LeftHandWeapon  
 
-	if (akNewContainer == akPlayer) && (QueenOfChaurusQuest.GetStageDone(255)==0) 
+	if (akNewContainer == akPlayer) && (QueenOfChaurusQuest.GetStageDone(260)==0) 
 		RightHandWeapon = akPlayer.GetEquippedWeapon(0) 
 		LeftHandWeapon = akPlayer.GetEquippedWeapon(1)
 
@@ -14,10 +14,13 @@ Event OnContainerChanged(ObjectReference akNewContainer, ObjectReference akOldCo
 
 		    DanicaPurespring.SendModEvent("SLPCureFaceHuggerGag")
 		    akPlayer.SendModEvent("SLPCureFaceHuggerGag")
+
 		 	CorruptionOffSpell.cast(WhiterunSancturaryCorruptionActivator, akNewContainer)
 		 	WhiterunSancturaryCorruptionMarker.disable()
+
 		 	fctParasites.infectEstrusTentacles( akPlayer  )
-		 	QueenOfChaurusQuest.SetStage(255)
+
+		 	QueenOfChaurusQuest.SetStage(260)
 		endif
 
 	endIf
