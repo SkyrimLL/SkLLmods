@@ -9,13 +9,13 @@ Actor akSpeaker = akSpeakerRef as Actor
 Actor akActor = Game.GetPlayer()
 If  (SexLab.ValidateActor( akActor) > 0) &&  (SexLab.ValidateActor(akSpeaker) > 0) 
 		; Debug.Notification( "[Resists weakly]" )
-		Debug.Messagebox("Honey rubs her skin against your back shamelessly, moaning in your ear.. her hand reaching down between your legs.")
+		Debug.Messagebox("She rubs her body against you shamelessly, moaning in your ear.. her hand reaching down between your legs.")
 
 		ActorBase PlayerBase = akActor.GetBaseObject() as ActorBase
 		Int PlayerGender = PlayerBase.GetSex() ; 0 = Male ; 1 = Female
 		
 		sslThreadModel Thread = SexLab.NewThread()
-		Thread.AddActor(akSpeaker, IsVictim = true) ; // IsVictim = true
+		Thread.AddActor(akSpeaker, IsVictim = false) ; // IsVictim = true
 		Thread.AddActor(akActor) ; // IsVictim = true
 
 

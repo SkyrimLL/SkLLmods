@@ -6,7 +6,7 @@ Scriptname SLH_TIF_BimboGiggle Extends TopicInfo Hidden
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
-SLH_Control.playRandomSound(akSpeaker)
+SLH_Control.playGiggle(akSpeaker)
 ;END CODE
 EndFunction
 ;END FRAGMENT

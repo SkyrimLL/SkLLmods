@@ -15,7 +15,7 @@ If  (SexLab.ValidateActor( akActor) > 0) &&  (SexLab.ValidateActor(akSpeaker) > 
 		Int PlayerGender = PlayerBase.GetSex() ; 0 = Male ; 1 = Female
 		
 		sslThreadModel Thread = SexLab.NewThread()
-		Thread.AddActor(akSpeaker, IsVictim = true) ; // IsVictim = true
+		Thread.AddActor(akSpeaker, IsVictim = false) ; // IsVictim = true
 		Thread.AddActor(akActor) ; // IsVictim = true
 
 
