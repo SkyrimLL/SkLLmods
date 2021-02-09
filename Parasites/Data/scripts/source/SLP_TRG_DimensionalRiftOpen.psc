@@ -27,14 +27,14 @@ Event OnTriggerEnter(ObjectReference akActionRef)
 
 			Debug.Messagebox("The air flickers with echoes from the other side but the Rift remains closed to you. The Seed inside you churns and makes your skin shiver with the desire to wear the full chaurus armor and mask.")
 
-		elseif ( (!fctParasites.isInfectedByString( kPlayer,  "ChaurusQueenArmor" )) || (!fctParasites.isInfectedByString( kPlayer,  "ChaurusQueenGag" )) ) && (QueenOfChaurusQuest.GetStageDone(380)==1) && (QueenOfChaurusQuest.GetStageDone(400)==0)
+		elseif ( (!fctParasites.isInfectedByString( kPlayer,  "ChaurusQueenArmor" )) || (!fctParasites.isInfectedByString( kPlayer,  "ChaurusQueenGag" )) ) && (QueenOfChaurusQuest.GetStageDone(390)==1) && (QueenOfChaurusQuest.GetStageDone(400)==0)
 			; 380 - After jumping into the Abyss and 400 - before closing the portal
 
 			DimensionalRiftDoorMarkerRef.disable()
 
 			Debug.notification("The Rift is still there,but unreachable without your chaurus armor and mask.")
 
-		elseif ( (!fctParasites.isInfectedByString( kPlayer,  "ChaurusQueenArmor" )) || (!fctParasites.isInfectedByString( kPlayer,  "ChaurusQueenGag" )) ) && (QueenOfChaurusQuest.GetStageDone(380)==0) 
+		elseif (QueenOfChaurusQuest.GetStageDone(380)==0) 
 
 			DimensionalRiftDoorMarkerRef.disable()
 

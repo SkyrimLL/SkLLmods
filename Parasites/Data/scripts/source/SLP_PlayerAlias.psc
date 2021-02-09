@@ -314,7 +314,7 @@ Event OnUpdate()
 				iChaurusQueenFlaresFrequency = 100
 			endif
 
-			(StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusQueenDate")==0)
+			;StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusQueenDate")==0
 
 			if (Utility.RandomInt(0,100) < (iNextStageThrottle / iChaurusQueenFlaresFrequency))
 				debug.trace("[SLP] tryParasiteNextStage")
