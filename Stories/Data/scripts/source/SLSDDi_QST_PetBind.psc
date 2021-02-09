@@ -1,35 +1,36 @@
 ;BEGIN FRAGMENT CODE - Do not edit anything between this and the end comment
-;NEXT FRAGMENT INDEX 17
+;NEXT FRAGMENT INDEX 18
 Scriptname SLSDDi_QST_PetBind Extends Scene Hidden
 
 ;BEGIN FRAGMENT Fragment_10
 Function Fragment_10()
 ;BEGIN CODE
-	ObjectReference  PetSlaveActorREF= _SLSD_PetSlaveREF.GetReference() 
+ObjectReference  PetSlaveActorREF= _SLSD_PetSlaveREF.GetReference() 
 	Actor PetSlaveActor= _SLSD_PetSlaveREF.GetReference() as Actor
 	Actor PetFreeActor= _SLSD_PetFreeREF.GetReference() as Actor
+	Actor kPlayer = Game.GetPlayer()
 
 	_SLSD_PetFollow.SetValue(1)
 	_SLSD_PetPosition.SetValue(0)
 
-	FlameAuraFX.RemoteCast( PetFreeActor, PetFreeActor, Game.GetPlayer())
+	FlameAuraFX.RemoteCast( PetFreeActor, PetFreeActor, kPlayer )
 	Utility.Wait(1.0)
 
 	if (_SLSD_PetPlugFree.GetValue() == 1)
 		PetFreeActor.RemoveFromFaction( WEPlayerFriend )
 		PetFreeActor.AddToFaction( WEPlayerEnemy )
 		PetFreeActor.IgnoreFriendlyHits(False)
-		  PetFreeActor.SetRelationshipRank(Game.GetPlayer(), -4)
+		  PetFreeActor.SetRelationshipRank(kPlayer , -4)
 	else
 		PetFreeActor.AddToFaction( WEPlayerFriend )
 		PetFreeActor.RemoveFromFaction( WEPlayerEnemy )
 		PetFreeActor.IgnoreFriendlyHits()
-		   PetFreeActor.SetRelationshipRank(Game.GetPlayer(), 3)
+		   PetFreeActor.SetRelationshipRank(kPlayer , 3)
 
 	EndIf
 
 
-	PetSlaveActorREF.MoveTo(Game.GetPlayer())
+	PetSlaveActorREF.MoveTo(kPlayer )
 	PetSlaveActor.Enable()
 
 	Utility.Wait(1.0)

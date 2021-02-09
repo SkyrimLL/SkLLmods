@@ -1,5 +1,5 @@
 ;BEGIN FRAGMENT CODE - Do not edit anything between this and the end comment
-;NEXT FRAGMENT INDEX 28
+;NEXT FRAGMENT INDEX 29
 Scriptname SLSDDi_QST_PetFree01 Extends Scene Hidden
 
 ;BEGIN FRAGMENT Fragment_3
@@ -10,22 +10,35 @@ Function Fragment_3()
 EndFunction
 ;END FRAGMENT
 
+;BEGIN FRAGMENT Fragment_0
+Function Fragment_0()
+;BEGIN CODE
+;
+;END CODE
+EndFunction
+;END FRAGMENT
+
 ;BEGIN FRAGMENT Fragment_17
 Function Fragment_17()
 ;BEGIN CODE
-	Actor PetSlaveActor= _SLSD_PetSlaveREF.GetReference() as Actor
+Actor PetSlaveActor= _SLSD_PetSlaveREF.GetReference() as Actor
 	ObjectReference PetFreeActorREF= _SLSD_PetFreeREF.GetReference() 
 	Actor PetFreeActor= _SLSD_PetFreeREF.GetReference() as Actor
 	string PetRaceID = MiscUtil.GetActorRaceEditorID(PetFreeActor)
+	Actor kPlayer = Game.GetPlayer()
+
 	if sslCreatureAnimationSlots.HasRaceKey("FlameAtronach") && !sslCreatureAnimationSlots.HasRaceID("FlameAtronach", PetRaceID)
 		sslCreatureAnimationSlots.AddRaceID("FlameAtronach", PetRaceID)
 	EndIf
+
 	_SLSD_PetFollow.SetValue(1)
 	_SLSD_PetPosition.SetValue(0)
 
-	PetFreeActorREF.MoveTo(Game.GetPlayer())
+	PetFreeActorREF.MoveTo(kPlayer)
 	Debug.Trace("[SL Stories] Enabling Pet Free")
 	PetFreeActor.Enable()
+
+	Sexlab.TreatAsFemale(PetFreeActor)
 
 	Utility.Wait(1.0)
 
@@ -42,22 +55,14 @@ Function Fragment_17()
 		PetFreeActor.RemoveFromFaction( WEPlayerFriend )
 		PetFreeActor.AddToFaction( WEPlayerEnemy )
 		PetFreeActor.IgnoreFriendlyHits(False)
-		  PetFreeActor.SetRelationshipRank(Game.GetPlayer(), -4)
+		  PetFreeActor.SetRelationshipRank(kPlayer, -4)
 	else
 		PetFreeActor.AddToFaction( WEPlayerFriend )
 		PetFreeActor.RemoveFromFaction( WEPlayerEnemy )
 		PetFreeActor.IgnoreFriendlyHits()
-		   PetFreeActor.SetRelationshipRank(Game.GetPlayer(), 3)
+		   PetFreeActor.SetRelationshipRank(kPlayer, 3)
 
 EndIf
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_0
-Function Fragment_0()
-;BEGIN CODE
-;
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -102,3 +107,6 @@ SPELL Property FlameShieldFX  Auto
 Faction Property WEPlayerEnemy  Auto  
 
 GlobalVariable Property IsPetHuman  Auto  
+
+SexLabFramework Property SexLab  Auto  
+
