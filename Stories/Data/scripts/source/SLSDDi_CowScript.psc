@@ -10,7 +10,7 @@ Function OnEquippedPre(actor akActor, bool silent=false)
 		EndIf
 	EndIf
 
-	_SLS_MilkProduced.SetValue(1)
+	; _SLS_MilkProduced.SetValue(1)
 	
 	Parent.OnEquippedPre(akActor, silent)
 EndFunction

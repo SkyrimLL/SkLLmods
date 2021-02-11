@@ -18,7 +18,7 @@ Event OnContainerChanged(ObjectReference akNewContainer, ObjectReference akOldCo
 		 	CorruptionOffSpell.cast(WhiterunSancturaryCorruptionActivator, akNewContainer)
 		 	WhiterunSancturaryCorruptionMarker.disable()
 
-		 	fctParasites.infectEstrusTentacles( akPlayer  )
+		 	fctParasites.infectEstrusChaurusEgg( akPlayer  )
 
 		 	QueenOfChaurusQuest.SetStage(260)
 		endif

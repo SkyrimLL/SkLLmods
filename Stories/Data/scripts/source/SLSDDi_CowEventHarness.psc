@@ -4,7 +4,7 @@ Keyword Property SLS_CowHarness Auto
 Keyword Property SLSD_CowMilker Auto
 
 Bool Function Filter(actor akActor, int chanceMod=0)
-	 return ((akActor.WornHasKeyword(SLS_CowHarness) || akActor.WornHasKeyword(SLS_CowHarness) ) && Parent.Filter(akActor, chanceMod))
+	 return ((akActor.WornHasKeyword(SLS_CowHarness) || akActor.WornHasKeyword(SLSD_CowMilker) ) && Parent.Filter(akActor, chanceMod))
 EndFunction
 
 Function Execute(actor akActor)

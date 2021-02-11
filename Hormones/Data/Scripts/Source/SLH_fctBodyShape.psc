@@ -1884,6 +1884,7 @@ function initShapeConstants(Actor kActor)
 	StorageUtil.SetIntValue(none, "_SLH_NiNodeOverrideON", isNiOInstalled as Int)
 
 	isSlifInstalled = Game.GetModbyName("SexLab Inflation Framework.esp") != 255
+	StorageUtil.SetIntValue(none, "_SLH_SlifON", isSlifInstalled as Int)
 
 	; setShapeState(kActor)
 

@@ -281,7 +281,33 @@ event OnPageReset(string a_page)
 		AddHeaderOption(" The Milk Farm")
 		AddSliderOptionST("STATE_MILKFARM_BREAST","Max breast size", _breastMaxMilkFarm,"{1}")
 		; AddToggleOptionST("STATE_MILKFARM_START","Player starting quest", _startMilkFarm as Float, OPTION_FLAG_DISABLED)
+    
 
+		SetCursorPosition(1)
+		AddHeaderOption(" Last Cow Milked info")
+
+		ObjectReference kActorRef = StorageUtil.GetFormValue( none , "_SD_iLastCowMilked")	as ObjectReference
+		Actor kActor = kActorRef	as Actor
+
+		AddTextOption(" Cow (actor): " + kActor, "", OPTION_FLAG_DISABLED)
+		AddTextOption(" Cow (name): " +  kActor.GetBaseObject().GetName(), "", OPTION_FLAG_DISABLED) 
+		
+		if (kActorRef != None)
+			AddTextOption(" _SLH_iLactating: " + StorageUtil.GetIntValue( kActor, "_SLH_iLactating")  as Int, "", OPTION_FLAG_DISABLED)
+			AddTextOption(" _SLH_iProlactinLevel: " + StorageUtil.GetIntValue( kActor , "_SLH_iProlactinLevel")  as Int, "", OPTION_FLAG_DISABLED)
+			AddTextOption(" _SLH_fHormoneLactation: " + StorageUtil.GetFloatValue( kActor , "_SLH_fHormoneLactation")  as Int, "", OPTION_FLAG_DISABLED)
+			AddTextOption(" _SLH_iMilkLevel: " + StorageUtil.GetIntValue( kActor , "_SLH_iMilkLevel")  as Int, "", OPTION_FLAG_DISABLED)
+			AddTextOption(" _SLH_isPregnant: " + StorageUtil.GetIntValue( kActor , "_SLH_isPregnant")  as Int, "", OPTION_FLAG_DISABLED) 
+
+			AddHeaderOption(" Milk Production") 
+			AddTextOption(" _SLH_iMilkProduced: " + StorageUtil.GetIntValue( kActor , "_SLH_iMilkProduced")  as Int, "", OPTION_FLAG_DISABLED)
+			AddTextOption(" _SLH_iDivineMilkProduced: " + StorageUtil.GetIntValue( kActor , "_SLH_iDivineMilkProduced")  as Int, "", OPTION_FLAG_DISABLED)
+			AddTextOption(" _SLH_iMilkProducedTotal: " + StorageUtil.GetIntValue( kActor , "_SLH_iMilkProducedTotal")  as Int, "", OPTION_FLAG_DISABLED)
+		else
+			AddTextOption(" Cow not initialized. " , "", OPTION_FLAG_DISABLED)	 
+			AddTextOption(" Milk an NPC first" , "", OPTION_FLAG_DISABLED)		
+			AddTextOption(" or get yourself milked. " , "", OPTION_FLAG_DISABLED)		
+		endif
 		; AddHeaderOption(" The Pet")
 
 

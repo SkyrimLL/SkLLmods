@@ -217,8 +217,8 @@ event OnPageReset(string a_page)
 		AddToggleOptionST("STATE_CHAURUSWORMVAG_TOGGLE","Infect/Cure Vaginal Chaurus Worm", _toggleChaurusWormVag as Float)
 		AddToggleOptionST("STATE_TENTACLEMONSTER_TOGGLE","Infect/Cure Tentacle Monster", _toggleTentacleMonster as Float)
 		AddToggleOptionST("STATE_LIVINGARMOR_TOGGLE","Infect/Cure Living Armor", _toggleLivingArmor as Float)
-		AddToggleOptionST("STATE_FACEHUGGER_TOGGLE","Infect/Cure Creepy Crawler", _toggleFaceHugger as Float)
-		AddToggleOptionST("STATE_FACEHUGGERGAG_TOGGLE","Infect/Cure Creepy Crawler (face)", _toggleFaceHuggerGag as Float)
+		AddToggleOptionST("STATE_FACEHUGGER_TOGGLE","Infect/Cure Hip Hugger", _toggleFaceHugger as Float)
+		AddToggleOptionST("STATE_FACEHUGGERGAG_TOGGLE","Infect/Cure Face Hugger", _toggleFaceHuggerGag as Float)
 		AddToggleOptionST("STATE_BARNACLES_TOGGLE","Infect/Cure Barnacles", _toggleBarnacles as Float)
 
 		AddHeaderOption(" NiOverride node scales")
@@ -823,10 +823,10 @@ state STATE_FACEHUGGER_TOGGLE ; TOGGLE
 		Int toggle = Math.LogicalXor( 1,  StorageUtil.GetIntValue(kPlayer, "_SLP_toggleFaceHugger" )  )  
 
 		If (toggle ==1)
-			Debug.MessageBox("Infecting player with Face Hugger")
+			Debug.MessageBox("Infecting player with Hip Hugger")
 			kPlayer.SendModEvent("SLPInfectFaceHugger")
 		else
-			Debug.MessageBox("Curing player from Face Hugger")
+			Debug.MessageBox("Curing player from Hip Hugger")
 			kPlayer.SendModEvent("SLPCureFaceHugger")
 		Endif
 
@@ -841,7 +841,7 @@ state STATE_FACEHUGGER_TOGGLE ; TOGGLE
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Manually Infect/Cure Face Hugger for roleplay or testing purposes.")
+		SetInfoText("Manually Infect/Cure Hip Hugger for roleplay or testing purposes.")
 	endEvent
 
 endState
@@ -866,7 +866,7 @@ state STATE_FACEHUGGER_CHANCE ; SLIDER
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Chance of attacks by Creepy crawlers (Hips)")
+		SetInfoText("Chance of attacks by Hip Hugger")
 	endEvent
 endState
 ; AddToggleOptionST("STATE_FACEHUGGERGAG_TOGGLE","Face Hugger", _toggleFaceHugger as Float, OPTION_FLAG_DISABLED)
@@ -875,10 +875,10 @@ state STATE_FACEHUGGERGAG_TOGGLE ; TOGGLE
 		Int toggle = Math.LogicalXor( 1,  StorageUtil.GetIntValue(kPlayer, "_SLP_toggleFaceHuggerGag" )  )  
 
 		If (toggle ==1)
-			Debug.MessageBox("Infecting player with Creepy Crawler (face)")
+			Debug.MessageBox("Infecting player with Face Hugger")
 			kPlayer.SendModEvent("SLPInfectFaceHuggerGag")
 		else
-			Debug.MessageBox("Curing player from Creepy Crawler (face)")
+			Debug.MessageBox("Curing player from Face Hugger")
 			kPlayer.SendModEvent("SLPCureFaceHuggerGag")
 		Endif
 
@@ -893,7 +893,7 @@ state STATE_FACEHUGGERGAG_TOGGLE ; TOGGLE
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Manually Infect/Cure Creepy Crawler (face) for roleplay or testing purposes.")
+		SetInfoText("Manually Infect/Cure Face Hugger for roleplay or testing purposes.")
 	endEvent
 
 endState
@@ -919,7 +919,7 @@ state STATE_FACEHUGGERGAG_CHANCE ; SLIDER
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Chance of attacks by Creepy crawlers (face)")
+		SetInfoText("Chance of attacks by Face Hugger")
 	endEvent
 endState
 
