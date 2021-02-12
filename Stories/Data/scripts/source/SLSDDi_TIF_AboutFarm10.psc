@@ -6,9 +6,11 @@ Scriptname SLSDDi_TIF_AboutFarm10 Extends TopicInfo Hidden
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
+CowLife.InitBusiness()
 Self.GetOwningQuest().SetStage(10)
 ;END CODE
 EndFunction
 ;END FRAGMENT
 
 ;END FRAGMENT CODE - Do not edit anything between this and the begin comment
+SLSDDi_QST_CowLife Property CowLife Auto

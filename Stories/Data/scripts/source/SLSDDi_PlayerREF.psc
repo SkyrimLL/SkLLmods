@@ -78,6 +78,7 @@ Function _maintenance()
 		elseif modName == "Campfire.esm"
 			Form Flame = Game.GetFormFromFile(0xA50C , "SexLab-StoriesDevious.esp")
 			If Flame 
+				; debug.messagebox("[SLSDDi] Flame (pet) found: " + Flame)
 				FormList CampHeatSourcesAll = Game.GetFormFromFile(0x28F06, "Campfire.esm") as FormList
 				If CampHeatSourcesAll && !CampHeatSourcesAll.HasForm(Flame)
 					CampHeatSourcesAll.AddForm(Flame)
@@ -99,6 +100,8 @@ Function _maintenance()
 				else
 					Debug.Trace("SexLab Stories Devious: Flame is already on Campfire:CampHeatSourcesFireMedium")
 				EndIf
+			else
+				; debug.messagebox("[SLSDDi] Flame (pet) not found")
 			EndIf
 
 		endif
@@ -278,56 +281,88 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 	Actor[] victims = new Actor[1]
 	victims[0] = victim
 	
-	; Debug.Notification("Has player: " + CowLife._hasPlayer(actors))
+	; Debug.Notification("Has player: " + _hasPlayer(actors))
 	; Debug.Notification("Arousal trigger: " + (slaUtil.GetActorExposure(PlayerActor) / 3))
 
 	; Check for breast stimulation
-	if (animation.HasTag("Breast") || animation.HasTag("Boobs") || animation.HasTag("Boobjob")) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iLactating") ==0 )
-        if (Utility.RandomInt(0,100)>90)
-        	StorageUtil.SetIntValue(PlayerActor, "_SLH_iLactating", 1)
-			Debug.Messagebox("Player starts lactating!")
+	Debug.Trace("[SLSDDi] Checking Player lactation: " )
 
-        endif
-    EndIf
+	If (isFemale(PlayerActor)) && (_hasPlayer(actors))
+		Debug.Trace("[SLSDDi]    Player is female" )
 
+		CowLife.checkIfLactating(PlayerActor)
 
-	; Force lactation if Player is wearing harness and not lactating yet
-	if ( PlayerActor.WornHasKeyword(SLSD_CowHarness) || PlayerActor.WornHasKeyword(SLSD_CowMilker) ) 
-		if (!StorageUtil.HasIntValue(PlayerActor, "_SLH_iLactating") || (StorageUtil.GetIntValue(PlayerActor, "_SLH_iLactating") == 0) )
-			StorageUtil.SetIntValue(PlayerActor, "_SLH_iLactating", 1)
-			Debug.Messagebox("Player starts lactating!")
-		endif
-	endif
-
-	If (StorageUtil.GetIntValue(PlayerActor, "_SLH_iLactating") == 1)
-		If (CowLife._hasPlayer(actors))
-			CowLife.UpdateMilkAfterSex(PlayerActor)
-		EndIf
-	Endif
-
-	int idx = 0
-	while idx < actors.Length
-	; Check for breast stimulation
-		if (animation.HasTag("Breast") || animation.HasTag("Boobs") || animation.HasTag("Boobjob")) && (StorageUtil.GetIntValue(actors[idx], "_SLH_iLactating") ==0 )
+		if (animation.HasTag("Breast") || animation.HasTag("Boobs") || animation.HasTag("Boobjob")) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iLactating") ==0 ) 
 	        if (Utility.RandomInt(0,100)>90)
-	        	StorageUtil.SetIntValue(actors[idx], "_SLH_iLactating", 1)
-				Debug.Messagebox("NPC starts lactating!")
+	        	StorageUtil.SetIntValue(PlayerActor, "_SLH_iLactating", 1)
+				Debug.Trace("[SLSDDi]    Player starts lactating" )
 
 	        endif
 	    EndIf
 
-		; Force lactation if NPC is wearing harness and not lactating yet
-		if ( actors[idx].WornHasKeyword(SLSD_CowHarness) || actors[idx].WornHasKeyword(SLSD_CowMilker) ) 
-			if  (!StorageUtil.HasIntValue(actors[idx], "_SLH_iLactating") || (StorageUtil.GetIntValue(actors[idx], "_SLH_iLactating") == 0) )
-				StorageUtil.SetIntValue(actors[idx], "_SLH_iLactating", 1)
-				Debug.Messagebox("NPC starts lactating!")
+
+		; Force lactation if Player is wearing harness and not lactating yet
+		if ( PlayerActor.WornHasKeyword(SLSD_CowHarness) || PlayerActor.WornHasKeyword(SLSD_CowMilker) ) 
+			if (!StorageUtil.HasIntValue(PlayerActor, "_SLH_iLactating") || (StorageUtil.GetIntValue(PlayerActor, "_SLH_iLactating") == 0) )
+				StorageUtil.SetIntValue(PlayerActor, "_SLH_iLactating", 1)
+				Debug.Trace("[SLSDDi]    Player starts lactating" )
 			endif
 		endif
 
-		if (actors[idx]) && ( actors[idx] != PlayerActor) && (StorageUtil.GetIntValue(actors[idx], "_SLH_iLactating") == 1)
+		If (StorageUtil.GetIntValue(PlayerActor, "_SLH_iLactating") == 1) 
+			Debug.Trace("[SLSDDi]    Player is lactating - updating milk" )
+			CowLife.UpdateMilkAfterSex(PlayerActor)
+		else
+			Debug.Trace("[SLSDDi]    Player is not lactating" )
 
-			CowLife.UpdateNPCMilkAfterSex(actors[idx])
-		EndIf
+		Endif
+	else
+		Debug.Trace("[SLSDDi]    Invalid player" )
+		Debug.Trace("[SLSDDi]       (_hasPlayer(actors): " + (_hasPlayer(actors)) )
+		Debug.Trace("[SLSDDi]       isFemale(actors[idx]): " + isFemale(actors[idx]))
+
+	endif
+
+	int idx = 0
+	while idx < actors.Length
+		; Check for breast stimulation
+		Debug.Trace("[SLSDDi] Checking actor lactation: " + actors[idx] )
+
+		If (actors[idx]) && ( actors[idx] != PlayerActor) && (isFemale(actors[idx]))
+			Debug.Trace("[SLSDDi]    Actor is female and not the player" )
+
+			CowLife.checkIfLactating(actors[idx])
+
+			if (animation.HasTag("Breast") || animation.HasTag("Boobs") || animation.HasTag("Boobjob")) && (StorageUtil.GetIntValue(actors[idx], "_SLH_iLactating") ==0 )
+		        if (Utility.RandomInt(0,100)>90)
+		        	StorageUtil.SetIntValue(actors[idx], "_SLH_iLactating", 1)
+					Debug.Trace("[SLSDDi]    Actor starts lactating" )
+
+		        endif
+		    EndIf
+
+			; Force lactation if NPC is wearing harness and not lactating yet
+			if ( actors[idx].WornHasKeyword(SLSD_CowHarness) || actors[idx].WornHasKeyword(SLSD_CowMilker) ) 
+				if  (!StorageUtil.HasIntValue(actors[idx], "_SLH_iLactating") || (StorageUtil.GetIntValue(actors[idx], "_SLH_iLactating") == 0) )
+					StorageUtil.SetIntValue(actors[idx], "_SLH_iLactating", 1)
+					Debug.Trace("[SLSDDi]    Actor starts lactating" )
+				endif
+			endif
+
+			if (StorageUtil.GetIntValue(actors[idx], "_SLH_iLactating") == 1)
+				Debug.Trace("[SLSDDi]    Actor is lactating - updating milk" )
+				CowLife.UpdateMilkAfterSex(actors[idx])
+			else
+				Debug.Trace("[SLSDDi]    Actor is not lactating" )
+			EndIf
+		else
+			Debug.Trace("[SLSDDi]    Invalid actor" )
+			Debug.Trace("[SLSDDi]       actors[idx]: " + actors[idx] )
+			Debug.Trace("[SLSDDi]       ( actors[idx] != PlayerActor): " + ( actors[idx] != PlayerActor) )
+			Debug.Trace("[SLSDDi]       isFemale(actors[idx]): " + isFemale(actors[idx]))
+
+		Endif
+
 		idx += 1
 	endwhile
 
@@ -366,7 +401,7 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 	; 	_listActors("End: ", actors)
 	; EndIf
 
-	; If (CowLife._hasPlayer(actors))
+	; If (_hasPlayer(actors))
 		;
 	; EndIf
 
@@ -388,7 +423,7 @@ Event OnSexLabOrgasm(String _eventName, String _args, Float _argc, Form _sender)
 	Actor[] victims = new Actor[1]
 	victims[0] = victim
 
-	If (StorageUtil.GetIntValue(PlayerActor, "_SLH_iLactating") == 1)
+	If (_hasPlayer(actors)) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iLactating") == 1)
 		Debug.Trace("SexLab Stories: Orgasm!")
 		If (!StorageUtil.HasIntValue(PlayerActor, "_SLH_iMilkDate") || (StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkDate") == 0) ) 
 			StorageUtil.SetIntValue(PlayerActor, "_SLH_iMilkDate", Game.QueryStat("Days Passed"))
@@ -396,9 +431,8 @@ Event OnSexLabOrgasm(String _eventName, String _args, Float _argc, Form _sender)
 
 		iMilkDateOffset = Game.QueryStat("Days Passed") - StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkDate")
 
-		if (CowLife._hasPlayer(actors))
-			CowLife.UpdateMilkAfterOrgasm(PlayerActor, iMilkDateOffset)
-		endif
+		CowLife.UpdateMilkAfterOrgasm(PlayerActor, iMilkDateOffset)
+
 	Endif
 
 	int idx = 0
@@ -411,7 +445,7 @@ Event OnSexLabOrgasm(String _eventName, String _args, Float _argc, Form _sender)
 
 			iMilkDateOffset = Game.QueryStat("Days Passed") - StorageUtil.GetIntValue(actors[idx], "_SLH_iMilkDate")
 
-			CowLife.UpdateNPCMilkAfterOrgasm(actors[idx],  iMilkDateOffset)
+			CowLife.UpdateMilkAfterOrgasm(actors[idx],  iMilkDateOffset)
 		EndIf
 		idx += 1
 	endwhile
@@ -424,6 +458,72 @@ endEvent
 
 
 
+; -------------------------------------------------------------------
+Bool function isFemale(actor kActor)
+	Bool bIsFemale
+	ActorBase kActorBase = kActor.GetActorBase()
+
+	Debug.Trace("[SLP]Checking actor gender")
+	Debug.Trace("[SLP]    kActor: " + kActor)
+	Debug.Trace("[SLP]    kActorBase: " + kActorBase)
+
+	if (kActorBase.GetSex() == 1) ; female
+		bIsFemale = True
+	Else
+		bIsFemale = False
+	EndIf
+
+	return bIsFemale
+EndFunction
+
+Bool function isMale(actor kActor)
+	return !isFemale(kActor)
+EndFunction
+
+
+; -------------------------------------------------------------------
+Bool Function _hasPlayer(Actor[] _actors)
+	ObjectReference PlayerREF= PlayerAlias.GetReference()
+
+	int idx = 0
+	while idx < _actors.Length
+		if _actors[idx] == PlayerRef
+			return True
+		endif
+		idx += 1
+	endwhile
+	Return False
+EndFunction
+
+Bool Function _hasActor(Actor[] _actors, Actor thisActor)
+
+	int idx = 0
+	while idx < _actors.Length
+		if _actors[idx] == thisActor as ObjectReference
+			return True
+		endif
+		idx += 1
+	endwhile
+	Return False
+EndFunction
+
+Bool Function _hasRace(Actor[] _actors, Race thisRace)
+	ActorBase aBase 
+	Race aRace 
+
+	int idx = 0
+	while idx < _actors.Length
+		if (_actors[idx])
+			; aBase = _actors[idx].GetBaseObject() as ActorBase
+			aRace = _actors[idx].GetLeveledActorBase().GetRace()
+			if aRace == thisRace
+				return True
+			endif
+		EndIf
+		idx += 1
+	endwhile
+	Return False
+EndFunction
 
 bool Function CheckXPMSERequirements(Actor akActor, bool isFemale)
 	return XPMSELib.CheckXPMSEVersion(akActor, isFemale, XPMSE_VERSION, true) && XPMSELib.CheckXPMSELibVersion(XPMSELIB_VERSION) && SKSE.GetPluginVersion("NiOverride") >= NIOVERRIDE_VERSION && NiOverride.GetScriptVersion() >= NIOVERRIDE_SCRIPT_VERSION

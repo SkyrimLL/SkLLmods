@@ -8,6 +8,21 @@ zaddReliableForceGreet Property fg Auto
 
 slaUtilScr Property slaUtil  Auto  
 
+Quest Property DivineCheeseQuest  Auto
+SLSDDi_QST_DivineCheese Property DivineCheeseScript Auto
+
+ReferenceAlias Property SnowShodCowDunmerAlias Auto
+ReferenceAlias Property SnowShodCowBosmerAlias Auto
+ReferenceAlias Property SnowShodCowNordAlias Auto
+ReferenceAlias Property SnowShodCowAltmerAlias Auto
+ReferenceAlias Property SnowShodCowImperialAlias Auto
+ReferenceAlias Property SnowShodCowOrcAlias Auto
+ReferenceAlias Property SnowShodCowBretonAlias Auto
+ReferenceAlias Property SnowShodCowRedguardAlias Auto
+
+ObjectReference Property BretonCowRef Auto
+ObjectReference Property NordCowRef Auto
+
 Potion Property Milk Auto
 Potion Property DivineMilk Auto
 
@@ -36,6 +51,8 @@ Armor Property cowHarnessRendered Auto
 Armor Property autoCowHarnessInventory Auto
 Armor Property autoCowHarnessRendered Auto
 
+Outfit Property FarmCowOutfit Auto
+
 Keyword Property SLS_CowHarness Auto
 Keyword Property SLS_CowMilker Auto
 
@@ -59,6 +76,7 @@ int Property MAX_PRESETS = 4 AutoReadOnly
 int Property MAX_MORPHS = 19 AutoReadOnly
 
 int MilkLevel = 0
+Int iTotalMilkProduced = 0
 
 int MILK_LEVEL_TRIGGER = 20
 
@@ -73,7 +91,7 @@ Function PlayerReceivedCowharness(Actor kActor )
 
 	; EquipDevice(actor akActor, armor deviceInventory, armor deviceRendered, keyword zad_DeviousDevice, bool skipEvents=false, bool skipMutex=false)
 	libs.EquipDevice(kActor, cowHarnessInventory , cowHarnessRendered , SLS_CowHarness)
-	StorageUtil.SetIntValue(none, "_SLH_iLactating", 1)
+	; StorageUtil.SetIntValue(none, "_SLH_iLactating", 1)
 
 	; SetStage(10)
 	; SetObjectiveDisplayed(10)
@@ -87,7 +105,7 @@ Function PlayerRemovedCowharness( Actor kActor )
 
 	; EquipDevice(actor akActor, armor deviceInventory, armor deviceRendered, keyword zad_DeviousDevice, bool skipEvents=false, bool skipMutex=false)
 	libs.RemoveDevice(kActor, cowHarnessInventory , cowHarnessRendered , SLS_CowHarness)
-	StorageUtil.SetIntValue(none, "_SLH_iLactating", 0)
+	; StorageUtil.SetIntValue(none, "_SLH_iLactating", 0)
 
 	; SetStage(10)
 	; SetObjectiveDisplayed(10)
@@ -101,7 +119,7 @@ Function PlayerReceivedAutoCowharness( Actor kActor )
 
 	; EquipDevice(actor akActor, armor deviceInventory, armor deviceRendered, keyword zad_DeviousDevice, bool skipEvents=false, bool skipMutex=false)
 	libs.EquipDevice(kActor, autoCowHarnessInventory , autoCowHarnessRendered , SLS_CowMilker)
-	StorageUtil.SetIntValue(none, "_SLH_iLactating", 1)
+	; StorageUtil.SetIntValue(none, "_SLH_iLactating", 1)
 
 	; SetStage(10)
 	; SetObjectiveDisplayed(10)
@@ -115,7 +133,7 @@ Function PlayerRemovedAutoCowharness( Actor kActor )
 
 	; EquipDevice(actor akActor, armor deviceInventory, armor deviceRendered, keyword zad_DeviousDevice, bool skipEvents=false, bool skipMutex=false)
 	libs.RemoveDevice(kActor, autoCowHarnessInventory , autoCowHarnessRendered , SLS_CowMilker)
-	StorageUtil.SetIntValue(none, "_SLH_iLactating", 0)
+	; StorageUtil.SetIntValue(none, "_SLH_iLactating", 0)
 
 	; SetStage(10)
 	; SetObjectiveDisplayed(10)
@@ -126,6 +144,14 @@ Function registerCow(Actor kActor)
 		StorageUtil.SetIntValue(kActor, "_SLH_iMilkCow", 1)
 		StorageUtil.FormListAdd(none, "_SLH_lMilkCowList", kActor)
 	endif
+
+	if (StorageUtil.GetIntValue(kActor, "_SLH_iProlactinLevel") < 10)
+		StorageUtil.SetIntValue(kActor, "_SLH_iProlactinLevel", Utility.RandomInt(2,10)) 
+	endif
+	
+	StorageUtil.SetFloatValue( kActor , "_SLH_fHormoneLactation", StorageUtil.GetIntValue(kActor, "_SLH_iProlactinLevel") as Float)
+	StorageUtil.SetIntValue(kActor, "_SLH_iLactating", 1)
+
 EndFunction
 
 Function updateAllCows()
@@ -157,6 +183,8 @@ Function updateCowStatus(Actor kActor, String bCreateMilk = "")
 	Float fLactationMilkDate = ( Game.QueryStat("Days Passed") - StorageUtil.GetIntValue(kActor, "_SLH_iMilkDate") ) as Float
 
 	pActorBase = kActor.GetActorBase()
+
+	checkIfLactating(kActor)
 
 	if ( kActor.WornHasKeyword(SLSD_CowHarness) || kActor.WornHasKeyword(SLSD_CowMilker) ) && (!StorageUtil.HasIntValue(kActor, "_SLH_iLactating") || (StorageUtil.GetIntValue(kActor, "_SLH_iLactating") == 0) )
 		StorageUtil.SetIntValue(kActor, "_SLH_iLactating", 1)
@@ -241,18 +269,16 @@ Function updateCowStatus(Actor kActor, String bCreateMilk = "")
 		GV_MilkLevel.SetValue(StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") as Int)
 		GV_ProlactinLevel.SetValue(StorageUtil.GetIntValue(kActor, "_SLH_iProlactinLevel") as Int)
 	Endif
+
+	StorageUtil.SetFormValue( none , "_SD_iLastCowMilked", kActor)
 EndFunction
 
 Function UpdateMilkAfterSex(Actor kActor)
-	UpdateNPCMilkAfterSex(kActor)
-EndFunction
-
-Function UpdateNPCMilkAfterSex(Actor kActor)
 	Actor kPlayer = Game.GetPlayer()
 	Int iProlactinLevel 
 	Float fLactiationHormoneMod = 0.1
 
-	Debug.Trace("[SLSDDi] UpdateNPCMilkAfterSex - Actor: " + kActor)
+	Debug.Trace("[SLSDDi] UpdateMilkAfterSex - Actor: " + kActor)
 	StorageUtil.SetFormValue( none , "_SD_iLastCowMilked", kActor)
 
 	iProlactinLevel = StorageUtil.GetIntValue(kActor, "_SLH_iProlactinLevel")
@@ -276,7 +302,7 @@ Function UpdateNPCMilkAfterSex(Actor kActor)
 		if (kActor == kPlayer)
 			Debug.Notification("Your breasts are swelling from a strong rush of milk.")
 		else
-			Debug.Notification("the cow's breasts are swelling from a strong rush of milk.")
+			Debug.Notification("The cow's breasts are swelling from a strong rush of milk.")
 		endif
 
 		If (StorageUtil.GetIntValue(kActor, "_SLH_isPregnant") == 1) 
@@ -336,10 +362,6 @@ Function UpdateNPCMilkAfterSex(Actor kActor)
 EndFunction
 
 Function UpdateMilkAfterOrgasm(Actor kActor, Int iMilkDateOffset)
-	UpdateNPCMilkAfterOrgasm( kActor,  iMilkDateOffset)
-EndFunction
-
-Function UpdateNPCMilkAfterOrgasm(Actor kActor, Int iMilkDateOffset)
 	Actor kPlayer = Game.GetPlayer()
 
 	Debug.Trace("[SLSDDi] UpdateNPCMilkAfterOrgasm - Actor: " + kActor)
@@ -520,49 +542,113 @@ Function GetMilk(Actor kActor, Int iNumberBottles=1)
 	StorageUtil.SetIntValue(kActor, "_SLH_iMilkProducedTotal", StorageUtil.GetIntValue(kActor, "_SLH_iMilkProducedTotal") +1)	
 EndFunction
 
+Function checkIfLactating(Actor kActor)
+	Bool isLactating = false
+
+	If (StorageUtil.GetIntValue(kActor, "_SLH_iMilkCow") == 1)
+		isLactating = true
+	endif
+
+	if (StorageUtil.GetIntValue(kActor, "_SLH_iProlactinLevel") > 0)
+		isLactating = true
+	endif
+	
+	if (StorageUtil.GetFloatValue( kActor , "_SLH_fHormoneLactation") > 0.0)
+		isLactating = true
+	endif
+
+	if (isLactating)
+		StorageUtil.SetIntValue(kActor, "_SLH_iLactating", 1)
+	else
+		StorageUtil.SetIntValue(kActor, "_SLH_iLactating", 0)
+	endif
+EndFunction
+
 ; -------------------------------------------------------------------
-Bool Function _hasPlayer(Actor[] _actors)
-	ObjectReference PlayerREF= PlayerAlias.GetReference()
+Function InitBusiness()
+	If (!StorageUtil.HasIntValue(none, "_SLS_iMilkFarmBusiness"))
+ 
+		InitFarmCow(BretonCowRef, "Breton") 
+		InitFarmCow(NordCowRef, "Nord")  
 
-	int idx = 0
-	while idx < _actors.Length
-		if _actors[idx] == PlayerRef
-			return True
-		endif
-		idx += 1
-	endwhile
-	Return False
+		StorageUtil.SetIntValue(none, "_SLS_iMilkFarmBusiness", 1)
+		Debug.Trace("[SLS] Milk Farm Business initialized")
+	EndIf
 EndFunction
 
-Bool Function _hasActor(Actor[] _actors, Actor thisActor)
+Function UpdateBusiness()
+	String sBusinessStatusMsg = "" 
 
-	int idx = 0
-	while idx < _actors.Length
-		if _actors[idx] == thisActor as ObjectReference
-			return True
-		endif
-		idx += 1
-	endwhile
-	Return False
+	; First time init if mod updated from old version
+	If (!StorageUtil.HasIntValue(none, "_SLS_iMilkFarmBusiness"))
+		InitBusiness()
+	endif
+ 
+	iTotalMilkProduced = 0
+	sBusinessStatusMsg += GetFarmCowStatus(SnowShodCowBretonAlias.GetReference(), "Breton") 
+	sBusinessStatusMsg += GetFarmCowStatus(SnowShodCowNordAlias.GetReference(), "Nord") 
+	sBusinessStatusMsg += GetFarmCowStatus(SnowShodCowImperialAlias.GetReference(), "Imperial") 
+	sBusinessStatusMsg += GetFarmCowStatus(SnowShodCowRedguardAlias.GetReference(), "Redguard") 
+	sBusinessStatusMsg += GetFarmCowStatus(SnowShodCowBosmerAlias.GetReference(), "Bosmer") 
+	sBusinessStatusMsg += GetFarmCowStatus(SnowShodCowDunmerAlias.GetReference(), "Dunmer") 
+	sBusinessStatusMsg += GetFarmCowStatus(SnowShodCowAltmerAlias.GetReference(), "Altmer") 
+	sBusinessStatusMsg += GetFarmCowStatus(SnowShodCowOrcAlias.GetReference(), "Orc") 
+
+	iTotalMilkProduced += StorageUtil.GetIntValue(game.getplayer(), "_SLH_iMilkProducedTotal")
+	sBusinessStatusMsg += "\n Player: " +  iTotalMilkProduced + " Milk Bottle"
+
+	updateAllCows()
+
+	sBusinessStatusMsg += "\n Total Milk Produced: " + iTotalMilkProduced
+
+	debug.MessageBox(sBusinessStatusMsg)
 EndFunction
 
-Bool Function _hasRace(Actor[] _actors, Race thisRace)
-	ActorBase aBase 
-	Race aRace 
+Function InitFarmCow(ObjectReference kCowActorRef, String sCowRace) 
+	Actor kCowActor
 
-	int idx = 0
-	while idx < _actors.Length
-		if (_actors[idx])
-			; aBase = _actors[idx].GetBaseObject() as ActorBase
-			aRace = _actors[idx].GetLeveledActorBase().GetRace()
-			if aRace == thisRace
-				return True
-			endif
-		EndIf
-		idx += 1
-	endwhile
-	Return False
-EndFunction
+	kCowActor = kCowActorRef as Actor 
+
+	if (sCowRace == "Breton")
+		SnowShodCowBretonAlias.ForceRefTo(kCowActorRef)
+	elseif (sCowRace == "Nord")
+		SnowShodCowNordAlias.ForceRefTo(kCowActorRef)
+	elseif (sCowRace == "Imperial")
+		SnowShodCowImperialAlias.ForceRefTo(kCowActorRef)
+	elseif (sCowRace == "Redguard")
+		SnowShodCowRedguardAlias.ForceRefTo(kCowActorRef)
+	elseif (sCowRace == "Bosmer")
+		SnowShodCowBosmerAlias.ForceRefTo(kCowActorRef)
+	elseif (sCowRace == "Dunmer")
+		SnowShodCowDunmerAlias.ForceRefTo(kCowActorRef)
+	elseif (sCowRace == "Altmer")
+		SnowShodCowAltmerAlias.ForceRefTo(kCowActorRef)
+	elseif (sCowRace == "Orc")
+		SnowShodCowOrcAlias.ForceRefTo(kCowActorRef)
+	endif
+
+	registerCow(kCowActor)
+
+	kCowActor.EvaluatePackage()
+
+Endfunction
+
+String Function GetFarmCowStatus(ObjectReference kCowActorRef, String sCowRace)
+	String sBusinessStatusMsg = ""
+
+	if (kCowActorRef != None)
+		iTotalMilkProduced += StorageUtil.GetIntValue(kCowActorRef as Actor, "_SLH_iMilkProducedTotal")
+		sBusinessStatusMsg += "\n " + sCowRace + " cow: " +  iTotalMilkProduced + " Milk Bottle"
+
+		(kCowActorRef as Actor).SetOutfit(FarmCowOutfit)
+	else
+		sBusinessStatusMsg += "\n " + sCowRace + " cow: X " 
+	endif
+
+	Return sBusinessStatusMsg
+Endfunction
+
+
  
 ; Local inflation support - defer to Hormones if available
 
@@ -570,7 +656,7 @@ function SLIF_inflate(Actor kActor, String sKey, float value, String NiOString)
 	int SLIF_event = ModEvent.Create("SLIF_inflate")
 	If (SLIF_event)
 		ModEvent.PushForm(SLIF_event, kActor)
-		ModEvent.PushString(SLIF_event, "SexLab Parasites")
+		ModEvent.PushString(SLIF_event, "SexLab Stories Devious")
 		ModEvent.PushString(SLIF_event, sKey)
 		ModEvent.PushFloat(SLIF_event, value)
 		ModEvent.PushString(SLIF_event, NiOString)
@@ -582,7 +668,7 @@ function SLIF_setMax(Actor kActor, String sKey, float maximum)
 	int SLIF_event = ModEvent.Create("SLIF_setMax")
 	If (SLIF_event)
 		ModEvent.PushForm(SLIF_event, kActor)
-		ModEvent.PushString(SLIF_event, "SexLab Parasites")
+		ModEvent.PushString(SLIF_event, "SexLab Stories Devious")
 		ModEvent.PushString(SLIF_event, sKey)
 		ModEvent.PushFloat(SLIF_event, maximum)
 		ModEvent.Send(SLIF_event)
