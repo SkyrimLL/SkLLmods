@@ -291,10 +291,10 @@ event OnPageReset(string a_page)
 
 		AddTextOption(" Cow (actor): " + kActor, "", OPTION_FLAG_DISABLED)
 		AddTextOption(" Cow (name): " +  kActor.GetBaseObject().GetName(), "", OPTION_FLAG_DISABLED) 
-		
+
 		if (kActorRef != None)
 			AddTextOption(" _SLH_iLactating: " + StorageUtil.GetIntValue( kActor, "_SLH_iLactating")  as Int, "", OPTION_FLAG_DISABLED)
-			AddTextOption(" _SLH_iProlactinLevel: " + StorageUtil.GetIntValue( kActor , "_SLH_iProlactinLevel")  as Int, "", OPTION_FLAG_DISABLED)
+			; AddTextOption(" _SLH_iProlactinLevel: " + StorageUtil.GetIntValue( kActor , "_SLH_iProlactinLevel")  as Int, "", OPTION_FLAG_DISABLED)
 			AddTextOption(" _SLH_fHormoneLactation: " + StorageUtil.GetFloatValue( kActor , "_SLH_fHormoneLactation")  as Int, "", OPTION_FLAG_DISABLED)
 			AddTextOption(" _SLH_iMilkLevel: " + StorageUtil.GetIntValue( kActor , "_SLH_iMilkLevel")  as Int, "", OPTION_FLAG_DISABLED)
 			AddTextOption(" _SLH_isPregnant: " + StorageUtil.GetIntValue( kActor , "_SLH_isPregnant")  as Int, "", OPTION_FLAG_DISABLED) 

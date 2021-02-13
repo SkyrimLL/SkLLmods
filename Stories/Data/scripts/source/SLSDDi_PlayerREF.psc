@@ -125,6 +125,15 @@ Function _maintenance()
 	RegisterForModEvent("_SLSDDi_EquipMilkingDevice", "OnEquipMilkingDevice")
 	RegisterForModEvent("_SLSDDi_RemoveMilkingDevice", "OnRemoveMilkingDevice")
 
+	If (StorageUtil.GetIntValue(none, "_SLH_iHormones") != 1)
+		; Hormones is not installed - register fallback mod event
+		RegisterForModEvent("SLHModHormone",    "OnModHormoneEvent")
+
+	endif
+
+	; Update cows on Load
+	CowLife.updateAllCows()
+
 	RegisterForSingleUpdate(10)
 EndFunction
 
@@ -151,6 +160,27 @@ Event OnUpdate()
 	RegisterForSingleUpdate(10)
 EndEvent
 
+Event OnModHormoneEvent(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+
+ 	if (kActor == None)
+ 		kActor = Game.GetPlayer()
+ 	EndIf
+	debug.Trace("[SLSDDi] Receiving 'mod hormone level' event. Actor: " + kActor )
+
+	; fctHormones.modHormoneLevel(kActor, _args, _argc)
+	Float fLactationHormoneLevel = StorageUtil.GetFloatValue( kActor , "_SLH_fHormoneLactation")  + _argc
+
+	if (fLactationHormoneLevel > 100.0)
+		fLactationHormoneLevel = 100.0
+	elseif (fLactationHormoneLevel < 0.0)
+		fLactationHormoneLevel = 0.0
+	endif
+
+	StorageUtil.SetFloatValue( kActor , "_SLH_fHormoneLactation", fLactationHormoneLevel)
+
+EndEvent
+
 Event OnUpdateCow(String _eventName, String _args, Float _argc = -1.0, Form _sender)
  	Actor kActor = _sender as Actor
  	String bCreateMilk = _args
@@ -170,6 +200,7 @@ Event OnDrinkCow(String _eventName, String _args, Float _argc = -1.0, Form _send
  	Actor kActor = _sender as Actor
  	Actor kPlayer = Game.GetPlayer() as Actor
  	String sPlayerCow = _args
+	Float fLactationHormoneMod = 0.1
 
 	If  (SexLab.ValidateActor( kPlayer ) > 0) &&  (SexLab.ValidateActor(kActor) > 0) 
 		actor[] sexActors = new actor[2]
@@ -201,9 +232,11 @@ Event OnDrinkCow(String _eventName, String _args, Float _argc = -1.0, Form _send
 		endIf
 
 		if  (kPlayer.WornHasKeyword(SLSD_CowHarness) || kPlayer.WornHasKeyword(SLSD_CowMilker))
-			StorageUtil.SetIntValue(kPlayer, "_SLH_iProlactinLevel", StorageUtil.GetIntValue(kPlayer, "_SLH_iProlactinLevel") + 2)	
+			; StorageUtil.SetIntValue(kPlayer, "_SLH_iProlactinLevel", StorageUtil.GetIntValue(kPlayer, "_SLH_iProlactinLevel") + 2)
+			fLactationHormoneMod += 1.0	
 		Else
-			StorageUtil.SetIntValue(kPlayer, "_SLH_iProlactinLevel", StorageUtil.GetIntValue(kPlayer, "_SLH_iProlactinLevel") + 1)	
+			; StorageUtil.SetIntValue(kPlayer, "_SLH_iProlactinLevel", StorageUtil.GetIntValue(kPlayer, "_SLH_iProlactinLevel") + 1)	
+			fLactationHormoneMod += 0.5
 		endif
 		SLSD_MilkOMaticSpell.Remotecast(kActor as ObjectReference ,kActor, kActor as ObjectReference)
 
@@ -216,9 +249,11 @@ Event OnDrinkCow(String _eventName, String _args, Float _argc = -1.0, Form _send
 		endIf
 
 		if  (kActor.WornHasKeyword(SLSD_CowHarness) || kActor.WornHasKeyword(SLSD_CowMilker))
-			StorageUtil.SetIntValue(kActor, "_SLH_iProlactinLevel", StorageUtil.GetIntValue(kActor, "_SLH_iProlactinLevel") + 2)	
+			; StorageUtil.SetIntValue(kActor, "_SLH_iProlactinLevel", StorageUtil.GetIntValue(kActor, "_SLH_iProlactinLevel") + 2)	
+			fLactationHormoneMod += 1.0	
 		Else
-			StorageUtil.SetIntValue(kActor, "_SLH_iProlactinLevel", StorageUtil.GetIntValue(kActor, "_SLH_iProlactinLevel") + 1)	
+			; StorageUtil.SetIntValue(kActor, "_SLH_iProlactinLevel", StorageUtil.GetIntValue(kActor, "_SLH_iProlactinLevel") + 1)	
+			fLactationHormoneMod += 0.5
 		endif
 
 		SLSD_MilkOMaticSpell.Remotecast(kPlayer as ObjectReference ,kPlayer, kPlayer as ObjectReference)
@@ -326,6 +361,7 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 	int idx = 0
 	while idx < actors.Length
 		; Check for breast stimulation
+		Debug.Trace("[SLSDDi] Checking actor list for lactation: " + idx + " / " + actors.Length )
 		Debug.Trace("[SLSDDi] Checking actor lactation: " + actors[idx] )
 
 		If (actors[idx]) && ( actors[idx] != PlayerActor) && (isFemale(actors[idx]))

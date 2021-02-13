@@ -17,6 +17,8 @@ Debug.Messagebox("Balimund chance is now " + _SLSDDi_BalimundItemReadyCheck.getV
 if (utility.RandomInt(0,100) <= iItemReadyChance  )
 	; random chance to clear the next check
 	Self.GetOwningQuest().SetStage(44)
+else
+	Self.GetOwningQuest().SetStage(43)
 
 endif
 ;END CODE
