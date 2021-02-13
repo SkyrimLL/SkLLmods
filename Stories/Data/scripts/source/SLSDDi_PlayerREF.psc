@@ -132,7 +132,7 @@ Function _maintenance()
 	endif
 
 	; Update cows on Load
-	CowLife.updateAllCows()
+	CowLife.updateAllCows("")
 
 	RegisterForSingleUpdate(10)
 EndFunction
@@ -152,7 +152,7 @@ Event OnUpdate()
 	iDaysSinceLastCheck = (daysPassed - iGameDateLastCheck ) as Int
 
 	If (iDaysSinceLastCheck > 0)
-		CowLife.updateAllCows()
+		CowLife.updateAllCows("NewDay")
 	endIf
 
 	iGameDateLastCheck = daysPassed  
@@ -192,7 +192,7 @@ EndEvent
 Event OnUpdateCowList(String _eventName, String _args, Float _argc = -1.0, Form _sender)
  	Actor kActor = _sender as Actor 
 
- 	CowLife.updateAllCows()
+ 	CowLife.updateAllCows("")
 
 EndEvent
 
@@ -239,6 +239,7 @@ Event OnDrinkCow(String _eventName, String _args, Float _argc = -1.0, Form _send
 			fLactationHormoneMod += 0.5
 		endif
 		SLSD_MilkOMaticSpell.Remotecast(kActor as ObjectReference ,kActor, kActor as ObjectReference)
+		kPlayer.SendModEvent("SLHModHormone", "Lactation", fLactationHormoneMod )
 
 	Else
 
@@ -257,6 +258,8 @@ Event OnDrinkCow(String _eventName, String _args, Float _argc = -1.0, Form _send
 		endif
 
 		SLSD_MilkOMaticSpell.Remotecast(kPlayer as ObjectReference ,kPlayer, kPlayer as ObjectReference)
+		kActor.SendModEvent("SLHModHormone", "Lactation", fLactationHormoneMod )
+
 	Endif
 
 	CowLife.updateCowStatus(kPlayer,"")

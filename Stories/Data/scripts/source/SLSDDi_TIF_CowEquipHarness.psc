@@ -10,8 +10,11 @@ Actor kPlayer = Game.GetPlayer()
 
 kPlayer.RemoveItem(CowHarness, 1)
 
-akSpeaker.AddItem(CowHarness, 1)
-akSpeaker.EquipItem(CowHarness)
+; akSpeaker.AddItem(CowHarness, 1)
+; akSpeaker.EquipItem(CowHarness)
+
+akSpeaker.SendModEvent("_SLSDDi_EquipMilkingDevice")
+
 ;END CODE
 EndFunction
 ;END FRAGMENT

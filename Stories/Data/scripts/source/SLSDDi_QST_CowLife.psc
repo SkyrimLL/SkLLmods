@@ -91,7 +91,11 @@ Function PlayerReceivedCowharness(Actor kActor )
 	libs.Log("PlayerReceivedCowharness ")
 	
 	; zaddsgBeltInexperiencedMsg.Show()
-	Debug.MessageBox("The harness molds around your body, accentuating your breasts as the suction cups lock in around your nipples.")
+	if kActor == libs.PlayerRef
+		Debug.MessageBox("The harness molds around your body, accentuating your breasts as the suction cups lock in around your nipples.")
+	else
+		Debug.MessageBox("The harness fits tightly around her body, pressing into her breasts as the suction cups lock in around her nipples.")
+	endif
 
 	; EquipDevice(actor akActor, armor deviceInventory, armor deviceRendered, keyword zad_DeviousDevice, bool skipEvents=false, bool skipMutex=false)
 	libs.EquipDevice(kActor, cowHarnessInventory , cowHarnessRendered , SLS_CowHarness)
@@ -105,7 +109,11 @@ Function PlayerRemovedCowharness( Actor kActor )
 	libs.Log("PlayerLostCowharness ")
 	
 	; zaddsgBeltInexperiencedMsg.Show()
-	Debug.MessageBox("The harness lets go of your sore nipples with a loud pop.")
+	if kActor == libs.PlayerRef
+		Debug.MessageBox("The harness lets go of your sore nipples with a loud pop.")
+	else
+		Debug.MessageBox("The harness lets go of her sore nipples with a loud pop.")
+	endif
 
 	; EquipDevice(actor akActor, armor deviceInventory, armor deviceRendered, keyword zad_DeviousDevice, bool skipEvents=false, bool skipMutex=false)
 	libs.RemoveDevice(kActor, cowHarnessInventory , cowHarnessRendered , SLS_CowHarness)
@@ -119,7 +127,11 @@ Function PlayerReceivedAutoCowharness( Actor kActor )
 	libs.Log("PlayerReceivedAutoCowharness ")
 	
 	; zaddsgBeltInexperiencedMsg.Show()
-	Debug.MessageBox("The harness molds around your body and starts humming, accentuating your breasts as the suction cups lock in around your nipples.")
+	if kActor == libs.PlayerRef
+		Debug.MessageBox("The harness molds around your body and starts humming, accentuating your breasts as the suction cups lock in around your nipples.")
+	else
+		Debug.MessageBox("The harness molds around her body and starts humming, compressing her breasts as the suction cups latch on her nipples.")
+	endif
 
 	; EquipDevice(actor akActor, armor deviceInventory, armor deviceRendered, keyword zad_DeviousDevice, bool skipEvents=false, bool skipMutex=false)
 	libs.EquipDevice(kActor, autoCowHarnessInventory , autoCowHarnessRendered , SLS_CowMilker)
@@ -133,7 +145,11 @@ Function PlayerRemovedAutoCowharness( Actor kActor )
 	libs.Log("PlayerLostAutoCowharness ")
 	
 	; zaddsgBeltInexperiencedMsg.Show()
-	Debug.MessageBox("The harness lets go of your swollen nipples with a loud pop.")
+	if kActor == libs.PlayerRef
+		Debug.MessageBox("The harness lets go of your swollen nipples with a loud pop.")
+	else
+		Debug.MessageBox("The harness lets go of her swollen nipples with a loud pop.")
+	endif
 
 	; EquipDevice(actor akActor, armor deviceInventory, armor deviceRendered, keyword zad_DeviousDevice, bool skipEvents=false, bool skipMutex=false)
 	libs.RemoveDevice(kActor, autoCowHarnessInventory , autoCowHarnessRendered , SLS_CowMilker)
@@ -169,7 +185,7 @@ Function registerCow(Actor kActor)
 
 EndFunction
 
-Function updateAllCows()
+Function updateAllCows(String sUpdateMode = "")
 	Int valueCount = StorageUtil.FormListCount(none, "_SLH_lMilkCowList")
 	int i = 0
 	Form thisCow
@@ -178,16 +194,28 @@ Function updateAllCows()
 
 	while(i < valueCount)
 		thisCow = StorageUtil.FormListGet(none, "_SLH_lMilkCowList", i)
-		updateCowStatus(thisCow as Actor, "NewDay")
+		updateCowStatus(thisCow as Actor, sUpdateMode)
 		i = i + 1
 	endwhile
 
 EndFunction
 
-Function updateCowStatus(Actor kActor, String bCreateMilk = "")
+Function updateCowStatus(Actor kActor, String sUpdateMode = "")
  	Actor PlayerActor= Game.GetPlayer() as Actor
  	ActorBase pActorBase
  	Float fLactationHormoneMod = 0.1
+
+ 	; sUpdateMode - allowed values 
+ 	; "Silent" - init values, correct errors, check status
+  	; "Check" - same as "Silent" with extra message, good for one ccow check
+	; "NewDay" - apply daily cooldowns
+	; "Milk" - reset milk date after production of bottle
+	; "AfterSex" - update after sex
+	; "AfterOrgasm" - update after orgasm
+
+	If (sUpdateMode == "")
+		sUpdateMode = "Silent"
+	endif
 
 	If (kActor == None)
 		kActor = PlayerActor
@@ -199,15 +227,17 @@ Function updateCowStatus(Actor kActor, String bCreateMilk = "")
 	Float fLactationHormoneLevel = StorageUtil.GetFloatValue( kActor , "_SLH_fHormoneLactation") 
 	Int	iLactationHormoneLevel = fLactationHormoneLevel  as Int
 
+
+	pActorBase = kActor.GetActorBase()
+
+	checkIfLactating(kActor)
+
+	; Fix potential init issues
  	if (StorageUtil.GetIntValue(kActor, "_SLH_iProlactinLevel")>0)
  		; Disable Prolactin variable and move to Hormone Lactation variable for Hormones compatibility
  		StorageUtil.SetFloatValue( kActor , "_SLH_fHormoneLactation", StorageUtil.GetIntValue(kActor, "_SLH_iProlactinLevel") as Int)
  		StorageUtil.SetIntValue(kActor, "_SLH_iProlactinLevel", -1)
  	endif
-
-	pActorBase = kActor.GetActorBase()
-
-	checkIfLactating(kActor)
 
 	if ( kActor.WornHasKeyword(SLSD_CowHarness) || kActor.WornHasKeyword(SLSD_CowMilker) ) && (!StorageUtil.HasIntValue(kActor, "_SLH_iLactating") || (StorageUtil.GetIntValue(kActor, "_SLH_iLactating") == 0) )
 		registerCow(kActor)
@@ -221,7 +251,7 @@ Function updateCowStatus(Actor kActor, String bCreateMilk = "")
 		registerCow(kActor)
 	Endif
 
-	If (bCreateMilk == "NewDay")
+	If (sUpdateMode == "NewDay")
 
 		If (StorageUtil.GetIntValue(kActor, "_SLH_isPregnant") == 1) 
 			fLactationHormoneMod = fLactationHormoneMod - 1.0
@@ -233,16 +263,42 @@ Function updateCowStatus(Actor kActor, String bCreateMilk = "")
 				StorageUtil.SetIntValue(kActor, "_SLH_iMilkLevel", StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") + 1)
 			endif
 		endIf
- 
+
+ 		kActor.SendModEvent("SLHModHormone", "Lactation", fLactationHormoneMod )
+
+	ElseIf (sUpdateMode == "Milk") ; Milk bottle produced - reset timer
+		StorageUtil.SetIntValue(kActor, "_SLH_iMilkDate", Game.QueryStat("Days Passed"))
+
+		fLactationHormoneMod = fLactationHormoneMod  + 2.0
+		; StorageUtil.SetIntValue(kActor, "_SLH_iProlactinLevel", iProlactinLevel )
+
+ 		kActor.SendModEvent("SLHModHormone", "Lactation", fLactationHormoneMod )
+
+	ElseIf (sUpdateMode == "Check") ; Messages from checking milk level
+		If (fLactationLevel<((MILK_LEVEL_TRIGGER as Float) - 10.0))
+			Debug.Notification("Her breasts are tender and filling up nicely - Level " + fLactationLevel as Int)
+
+		ElseIf (fLactationLevel>= ((MILK_LEVEL_TRIGGER as Float) - 10.0)) && (fLactationLevel<( (MILK_LEVEL_TRIGGER as Float) - 6.0)) 
+			Debug.Notification("Her breasts are swelling up with milk - Level " + fLactationLevel as Int)
+
+		ElseIf (fLactationLevel>= ((MILK_LEVEL_TRIGGER as Float) - 6.0)) && (fLactationLevel< ( (MILK_LEVEL_TRIGGER as Float) - 2.0))
+			Debug.Notification("Her breasts are heavy and her tits hard - Level " + fLactationLevel as Int)
+
+		ElseIf (fLactationLevel>= ((MILK_LEVEL_TRIGGER as Float) - 2.0)) 
+			Debug.Notification("Her breasts are full and ready to be milked - Level " + fLactationLevel as Int)
+		Endif
+
 	Endif
 
-	; Debug.Trace("[SLSDDi] Receiving Milk Cow update event")
-	; Debug.Notification("[SLSDDi] Check for NiOverride: " + isNiOInstalled)
-	; Debug.Notification("[SLSDDi] Check for Female actor: " + pActorBase.GetSex())
-	; Debug.Notification("[SLSDDi] Check for Lactating actor: " + StorageUtil.GetIntValue(kActor, "_SLH_iLactating"))
-	Debug.Trace("[SLSDDi] Milk level: " + StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel"))
-	Debug.Trace("[SLSDDi] Lactation Hormone level: " + iLactationHormoneLevel)
 
+	If (kActor == PlayerActor)
+		GV_MilkLevel.SetValue(StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") as Int)
+		GV_ProlactinLevel.SetValue( StorageUtil.GetFloatValue( kActor , "_SLH_fHormoneLactation") as Int)
+	Endif
+
+	StorageUtil.SetFormValue( none , "_SD_iLastCowMilked", kActor)
+
+	; Update breast size
 	if (pActorBase.GetSex()==1)
 		; Debug.Notification("[SLSDDi] Days since last milking: " + (fLactationMilkDate as Int))
 		Float fBreast  = 1.0 +  (fLactationBase * 0.2) + (fLactationLevel * 0.1) + (fLactationMilkDate * 0.15)
@@ -262,33 +318,14 @@ Function updateCowStatus(Actor kActor, String bCreateMilk = "")
 	
 	EndIf
 
-	If (bCreateMilk == "Milk") ; Milk bottle produced - reset timer
-		StorageUtil.SetIntValue(kActor, "_SLH_iMilkDate", Game.QueryStat("Days Passed"))
 
-		fLactationHormoneMod = fLactationHormoneMod  + 2.0
-		; StorageUtil.SetIntValue(kActor, "_SLH_iProlactinLevel", iProlactinLevel )
+	; Debug.Trace("[SLSDDi] Receiving Milk Cow update event")
+	; Debug.Notification("[SLSDDi] Check for NiOverride: " + isNiOInstalled)
+	; Debug.Notification("[SLSDDi] Check for Female actor: " + pActorBase.GetSex())
+	; Debug.Notification("[SLSDDi] Check for Lactating actor: " + StorageUtil.GetIntValue(kActor, "_SLH_iLactating"))
+	Debug.Trace("[SLSDDi] Milk level: " + StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel"))
+	Debug.Trace("[SLSDDi] Lactation Hormone level: " + iLactationHormoneLevel)
 
-	ElseIf (bCreateMilk == "Check") ; Messages from checking milk level
-		If (fLactationLevel<((MILK_LEVEL_TRIGGER as Float) - 10.0))
-			Debug.Notification("Her breasts are tender and filling up nicely - Level " + fLactationLevel as Int)
-		ElseIf (fLactationLevel>= ((MILK_LEVEL_TRIGGER as Float) - 10.0)) && (fLactationLevel<( (MILK_LEVEL_TRIGGER as Float) - 6.0)) 
-			Debug.Notification("Her breasts are swelling up with milk - Level " + fLactationLevel as Int)
-		ElseIf (fLactationLevel>= ((MILK_LEVEL_TRIGGER as Float) - 6.0)) && (fLactationLevel< ( (MILK_LEVEL_TRIGGER as Float) - 2.0))
-			Debug.Notification("Her breasts are heavy and her tits hard - Level " + fLactationLevel as Int)
-		ElseIf (fLactationLevel>= ((MILK_LEVEL_TRIGGER as Float) - 2.0)) 
-			Debug.Notification("Her breasts are full and ready to be milked - Level " + fLactationLevel as Int)
-		Endif
-
-	Endif
-
-	kActor.SendModEvent("SLHModHormone", "Lactation", fLactationHormoneMod )
-
-	If (kActor == PlayerActor)
-		GV_MilkLevel.SetValue(StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") as Int)
-		GV_ProlactinLevel.SetValue( StorageUtil.GetFloatValue( kActor , "_SLH_fHormoneLactation") as Int)
-	Endif
-
-	StorageUtil.SetFormValue( none , "_SD_iLastCowMilked", kActor)
 EndFunction
 
 Function UpdateMilkAfterSex(Actor kActor)
@@ -369,8 +406,8 @@ Function UpdateMilkAfterSex(Actor kActor)
 
 	; kActor.SendModEvent("_SLSDDi_UpdateCow")
 	kActor.SendModEvent("SLHModHormone", "Lactation", fLactationHormoneMod )
-
-	updateCowStatus(kActor)
+ 
+	updateCowStatus(kActor, "AfterSex")
 
 	Debug.Trace("[SLSDDi] Actor Hormone mod: " + fLactationHormoneMod  as Int )
 	Debug.Trace("[SLSDDi] Actor Lactation Hormone level: " + StorageUtil.GetFloatValue( kActor , "_SLH_fHormoneLactation")  as Int )
@@ -636,10 +673,16 @@ EndFunction
 
 ; -------------------------------------------------------------------
 Function InitBusiness()
+	Actor kBretonCow = BretonCowRef as Actor
+	Actor kNordCow = NordCowRef as Actor
+
 	If (!StorageUtil.HasIntValue(none, "_SLS_iMilkFarmBusiness"))
  
 		InitFarmCow(BretonCowRef, "Breton") 
+		kBretonCow.SendModEvent("SLHModHormone", "Lactation", 70.0 )
+
 		InitFarmCow(NordCowRef, "Nord")  
+		kNordCow.SendModEvent("SLHModHormone", "Lactation", 40.0 )
 
 		StorageUtil.SetIntValue(none, "_SLS_iMilkFarmBusiness", 1)
 		Debug.Trace("[SLS] Milk Farm Business initialized")
@@ -671,7 +714,7 @@ Function UpdateBusiness()
 		sBusinessStatusMsg += "\n Player: "  +  StorageUtil.GetIntValue(kPlayer, "_SLH_iMilkProducedTotal") + " L: " +StorageUtil.GetIntValue(kPlayer, "_SLH_iMilkLevel") + " H: " + StorageUtil.GetFloatValue( kPlayer , "_SLH_fHormoneLactation")
 	endif
 
-	updateAllCows()
+	updateAllCows("")
 
 	sBusinessStatusMsg += "\n Total Milk Produced: " + iTotalMilkProduced
 	; sBusinessStatusMsg += "\n For the Nords and Imperials..." 
