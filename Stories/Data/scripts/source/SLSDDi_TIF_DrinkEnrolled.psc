@@ -1,16 +1,24 @@
 ;BEGIN FRAGMENT CODE - Do not edit anything between this and the end comment
 ;NEXT FRAGMENT INDEX 2
-Scriptname SLSDDi_TIF_HelpCow Extends TopicInfo Hidden
+Scriptname SLSDDi_TIF_DrinkEnrolled Extends TopicInfo Hidden
 
 ;BEGIN FRAGMENT Fragment_1
 Function Fragment_1(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
-Debug.Notification( "The cow moans with relief..." )
-akSpeaker.SendModEvent("_SLSDDi_GropeCow")
+Form fActorForm = akSpeaker as Form
+String sActorName 
 
+if (fActorForm != None)
+	sActorName = fActorForm.GetName()
+else
+	sActorName = "She"
+endif
 
-; ( SexLab.PlayerRef ).AddItem(Milk, 1)
+Debug.Notification( sActorName + " moans with relief..." )
+akSpeaker.SendModEvent("_SLSDDi_DrinkCow")
+CowLife.PayEnrolledCow(akSpeaker)
+
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -20,3 +28,5 @@ EndFunction
 SexLabFramework Property SexLab  Auto  
 
 Potion Property Milk  Auto  
+
+SLSDDi_QST_CowLife Property CowLife Auto

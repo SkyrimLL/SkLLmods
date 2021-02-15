@@ -10,9 +10,7 @@ Potion Property DivineMilk Auto
 
 GlobalVariable Property GV_MilkLevel  Auto  
 GlobalVariable Property GV_ProlactinLevel  Auto  
-
 GlobalVariable Property MilkProduced  Auto  
-
 GlobalVariable Property MilkProducedTotal  Auto  
 
 Keyword Property SLSD_CowHarness Auto
@@ -121,6 +119,7 @@ Function _maintenance()
 
 	RegisterForModEvent("_SLSDDi_UpdateCow", "OnUpdateCow")
 	RegisterForModEvent("_SLSDDi_UpdateCowList", "OnUpdateCowList")
+	RegisterForModEvent("_SLSDDi_GropeCow", "OnGropeCow")
 	RegisterForModEvent("_SLSDDi_DrinkCow", "OnDrinkCow")
 	RegisterForModEvent("_SLSDDi_EquipMilkingDevice", "OnEquipMilkingDevice")
 	RegisterForModEvent("_SLSDDi_RemoveMilkingDevice", "OnRemoveMilkingDevice")
@@ -132,7 +131,9 @@ Function _maintenance()
 	endif
 
 	; Update cows on Load
+	; CowLife.InitBusiness()  ; comment out on release
 	CowLife.updateAllCows("")
+	CowLife.UpdateBalimundMerchantChest()
 
 	RegisterForSingleUpdate(10)
 EndFunction
@@ -153,6 +154,7 @@ Event OnUpdate()
 
 	If (iDaysSinceLastCheck > 0)
 		CowLife.updateAllCows("NewDay")
+		CowLife.UpdateBalimundMerchantChest()
 	endIf
 
 	iGameDateLastCheck = daysPassed  
@@ -196,7 +198,7 @@ Event OnUpdateCowList(String _eventName, String _args, Float _argc = -1.0, Form 
 
 EndEvent
 
-Event OnDrinkCow(String _eventName, String _args, Float _argc = -1.0, Form _sender)
+Event OnGropeCow(String _eventName, String _args, Float _argc = -1.0, Form _sender)
  	Actor kActor = _sender as Actor
  	Actor kPlayer = Game.GetPlayer() as Actor
  	String sPlayerCow = _args
@@ -214,7 +216,13 @@ Event OnDrinkCow(String _eventName, String _args, Float _argc = -1.0, Form _send
 
 		sslBaseAnimation[] anims
 		anims = new sslBaseAnimation[1]
-		anims[0] = SexLab.GetAnimationByName("3J Straight Breastfeeding")
+		Int rnum = Utility.RandomInt(0,100)
+
+		if (rnum > 50)
+			anims[0] = SexLab.GetAnimationByName("3J Straight Breastfeeding")
+		else
+			anims[0] = SexLab.GetAnimationByName("3J Lesbian Breastfeeding")
+		endif
 
 		if (anims[0] ==None)
 			anims = SexLab.GetAnimationsByTags(2, "Breast","Estrus,Dwemer")
@@ -223,47 +231,61 @@ Event OnDrinkCow(String _eventName, String _args, Float _argc = -1.0, Form _send
 		SexLab.StartSex(sexActors, anims)
 	EndIf
 
+	CowLife.updateCowStatus(kPlayer,"")
+	CowLife.updateCowStatus(kActor,"")
 
+EndEvent
+
+Event OnDrinkCow(String _eventName, String _args, Float _argc = -1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+ 	Actor kPlayer = Game.GetPlayer() as Actor
+ 	String sPlayerCow = _args
+	Float fLactationHormoneMod = 0.1
+
+	; Reduce levels from drinking
 	If (sPlayerCow == "PlayerCow")
-		If (StorageUtil.GetIntValue(kPlayer, "_SLH_isPregnant") == 1) &&  (StorageUtil.GetIntValue(kPlayer, "_SLH_iMilkLevel") > 5)
-			StorageUtil.GetIntValue(kPlayer, "_SLH_iMilkLevel", StorageUtil.GetIntValue(kPlayer, "_SLH_iMilkLevel") - 2)
-		elseif (StorageUtil.GetIntValue(kPlayer, "_SLH_isPregnant") != 1) &&  (StorageUtil.GetIntValue(kPlayer, "_SLH_iMilkLevel") > 8)
-			StorageUtil.GetIntValue(kPlayer, "_SLH_iMilkLevel", StorageUtil.GetIntValue(kPlayer, "_SLH_iMilkLevel") - 1)
-		endIf
 
-		if  (kPlayer.WornHasKeyword(SLSD_CowHarness) || kPlayer.WornHasKeyword(SLSD_CowMilker))
-			; StorageUtil.SetIntValue(kPlayer, "_SLH_iProlactinLevel", StorageUtil.GetIntValue(kPlayer, "_SLH_iProlactinLevel") + 2)
-			fLactationHormoneMod += 1.0	
-		Else
-			; StorageUtil.SetIntValue(kPlayer, "_SLH_iProlactinLevel", StorageUtil.GetIntValue(kPlayer, "_SLH_iProlactinLevel") + 1)	
-			fLactationHormoneMod += 0.5
-		endif
 		SLSD_MilkOMaticSpell.Remotecast(kActor as ObjectReference ,kActor, kActor as ObjectReference)
-		kPlayer.SendModEvent("SLHModHormone", "Lactation", fLactationHormoneMod )
 
 	Else
 
-		If (StorageUtil.GetIntValue(kActor, "_SLH_isPregnant") == 1) &&  (StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") > 5)
-			StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel", StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") - 2)
-		elseif (StorageUtil.GetIntValue(kActor, "_SLH_isPregnant") != 1) &&  (StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") > 8)
-			StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel", StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") - 1)
-		endIf
-
-		if  (kActor.WornHasKeyword(SLSD_CowHarness) || kActor.WornHasKeyword(SLSD_CowMilker))
-			; StorageUtil.SetIntValue(kActor, "_SLH_iProlactinLevel", StorageUtil.GetIntValue(kActor, "_SLH_iProlactinLevel") + 2)	
-			fLactationHormoneMod += 1.0	
-		Else
-			; StorageUtil.SetIntValue(kActor, "_SLH_iProlactinLevel", StorageUtil.GetIntValue(kActor, "_SLH_iProlactinLevel") + 1)	
-			fLactationHormoneMod += 0.5
-		endif
-
 		SLSD_MilkOMaticSpell.Remotecast(kPlayer as ObjectReference ,kPlayer, kPlayer as ObjectReference)
-		kActor.SendModEvent("SLHModHormone", "Lactation", fLactationHormoneMod )
-
+ 
 	Endif
 
-	CowLife.updateCowStatus(kPlayer,"")
-	CowLife.updateCowStatus(kActor,"")
+
+	If  (SexLab.ValidateActor( kPlayer ) > 0) &&  (SexLab.ValidateActor(kActor) > 0) 
+		actor[] sexActors = new actor[2]
+		If (sPlayerCow == "PlayerCow")
+			sexActors[0] = kPlayer
+			sexActors[1] = kActor
+		else
+			sexActors[0] = kActor
+			sexActors[1] = kPlayer
+		endif
+
+		sslBaseAnimation[] anims
+		anims = new sslBaseAnimation[1]
+		Int rnum = Utility.RandomInt(0,100)
+
+		if (rnum > 50)
+			anims[0] = SexLab.GetAnimationByName("3J Straight Breastfeeding")
+		else
+			anims[0] = SexLab.GetAnimationByName("3J Lesbian Breastfeeding")
+		endif
+
+		if (anims[0] ==None)
+			anims = SexLab.GetAnimationsByTags(2, "Breast","Estrus,Dwemer")
+		endif
+
+		SexLab.StartSex(sexActors, anims)
+	EndIf
+
+	If (sPlayerCow == "PlayerCow")
+		CowLife.updateCowStatus(kPlayer,"Drink")
+	else
+		CowLife.updateCowStatus(kActor,"Drink")
+	endif
 
 EndEvent
 

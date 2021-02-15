@@ -6,11 +6,12 @@ Scriptname SLSDDi_TIF_SellMilk5 Extends TopicInfo Hidden
 Function Fragment_1(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
-int milkCount = Game.GetPlayer().GetItemCount(Milk) 
+Actor kPlayer = Game.GetPlayer()
+int milkCount = kPlayer.GetItemCount(Milk) 
 
 if (milkCount > 0)
-	Game.GetPlayer().RemoveItem(Milk, milkCount )
-	Game.GetPlayer().AddItem(Gold, 50 * milkCount )
+	kPlayer.RemoveItem(Milk, milkCount )
+	kPlayer.AddItem(Gold, 5 * milkCount )
 EndIf
 ;END CODE
 EndFunction
