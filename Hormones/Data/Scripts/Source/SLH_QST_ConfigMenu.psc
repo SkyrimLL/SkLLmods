@@ -258,8 +258,8 @@ EndFunction
 ; @overrides SKI_ConfigBase
 event OnConfigInit()
 	Pages = new string[2]
-	Pages[0] = "Customization"
-	Pages[1] = "Add-ons"
+	Pages[0] = "$SLH_pCustomization"
+	Pages[1] = "$SLH_pAddons"
 
 endEvent
 
@@ -271,11 +271,11 @@ event OnVersionUpdate(int a_version)
 	if (a_version >= 2019 && CurrentVersion < 2019)
 		Debug.Trace(self + ": Updating script to version 2019")
 		Pages = new string[5]
-		Pages[0] = "Hormone levels"
-		Pages[1] = "Body changes"
-		Pages[2] = "Triggers"
-		Pages[3] = "Curses"
-		Pages[4] = "Debug"
+		Pages[0] = "$SLH_pHormonelevels"
+		Pages[1] = "$SLH_pBodyChanges"
+		Pages[2] = "$SLH_pTriggers"
+		Pages[3] = "$SLH_pCurses"
+		Pages[4] = "$SLH_pDebug"
 	endIf
 endEvent
 
@@ -431,30 +431,30 @@ event OnPageReset(string a_page)
 	Bool bBellyEnabled      = ( bEnableBelly  as bool )
 	Bool bSchlongEnabled    = ( bEnableSchlong as bool )
 
-	If (a_page == "Hormone levels")
+	If (a_page == "$SLH_pHormonelevels")
 		SetCursorFillMode(TOP_TO_BOTTOM)
 
-		AddHeaderOption(" Hormones Levels Modifiers")
-		AddSliderOptionST("STATE_METABOLISM","Metabolism hormone", _metabolismMod as Float,"{1}") 
-		AddSliderOptionST("STATE_FEMALE","Female hormone", _femaleMod as Float,"{1}") 
-		AddSliderOptionST("STATE_MALE","Male hormone", _maleMod as Float,"{1}") 
-		AddSliderOptionST("STATE_SEXDRIVE","Sex Drive hormone", _sexDriveMod as Float,"{1}") 
-		AddSliderOptionST("STATE_BIMBO_HORMONE","Bimbo hormone", _bimboMod as Float,"{1}") 
-		AddSliderOptionST("STATE_SUCCUBUS_HORMONE","Succubus hormone", _succubusMod as Float,"{1}") 
-		AddSliderOptionST("STATE_GROWTH","Growth hormone", _growthMod as Float,"{1}") 
-		AddSliderOptionST("STATE_PHEROMONES","Pheromones", _pheromonesMod as Float,"{1}") 
-		AddSliderOptionST("STATE_LACTATION","Lactation hormone", _lactationMod as Float,"{1}") 
-		AddSliderOptionST("STATE_PIGMENTATION","Pigmentation hormone", _pigmentationMod as Float,"{1}") 
-		AddSliderOptionST("STATE_SLEEP","Sleep hormone", _sleepMod as Float,"{1}") 
-		AddSliderOptionST("STATE_HUNGER","Hunger hormone", _hungerMod as Float,"{1}") 
-		AddSliderOptionST("STATE_IMMUNITY","Immunity hormone", _immunityMod as Float,"{1}") 
-		AddSliderOptionST("STATE_STRESS","Stress hormone", _stressMod as Float,"{1}") 
-		AddSliderOptionST("STATE_MOOD","Mood hormone", _moodMod as Float,"{1}") 
+		AddHeaderOption("$SLH_hHormonesLevelsModifiers")
+		AddSliderOptionST("STATE_METABOLISM","$SLH_sMETABOLISM", _metabolismMod as Float,"{1}") 
+		AddSliderOptionST("STATE_FEMALE","$SLH_sFEMALE", _femaleMod as Float,"{1}") 
+		AddSliderOptionST("STATE_MALE","$SLH_sMALE", _maleMod as Float,"{1}") 
+		AddSliderOptionST("STATE_SEXDRIVE","$SLH_sSEXDRIVE", _sexDriveMod as Float,"{1}") 
+		AddSliderOptionST("STATE_BIMBO_HORMONE","$SLH_sBIMBO_HORMONE", _bimboMod as Float,"{1}") 
+		AddSliderOptionST("STATE_SUCCUBUS_HORMONE","$SLH_sSUCCUBUS_HORMONE", _succubusMod as Float,"{1}") 
+		AddSliderOptionST("STATE_GROWTH","$SLH_sGROWTH", _growthMod as Float,"{1}") 
+		AddSliderOptionST("STATE_PHEROMONES","$SLH_sPHEROMONES", _pheromonesMod as Float,"{1}") 
+		AddSliderOptionST("STATE_LACTATION","$SLH_sLACTATION", _lactationMod as Float,"{1}") 
+		AddSliderOptionST("STATE_PIGMENTATION","$SLH_sPIGMENTATION", _pigmentationMod as Float,"{1}") 
+		AddSliderOptionST("STATE_SLEEP","$SLH_sSLEEP", _sleepMod as Float,"{1}") 
+		AddSliderOptionST("STATE_HUNGER","$SLH_sHUNGER", _hungerMod as Float,"{1}") 
+		AddSliderOptionST("STATE_IMMUNITY","$SLH_sIMMUNITY", _immunityMod as Float,"{1}") 
+		AddSliderOptionST("STATE_STRESS","$SLH_sSTRESS", _stressMod as Float,"{1}") 
+		AddSliderOptionST("STATE_MOOD","$SLH_sMOOD", _moodMod as Float,"{1}") 
 
 		AddEmptyOption()
 		SetCursorPosition(1)
 
-		AddHeaderOption("Hormone Levels") 
+		AddHeaderOption("$SLH_hHormoneLevels") 
 		; AddTextOption("      (not used before v3.0)", "", OPTION_FLAG_DISABLED) 
 
 		AddTextOption("     Metabolism: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneMetabolism") as Int, "", OPTION_FLAG_DISABLED)
@@ -475,186 +475,186 @@ event OnPageReset(string a_page)
 
 
 
-	elseIf (a_page == "Body changes")
+	elseIf (a_page == "")
 		SetCursorFillMode(TOP_TO_BOTTOM)
 
-		AddHeaderOption(" Weight")
-		AddToggleOptionST("STATE_CHANGE_WEIGHT","Change Weight scale", _useWeight as Float)
-		AddSliderOptionST("STATE_WEIGHT_SWELL","Weight swell mod", _weightSwellMod as Float,"{1}")
+		AddHeaderOption("$SLH_hWeight")
+		AddToggleOptionST("STATE_CHANGE_WEIGHT","$SLH_bCHANGE_WEIGHT", _useWeight as Float)
+		AddSliderOptionST("STATE_WEIGHT_SWELL","$SLH_sWEIGHT_SWELL", _weightSwellMod as Float,"{1}")
 
-		AddHeaderOption(" Skin")
-		AddToggleOptionST("STATE_CHANGE_COLOR","Change skin color", _useColors as Float)
+		AddHeaderOption("$SLH_hSkin")
+		AddToggleOptionST("STATE_CHANGE_COLOR","$SLH_bCHANGE_COLOR", _useColors as Float)
 
-		AddColorOptionST("STATE_DEFAULT_COLOR","Default color", _defaultColor as Int)
-		AddInputOptionST("STATE_DEFAULT_COLOR_TXT","Default color value", IntToHex(_defaultColor) as String)
+		AddColorOptionST("STATE_DEFAULT_COLOR","$SLH_cDEFAULT_COLOR", _defaultColor as Int)
+		AddInputOptionST("STATE_DEFAULT_COLOR_TXT","$SLH_iDEFAULT_COLOR_TXT", IntToHex(_defaultColor) as String)
 
-		AddColorOptionST("STATE_RED_COLOR_SHIFT","Red color shift", _redShiftColor as Int)
-		AddInputOptionST("STATE_RED_COLOR_TXT","Red color shift value", IntToHex(_redShiftColor) as String)
-		AddSliderOptionST("STATE_RED_COLOR_SHIFT_MOD","Red color shift mod", _redShiftColorMod as Float,"{1}")
+		AddColorOptionST("STATE_RED_COLOR_SHIFT","$SLH_cRED_COLOR_SHIFT", _redShiftColor as Int)
+		AddInputOptionST("STATE_RED_COLOR_TXT","$SLH_iRED_COLOR_TXT", IntToHex(_redShiftColor) as String)
+		AddSliderOptionST("STATE_RED_COLOR_SHIFT_MOD","$SLH_sRED_COLOR_SHIFT_MOD", _redShiftColorMod as Float,"{1}")
 
-		AddColorOptionST("STATE_BLUE_COLOR_SHIFT","Blue color shift", _blueShiftColor as Int)
-		AddInputOptionST("STATE_BLUE_COLOR_TXT","Blue color shift value", IntToHex(_blueShiftColor) as String)
-		AddSliderOptionST("STATE_BLUE_COLOR_SHIFT_MOD","Blue color shift mod", _blueShiftColorMod as Float,"{1}")
+		AddColorOptionST("STATE_BLUE_COLOR_SHIFT","$SLH_cBLUE_COLOR_SHIFT", _blueShiftColor as Int)
+		AddInputOptionST("STATE_BLUE_COLOR_TXT","$SLH_iBLUE_COLOR_TXT", IntToHex(_blueShiftColor) as String)
+		AddSliderOptionST("STATE_BLUE_COLOR_SHIFT_MOD","$SLH_sBLUE_COLOR_SHIFT_MOD", _blueShiftColorMod as Float,"{1}")
 
-		AddHeaderOption(" Hair")
-		AddToggleOptionST("STATE_CHANGE_HAIR","Changes to Hair", _useHair as Float)
-		AddToggleOptionST("STATE_CHANGE_HAIRLOSS","Enable hair loss", _useHairLoss as Float)
+		AddHeaderOption("$SLH_hHair")
+		AddToggleOptionST("STATE_CHANGE_HAIR","$SLH_bCHANGE_HAIR", _useHair as Float)
+		AddToggleOptionST("STATE_CHANGE_HAIRLOSS","$SLH_bCHANGE_HAIRLOSS", _useHairLoss as Float)
 
-		AddToggleOptionST("STATE_CHANGE_HAIRCOLOR","Change hair color", _useHairColors as Float)
-		AddColorOptionST("STATE_BIMBO_HAIR_COLOR_SHIFT","Bimbo Hair color shift", _bimboHairColor as Int)
-		AddInputOptionST("STATE_BIMBO_HAIR_COLOR_TXT","Bimbo Hair color shift value", IntToHex(_bimboHairColor) as String)
-		AddSliderOptionST("STATE_BIMBO_HAIR_COLOR_SHIFT_MOD","Bimbo Hair color shift mod", _bimboHairColorMod as Float,"{1}")
+		AddToggleOptionST("STATE_CHANGE_HAIRCOLOR","$SLH_bCHANGE_HAIRCOLOR", _useHairColors as Float)
+		AddColorOptionST("STATE_BIMBO_HAIR_COLOR_SHIFT","$SLH_cBIMBO_HAIR_COLOR_SHIFT", _bimboHairColor as Int)
+		AddInputOptionST("STATE_BIMBO_HAIR_COLOR_TXT","$SLH_iBIMBO_HAIR_COLOR_TXT", IntToHex(_bimboHairColor) as String)
+		AddSliderOptionST("STATE_BIMBO_HAIR_COLOR_SHIFT_MOD","$SLH_sBIMBO_HAIR_COLOR_SHIFT_MOD", _bimboHairColorMod as Float,"{1}")
 
-		AddColorOptionST("STATE_SUCCUBUS_HAIR_COLOR_SHIFT","Succubus Hair color shift", _succubusHairColor as Int)
-		AddInputOptionST("STATE_SUCCUBUS_HAIR_COLOR_TXT","Succubus Hair color shift value", IntToHex(_succubusHairColor) as String)
-		AddSliderOptionST("STATE_SUCCUBUS_HAIR_COLOR_SHIFT_MOD","Succubus Hair color shift mod", _succubusHairColorMod as Float,"{1}")
+		AddColorOptionST("STATE_SUCCUBUS_HAIR_COLOR_SHIFT","$SLH_cSUCCUBUS_HAIR_COLOR_SHIFT", _succubusHairColor as Int)
+		AddInputOptionST("STATE_SUCCUBUS_HAIR_COLOR_TXT","$SLH_iSUCCUBUS_HAIR_COLOR_TXT", IntToHex(_succubusHairColor) as String)
+		AddSliderOptionST("STATE_SUCCUBUS_HAIR_COLOR_SHIFT_MOD","$SLH_sSUCCUBUS_HAIR_COLOR_SHIFT_MOD", _succubusHairColorMod as Float,"{1}")
 
 		SetCursorPosition(1)
 
-		AddHeaderOption(" Shape")
-		AddToggleOptionST("STATE_CHANGE_OVERRIDE","Shape change override", _changeOverrideToggle as Float)
-		AddSliderOptionST("STATE_SWELL_FACTOR","Base swell factor", _baseSwellFactor as Float,"{0} %")
-		AddSliderOptionST("STATE_SHRINK_FACTOR","Base shrink factor", _baseShrinkFactor as Float,"{0} %")
+		AddHeaderOption("$SLH_hShape")
+		AddToggleOptionST("STATE_CHANGE_OVERRIDE","$SLH_bCHANGE_OVERRIDE", _changeOverrideToggle as Float)
+		AddSliderOptionST("STATE_SWELL_FACTOR","$SLH_sSWELL_FACTOR", _baseSwellFactor as Float,"{0} %")
+		AddSliderOptionST("STATE_SHRINK_FACTOR","$SLH_sSHRINK_FACTOR", _baseShrinkFactor as Float,"{0} %")
 
-		AddHeaderOption(" Cloth compression")
-		AddSliderOptionST("STATE_ARMOR_MOD","Armor shrink", _armorMod as Float,"{1}")
-		AddSliderOptionST("STATE_CLOTH_MOD","Cloth shrink", _clothMod as Float,"{1}")
+		AddHeaderOption("$SLH_hClothCompression")
+		AddSliderOptionST("STATE_ARMOR_MOD","$SLH_sARMOR_MOD", _armorMod as Float,"{1}")
+		AddSliderOptionST("STATE_CLOTH_MOD","$SLH_sCLOTH_MOD", _clothMod as Float,"{1}")
 
-		AddHeaderOption(" Breast")
+		AddHeaderOption("$SLH_hBRreast")
 		If (bBreastEnabled)
-			AddToggleOptionST("STATE_CHANGE_BREAST_NODE","Change Breast Node", _useBreastNode as Float)	
-			AddSliderOptionST("STATE_BREAST_SWELL","Breast swell modifier", _breastSwellMod as Float,"{1}")
-			AddSliderOptionST("STATE_BREAST_MIN","Breast swell min", _breastMin as Float,"{1}")
-			AddSliderOptionST("STATE_BREAST_MAX","Breast swell max", _breastMax as Float,"{1}")
+			AddToggleOptionST("STATE_CHANGE_BREAST_NODE","$SLH_bCHANGE_BREAST_NODE", _useBreastNode as Float)	
+			AddSliderOptionST("STATE_BREAST_SWELL","$SLH_sBREAST_SWELL", _breastSwellMod as Float,"{1}")
+			AddSliderOptionST("STATE_BREAST_MIN","$SLH_sBREAST_MIN", _breastMin as Float,"{1}")
+			AddSliderOptionST("STATE_BREAST_MAX","$SLH_sBREAST_MAX", _breastMax as Float,"{1}")
 		else
-			AddToggleOptionST("STATE_CHANGE_BREAST_NODE","Change Breast Node", _useBreastNode as Float, OPTION_FLAG_DISABLED)	
+			AddToggleOptionST("STATE_CHANGE_BREAST_NODE","$SLH_bCHANGE_BREAST_NODE", _useBreastNode as Float, OPTION_FLAG_DISABLED)	
 			; AddSliderOptionST("STATE_BREAST_SWELL","Breast swell modifier", _breastSwellMod as Float,"{1}", OPTION_FLAG_DISABLED)
 			; AddSliderOptionST("STATE_BREAST_MAX","Breast swell max", _breastMax as Float,"{1}", OPTION_FLAG_DISABLED)
 		EndIf
 
-		AddHeaderOption(" Belly")
+		AddHeaderOption("$SLH_hBelly")
 		If (bBellyEnabled)
-			AddToggleOptionST("STATE_CHANGE_BELLY_NODE","Change Belly Node", _useBellyNode as Float)	
-			AddSliderOptionST("STATE_BELLY_SWELL","Belly swell modifier", _bellySwellMod as Float,"{1}")
-			AddSliderOptionST("STATE_BELLY_MIN","Belly swell min", _bellyMin as Float,"{1}")
-			AddSliderOptionST("STATE_BELLY_MAX","Belly swell max", _bellyMax as Float,"{1}")
+			AddToggleOptionST("STATE_CHANGE_BELLY_NODE","$SLH_bCHANGE_BELLY_NODE", _useBellyNode as Float)	
+			AddSliderOptionST("STATE_BELLY_SWELL","$SLH_sBELLY_SWELL", _bellySwellMod as Float,"{1}")
+			AddSliderOptionST("STATE_BELLY_MIN","$SLH_sBELLY_MIN", _bellyMin as Float,"{1}")
+			AddSliderOptionST("STATE_BELLY_MAX","$SLH_sBELLY_MAX", _bellyMax as Float,"{1}")
 		else
-			AddToggleOptionST("STATE_CHANGE_BELLY_NODE","Change Belly Node", _useBellyNode as Float, OPTION_FLAG_DISABLED)	
+			AddToggleOptionST("STATE_CHANGE_BELLY_NODE","$SLH_bCHANGE_BELLY_NODE", _useBellyNode as Float, OPTION_FLAG_DISABLED)	
 			; AddSliderOptionST("STATE_BELLY_SWELL","Belly swell modifier", _bellySwellMod as Float,"{1}", OPTION_FLAG_DISABLED)
 			; AddSliderOptionST("STATE_BELLY_MAX","Belly swell max", _bellyMax as Float,"{1}", OPTION_FLAG_DISABLED)
 		EndIf
 
-		AddHeaderOption(" Butt")
+		AddHeaderOption("$SLH_hButt")
 		If (bButtEnabled)
-			AddToggleOptionST("STATE_CHANGE_BUTT_NODE","Change Butt Node", _useButtNode as Float)		
-			AddSliderOptionST("STATE_BUTT_SWELL","Butt swell modifier", _buttSwellMod as Float,"{1}")
-			AddSliderOptionST("STATE_BUTT_MIN","Butt swell min", _buttMin as Float,"{1}")
-			AddSliderOptionST("STATE_BUTT_MAX","Butt swell max", _buttMax as Float,"{1}")
+			AddToggleOptionST("STATE_CHANGE_BUTT_NODE","$SLH_bCHANGE_BUTT_NODE", _useButtNode as Float)		
+			AddSliderOptionST("STATE_BUTT_SWELL","$SLH_sBUTT_SWELL", _buttSwellMod as Float,"{1}")
+			AddSliderOptionST("STATE_BUTT_MIN","$SLH_sBUTT_MIN", _buttMin as Float,"{1}")
+			AddSliderOptionST("STATE_BUTT_MAX","$SLH_sBUTT_MAX", _buttMax as Float,"{1}")
 		else
-			AddToggleOptionST("STATE_CHANGE_BUTT_NODE","Change Butt Node", _useButtNode as Float, OPTION_FLAG_DISABLED)		
+			AddToggleOptionST("STATE_CHANGE_BUTT_NODE","$SLH_bCHANGE_BUTT_NODE", _useButtNode as Float, OPTION_FLAG_DISABLED)		
 			; AddSliderOptionST("STATE_BUTT_SWELL","Butt swell modifier", _buttSwellMod as Float,"{1}", OPTION_FLAG_DISABLED)
 			; AddSliderOptionST("STATE_BUTT_MAX","Butt swell max", _buttMax as Float,"{1}", OPTION_FLAG_DISABLED)
 		EndIf
 
-		AddHeaderOption(" Schlong")
+		AddHeaderOption("$SLH_hSchlong")
 		If (bSchlongEnabled)
-			AddToggleOptionST("STATE_CHANGE_SCHLONG_NODE","Change Schlong Node", _useSchlongNode as Float)
-			AddSliderOptionST("STATE_SCHLONG_SWELL","Schlong swell modifier", _schlongSwellMod as Float,"{1}")
-			AddSliderOptionST("STATE_SCHLONG_MIN","Schlong swell min", _schlongMin as Float,"{1}")
-			AddSliderOptionST("STATE_SCHLONG_MAX","Schlong swell max", _schlongMax as Float,"{1}")
+			AddToggleOptionST("STATE_CHANGE_SCHLONG_NODE","$SLH_bCHANGE_SCHLONG_NODE", _useSchlongNode as Float)
+			AddSliderOptionST("STATE_SCHLONG_SWELL","$SLH_sSCHLONG_SWELL", _schlongSwellMod as Float,"{1}")
+			AddSliderOptionST("STATE_SCHLONG_MIN","$SLH_sSCHLONG_MIN", _schlongMin as Float,"{1}")
+			AddSliderOptionST("STATE_SCHLONG_MAX","$SLH_sSCHLONG_MAX", _schlongMax as Float,"{1}")
 		else
-			AddToggleOptionST("STATE_CHANGE_SCHLONG_NODE","Change Schlong Node", _useSchlongNode as Float, OPTION_FLAG_DISABLED)
+			AddToggleOptionST("STATE_CHANGE_SCHLONG_NODE","$SLH_bCHANGE_SCHLONG_NODE", _useSchlongNode as Float, OPTION_FLAG_DISABLED)
 			; AddSliderOptionST("STATE_SCHLONG_SWELL","Schlong swell modifier", _schlongSwellMod as Float,"{1}", OPTION_FLAG_DISABLED)
 			; AddSliderOptionST("STATE_SCHLONG_MAX","Schlong swell max", _schlongMax as Float,"{1}", OPTION_FLAG_DISABLED)
 		EndIf
 
-	elseIf (a_page == "Triggers")
+	elseIf (a_page == "$SLH_pTriggers")
 		SetCursorFillMode(TOP_TO_BOTTOM)
-		AddHeaderOption(" Sexual activity trigger")
+		AddHeaderOption("$SLH_hSexualActivityTrigger")
 		; AddSliderOptionST("STATE_LIBIDO","Starting libido", _startingLibido as Float) 
-		AddSliderOptionST("STATE_SEX_TRIGGER","High Sex Activity trigger", _sexActivityThreshold as Float)		
-		AddSliderOptionST("STATE_SEX_BUFFER","Low Sex Activity buffer", _sexActivityBuffer as Float)
-		AddToggleOptionST("STATE_HORNY_BEG","Beg for sex", _hornyBegON   as Bool)
-		AddSliderOptionST("STATE_BEG_TRIGGER","Beg arousal trigger", _hornyBegArousal  as Float,"{1}")
-		AddSliderOptionST("STATE_GRAB_TRIGGER","Public sex attack", _hornyGrab  as Float,"{1}")
-		AddToggleOptionST("STATE_EXHIBITIONIST","Allow Exhibitionist", _allowExhibitionist as Float)
-		AddSliderOptionST("STATE_COMMENTS_FREQUENCY","NPC Comments Frequency ", _commentsFrequency as Float,"{1} %")
+		AddSliderOptionST("STATE_SEX_TRIGGER","$SLH_sSEX_TRIGGER", _sexActivityThreshold as Float)		
+		AddSliderOptionST("STATE_SEX_BUFFER","$SLH_sSEX_BUFFER", _sexActivityBuffer as Float)
+		AddToggleOptionST("STATE_HORNY_BEG","$SLH_bHORNY_BEG", _hornyBegON   as Bool)
+		AddSliderOptionST("STATE_BEG_TRIGGER","$SLH_sBEG_TRIGGER", _hornyBegArousal  as Float,"{1}")
+		AddSliderOptionST("STATE_GRAB_TRIGGER","$SLH_sGRAB_TRIGGER", _hornyGrab  as Float,"{1}")
+		AddToggleOptionST("STATE_EXHIBITIONIST","$SLH_bEXHIBITIONIST", _allowExhibitionist as Float)
+		AddSliderOptionST("STATE_COMMENTS_FREQUENCY","$SLH_sCOMMENTS_FREQUENCY", _commentsFrequency as Float,"{1} %")
 
 		AddEmptyOption()
 		SetCursorPosition(1)
-		AddHeaderOption(" Shape change triggers ")
-		AddToggleOptionST("STATE_UPDATE_ON_CELL","Update on cell change", _shapeUpdateOnCellChange as Float)
-		AddToggleOptionST("STATE_UPDATE_ON_SEX","Update after sex", _shapeUpdateAfterSex as Float)
-		AddToggleOptionST("STATE_UPDATE_ON_TIMER","Update on timer", _shapeUpdateOnTimer as Float)
-		AddToggleOptionST("STATE_ENABLE_NODE_UPDATE","Enable QueueNodeUpdate", _enableNiNodeUpdate as Float)
-		AddToggleOptionST("STATE_CHANGE_NODES","Change NetImmerse Nodes", _useNodes as Float)
+		AddHeaderOption("$SLH_hShapeChangeTriggers")
+		AddToggleOptionST("STATE_UPDATE_ON_CELL","$SLH_sUPDATE_ON_CELL", _shapeUpdateOnCellChange as Float)
+		AddToggleOptionST("STATE_UPDATE_ON_SEX","$SLH_sUPDATE_ON_SEX", _shapeUpdateAfterSex as Float)
+		AddToggleOptionST("STATE_UPDATE_ON_TIMER","$SLH_bUPDATE_ON_TIMER", _shapeUpdateOnTimer as Float)
+		AddToggleOptionST("STATE_ENABLE_NODE_UPDATE","$SLH_sENABLE_NODE_UPDATE", _enableNiNodeUpdate as Float)
+		AddToggleOptionST("STATE_CHANGE_NODES","$SLH_sCHANGE_NODES", _useNodes as Float)
 
 		If CheckXPMSERequirements(PlayerActor, PlayerGender as Bool)
-			AddToggleOptionST("STATE_ENABLE_NODE_OVERRIDE","Enable NiOverride", StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON") as Float)
+			AddToggleOptionST("STATE_ENABLE_NODE_OVERRIDE","$SLH_bENABLE_NODE_OVERRIDE", StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON") as Float)
 		else
-			AddToggleOptionST("STATE_ENABLE_NODE_OVERRIDE","Enable NiOverride", StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON") as Float, OPTION_FLAG_DISABLED)
+			AddToggleOptionST("STATE_ENABLE_NODE_OVERRIDE","$SLH_bENABLE_NODE_OVERRIDE", StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON") as Float, OPTION_FLAG_DISABLED)
 		endif
-		AddToggleOptionST("STATE_BALANCE","NiO Node Balancing", _applyNodeBalancing  as Float)
+		AddToggleOptionST("STATE_BALANCE","$SLH_sBALANCE", _applyNodeBalancing  as Float)
 
 
-	elseIf (a_page == "Curses")
+	elseIf (a_page == "$SLH_pCurses")
 		SetCursorFillMode(TOP_TO_BOTTOM)
 
-		AddHeaderOption(" Succubus Curse")
-		AddToggleOptionST("STATE_SUCCUBUS","Allow Succubus Curse", _allowSuccubus as Float)
+		AddHeaderOption("$SLH_hSuccubusCurse")
+		AddToggleOptionST("STATE_SUCCUBUS","$SLH_bSUCCUBUS", _allowSuccubus as Float)
 
-		AddHeaderOption(" Sex Change Curse")
-		AddToggleOptionST("STATE_SEX_CHANGE","Allow Sex Change Curse", _allowHRT as Float)
-		AddToggleOptionST("STATE_TG","Allow Transgender Curse", _allowTG as Float)
+		AddHeaderOption("$SLH_hSexChangeCurse")
+		AddToggleOptionST("STATE_SEX_CHANGE","$SLH_bSEX_CHANGE", _allowHRT as Float)
+		AddToggleOptionST("STATE_TG","$SLH_bTG", _allowTG as Float)
 
-		AddHeaderOption(" Bimbo Curse")
-		AddToggleOptionST("STATE_BIMBO","Allow Bimbo Curse", _allowBimbo as Float)
-		AddToggleOptionST("STATE_BIMBO_RACE","Bimbo Race", _allowBimboRace as Float)
-		AddSliderOptionST("STATE_BIMBO_CLUMSINESS","Clumsiness factor", _bimboClumsinessMod as Float,"{1}")
-		AddToggleOptionST("STATE_BIMBO_DROP","Drop items when aroused", _bimboClumsinessDrop  as Bool)
-		AddSliderOptionST("STATE_BIMBO_THOUGHTS","Bimbo Thoughts Delay", _bimboThoughtsDelay,"{1}")
+		AddHeaderOption("$SLH_hBimboCurse")
+		AddToggleOptionST("STATE_BIMBO","$SLH_bBIMBO", _allowBimbo as Float)
+		AddToggleOptionST("STATE_BIMBO_RACE","$SLH_bBIMBO_RACE", _allowBimboRace as Float)
+		AddSliderOptionST("STATE_BIMBO_CLUMSINESS","$SLH_sBIMBO_CLUMSINESS", _bimboClumsinessMod as Float,"{1}")
+		AddToggleOptionST("STATE_BIMBO_DROP","$SLH_bBIMBO_DROP", _bimboClumsinessDrop  as Bool)
+		AddSliderOptionST("STATE_BIMBO_THOUGHTS","$SLH_sBIMBO_THOUGHTS", _bimboThoughtsDelay,"{1}")
 
 
 		AddEmptyOption()
 		SetCursorPosition(1)
-		AddHeaderOption(" Curses manual triggers ")
-		AddToggleOptionST("STATE_SET_SUCCUBUS","Trigger Succubus Curse now", _setSuccubus as Float)
-		AddToggleOptionST("STATE_SET_SEX_CHANGE","Trigger Sex Change Curse now", _setHRT as Float)
-		AddToggleOptionST("STATE_SET_TG","Trigger Transgender Curse now", _setTG as Float)
-		AddToggleOptionST("STATE_SET_BIMBO","Trigger Bimbo Curse now", _setBimbo as Float)
+		AddHeaderOption("$SLH_hCursesManualTriggers")
+		AddToggleOptionST("STATE_SET_SUCCUBUS","$SLH_bSET_SUCCUBUS", _setSuccubus as Float)
+		AddToggleOptionST("STATE_SET_SEX_CHANGE","$SLH_bSET_SEX_CHANGE", _setHRT as Float)
+		AddToggleOptionST("STATE_SET_TG","$SLH_sSET_TG", _setTG as Float)
+		AddToggleOptionST("STATE_SET_BIMBO","$SLH_bSET_BIMBO", _setBimbo as Float)
 
 
 
-	elseIf (a_page == "Debug")
+	elseIf (a_page == "$SLH_pDebug")
 		SetCursorFillMode(TOP_TO_BOTTOM)
 
-		AddHeaderOption(" Status")
-		AddToggleOptionST("STATE_SELF_SPELLS","Allow Self Spells", _allowSelfSpells as Float)
-		AddToggleOptionST("STATE_SHOW_STATUS","Show Status messages", _showStatus as Bool)
+		AddHeaderOption("$SLH_hStatus")
+		AddToggleOptionST("STATE_SELF_SPELLS","$SLH_bSELF_SPELLS", _allowSelfSpells as Float)
+		AddToggleOptionST("STATE_SHOW_STATUS","$SLH_bSHOW_STATUS", _showStatus as Bool)
 
-		AddToggleOptionST("STATE_STATUS","Display current status", _statusToggle as Float)
+		AddToggleOptionST("STATE_STATUS","$SLH_bSTATUS", _statusToggle as Float)
 
-		AddHeaderOption(" Change shape values")
-		AddSliderOptionST("STATE_WEIGHT_VALUE","Weight ", _weightSetValue as Float,"{1}")
-		AddSliderOptionST("STATE_BREAST_VALUE","Breast", _breastSetValue as Float,"{1}")
-		AddSliderOptionST("STATE_BELLY_VALUE","Belly", _bellySetValue as Float,"{1}")
-		AddSliderOptionST("STATE_BUTT_VALUE","Butt", _buttSetValue as Float,"{1}")
-		AddSliderOptionST("STATE_SCHLONG_VALUE","Schlong", _schlongSetValue as Float,"{1}")
+		AddHeaderOption("$SLH_hChangeShapeValues")
+		AddSliderOptionST("STATE_WEIGHT_VALUE","$SLH_sWEIGHT_VALUE", _weightSetValue as Float,"{1}")
+		AddSliderOptionST("STATE_BREAST_VALUE","$SLH_sBREAST_VALUE", _breastSetValue as Float,"{1}")
+		AddSliderOptionST("STATE_BELLY_VALUE","$SLH_sBELLY_VALUE", _bellySetValue as Float,"{1}")
+		AddSliderOptionST("STATE_BUTT_VALUE","Bu$SLH_sBUTT_VALUE", _buttSetValue as Float,"{1}")
+		AddSliderOptionST("STATE_SCHLONG_VALUE","$SLH_sSCHLONG_VALUE", _schlongSetValue as Float,"{1}")
 
 		AddEmptyOption()
-		AddToggleOptionST("STATE_REFRESH","Apply changes", _refreshToggle as Float)
+		AddToggleOptionST("STATE_REFRESH","$SLH_bREFRESH", _refreshToggle as Float)
  
 		AddEmptyOption()
 		SetCursorPosition(1)
 
-		AddToggleOptionST("STATE_SETSHAPE","Set default shape", _setshapeToggle as Float)
-		AddToggleOptionST("STATE_RESET_HORMONES","Reset hormone levels", _resetHormonesToggle as Float)
-		AddToggleOptionST("STATE_RESET_SKIN_COLOR","Reset skin color", _resetSkinColorToggle as Float)
-		AddToggleOptionST("STATE_RESET_COLORS","Reset color settings", _resetColorsToggle as Float)
-		AddToggleOptionST("STATE_RESET","Reset changes", _resetToggle as Float)
-		AddToggleOptionST("STATE_DEBUG","Debug messages", _showDebug as Float)
+		AddToggleOptionST("STATE_SETSHAPE","$SLH_bSETSHAPE", _setshapeToggle as Float)
+		AddToggleOptionST("STATE_RESET_HORMONES","$SLH_bRESET_HORMONES", _resetHormonesToggle as Float)
+		AddToggleOptionST("STATE_RESET_SKIN_COLOR","$SLH_bRESET_SKIN_COLOR", _resetSkinColorToggle as Float)
+		AddToggleOptionST("STATE_RESET_COLORS","$SLH_bRESET_COLORS", _resetColorsToggle as Float)
+		AddToggleOptionST("STATE_RESET","R$SLH_bRESET", _resetToggle as Float)
+		AddToggleOptionST("STATE_DEBUG","$SLH_bDEBUG", _showDebug as Float)
 
-		AddHeaderOption(" Player status")
+		AddHeaderOption("$SLH_hPlayerStatus")
 		Int iHoursSinceLastSex = GetCurrentHourOfDay() - StorageUtil.GetIntValue(PlayerActor, "_SLH_iHourOfDaySinceLastSex") 
 
  		AddTextOption(" Sex count today: " +  StorageUtil.GetIntValue(PlayerActor, "_SLH_iSexCountToday")   as Int, "", OPTION_FLAG_DISABLED)
@@ -675,7 +675,7 @@ event OnPageReset(string a_page)
 		AddTextOption(" Succubus Level: " +  StorageUtil.GetIntValue(PlayerActor, "_SLH_iSuccubusLevel")   as Int, "", OPTION_FLAG_DISABLED)
 
 		if (StorageUtil.GetFormValue(PlayerActor, "_SLH_fOrigRace") !=  (pActorBase.GetRace() as Form)) 
-			AddTextOption("Warning: Current player race doesn't match original player race. Use the Set Default Shape menu option if you are not in a temporary transformation.", "", OPTION_FLAG_DISABLED) 
+			AddTextOption("$SLH_xPlayerRaceWarning", "", OPTION_FLAG_DISABLED) 
 		endif
 	endIf
 endEvent
@@ -702,7 +702,7 @@ state STATE_PIGMENTATION ; SLIDER
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Pigmentation hormone - How easily skin can change color (0: No change - 1: Normal rate - 2: Accelerated rate)")
+		SetInfoText("$SLH_sPIGMENTATION_DESC")
 	endEvent
 endState
 
@@ -728,7 +728,7 @@ state STATE_GROWTH ; SLIDER
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Growth hormone - How easily weight can change (0: No change - 1: Normal rate - 2: Accelerated rate)")
+		SetInfoText("$SLH_sGROWTH_DESC")
 	endEvent
 endState
 
@@ -754,7 +754,7 @@ state STATE_METABOLISM ; SLIDER
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Metabolism hormone - Fat accumulation and heat loss resistance (0: No change - 1: Normal rate - 2: Accelerated rate)")
+		SetInfoText("$SLH_sMETABOLISM_DESC")
 	endEvent
 endState
 
@@ -780,7 +780,7 @@ state STATE_SLEEP ; SLIDER
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Sleep hormone - How quickly need for sleep happens (0: No change - 1: Normal rate - 2: Accelerated rate)")
+		SetInfoText("$SLH_sSLEEP_DESC")
 	endEvent
 endState
 
@@ -806,7 +806,7 @@ state STATE_HUNGER ; SLIDER
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Hunger hormone - How quickly need for food happens (0: No change - 1: Normal rate - 2: Accelerated rate)")
+		SetInfoText("$SLH_sHUNGER_DESC")
 	endEvent
 endState
 
@@ -832,7 +832,7 @@ state STATE_IMMUNITY ; SLIDER
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Immunity hormone - Resistance to diseases (0: No change - 1: Normal rate - 2: Accelerated rate)")
+		SetInfoText("$SLH_sIMMUNITY_DESC")
 	endEvent
 endState
 
@@ -858,7 +858,7 @@ state STATE_STRESS ; SLIDER
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Stress hormone - Fight or flight response (0: No change - 1: Normal rate - 2: Accelerated rate)")
+		SetInfoText("$SLH_sSTRESS_DESC")
 	endEvent
 endState
 
@@ -884,7 +884,7 @@ state STATE_MOOD ; SLIDER
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Mood hormone - Calm to volatile (0: No change - 1: Normal rate - 2: Accelerated rate)")
+		SetInfoText("$SLH_sMOOD_DESC")
 	endEvent
 endState
 
@@ -910,7 +910,7 @@ state STATE_MALE ; SLIDER
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Male hormone - Controls masculine organ growth and function (0: No change - 1: Normal rate - 2: Accelerated rate)")
+		SetInfoText("$SLH_sMALE_DESC")
 	endEvent
 endState
 
@@ -936,7 +936,7 @@ state STATE_FEMALE ; SLIDER
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Female hormone - Controls feminine organ growth and function (0: No change - 1: Normal rate - 2: Accelerated rate)")
+		SetInfoText("$SLH_sFEMALE_DESC")
 	endEvent
 endState
 
@@ -962,7 +962,7 @@ state STATE_SEXDRIVE ; SLIDER
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Sex Drive hormone - Controls personal need for sex (0: No change - 1: Normal rate - 2: Accelerated rate)")
+		SetInfoText("$SLH_sSEXDRIVE_DESC")
 	endEvent
 endState
 
@@ -988,7 +988,7 @@ state STATE_PHEROMONES ; SLIDER
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Pheromones - Controls arousal in others (0: No change - 1: Normal rate - 2: Accelerated rate)")
+		SetInfoText("$SLH_sPHEROMONES_DESC")
 	endEvent
 endState
 
@@ -1014,7 +1014,7 @@ state STATE_LACTATION ; SLIDER
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Lactation hormone - Controls milk production (0: No change - 1: Normal rate - 2: Accelerated rate)")
+		SetInfoText("$SLH_sLACTATION_DESC")
 	endEvent
 endState
 
@@ -1040,7 +1040,7 @@ state STATE_BIMBO_HORMONE ; SLIDER
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Bimbo hormone - Controls amount of brain fuzz in a bimbo (0: No change - 1: Normal rate - 2: Accelerated rate)")
+		SetInfoText("$SLH_sBIMBO_HORMONE_DESC")
 	endEvent
 endState
 
@@ -1066,7 +1066,7 @@ state STATE_SUCCUBUS_HORMONE ; SLIDER
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Succubus hormone - Controls power of succubus effects (0: No change - 1: Normal rate - 2: Accelerated rate)")
+		SetInfoText("$SLH_sSUCCUBUS_HORMONE_DESC")
 	endEvent
 endState
 
@@ -1085,7 +1085,7 @@ state STATE_RESET_HORMONES ; TOGGLE
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Reset hormone levels to 'normal' levels based on race.")
+		SetInfoText("$SLH_bRESET_HORMONES_DESC")
 	endEvent
 endState
 
@@ -1105,7 +1105,7 @@ state STATE_RESET_SKIN_COLOR ; TOGGLE
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Reset skin color to default settings.")
+		SetInfoText("$SLH_bRESET_SKIN_COLOR_DESC")
 	endEvent
 endState
 
@@ -1124,7 +1124,7 @@ state STATE_RESET_COLORS ; TOGGLE
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Reset hormone colors to default settings.")
+		SetInfoText("$SLH_bRESET_COLORS_DESC")
 	endEvent
 endState
 
@@ -1149,7 +1149,7 @@ state STATE_LIBIDO ; SLIDER
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Starting libido - controls initial sex drive of your character.")
+		SetInfoText("$SLH_sLIBIDO_DESC")
 	endEvent
 endState
 ; AddSliderOptionST("STATE_SEX_TRIGGER","High Sex Activity trigger", _sexActivityThreshold)
@@ -1174,7 +1174,7 @@ state STATE_SEX_TRIGGER ; SLIDER
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Number of sex acts required in a day to increase body changes.")
+		SetInfoText("$SLH_sSEX_TRIGGER_DESC")
 	endEvent
 endState
 ; AddSliderOptionST("STATE_SEX_BUFFER","High Sex Activity buffer", _sexActivityBuffer)
@@ -1199,7 +1199,7 @@ state STATE_SEX_BUFFER ; SLIDER
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Number of days without sex before body changes decrease.")
+		SetInfoText("$SLH_sSEX_BUFFER_DESC")
 	endEvent
 endState
 ; AddToggleOptionST("STATE_CHANGE_NODES","Change NetImmerse Nodes", _useNodes)
@@ -1217,7 +1217,7 @@ state STATE_CHANGE_NODES ; TOGGLE
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Allows changes to NetImmerse Nodes")
+		SetInfoText("$SLH_sCHANGE_NODES_DESC")
 	endEvent
 endState
 ; AddToggleOptionST("STATE_CHANGE_BREAST_NODE","Change Breast Node", _useBreastNode as Float)	
@@ -1235,7 +1235,7 @@ state STATE_CHANGE_BREAST_NODE ; TOGGLE
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Allows Hormones to change breast nodes.")
+		SetInfoText("$SLH_bCHANGE_BREAST_NODE_DESC")
 	endEvent
 endState
 ; AddToggleOptionST("STATE_CHANGE_BUTT_NODE","Change Butt Node", _useButtNode as Float)		
@@ -1253,7 +1253,7 @@ state STATE_CHANGE_BUTT_NODE ; TOGGLE
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Allows Hormones to change butt nodes.")
+		SetInfoText("$SLH_bCHANGE_BUTT_NODE_DESC")
 	endEvent
 endState
 ; AddToggleOptionST("STATE_CHANGE_BELLY_NODE","Change Belly Node", _useBellyNode as Float)		
@@ -1271,7 +1271,7 @@ state STATE_CHANGE_BELLY_NODE ; TOGGLE
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Allows Hormones to change belly nodes.")
+		SetInfoText("$SLH_bCHANGE_BELLY_NODE_DESC")
 	endEvent
 endState
 ; AddToggleOptionST("STATE_CHANGE_SCHLONG_NODE","Change Schlong Node", _useSchlongNode as Float)
@@ -1289,7 +1289,7 @@ state STATE_CHANGE_SCHLONG_NODE ; TOGGLE
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Allows Hormones to change schlong nodes.")
+		SetInfoText("$SLH_bCHANGE_SCHLONG_NODE_DESC")
 	endEvent
 endState
 
@@ -1315,7 +1315,7 @@ state STATE_SWELL_FACTOR ; SLIDER
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Base swell factor - Rate of growth applied to breasts, belly and butt (in % of calculated amount of growth - 0 means no change at all - 100 means full amount of growth applied).")
+		SetInfoText("$SLH_sSWELL_FACTOR_DESC")
 	endEvent
 endState
 ; AddSliderOptionST("STATE_SHRINK_FACTOR","Base shrink factor", _baseShrinkFactor)
@@ -1340,7 +1340,7 @@ state STATE_SHRINK_FACTOR ; SLIDER
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Base shrink factor - Rate of reduction applied to breasts, belly and butt (in % of current shape value).")
+		SetInfoText("$SLH_sSHRINK_FACTOR_DESC")
 	endEvent
 endState
 ; AddSliderOptionST("STATE_ARMOR_MOD","Armor shrink", _armorMod)
@@ -1366,7 +1366,7 @@ state STATE_ARMOR_MOD ; SLIDER
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Armor shrink factor - Amount of change applied when wearing an armor. Disabled when other mods are taking over shape updates (like pregnancy mods).")
+		SetInfoText("$SLH_sARMOR_MOD_DESC")
 	endEvent
 endState
 ; AddSliderOptionST("STATE_CLOTH_MOD","Cloth shrink", _clothMod)
@@ -1392,7 +1392,7 @@ state STATE_CLOTH_MOD ; SLIDER
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Armor shrink factor - Amount of change applied when wearing cloth. Disabled when other mods are taking over shape updates (like pregnancy mods).")
+		SetInfoText("$SLH_sCLOTH_MOD_DESC")
 	endEvent
 endState
 ; AddSliderOptionST("STATE_BREAST_SWELL","Breast swell modifier", _breastSwellMod)
@@ -1419,7 +1419,7 @@ state STATE_BREAST_SWELL ; SLIDER
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Breast swell modifier - Amount of base change applied to breasts (1 being the full amount).")
+		SetInfoText("$SLH_sBREAST_SWELL_DESC")
 	endEvent
 endState
 ; AddSliderOptionST("STATE_BREAST_MAX","Breast swell max", _breastMax)
@@ -1446,7 +1446,7 @@ state STATE_BREAST_MAX ; SLIDER
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Maximum breast size multiplier allowed")
+		SetInfoText("$SLH_sBREAST_MAX_DESC")
 	endEvent
 endState
 ; AddSliderOptionST("STATE_BREAST_MIN","Breast swell min", _breastMin)
@@ -1473,7 +1473,7 @@ state STATE_BREAST_MIN ; SLIDER
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Minimum breast size multiplier allowed")
+		SetInfoText("$SLH_sBREAST_MIN_DESC")
 	endEvent
 endState
 ; AddSliderOptionST("STATE_BELLY_SWELL","Belly swell modifier", _bellySwellMod)
@@ -1500,7 +1500,7 @@ state STATE_BELLY_SWELL ; SLIDER
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Belly swell modifier - Amount of base change applied to belly (1 being the full amount).")
+		SetInfoText("$SLH_sBELLY_SWELL_DESC")
 	endEvent
 endState
 ; AddSliderOptionST("STATE_BELLY_MAX","Belly swell max", _bellyMax)
@@ -1527,7 +1527,7 @@ state STATE_BELLY_MAX ; SLIDER
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Maximum belly size multiplier allowed")
+		SetInfoText("$SLH_sBELLY_MAX_DESC")
 	endEvent
 endState
 ; AddSliderOptionST("STATE_BELLY_MIN","Belly swell min", _bellyMin)
@@ -1554,7 +1554,7 @@ state STATE_BELLY_MIN ; SLIDER
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Minimum belly size multiplier allowed")
+		SetInfoText("$SLH_sBELLY_MIN_DESC")
 	endEvent
 endState
 ; AddSliderOptionST("STATE_BUTT_SWELL","Butt swell modifier", _buttSwellMod)
@@ -1581,7 +1581,7 @@ state STATE_BUTT_SWELL ; SLIDER
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Butt swell modifier - Amount of base change applied to butt (1 being the full amount).")
+		SetInfoText("$SLH_sBUTT_SWELL_DESC")
 	endEvent
 endState
 ; AddSliderOptionST("STATE_BUTT_MAX",("Butt swell max", _buttMax)
@@ -1608,7 +1608,7 @@ state STATE_BUTT_MAX ; SLIDER
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Maximum butt size multiplier allowed")
+		SetInfoText("$SLH_sBUTT_MAX_DESC")
 	endEvent
 endState
 ; AddSliderOptionST("STATE_BUTT_MIN","Butt swell min", _buttMin)
@@ -1635,7 +1635,7 @@ state STATE_BUTT_MIN ; SLIDER
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Minimum butt size multiplier allowed")
+		SetInfoText("$SLH_sBUTT_MIN_DESC")
 	endEvent
 endState
 ; AddSliderOptionST("STATE_SCHLONG_SWELL","Schlong swell modifier", _schlongSwellMod)
@@ -1662,7 +1662,7 @@ state STATE_SCHLONG_SWELL ; SLIDER
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Schlong swell modifier - Amount of base change applied to schlong size (1 being the full amount).")
+		SetInfoText("$SLH_sSCHLONG_SWELL_DESC")
 	endEvent
 endState
 ; AddSliderOptionST("STATE_SCHLONG_MAX","Belly swell max", _bellyMax)
@@ -1689,7 +1689,7 @@ state STATE_SCHLONG_MAX ; SLIDER
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Maximum schlong size multiplier allowed")
+		SetInfoText("$SLH_sSCHLONG_MAX_DESC")
 	endEvent
 endState
 ; AddSliderOptionST("STATE_SCHLONG_MIN","Schlong swell min", _schlongMin)
@@ -1716,7 +1716,7 @@ state STATE_SCHLONG_MIN ; SLIDER
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Minimum schlong size multiplier allowed")
+		SetInfoText("$SLH_sSCHLONG_MIN_DESC")
 	endEvent
 endState
 ; AddToggleOptionST("STATE_CHANGE_WEIGHT","Change Weight scale", _useWeight)
@@ -1739,7 +1739,7 @@ state STATE_CHANGE_WEIGHT ; TOGGLE
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Allow changes to Weight scale")
+		SetInfoText("$SLH_bCHANGE_WEIGHT_DESC")
 	endEvent
 endState
 ; AddSliderOptionST("STATE_WEIGHT_SWELL","Weight swell mod", _weightSwellMod)
@@ -1766,7 +1766,7 @@ state STATE_WEIGHT_SWELL ; SLIDER
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Weight swell modifier - Amount of base change applied to weight (1 being the full amount)")
+		SetInfoText("$SLH_sWEIGHT_SWELL_DESC")
 	endEvent
 endState
 ; AddToggleOptionST("STATE_CHANGE_COLOR","Change colors", _useColors)
@@ -1786,7 +1786,7 @@ state STATE_CHANGE_COLOR ; TOGGLE
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Allow change to skin color")
+		SetInfoText("$SLH_bCHANGE_COLOR_DESC")
 	endEvent
 endState
 
@@ -1806,7 +1806,7 @@ state STATE_CHANGE_HAIR ; TOGGLE
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Allow changes to hair")
+		SetInfoText("$SLH_bCHANGE_HAIR_DESC")
 	endEvent
 endState
 
@@ -1826,7 +1826,7 @@ state STATE_CHANGE_HAIRLOSS ; TOGGLE
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Allow hair loss")
+		SetInfoText("$SLH_bCHANGE_HAIRLOSS_DESC")
 	endEvent
 endState
 
@@ -1846,7 +1846,7 @@ state STATE_CHANGE_HAIRCOLOR ; TOGGLE
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Allow change to hair color")
+		SetInfoText("$SLH_bCHANGE_HAIRCOLOR_DESC")
 	endEvent
 endState
 
@@ -1875,7 +1875,7 @@ state STATE_DEFAULT_COLOR ; COLOR
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Default skin color - Base color for the skin in a default state")
+		SetInfoText("$SLH_cDEFAULT_COLOR_DESC")
 	endEvent
 endState
 ; AddColorOptionST("STATE_DEFAULT_COLOR_TXT","Default color text", IntToHex(_defaultColor) as String)
@@ -1901,7 +1901,7 @@ state STATE_DEFAULT_COLOR_TXT ; COLOR
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Base color for the skin in a default state, as a six digit hex value (RRGGBB) with leading zeroes.\nExamples: FF0000 = red, 00FF00 = green, 0000FF = blue")
+		SetInfoText("$SLH_iDEFAULT_COLOR_TXT_DESC")
 	endEvent
 endState
 ; AddColorOptionST("STATE_RED_COLOR_SHIFT","Red color shift", _redShiftColor as Int)
@@ -1926,7 +1926,7 @@ state STATE_RED_COLOR_SHIFT ; COLOR
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Red shift color - Color for 'red' shift from current color (blushing after sex)")
+		SetInfoText("$SLH_cRED_COLOR_SHIFT_DESC")
 	endEvent
 endState
 ; AddColorOptionST("STATE_RED_COLOR_TXT","Red color text", IntToHex(_redShiftColor) as String)
@@ -1950,7 +1950,7 @@ state STATE_RED_COLOR_TXT ; COLOR
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Red shift color - as a six digit hex value (RRGGBB) with leading zeroes.\nExamples: FF0000 = red, 00FF00 = green, 0000FF = blue")
+		SetInfoText("$SLH_iRED_COLOR_TXT_DESC")
 	endEvent
 endState
 ; AddSliderOptionST("STATE_RED_COLOR_SHIFT_MOD","Red color shift mod", _redShiftColorMod as Float,"{1}")
@@ -1975,7 +1975,7 @@ state STATE_RED_COLOR_SHIFT_MOD ; SLIDER
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Red shift color modifier - Amount of base change applied to shift to red color from current color (1 being the full amount)")
+		SetInfoText("$SLH_sRED_COLOR_SHIFT_MOD_DESC")
 	endEvent
 endState
 
@@ -2002,7 +2002,7 @@ state STATE_BLUE_COLOR_SHIFT ; COLOR
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Blue shift color - Color for 'blue' shift from current color (sex withdrawal)")
+		SetInfoText("$SLH_cBLUE_COLOR_SHIFT_DESC")
 	endEvent
 endState
 ; AddColorOptionST("STATE_BLUE_COLOR_TXT","Blue color text", IntToHex(_blueShiftColor) as String)
@@ -2026,7 +2026,7 @@ state STATE_BLUE_COLOR_TXT ; COLOR
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Blue shift color - as a six digit hex value (RRGGBB) with leading zeroes.\nExamples: FF0000 = red, 00FF00 = green, 0000FF = blue")
+		SetInfoText("$SLH_iBLUE_COLOR_TXT_DESC")
 	endEvent
 endState
 ; AddSliderOptionST("STATE_BLUE_COLOR_SHIFT_MOD","Blue color shift mod", _blueShiftColorMod as Float,"{1}")
@@ -2051,7 +2051,7 @@ state STATE_BLUE_COLOR_SHIFT_MOD ; SLIDER
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Blue shift color modifier - Amount of base change applied to shift to blue color from current color (1 being the full amount)")
+		SetInfoText("$SLH_sBLUE_COLOR_SHIFT_MOD_DESC")
 	endEvent
 endState
 
@@ -2077,7 +2077,7 @@ state STATE_BIMBO_HAIR_COLOR_SHIFT ; COLOR
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Bimbo Hair color - Hair Color for 'Bimbo' curse")
+		SetInfoText("$SLH_cBIMBO_HAIR_COLOR_SHIFT_DESC")
 	endEvent
 endState
 ; AddColorOptionST("STATE_BIMBO_HAIR_COLOR_TXT","Bimbo color text", IntToHex(_bimboHairColor) as String)
@@ -2101,7 +2101,7 @@ state STATE_BIMBO_HAIR_COLOR_TXT ; COLOR
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Bimbo Hair color - as a six digit hex value (RRGGBB) with leading zeroes.\nExamples: FF0000 = red, 00FF00 = green, 0000FF = blue")
+		SetInfoText("$SLH_iBIMBO_HAIR_COLOR_TXT_DESC")
 	endEvent
 endState
 ; AddSliderOptionST("STATE_BIMBO_HAIR_COLOR_SHIFT_MOD","Bimbo Hair shift mod", _bimboHairColorMod as Float,"{1}")
@@ -2126,7 +2126,7 @@ state STATE_BIMBO_HAIR_COLOR_SHIFT_MOD ; SLIDER
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Bimbo Hair color modifier - Amount of base change applied to shift to the full Bimbo Hair color from current color (1 being the full amount)")
+		SetInfoText("$SLH_sBIMBO_HAIR_COLOR_SHIFT_MOD_DESC")
 	endEvent
 endState
 
@@ -2152,7 +2152,7 @@ state STATE_SUCCUBUS_HAIR_COLOR_SHIFT ; COLOR
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Succubus Hair color - Hair Color for 'Succubus' curse")
+		SetInfoText("$SLH_cSUCCUBUS_HAIR_COLOR_SHIFT_DESC")
 	endEvent
 endState
 ; AddColorOptionST("STATE_SUCCUBUS_HAIR_COLOR_TXT","Succubus color text", IntToHex(_succubusHairColor) as String)
@@ -2176,7 +2176,7 @@ state STATE_SUCCUBUS_HAIR_COLOR_TXT ; COLOR
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Succubus Hair color - as a six digit hex value (RRGGBB) with leading zeroes.\nExamples: FF0000 = red, 00FF00 = green, 0000FF = blue")
+		SetInfoText("$SLH_iSUCCUBUS_HAIR_COLOR_TXT_DESC")
 	endEvent
 endState
 ; AddSliderOptionST("STATE_SUCCUBUS_HAIR_COLOR_SHIFT_MOD","Succubus Hair shift mod", _succubusHairColorMod as Float,"{1}")
@@ -2201,7 +2201,7 @@ state STATE_SUCCUBUS_HAIR_COLOR_SHIFT_MOD ; SLIDER
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Succubus Hair color modifier - Amount of base change applied to shift to the full Succubus Hair color from current color (1 being the full amount)")
+		SetInfoText("$SLH_sSUCCUBUS_HAIR_COLOR_SHIFT_MOD_DESC")
 	endEvent
 endState
 
@@ -2233,7 +2233,7 @@ state STATE_WEIGHT_VALUE ; SLIDER
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Set Weight to this value.")
+		SetInfoText("$SLH_sWEIGHT_VALUE_DESC")
 	endEvent
 endState
 ; AddSliderOptionST("STATE_BREAST_VALUE","Breast", _breastSetValue as Float,"{1}")
@@ -2260,7 +2260,7 @@ state STATE_BREAST_VALUE ; SLIDER
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Set Breasts nodes to this value.")
+		SetInfoText("$SLH_sBREAST_VALUE_DESC")
 	endEvent
 endState
 ; AddSliderOptionST("STATE_BELLY_VALUE","Belly", _bellySetValue as Float,"{1}")
@@ -2287,7 +2287,7 @@ state STATE_BELLY_VALUE ; SLIDER
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Set Belly nodes to this value.")
+		SetInfoText("$SLH_sBELLY_VALUE_DESC")
 	endEvent
 endState
 ; AddSliderOptionST("STATE_BUTT_VALUE","Butt", _buttSetValue as Float,"{1}")
@@ -2314,7 +2314,7 @@ state STATE_BUTT_VALUE ; SLIDER
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Set Butt nodes to this value.")
+		SetInfoText("$SLH_sBUTT_VALUE_DESC")
 	endEvent
 endState
 ; AddSliderOptionST("STATE_SCHLONG_VALUE","Schlong", _schlongSetValue as Float,"{1}")
@@ -2341,7 +2341,7 @@ state STATE_SCHLONG_VALUE ; SLIDER
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Set Schlong nodes to this value.")
+		SetInfoText("$SLH_sSCHLONG_VALUE_DESC")
 	endEvent
 endState
 ; AddToggleOptionST("STATE_REFRESH","Apply changes", _refreshToggle as Float)
@@ -2359,7 +2359,7 @@ state STATE_REFRESH ; TOGGLE
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Apply these values to current Hormones settings.")
+		SetInfoText("$SLH_bREFRESH_DESC")
 	endEvent
 endState
 
@@ -2381,7 +2381,7 @@ state STATE_SUCCUBUS ; TOGGLE
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Succubus curse - Caused by exposure to Daedric influence.")
+		SetInfoText("$SLH_bSUCCUBUS_DESC")
 	endEvent
 endState
 state STATE_SET_SUCCUBUS ; TOGGLE
@@ -2408,7 +2408,7 @@ state STATE_SET_SUCCUBUS ; TOGGLE
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Toggle Succubus - Set or clear the succubus effect now (for player starts or rolepay)")
+		SetInfoText("$SLH_bSET_SUCCUBUS_DESC")
 	endEvent
 endState
 ; AddToggleOptionST("STATE_BIMBO","Sex Change Curse", _allowBimbo)
@@ -2428,7 +2428,7 @@ state STATE_BIMBO ; TOGGLE
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Bimbo Curse - This curse could turn you into a mindless sex-starved blonde.")
+		SetInfoText("$SLH_bBIMBO_DESC")
 	endEvent
 endState
 state STATE_SET_BIMBO ; TOGGLE
@@ -2457,7 +2457,7 @@ state STATE_SET_BIMBO ; TOGGLE
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Toggle Bimbo - Set or clear the bimbo effect now (for player starts or rolepay)")
+		SetInfoText("$SLH_bSET_BIMBO_DESC")
 	endEvent
 endState
 ; AddToggleOptionST("STATE_BIMBO","Sex Change Curse", _allowBimboRace)
@@ -2477,7 +2477,7 @@ state STATE_BIMBO_RACE ; TOGGLE
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Bimbo Race - Use the custom Bimbo race for the transformation. If unselected, the current race of the player will be preserved.")
+		SetInfoText("$SLH_bBIMBO_RACE_DESC")
 	endEvent
 endState
 ; AddSliderOptionST("STATE_BIMBO_CLUMSINESS","Bimbo clumsiness factor", _bimboClumsinessMod)
@@ -2501,7 +2501,7 @@ state STATE_BIMBO_CLUMSINESS ; SLIDER
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Bimbo clumsiness factor - To throttle dropping weapons or stumbling to the ground from 0 (no effect) to 1.0 (default range of clumsiness)")
+		SetInfoText("$SLH_sBIMBO_CLUMSINESS_DESC")
 	endEvent
 endState
 
@@ -2527,7 +2527,7 @@ state STATE_BIMBO_THOUGHTS ; SLIDER
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Bimbo Thoughts Delay - Timer to throttle the occurence of bimbo thoughts. This base value is altered by arousal and the Bimbo hormone.")
+		SetInfoText("$SLH_sBIMBO_THOUGHTS_DESC")
 	endEvent
 endState
 
@@ -2546,7 +2546,7 @@ state STATE_HORNY_BEG ; TOGGLE
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Bimbo beg for sex when aroused. Begging topics will block all other dialogues until arousal falls below threshold.")
+		SetInfoText("$SLH_bHORNY_BEG_DESC")
 	endEvent
 endState
 ; AddSliderOptionST("STATE_BEG_TRIGGER","Beg arousal trigger", _hornyBegArousal  as Float,"{1}")
@@ -2570,7 +2570,7 @@ state STATE_BEG_TRIGGER ; SLIDER
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Arousal threshold to trigger forced begging topic for a Bimbo.")
+		SetInfoText("$SLH_sBEG_TRIGGER_DESC")
 	endEvent
 endState
 ; AddSliderOptionST("STATE_GRAB_TRIGGER","Public sex attack", _hornyGrab  as Float,"{1}")
@@ -2596,7 +2596,7 @@ state STATE_GRAB_TRIGGER ; SLIDER
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Chance of attack by onlooker if player has sex in public.")
+		SetInfoText("$SLH_sGRAB_TRIGGER_DESC")
 	endEvent
 endState
 ; AddToggleOptionST("STATE_BIMBO_DROP","Drop items when aroused", _bimboClumsinessDrop  as Bool)
@@ -2614,7 +2614,7 @@ state STATE_BIMBO_DROP ; TOGGLE
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("At high arousal values, Bimbo will be clumsy and drop equipped weapons in combat. This may cause dropped weapons to fall through the ground and be lost in some terrains.")
+		SetInfoText("$SLH_bBIMBO_DROP_DESC")
 	endEvent
 endState
 ; AddToggleOptionST("STATE_SEX_CHANGE","Sex Change Curse", _isHRT)
@@ -2634,7 +2634,7 @@ state STATE_SEX_CHANGE ; TOGGLE
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Sex Change Curse - This curse could turn your gender upside down.")
+		SetInfoText("$SLH_bSEX_CHANGE_DESC")
 	endEvent
 endState
 state STATE_SET_SEX_CHANGE ; TOGGLE
@@ -2660,7 +2660,7 @@ state STATE_SET_SEX_CHANGE ; TOGGLE
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Toggle Sex Change - Set or clear the sex change effect now (for player starts or rolepay)")
+		SetInfoText("$SLH_bSET_SEX_CHANGE_DESC")
 	endEvent
 endState
 ; AddToggleOptionST("STATE_TG","Allow Transgender", _isTG)
@@ -2680,7 +2680,7 @@ state STATE_TG ; TOGGLE
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Allow Transgender - This option enables smoother transitions from male to female, with an intermediate state (female with male genitals).")
+		SetInfoText("$SLH_bTG_DESC")
 	endEvent
 endState
 state STATE_SET_TG ; TOGGLE
@@ -2708,7 +2708,7 @@ state STATE_SET_TG ; TOGGLE
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Toggle Transgender - Set or clear the transgender effect now (for player starts or rolepay)")
+		SetInfoText("$SLH_sSET_TG_DESC")
 	endEvent
 endState
 
@@ -2727,7 +2727,7 @@ state STATE_EXHIBITIONIST ; TOGGLE
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Allow Exhibitionist - High levels of arousal will automatically make your character Exhibitionist in SexLab Arousal.")
+		SetInfoText("$SLH_bEXHIBITIONIST_DESC")
 	endEvent
 endState
 ; AddToggleOptionST("STATE_SELF_SPELLS","Allow Self Spells", _allowSelfSpells)
@@ -2747,7 +2747,7 @@ state STATE_SELF_SPELLS ; TOGGLE
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Allow Self Spells - Enable spells for Undress and Masturbation when loading your save game (quit and reload to see the change).")
+		SetInfoText("$SLH_bSELF_SPELLS_DESC")
 	endEvent
 endState
 ; AddToggleOptionST("STATE_STATUS","Display status", _statusToggle)
@@ -2761,7 +2761,7 @@ state STATE_STATUS ; TOGGLE
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Display full status for current hormone changes.")
+		SetInfoText("$SLH_bSTATUS_DESC")
 	endEvent
 endState
 
@@ -2782,7 +2782,7 @@ state STATE_SHOW_STATUS ; TOGGLE
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Show Player Status messages - Display messages about the player's sexual status.")
+		SetInfoText("$SLH_bSHOW_STATUS_DESC")
 	endEvent
 endState
 
@@ -2810,7 +2810,7 @@ state STATE_COMMENTS_FREQUENCY ; SLIDER
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("NPC Comments Frequency - Percent chance to see NPCs making comments about the Player's libido (sex reputation).")
+		SetInfoText("$SLH_sCOMMENTS_FREQUENCY_DESC")
 	endEvent
 endState
 
@@ -2829,7 +2829,7 @@ state STATE_CHANGE_OVERRIDE ; TOGGLE
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Check to let Hormones refresh shape by itself. Unckech if you are using another shape modifying mod with its own refresh schedule (Pregnancy mods for example).")
+		SetInfoText("$SLH_bCHANGE_OVERRIDE_DESC")
 	endEvent
 
 endState
@@ -2849,7 +2849,7 @@ state STATE_UPDATE_ON_CELL ; TOGGLE
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Check to apply shape changes when player changes cell.")
+		SetInfoText("$SLH_sUPDATE_ON_CELL_DESC")
 	endEvent
 
 endState
@@ -2868,7 +2868,7 @@ state STATE_UPDATE_ON_SEX ; TOGGLE
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Check to apply shape changes after sex.")
+		SetInfoText("$SLH_sUPDATE_ON_SEX_DESC")
 	endEvent
 
 endState
@@ -2887,7 +2887,7 @@ state STATE_UPDATE_ON_TIMER ; TOGGLE
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Check to apply shape changes on a timer (once a day or after sleep).")
+		SetInfoText("$SLH_bUPDATE_ON_TIMER_DESC")
 	endEvent
 
 endState
@@ -2909,7 +2909,7 @@ state STATE_ENABLE_NODE_UPDATE ; TOGGLE
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Check to let Hormones apply node changes directly. Uncheck if you already have a mod making regular node changes (Bathing/Dirt mod for example) as too frequent changes can cause crashes.")
+		SetInfoText("$SLH_sENABLE_NODE_UPDATE_DESC")
 	endEvent
 
 endState
@@ -2933,7 +2933,7 @@ state STATE_ENABLE_NODE_OVERRIDE ; TOGGLE
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Check to let Hormones use NiOverride. Useful if you are using other mods compatible with NiOverride to apply changes to the player's body.")
+		SetInfoText("$SLH_bENABLE_NODE_OVERRIDE_DESC")
 	endEvent
 
 endState
@@ -2953,7 +2953,7 @@ state STATE_SETSHAPE ; TOGGLE
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Set shape - records default shape to current values of race, weight, shape and color. Use this option if you change race during the game (vampire or other transformations)")
+		SetInfoText("$SLH_bSETSHAPE_DESC")
 	endEvent
 
 endState
@@ -2974,7 +2974,7 @@ state STATE_DEBUG ; TOGGLE
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Enable or disable debug messages in the Papyrus Log")
+		SetInfoText("$SLH_bDEBUG_DESC")
 	endEvent
 
 endState
@@ -2994,7 +2994,7 @@ state STATE_RESET ; TOGGLE
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Reset changes - Resets character to original weight, shape and color.")
+		SetInfoText("$SLH_bRESET_DESC")
 	endEvent
 
 endState
@@ -3014,7 +3014,7 @@ state STATE_BALANCE ; TOGGLE
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Automatically adjusts max size of NetImmerse Overrides used by several mods (NiO required).")
+		SetInfoText("$SLH_sBALANCE_DESC")
 	endEvent
 
 endState
