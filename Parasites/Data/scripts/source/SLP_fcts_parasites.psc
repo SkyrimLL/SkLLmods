@@ -2901,52 +2901,71 @@ Function ApplyBodyChange(Actor kActor, String sParasite, String sBodyPart, Float
 			Endif
 		Endif
 
+		If (StorageUtil.GetIntValue(none, "_SLH_iHormones")!=1) && (kActor == PlayerActor)
 
-		if (( sBodyPart == "Breast"  ) && (pActorBase.GetSex()==1)) ; Female change
-			Debug.Trace("[SLP]    Applying breast change: " + NiOString)
-			Debug.Trace("[SLP]    Value: " + fValue)
+			if ( sBodyPart == "Breast"  )
+				StorageUtil.SetFloatValue(kActor, "_SLH_fBreast", fValue )  
 
-			if (isSlifInstalled)
-				SLIF_inflateMax(kActor, "slif_breast", fValue, fValueMax, NiOString)
-			else
-				XPMSELib.SetNodeScale(kActor, true, NINODE_LEFT_BREAST, fValue, NiOString)
-				XPMSELib.SetNodeScale(kActor, true, NINODE_RIGHT_BREAST, fValue, NiOString)
+			elseif ( sBodyPart == "Belly"  )
+				StorageUtil.SetFloatValue(kActor, "_SLH_fBelly", fValue )  
+
+			elseif ( sBodyPart == "Butt"  )
+				StorageUtil.SetFloatValue(kActor, "_SLH_fButt", fValue )
+				  
+			elseif ( sBodyPart == "Schlong"  )
+				StorageUtil.SetFloatValue(kActor, "_SLH_fSchlong", fValue )  
+			endif
+
+			kActor.SendModEvent("SLHRefresh")
+
+		else
+
+			if (( sBodyPart == "Breast"  ) && (pActorBase.GetSex()==1)) ; Female change
+				Debug.Trace("[SLP]    Applying breast change: " + NiOString)
+				Debug.Trace("[SLP]    Value: " + fValue)
+
+				if (isSlifInstalled)
+					SLIF_inflateMax(kActor, "slif_breast", fValue, fValueMax, NiOString)
+				else
+					XPMSELib.SetNodeScale(kActor, true, NINODE_LEFT_BREAST, fValue, NiOString)
+					XPMSELib.SetNodeScale(kActor, true, NINODE_RIGHT_BREAST, fValue, NiOString)
+				Endif
+
+			Elseif (( sBodyPart == "Belly"  ) && (pActorBase.GetSex()==1)) ; Female change
+				Debug.Trace("[SLP]    Applying belly change: " + NiOString)
+				Debug.Trace("[SLP]    Value: " + fValue)
+
+				if (isSlifInstalled)
+					SLIF_inflateMax(kActor, "slif_belly", fValue, fValueMax, NiOString)
+				else
+					XPMSELib.SetNodeScale(kActor, true, NINODE_BELLY, fValue, NiOString)
+				Endif
+
+
+			Elseif (( sBodyPart == "Butt"  )) 
+				Debug.Trace("[SLP]    Applying butt change: " + NiOString)
+				Debug.Trace("[SLP]    Value: " + fValue)
+
+				if (isSlifInstalled)
+					SLIF_inflateMax(kActor, "slif_butt", fValue, fValueMax, NiOString)
+				else
+					XPMSELib.SetNodeScale(kActor, pActorBase.GetSex(), NINODE_LEFT_BUTT, fValue, NiOString)
+					XPMSELib.SetNodeScale(kActor, pActorBase.GetSex(), NINODE_RIGHT_BUTT, fValue, NiOString)
+				Endif
+
+
+			Elseif (( sBodyPart == "Schlong"  ) ) 
+				Debug.Trace("[SLP]    Applying schlong change: " + NiOString)
+				Debug.Trace("[SLP]    Value: " + fValue)
+
+				if (isSlifInstalled)
+					SLIF_inflateMax(kActor, "slif_schlong", fValue, fValueMax, NiOString)
+				else
+					XPMSELib.SetNodeScale(kActor, pActorBase.GetSex(), NINODE_SCHLONG, fValue, NiOString)
+				Endif
+
 			Endif
-
-		Elseif (( sBodyPart == "Belly"  ) && (pActorBase.GetSex()==1)) ; Female change
-			Debug.Trace("[SLP]    Applying belly change: " + NiOString)
-			Debug.Trace("[SLP]    Value: " + fValue)
-
-			if (isSlifInstalled)
-				SLIF_inflateMax(kActor, "slif_belly", fValue, fValueMax, NiOString)
-			else
-				XPMSELib.SetNodeScale(kActor, true, NINODE_BELLY, fValue, NiOString)
-			Endif
-
-
-		Elseif (( sBodyPart == "Butt"  )) 
-			Debug.Trace("[SLP]    Applying butt change: " + NiOString)
-			Debug.Trace("[SLP]    Value: " + fValue)
-
-			if (isSlifInstalled)
-				SLIF_inflateMax(kActor, "slif_butt", fValue, fValueMax, NiOString)
-			else
-				XPMSELib.SetNodeScale(kActor, pActorBase.GetSex(), NINODE_LEFT_BUTT, fValue, NiOString)
-				XPMSELib.SetNodeScale(kActor, pActorBase.GetSex(), NINODE_RIGHT_BUTT, fValue, NiOString)
-			Endif
-
-
-		Elseif (( sBodyPart == "Schlong"  ) ) 
-			Debug.Trace("[SLP]    Applying schlong change: " + NiOString)
-			Debug.Trace("[SLP]    Value: " + fValue)
-
-			if (isSlifInstalled)
-				SLIF_inflateMax(kActor, "slif_schlong", fValue, fValueMax, NiOString)
-			else
-				XPMSELib.SetNodeScale(kActor, pActorBase.GetSex(), NINODE_SCHLONG, fValue, NiOString)
-			Endif
-
-		Endif
+		endif
 	Else
 		; Debug.Notification("[SLP]Receiving body change: NiO not installed")
 
