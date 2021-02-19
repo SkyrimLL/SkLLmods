@@ -15,13 +15,14 @@ EndFunction
 Function Fragment_2(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
+Actor kPlayer = Game.GetPlayer() 
 Debug.Notification( "She eagerly strips and lets you inspect her breasts." )
-akSpeaker.SendModEvent("_SLSDDi_UpdateCow")
+akSpeaker.SendModEvent("_SLSDDi_UpdateCow","Check",0)
 
-If  (SexLab.ValidateActor( Game.GetPlayer() ) > 0) &&  (SexLab.ValidateActor(akSpeaker) > 0) 
+If  (SexLab.ValidateActor( kPlayer ) > 0) &&  (SexLab.ValidateActor(akSpeaker) > 0) 
 	actor[] sexActors = new actor[2]
 	sexActors[0] = akSpeaker
-	sexActors[1] = Game.GetPlayer()
+	sexActors[1] = kPlayer
 
 	sslBaseAnimation[] anims
 	anims = new sslBaseAnimation[1]
