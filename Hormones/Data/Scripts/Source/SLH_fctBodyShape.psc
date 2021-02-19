@@ -430,7 +430,7 @@ function alterBodyAfterRest(Actor kActor)
 			if ( bBreastEnabled ) 
 				Float fCurrentBreast 
 				If (StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON")==0)
-					fCurrentBreast = NetImmerse.GetNodeScale(kActor, NINODE_RIGHT_BREAST, false)
+					fCurrentBreast = SLHGetNodeScale(kActor, NINODE_RIGHT_BREAST, false)
 				else
 					fCurrentBreast = StorageUtil.GetFloatValue(kActor, "_SLH_fBreast")
 				endIf
@@ -470,7 +470,7 @@ function alterBodyAfterRest(Actor kActor)
 			if ( bBellyEnabled )  
 				Float fCurrentBelly 
 				If (StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON")==0)
-					fCurrentBelly = NetImmerse.GetNodeScale(kActor, NINODE_BELLY, false)
+					fCurrentBelly = SLHGetNodeScale(kActor, NINODE_BELLY, false)
 				else
 					fCurrentBelly = StorageUtil.GetFloatValue(kActor, "_SLH_fBelly")
 				endIf
@@ -496,7 +496,7 @@ function alterBodyAfterRest(Actor kActor)
 			if ( bButtEnabled )  
 				Float fCurrentButt 
 				If (StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON")==0)
-					fCurrentButt = NetImmerse.GetNodeScale(kActor, NINODE_RIGHT_BUTT, false)
+					fCurrentButt = SLHGetNodeScale(kActor, NINODE_RIGHT_BUTT, false)
 				else
 					fCurrentButt = StorageUtil.GetFloatValue(kActor, "_SLH_fButt")
 				endIf
@@ -545,7 +545,9 @@ function alterBodyAfterRest(Actor kActor)
 			endif
 		EndIf
 	EndIf
-
+	
+	; Imported from MME Morphs code - Double check if this needs to be here
+	NiOverride.UpdateModelWeight(kActor)
 	; StorageUtil.SetFloatValue(kActor, "_SLH_fSwellFactor",  fSwellFactor) 
  
 	
@@ -643,7 +645,7 @@ function alterBodyByPercent(Actor kActor, String sBodyPart, Float modFactor)
 			if ( bBreastEnabled ) 
 				Float fCurrentBreast 
 				If (StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON")==0)
-					fCurrentBreast = NetImmerse.GetNodeScale(kActor, NINODE_RIGHT_BREAST, false)
+					fCurrentBreast = SLHGetNodeScale(kActor, NINODE_RIGHT_BREAST, false)
 				else
 					fCurrentBreast = StorageUtil.GetFloatValue(kActor, "_SLH_fBreast")
 				endIf
@@ -673,7 +675,7 @@ function alterBodyByPercent(Actor kActor, String sBodyPart, Float modFactor)
 			if ( bBellyEnabled )  
 				Float fCurrentBelly 
 				If (StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON")==0)
-					fCurrentBelly = NetImmerse.GetNodeScale(kActor, NINODE_BELLY, false)
+					fCurrentBelly = SLHGetNodeScale(kActor, NINODE_BELLY, false)
 				else
 					fCurrentBelly = StorageUtil.GetFloatValue(kActor, "_SLH_fBelly")
 				endIf
@@ -696,7 +698,7 @@ function alterBodyByPercent(Actor kActor, String sBodyPart, Float modFactor)
 			if ( bButtEnabled )  
 				Float fCurrentButt 
 				If (StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON")==0)
-					fCurrentButt = NetImmerse.GetNodeScale(kActor, NINODE_RIGHT_BUTT, false)
+					fCurrentButt = SLHGetNodeScale(kActor, NINODE_RIGHT_BUTT, false)
 				else
 					fCurrentButt = StorageUtil.GetFloatValue(kActor, "_SLH_fButt")
 				endIf
@@ -737,8 +739,8 @@ function alterBodyByPercent(Actor kActor, String sBodyPart, Float modFactor)
 		EndIf
 	EndIf
 	
-
- 
+	; Imported from MME Morphs code - Double check if this needs to be here
+	NiOverride.UpdateModelWeight(kActor)
 	; StorageUtil.SetFloatValue(kActor, "_SLH_fSwellFactor",  modFactor) 
  
 EndFunction
@@ -774,9 +776,9 @@ Bool function detectShapeChange(Actor kActor)
 		StorageUtil.SetFormValue(kActor, "_SLH_fOrigRace",thisRace) 
 	EndIf
 
-	Float fCurrentBreast       = NetImmerse.GetNodeScale(kActor, NINODE_RIGHT_BREAST, false) / fApparelMod
-	Float fCurrentButt       = NetImmerse.GetNodeScale(kActor, NINODE_RIGHT_BUTT, false) / fApparelMod
-	Float fCurrentBelly       = NetImmerse.GetNodeScale(kActor, NINODE_BELLY, false) / fApparelMod
+	Float fCurrentBreast       = SLHGetNodeScale(kActor, NINODE_RIGHT_BREAST, false) / fApparelMod
+	Float fCurrentButt       = SLHGetNodeScale(kActor, NINODE_RIGHT_BUTT, false) / fApparelMod
+	Float fCurrentBelly       = SLHGetNodeScale(kActor, NINODE_BELLY, false) / fApparelMod
 	Float fCurrentSchlong       = NetImmerse.GetNodeScale(kActor, NINODE_SCHLONG, false)
 	Float fCurrentWeight = pActorBase.GetWeight()
 
@@ -938,15 +940,15 @@ function alterBreastNode(Actor kActor, float fNewBreast = 0.0)
 	fPregRightBreast   = fBreast
 
 	If (StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON")==0)
-		NetImmerse.SetNodeScale( kActor, NINODE_LEFT_BREAST, fPregLeftBreast * fApparelMod, false)
-		NetImmerse.SetNodeScale( kActor, NINODE_RIGHT_BREAST, fPregRightBreast * fApparelMod, false)
+		; NetImmerse.SetNodeScale( kActor, NINODE_LEFT_BREAST, fPregLeftBreast * fApparelMod, false)
+		SLHSetNodeScale( kActor, NINODE_RIGHT_BREAST, fPregRightBreast * fApparelMod, false)
 		; if bTorpedoFixEnabled
 		;	NetImmerse.SetNodeScale( kActor, NINODE_LEFT_BREAST01, fPregLeftBreast01, false)
 		;	NetImmerse.SetNodeScale( kActor, NINODE_RIGHT_BREAST01, fPregRightBreast01, false)
 		; endIf
 
-		NetImmerse.SetNodeScale( kActor, NINODE_LEFT_BREAST, fPregLeftBreast * fApparelMod, true)
-		NetImmerse.SetNodeScale( kActor, NINODE_RIGHT_BREAST, fPregRightBreast * fApparelMod, true)
+		;NetImmerse.SetNodeScale( kActor, NINODE_LEFT_BREAST, fPregLeftBreast * fApparelMod, true)
+		SLHSetNodeScale( kActor, NINODE_RIGHT_BREAST, fPregRightBreast * fApparelMod, true)
 		; if bTorpedoFixEnabled
 		;	NetImmerse.SetNodeScale( kActor, NINODE_RIGHT_BREAST01, fPregRightBreast01, true)
 		;	NetImmerse.SetNodeScale( kActor, NINODE_LEFT_BREAST01, fPregLeftBreast01, true)
@@ -1010,8 +1012,8 @@ function alterBellyNode(Actor kActor, float fNewBelly = 0.0)
 
 	If (StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON")==0)
 		; kTarget.SetAnimationVariableFloat("ecBellySwell", fBellySwell)
-		NetImmerse.SetNodeScale( kActor, NINODE_BELLY, fPregBelly * fApparelMod, false)
-		NetImmerse.SetNodeScale( kActor, NINODE_BELLY, fPregBelly * fApparelMod, true)
+		SLHSetNodeScale( kActor, NINODE_BELLY, fPregBelly * fApparelMod, false)
+		SLHSetNodeScale( kActor, NINODE_BELLY, fPregBelly * fApparelMod, true)
 
 	elseif (isSlifInstalled)
 				SLIF_inflateMax(kActor, "slif_belly", fPregBelly * fApparelMod, fNodeMax, SLH_KEY)
@@ -1070,11 +1072,11 @@ function alterButtNode(Actor kActor, float fNewButt = 0.0)
 	fPregRightButt = fButt
 
 	If (StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON")==0)
-		NetImmerse.SetNodeScale( kActor, NINODE_LEFT_BUTT, fPregLeftButt * fApparelMod, false)
-		NetImmerse.SetNodeScale( kActor, NINODE_RIGHT_BUTT, fPregRightButt * fApparelMod, false)
+		;NetImmerse.SetNodeScale( kActor, NINODE_LEFT_BUTT, fPregLeftButt * fApparelMod, false)
+		SLHSetNodeScale( kActor, NINODE_RIGHT_BUTT, fPregRightButt * fApparelMod, false)
 
-		NetImmerse.SetNodeScale( kActor, NINODE_LEFT_BUTT, fPregLeftButt * fApparelMod, true)
-		NetImmerse.SetNodeScale( kActor, NINODE_RIGHT_BUTT, fPregRightButt * fApparelMod, true)
+		;NetImmerse.SetNodeScale( kActor, NINODE_LEFT_BUTT, fPregLeftButt * fApparelMod, true)
+		SLHSetNodeScale( kActor, NINODE_RIGHT_BUTT, fPregRightButt * fApparelMod, true)
 
 	elseif (isSlifInstalled)
 				SLIF_inflateMax(kActor, "slif_butt", fPregLeftButt * fApparelMod, fNodeMax, SLH_KEY)
@@ -1285,6 +1287,9 @@ function refreshBodyShape(Actor kActor)
 		endif
 
 	EndIf
+	
+	; Imported from MME Morphs code - Double check if this needs to be here
+	NiOverride.UpdateModelWeight(kActor)
 
 
 endFunction
@@ -1492,7 +1497,7 @@ Bool function tryTGEvent(Actor kActor, float fHoursSleep) ; trans gender
 			fWeight = StorageUtil.GetFloatValue(kActor, "_SLH_fWeight")	
 		endIf
 
-		if (fHormoneFemale<20.0) && (fHormoneMale>=80.0) && (fHormoneMetabolism>=80) && (fWeight < 10)  
+		if (fHormoneFemale>=90.0) && (fHormoneMale>=80.0) && (fHormoneMetabolism>=80) && (fWeight < 10)  
 			debugTrace("	 TG transformation - stage 2 passed")
 			If (rollFirstPerson <= (fHormoneBimbo as Int))
 				sMessage = "Are my boobs shrinking?"
@@ -1524,7 +1529,7 @@ Bool function tryTGEvent(Actor kActor, float fHoursSleep) ; trans gender
 	endif
 
 	If (sMessage != "")
-		debug.notification(sMessage + " (TG)")
+		debug.MessageBox(sMessage + " (TG)")
 	Endif
 
 	return 	bEventTriggered 
@@ -1656,7 +1661,7 @@ Bool function tryHRTEvent(Actor kActor, float fHoursSleep) ; sex change
 	endif
 
 	If (sMessage != "")
-		debug.notification(sMessage + " (HRT)")
+		debug.MessageBox(sMessage + " (HRT)")
 	Endif
 
 	return 	bEventTriggered 
@@ -1789,7 +1794,7 @@ Bool function tryBimboEvent(Actor kActor, float fHoursSleep) ; bimbo curse
 	endif
 
 	If (sMessage != "")
-		debug.notification(sMessage + " (Bimbo)")
+		debug.MessageBox(sMessage + " (Bimbo)")
 	Endif
 
 	return 	bEventTriggered 
@@ -1897,27 +1902,27 @@ function initShapeState(Actor kActor)
 	
 
 	if ( bBreastEnabled && pLeveledActorBase.GetSex() == 1 )
-		fOrigLeftBreast  = NetImmerse.GetNodeScale(kActor, NINODE_LEFT_BREAST, false)
-		fOrigRightBreast = NetImmerse.GetNodeScale(kActor, NINODE_RIGHT_BREAST, false)
-		fPregLeftBreast  = fOrigLeftBreast
+		;fOrigLeftBreast  = SLHGetNodeScale(kActor, NINODE_LEFT_BREAST, false)
+		fOrigRightBreast = SLHGetNodeScale(kActor, NINODE_RIGHT_BREAST, false)
+		;fPregLeftBreast  = fOrigLeftBreast
 		fPregRightBreast = fOrigRightBreast
 		StorageUtil.SetFloatValue(kActor, "_SLH_fBreast", fOrigRightBreast)
 		if bTorpedoFixEnabled
-			fOrigLeftBreast01  = NetImmerse.GetNodeScale(kActor, NINODE_LEFT_BREAST01, false)
-			fOrigRightBreast01 = NetImmerse.GetNodeScale(kActor, NINODE_RIGHT_BREAST01, false)
-			fPregLeftBreast01  = fOrigLeftBreast01
+			;fOrigLeftBreast01  = SLHGetNodeScale(kActor, NINODE_LEFT_BREAST01, false)
+			fOrigRightBreast01 = SLHGetNodeScale(kActor, NINODE_RIGHT_BREAST01, false)
+			;fPregLeftBreast01  = fOrigLeftBreast01
 			fPregRightBreast01 = fOrigRightBreast01
 		endif
 	endif
 	if ( bButtEnabled )
-		fOrigLeftButt    = NetImmerse.GetNodeScale(kActor, NINODE_LEFT_BUTT, false)
-		fOrigRightButt   = NetImmerse.GetNodeScale(kActor, NINODE_RIGHT_BUTT, false)
-		fPregLeftButt    = fOrigLeftButt
+		;fOrigLeftButt    = SLHGetNodeScale(kActor, NINODE_LEFT_BUTT, false)
+		fOrigRightButt   = SLHGetNodeScale(kActor, NINODE_RIGHT_BUTT, false)
+		;fPregLeftButt    = fOrigLeftButt
 		fPregRightButt   = fOrigRightButt
 		StorageUtil.SetFloatValue(kActor, "_SLH_fButt", fOrigRightButt)
 	endif
 	if ( bBellyEnabled )
-		fOrigBelly       = NetImmerse.GetNodeScale(kActor, NINODE_BELLY, false)
+		fOrigBelly       = SLHGetNodeScale(kActor, NINODE_BELLY, false)
 		fPregBelly       = fOrigBelly  
 		StorageUtil.SetFloatValue(kActor, "_SLH_fBelly", fOrigBelly)
 	endif		
@@ -1980,27 +1985,27 @@ function setShapeStateDefault(Actor kActor)
 	ActorBase pLeveledActorBase = kActor.GetLeveledActorBase()
 	
 	if ( bBreastEnabled && pLeveledActorBase.GetSex() == 1 )
-		fOrigLeftBreast  = NetImmerse.GetNodeScale(kActor, NINODE_LEFT_BREAST, false)
-		fOrigRightBreast = NetImmerse.GetNodeScale(kActor, NINODE_RIGHT_BREAST, false)
-		fPregLeftBreast  = fOrigLeftBreast
+		;fOrigLeftBreast  = NetImmerse.GetNodeScale(kActor, NINODE_LEFT_BREAST, false)
+		fOrigRightBreast = SLHGetNodeScale(kActor, NINODE_RIGHT_BREAST, false)
+		;fPregLeftBreast  = fOrigLeftBreast
 		fPregRightBreast = fOrigRightBreast
 		StorageUtil.SetFloatValue(kActor, "_SLH_fBreast", fOrigRightBreast)
 		if bTorpedoFixEnabled
-			fOrigLeftBreast01  = NetImmerse.GetNodeScale(kActor, NINODE_LEFT_BREAST01, false)
-			fOrigRightBreast01 = NetImmerse.GetNodeScale(kActor, NINODE_RIGHT_BREAST01, false)
-			fPregLeftBreast01  = fOrigLeftBreast01
+			;fOrigLeftBreast01  = NetImmerse.GetNodeScale(kActor, NINODE_LEFT_BREAST01, false)
+			fOrigRightBreast01 = SLHGetNodeScale(kActor, NINODE_RIGHT_BREAST01, false)
+			;fPregLeftBreast01  = fOrigLeftBreast01
 			fPregRightBreast01 = fOrigRightBreast01
 		endif
 	endif
 	if ( bButtEnabled )
-		fOrigLeftButt    = NetImmerse.GetNodeScale(kActor, NINODE_LEFT_BUTT, false)
-		fOrigRightButt   = NetImmerse.GetNodeScale(kActor, NINODE_RIGHT_BUTT, false)
-		fPregLeftButt    = fOrigLeftButt
+		;fOrigLeftButt    = NetImmerse.GetNodeScale(kActor, NINODE_LEFT_BUTT, false)
+		fOrigRightButt   = SLHGetNodeScale(kActor, NINODE_RIGHT_BUTT, false)
+		;fPregLeftButt    = fOrigLeftButt
 		fPregRightButt   = fOrigRightButt
 		StorageUtil.SetFloatValue(kActor, "_SLH_fButt", fOrigRightButt)
 	endif
 	if ( bBellyEnabled )
-		fOrigBelly       = NetImmerse.GetNodeScale(kActor, NINODE_BELLY, false)
+		fOrigBelly       = SLHGetNodeScale(kActor, NINODE_BELLY, false)
 		fPregBelly       = fOrigBelly  
 		StorageUtil.SetFloatValue(kActor, "_SLH_fBelly", fOrigBelly)
 	endif		
@@ -2136,9 +2141,9 @@ function getShapeFromNodes(Actor kActor)
 	; Debug.Notification("SexLab Hormones: Reading state from storage")
 	debugTrace("    :: Reading state from player actor")
 
-	StorageUtil.SetFloatValue(kActor, "_SLH_fBreast", NetImmerse.GetNodeScale(kActor, NINODE_RIGHT_BREAST, false) / fApparelMod)
-	StorageUtil.SetFloatValue(kActor, "_SLH_fButt", NetImmerse.GetNodeScale(kActor, NINODE_RIGHT_BUTT, false) / fApparelMod)
-	StorageUtil.SetFloatValue(kActor, "_SLH_fBelly", NetImmerse.GetNodeScale(kActor, NINODE_BELLY, false)  / fApparelMod)
+	StorageUtil.SetFloatValue(kActor, "_SLH_fBreast", SLHGetNodeScale(kActor, NINODE_RIGHT_BREAST, false) / fApparelMod)
+	StorageUtil.SetFloatValue(kActor, "_SLH_fButt", SLHGetNodeScale(kActor, NINODE_RIGHT_BUTT, false) / fApparelMod)
+	StorageUtil.SetFloatValue(kActor, "_SLH_fBelly", SLHGetNodeScale(kActor, NINODE_BELLY, false)  / fApparelMod)
 	StorageUtil.SetFloatValue(kActor, "_SLH_fSchlong", NetImmerse.GetNodeScale(kActor, NINODE_SCHLONG, false))
 	; fWeight = pActorBase.GetWeight()
 	StorageUtil.SetFloatValue(kActor, "_SLH_fWeight", pActorBase.GetWeight())
@@ -2148,6 +2153,167 @@ function getShapeFromNodes(Actor kActor)
 	setShapeState(kActor)
 
 EndFunction
+
+Function SLHSetNodeScale(Actor akActor, string nodeName, float value, bool isFemale)
+	string modName = "SexLab_Hormones.esp"
+	If nodeName == "NPC R Breast"
+		SLHSetMorphScale(akActor, "Breasts", value)
+		SLHSetMorphScale(akActor, "BreastsSH", value)
+		SLHSetMorphScale(akActor, "BreastGravity", value)
+		SLHSetMorphScale(akActor, "BreastCleavage", value)
+		SLHSetMorphScale(akActor, "DoubleMelon", value)
+		SLHSetMorphScale(akActor, "BreastsFantasy", value)
+		SLHSetMorphScale(akActor, "NipplePerkiness", value)
+		SLHSetMorphScale(akActor, "NippleLength", value)
+	ElseIf nodeName == "NPC Belly"
+		SLHSetMorphScale(akActor, "Belly", value)
+		SLHSetMorphScale(akActor, "BigBelly", value)
+		SLHSetMorphScale(akActor, "HipsUpperWidth", value)
+		SLHSetMorphScale(akActor, "WideWaistLine", value)
+	ElseIf nodeName == "NPC R Butt"
+		SLHSetMorphScale(akActor, "Butt", value)
+		SLHSetMorphScale(akActor, "ChubbyButt", value)
+		SLHSetMorphScale(akActor, "MuscleButt", value)
+		SLHSetMorphScale(akActor, "Hips", value)
+		SLHSetMorphScale(akActor, "Thighs", value)
+	EndIf
+EndFunction
+
+Function SLHSetMorphScale(Actor akActor, string nodeName, float value)
+	string modName = "SexLab_Hormones.esp"
+
+	string JsonKey
+	If nodeName == "Breasts"
+		JsonKey = "breasts"
+	ElseIf nodeName == "BreastsSH"
+		JsonKey = "breastssh"
+	ElseIf nodeName == "BreastGravity"
+		JsonKey = "breastgravity"
+	ElseIf nodeName == "BreastCleavage"
+		JsonKey = "breastcleavage"
+	ElseIf nodeName == "DoubleMelon"
+		JsonKey = "doublemelon"
+	ElseIf nodeName == "BreastsFantasy"
+		JsonKey = "breastsfantasy"
+	ElseIf nodeName == "NipplePerkiness"
+		JsonKey = "nippleperkiness"
+	ElseIf nodeName == "NippleLength"
+		JsonKey = "nipplelength"
+	ElseIf nodeName == "Belly"
+		JsonKey = "belly"
+	ElseIf nodeName == "BigBelly"
+		JsonKey = "bigbelly"
+	ElseIf nodeName == "Hips"
+		JsonKey = "hips"
+	ElseIf nodeName == "HipsUpperWidth"
+		JsonKey = "hipsupperwidth"
+	ElseIf nodeName == "WideWaistLine"
+		JsonKey = "widewaistline"
+	ElseIf nodeName == "Butt"
+		JsonKey = "butt"
+	ElseIf nodeName == "ChubbyButt"
+		JsonKey = "chubbybutt"
+	ElseIf nodeName == "MuscleButt"
+		JsonKey = "musclebutt"
+	ElseIf nodeName == "Thighs"
+		JsonKey = "thighs"
+	EndIf
+	
+	
+	;SE bodyslide notes:
+	;BreastsSH changed to BreastsNewSH
+	;BreastsSSH doesnt exist in SE
+	;BreastGravity changed to BreastGravity2
+	;NippleAreola changed to AreolaSize
+	;try to scale all nodes for se converted/legacy armors
+	
+	;NetImmerse-Bodyslide converter
+	float bodyslide_value = (value - 1.0) / 2.0
+	float bodyslide_scale_modifier = JsonUtil.GetFloatValue("/SLHormones/Bodymorph", JsonKey)
+	
+	;breast scale
+	If nodeName == "Breasts"
+		NiOverride.SetBodyMorph(akActor, "Breasts", modName, bodyslide_value * bodyslide_scale_modifier)
+	ElseIf nodeName == "BreastsSH"
+		NiOverride.SetBodyMorph(akActor, "BreastsNewSH", modName, bodyslide_value * bodyslide_scale_modifier)
+	ElseIf nodeName == "BreastGravity"
+		NiOverride.SetBodyMorph(akActor, "BreastGravity2", modName, bodyslide_value * bodyslide_scale_modifier)
+	ElseIf nodeName == "BreastCleavage"
+		NiOverride.SetBodyMorph(akActor, "BreastCleavage", modName, bodyslide_value * bodyslide_scale_modifier)
+	ElseIf nodeName == "DoubleMelon"
+		NiOverride.SetBodyMorph(akActor, "DoubleMelon", modName, bodyslide_value * bodyslide_scale_modifier)
+	ElseIf nodeName == "BreastsFantasy"
+		NiOverride.SetBodyMorph(akActor, "BreastsFantasy", modName, bodyslide_value * bodyslide_scale_modifier)
+	ElseIf nodeName == "NipplePerkiness"
+		NiOverride.SetBodyMorph(akActor, "NipplePerkiness", modName, bodyslide_value * bodyslide_scale_modifier)
+	ElseIf nodeName == "NippleLength"
+		NiOverride.SetBodyMorph(akActor, "NippleLength", modName, bodyslide_value * bodyslide_scale_modifier)
+	;belly scale
+	ElseIf nodeName == "Belly"
+		NiOverride.SetBodyMorph(akActor, "Belly", modName, bodyslide_value * bodyslide_scale_modifier)
+	ElseIf nodeName == "BigBelly"
+		NiOverride.SetBodyMorph(akActor, "BigBelly", modName, bodyslide_value * bodyslide_scale_modifier)
+	ElseIf nodeName == "HipsUpperWidth"
+		NiOverride.SetBodyMorph(akActor, "HipsUpperWidth", modName, bodyslide_value * bodyslide_scale_modifier)
+	ElseIf nodeName == "WideWaistLine"
+		NiOverride.SetBodyMorph(akActor, "WideWaistLine", modName, bodyslide_value * bodyslide_scale_modifier)
+	;butt scale
+	ElseIf nodeName == "Butt"
+		NiOverride.SetBodyMorph(akActor, "Butt", modName, bodyslide_value * bodyslide_scale_modifier)
+	ElseIf nodeName == "ChubbyButt"
+		NiOverride.SetBodyMorph(akActor, "ChubbyButt", modName, bodyslide_value * bodyslide_scale_modifier)
+	ElseIf nodeName == "MuscleButt"
+		NiOverride.SetBodyMorph(akActor, "MuscleButt", modName, bodyslide_value * bodyslide_scale_modifier)
+	ElseIf nodeName == "Hips"
+		NiOverride.SetBodyMorph(akActor, "Hips", modName, bodyslide_value * bodyslide_scale_modifier)
+	ElseIf nodeName == "Thighs"
+		NiOverride.SetBodyMorph(akActor, "Thighs", modName, bodyslide_value * bodyslide_scale_modifier)
+	EndIf
+EndFunction
+
+Float Function SLHGetNodeScale(Actor akActor, string nodeName, bool isFemale)
+	string modName = "SexLab_Hormones.esp"
+
+	string JsonKey
+	If nodeName == "NPC R Breast"
+		JsonKey = "breasts"
+	ElseIf nodeName == "NPC Belly"
+		JsonKey = "belly"
+	ElseIf nodeName == "NPC R Butt"
+		JsonKey = "butt"
+	EndIf
+	
+	
+	;SE bodyslide notes:
+	;BreastsSH changed to BreastsNewSH
+	;BreastsSSH doesnt exist in SE
+	;BreastGravity changed to BreastGravity2
+	;NippleAreola changed to AreolaSize
+	;try to scale all nodes for se converted/legacy armors
+	
+	;NetImmerse-Bodyslide converter
+	float bodyslide_scale_modifier = JsonUtil.GetFloatValue("/SLHormones/Bodymorph", JsonKey)
+	float NodeConvertValue
+	float value
+
+	;breast scale
+	If nodeName == "NPC R Breast"
+		NodeConvertValue = NiOverride.GetBodyMorph(akActor, "Breasts", modName)
+		value = ((2.0*(NodeConvertValue / bodyslide_scale_modifier)) + 1.0)
+		return value
+	;belly scale
+	ElseIf nodeName == "NPC Belly"
+		NodeConvertValue = NiOverride.GetBodyMorph(akActor, "Belly", modName)
+		value = ((2.0*(NodeConvertValue / bodyslide_scale_modifier)) + 1.0)
+		return value
+	;butt scale
+	ElseIf nodeName == "NPC R Butt"
+		NodeConvertValue = NiOverride.GetBodyMorph(akActor, "Butt", modName)
+		value = ((2.0*(NodeConvertValue / bodyslide_scale_modifier)) + 1.0)
+		return value
+	EndIf
+EndFunction
+
 
 function setShapeState(Actor kActor)
 	; Debug.Notification("SexLab Hormones: Writing state to storage")

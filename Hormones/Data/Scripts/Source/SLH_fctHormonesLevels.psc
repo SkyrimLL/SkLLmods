@@ -224,34 +224,38 @@ EndFunction
 
 function modHormoneLevel(Actor kActor, String sHormoneLevel, Float fModValue)
 	Float fHormoneLevel  = StorageUtil.GetFloatValue(kActor, "_SLH_fHormone" + sHormoneLevel)
-	; Racial adjustment of mod value
-	fModValue = fModValue * StorageUtil.GetFloatValue(kActor, "_SLH_fHormone" + sHormoneLevel + "Mod")
+	Float fRacialModifier = StorageUtil.GetFloatValue(kActor, "_SLH_fHormone" + sHormoneLevel + "Mod")
 
-	debugTrace("    :: Hormone Mod " + sHormoneLevel + " : Value = " + fHormoneLevel)
-
-	fHormoneLevel = fctUtil.fRange( fHormoneLevel + fModValue , 0.0, 100.0)
-
-	; minimum level to always keep a residue of hormone in body
-	if (fHormoneLevel<2.0)
-		fHormoneLevel=2.0
+	If (fRacialModifier == 0)
+		; fRacialModifier = 1.
+		setHormoneLevelsRacialMod( kActor)
 	endif
 
-	StorageUtil.SetFloatValue(kActor, "_SLH_fHormone" + sHormoneLevel, fHormoneLevel)
-	debugTrace("    :: Hormone Mod " + sHormoneLevel + " : New Value = " + fHormoneLevel)
+	; Racial adjustment of mod value
+	fModValue = fModValue * fRacialModifier
 
-	If (fModValue > 0)
-		; debug.Notification(sHormoneLevel + " Hormone Mod +" + fModValue)
-		debugTrace(sHormoneLevel + " Hormone Mod +" + fModValue)
-	Else
-		; debug.Notification(sHormoneLevel + " Hormone Mod " + fModValue)
-		debugTrace(sHormoneLevel + " Hormone Mod " + fModValue)
-	endIf
+	debug.trace("[SLH]    :: Hormone Mod " + sHormoneLevel + " : Value = " + fModValue)
+
+	; minimum level to always keep a residue of hormone in body
+	fHormoneLevel = fctUtil.fRange( fHormoneLevel + fModValue , 2.0, 100.0)
+
+	StorageUtil.SetFloatValue(kActor, "_SLH_fHormone" + sHormoneLevel, fHormoneLevel)
+	debug.trace("[SLH]    :: Hormone Mod " + sHormoneLevel + " : New Value = " + fHormoneLevel)
+
 EndFunction
 
 function modHormoneLevelPercent(Actor kActor, String sHormoneLevel, Float fModValue)
 	Float fHormoneLevel  = StorageUtil.GetFloatValue(kActor, "_SLH_fHormone" + sHormoneLevel)
+	Float fRacialModifier = StorageUtil.GetFloatValue(kActor, "_SLH_fHormone" + sHormoneLevel + "Mod")
+
+	If (fRacialModifier == 0)
+		; fRacialModifier = 1.
+		setHormoneLevelsRacialMod( kActor)
+	endif
+	
 	; Racial adjustment of mod value
-	fModValue = fModValue * StorageUtil.GetFloatValue(kActor, "_SLH_fHormone" + sHormoneLevel + "Mod")
+	fModValue = fModValue * fRacialModifier
+
 	fModValue = (fModValue / 100.0 ) * fHormoneLevel
 
 	; minimum level to prevent finding a percent of 0
@@ -261,18 +265,11 @@ function modHormoneLevelPercent(Actor kActor, String sHormoneLevel, Float fModVa
 
 	debugTrace("    :: Hormone Mod Percent " + sHormoneLevel + " : Value = " + fHormoneLevel)
 
-	fHormoneLevel = fctUtil.fRange( fHormoneLevel + fModValue , 0.0, 100.0)
+	fHormoneLevel = fctUtil.fRange( fHormoneLevel + fModValue , 2.0, 100.0)
 
 	StorageUtil.SetFloatValue(kActor, "_SLH_fHormone" + sHormoneLevel, fHormoneLevel)
-	debugTrace("    :: Hormone Mod Percente " + sHormoneLevel + " : New Value = " + fHormoneLevel)
-
-	If (fModValue > 0)
-		; debug.Notification(sHormoneLevel + " Hormone Mod +" + fModValue)
-		debugTrace(sHormoneLevel + " Hormone Mod +" + fModValue)
-	Else
-		; debug.Notification(sHormoneLevel + " Hormone Mod " + fModValue)
-		debugTrace(sHormoneLevel + " Hormone Mod " + fModValue)
-	endIf
+	debugTrace("    :: Hormone Mod Percent " + sHormoneLevel + " : New Value = " + fHormoneLevel)
+ 
 EndFunction
 
 

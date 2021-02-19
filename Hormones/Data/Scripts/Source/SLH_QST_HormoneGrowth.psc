@@ -1155,7 +1155,7 @@ Event OnModHormoneEvent(String _eventName, String _args, Float _argc = 1.0, Form
  	if (kActor == None)
  		kActor = Game.GetPlayer()
  	EndIf
-	debugTrace(" Receiving 'mod hormone level' event. Actor: " + kActor )
+	debug.trace("[SLH] Receiving 'mod hormone level' event for " + _args + ". Actor: " + kActor )
 
 	fctHormones.modHormoneLevel(kActor, _args, _argc)
 
@@ -1174,17 +1174,34 @@ Event OnModHormoneRandomEvent(String _eventName, String _args, Float _argc = 1.0
  	
 	debugTrace(" Receiving 'mod hormone random level' event. Tag: " + _args )
 
-	fctHormones.modHormoneLevel(kActor, "Pigmentation", Utility.RandomFloat(-1.0,2.0) * _argc )
-	fctHormones.modHormoneLevel(kActor, "Growth", Utility.RandomFloat(5.0,10.0) * _argc )
-	fctHormones.modHormoneLevel(kActor, "Metabolism", Utility.RandomFloat(5.0,20.0) * _argc )
-	fctHormones.modHormoneLevel(kActor, "Sleep", Utility.RandomFloat(-1.0,2.0) * _argc )
-	fctHormones.modHormoneLevel(kActor, "Hunger", Utility.RandomFloat(-1.0,2.0) * _argc )
-	fctHormones.modHormoneLevel(kActor, "Immunity", Utility.RandomFloat(-1.0,2.0) * _argc )
-	fctHormones.modHormoneLevel(kActor, "Stress", Utility.RandomFloat(-10.0,20.0) * _argc )
-	fctHormones.modHormoneLevel(kActor, "SexDrive", Utility.RandomFloat(-10.0,20.0) * _argc )
-	fctHormones.modHormoneLevel(kActor, "Pheromones", Utility.RandomFloat(-0.5,1.0) * _argc )
-	fctHormones.modHormoneLevel(kActor, "Lactation", Utility.RandomFloat(-1.0,2.0) * _argc )
+	if (_args == "HRT")
+		if (fctUtil.isMale(kActor))
+			fctHormones.modHormoneLevel(kActor, "Metabolism", Utility.RandomFloat(10.0,20.0) * _argc )
+			fctHormones.modHormoneLevel(kActor, "Female", Utility.RandomFloat(5.0,10.0) * _argc )
+			fctHormones.modHormoneLevel(kActor, "Male", Utility.RandomFloat(-5.0,-10.0) * _argc )
+		Elseif (_args == "HRT") && (fctUtil.isFemale(kActor))
+			fctHormones.modHormoneLevel(kActor, "Metabolism", Utility.RandomFloat(10.0,20.0) * _argc )
+			fctHormones.modHormoneLevel(kActor, "Female", Utility.RandomFloat(-5.0,10.0) * _argc )
+			fctHormones.modHormoneLevel(kActor, "Male", Utility.RandomFloat(5.0,10.0) * _argc )
+		endif
+	
+	elseif (_args == "TG")
+		fctHormones.modHormoneLevel(kActor, "Metabolism", Utility.RandomFloat(10.0,20.0) * _argc )
+		fctHormones.modHormoneLevel(kActor, "Female", Utility.RandomFloat(5.0,10.0) * _argc )
+		fctHormones.modHormoneLevel(kActor, "Male", Utility.RandomFloat(5.0,10.0) * _argc )
 
+	else
+		fctHormones.modHormoneLevel(kActor, "Pigmentation", Utility.RandomFloat(-1.0,2.0) * _argc )
+		fctHormones.modHormoneLevel(kActor, "Growth", Utility.RandomFloat(5.0,10.0) * _argc )
+		fctHormones.modHormoneLevel(kActor, "Metabolism", Utility.RandomFloat(5.0,20.0) * _argc )
+		fctHormones.modHormoneLevel(kActor, "Sleep", Utility.RandomFloat(-1.0,2.0) * _argc )
+		fctHormones.modHormoneLevel(kActor, "Hunger", Utility.RandomFloat(-1.0,2.0) * _argc )
+		fctHormones.modHormoneLevel(kActor, "Immunity", Utility.RandomFloat(-1.0,2.0) * _argc )
+		fctHormones.modHormoneLevel(kActor, "Stress", Utility.RandomFloat(-10.0,20.0) * _argc )
+		fctHormones.modHormoneLevel(kActor, "SexDrive", Utility.RandomFloat(-10.0,20.0) * _argc )
+		fctHormones.modHormoneLevel(kActor, "Pheromones", Utility.RandomFloat(-0.5,1.0) * _argc )
+		fctHormones.modHormoneLevel(kActor, "Lactation", Utility.RandomFloat(-1.0,2.0) * _argc )
+	endif
 
 	if (_args == "Succubus") || (_args == "Bimbo") || (_args == "Chaurus")
 		fctHormones.modHormoneLevel(kActor, "Mood", Utility.RandomFloat(-5.0,10.0) * _argc )
@@ -1205,6 +1222,8 @@ Event OnModHormoneRandomEvent(String _eventName, String _args, Float _argc = 1.0
 		fctHormones.modHormoneLevel(kActor, "Succubus", Utility.RandomFloat(5.0,15.0) * _argc )
 	endif
 	
+
+
 EndEvent
 
 
