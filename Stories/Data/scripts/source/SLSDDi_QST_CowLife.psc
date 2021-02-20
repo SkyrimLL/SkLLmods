@@ -28,6 +28,7 @@ FormList Property MilkFarmList Auto
 
 Faction Property HucowsFaction Auto
 Faction Property MilkFarmCowsFaction Auto
+Faction Property CrimeFactionRiften Auto
 
 Potion Property Milk Auto
 Potion Property DivineMilk Auto
@@ -753,6 +754,10 @@ Function GetMilk(Actor kActor, Int iNumberBottles=1)
 	Float fLactationHormoneLevel = StorageUtil.GetFloatValue( kActor , "_SLH_fHormoneLactation") 
 
 	Debug.Trace("[SLSDDi] GetMilk - Actor: " + kActor)
+	Debug.Trace("[SLSDDi] _SLH_iMilkProduced: " + StorageUtil.GetIntValue(kActor, "_SLH_iMilkProduced"))
+	Debug.Trace("[SLSDDi] _SLH_iDivineMilkProduced: " + StorageUtil.GetIntValue(kActor, "_SLH_iDivineMilkProduced"))
+	Debug.Trace("[SLSDDi] _SLH_iMilkProducedTotal: " + StorageUtil.GetIntValue(kActor, "_SLH_iMilkProducedTotal"))
+	Debug.Trace("[SLSDDi] iNumberBottles: " + iNumberBottles)
 
 	if (kActor == kPlayer) && (isMale(kPlayer))
 		Debug.Trace("[SLSDDi] Actor is Player and Male - Aborting GetMilk.")
@@ -768,6 +773,11 @@ Function GetMilk(Actor kActor, Int iNumberBottles=1)
 	Endif
 
 	StorageUtil.SetIntValue(kActor, "_SLH_iMilkProducedTotal", StorageUtil.GetIntValue(kActor, "_SLH_iMilkProducedTotal") + iNumberBottles)	
+
+	Debug.Trace("[SLSDDi] after _SLH_iMilkProduced: " + StorageUtil.GetIntValue(kActor, "_SLH_iMilkProduced"))
+	Debug.Trace("[SLSDDi] after _SLH_iDivineMilkProduced: " + StorageUtil.GetIntValue(kActor, "_SLH_iDivineMilkProduced"))
+	Debug.Trace("[SLSDDi] after _SLH_iMilkProducedTotal: " + StorageUtil.GetIntValue(kActor, "_SLH_iMilkProducedTotal"))
+
 EndFunction
 
 Function checkIfLactating(Actor kActor)
@@ -964,12 +974,17 @@ Function PayEnrolledCow(Actor kActor)
 	  	Debug.Notification("You pay " + sActorName + " a fee of 5 gold.")
 
 	elseif (kActor.GetRelationshipRank(kPlayer) == 4) 
-	  	Debug.Notification("You may stimulate " + sActorName + " for free")
+	  	; Debug.Notification("You may stimulate " + sActorName + " for free")
 
 	else
 		; Figure out what to do when player cannot pay enrolled cow
 	  	Debug.Notification("You could not pay " + sActorName + " and she reported you.")
-		CrimeFaction.ModCrimeGold(5)
+
+	  	if (CrimeFaction == None)
+	  		CrimeFactionRiften.ModCrimeGold(5)
+	  	Else
+			CrimeFaction.ModCrimeGold(5)
+		endif
 	endIf
 Endfunction
 

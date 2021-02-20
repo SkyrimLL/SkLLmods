@@ -17,23 +17,17 @@ Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
 Actor kPlayer = Game.GetPlayer() 
 Debug.Notification( "She reluctantly agrees to be inspected" )
-akSpeaker.SendModEvent("_SLSDDi_UpdateCow","Check",0)
+Form fActorForm = akSpeaker as Form
+String sActorName 
 
-If  (SexLab.ValidateActor( kPlayer ) > 0) &&  (SexLab.ValidateActor(akSpeaker) > 0) 
-	actor[] sexActors = new actor[2]
-	sexActors[0] = akSpeaker
-	sexActors[1] = kPlayer
+if (fActorForm != None)
+	sActorName = fActorForm.GetName()
+else
+	sActorName = "She"
+endif
 
-	sslBaseAnimation[] anims
-	anims = new sslBaseAnimation[1]
-	anims[0] = SexLab.GetAnimationByName("3J Straight Breastfeeding")
-
-	if (anims[0] ==None)
-		anims = SexLab.GetAnimationsByTags(2, "Breast","Estrus,Dwemer")
-	endif
-
-	SexLab.StartSex(sexActors, anims)
-EndIf
+Debug.Notification( sActorName + " moans with relief..." )
+akSpeaker.SendModEvent("_SLSDDi_GropeCow")
 ;END CODE
 EndFunction
 ;END FRAGMENT

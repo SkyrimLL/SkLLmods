@@ -348,9 +348,11 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 	; Check for breast stimulation
 	Debug.Trace("[SLSDDi] Checking Player lactation: " )
 
-	if (actors.Length == 2) && ( ((actors[0]!=PlayerActor) && (actors[1]==PlayerActor) && (isFemale(actors[0]))) || ((actors[1]!=PlayerActor) && (actors[0]==PlayerActor) && (isFemale(actors[1]))) )
-		; Debug.Notification("[SLSDDi] Milk during sex ENABLED")
-		CowLife.updateMilkDuringSexFlag(1)
+	If (_hasPlayer(actors))
+		if (actors.Length == 2) && ( ((actors[0]!=PlayerActor) && (actors[1]==PlayerActor) && (isFemale(actors[0]))) || ((actors[1]!=PlayerActor) && (actors[0]==PlayerActor) && (isFemale(actors[1]))) )
+			; Debug.Notification("[SLSDDi] Milk during sex ENABLED")
+			CowLife.updateMilkDuringSexFlag(1)
+		endif
 	endif
 
 	If (isFemale(PlayerActor)) && (_hasPlayer(actors))
@@ -380,7 +382,7 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 			CowLife.UpdateMilkAfterSex(PlayerActor)
 		else
 			Debug.Trace("[SLSDDi]    Player is not lactating" )
-
+			StorageUtil.SetFormValue( none , "_SD_iLastCowMilked", PlayerActor)
 		Endif
 	else
 		Debug.Trace("[SLSDDi]    Invalid player" )
@@ -421,6 +423,7 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 				CowLife.UpdateMilkAfterSex(actors[idx])
 			else
 				Debug.Trace("[SLSDDi]    Actor is not lactating" )
+				StorageUtil.SetFormValue( none , "_SD_iLastCowMilked", actors[idx])
 			EndIf
 		else
 			Debug.Trace("[SLSDDi]    Invalid actor" )

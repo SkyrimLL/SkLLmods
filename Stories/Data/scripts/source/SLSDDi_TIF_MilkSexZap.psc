@@ -10,7 +10,9 @@ if (Utility.RandomInt(0,100)>70)
 	akSpeaker.SendModEvent("SLHModHormone", "Lactation", 0.1 * Utility.RandomInt(0,10) )
 	libs.SexlabMoan(akSpeaker)	
 	debug.notification("Her breasts are getting warm")
-	debug.notification(" Lactation: " + StorageUtil.GetFloatValue( akSpeaker , "_SLH_fHormoneLactation") )
+	; debug.notification(" Lactation: " + StorageUtil.GetFloatValue( akSpeaker , "_SLH_fHormoneLactation") )
+else
+	akSpeaker.SendModEvent("SLHModHormone", "Lactation", 0.1 )
 
 endif
 
