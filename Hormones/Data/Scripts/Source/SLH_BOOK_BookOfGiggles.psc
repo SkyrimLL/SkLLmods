@@ -1,5 +1,8 @@
 Scriptname SLH_BOOK_BookOfGiggles extends ObjectReference  
 
+Sound Property ReadSoundFX  Auto
+ImageSpaceModifier Property ReadImod  Auto  
+String Property sCurse Auto
 
 event onRead()
 	Actor kPlayer = Game.GetPlayer()
@@ -10,6 +13,12 @@ event onRead()
 	
 	; Heal the player - useful action to invite player to read the book often
 	kPlayer.resethealthandlimbs()
+
+
+	ReadImod.Apply( )
+    ReadSoundFX.Play(kPlayer as ObjectReference)
+	Utility.Wait(10)
+
 
 	; Mess with Hormone levels - similar to sex with Daedra
 	; This will move the player along toward a gradual transformation
@@ -39,11 +48,12 @@ event onRead()
 
 		; 1% chance of instant transformation
 		If (Utility.RandomInt(0,100)>95)
-			kPlayer.SendModEvent("SLHCastHRTCurse")
+			kPlayer.SendModEvent("SLHCastTGCurse")
 		Endif
 	endif
+
+	ReadImod.Remove( )
 
 
 endEvent
 
-String Property sCurse Auto

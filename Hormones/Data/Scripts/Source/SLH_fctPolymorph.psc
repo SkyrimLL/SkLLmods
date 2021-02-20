@@ -701,6 +701,18 @@ Bool function TGEffectON(actor kActor)
         ;    SLH_Control.setTGState(kActor, TRUE)
         ;    debugTrace(" TG ON")
 
+        GV_allowHRT.SetValue(1)
+
+        HRTEffectON(kActor)
+        
+        kActor.SendModEvent("SLHSetSchlong", "UNP Bimbo")
+        StorageUtil.SetFloatValue(kActor, "_SLH_fSchlong",0.7 ) 
+        kActor.SendModEvent("SLHRefresh")
+
+        Sexlab.TreatAsMale(kActor)
+        SLH_Control.setTGState(kActor, TRUE)
+        debugTrace(" TG ON")
+
     elseif (!isActorMale) 
         ; Female to Female + Schlong
 

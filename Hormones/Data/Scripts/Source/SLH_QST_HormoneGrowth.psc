@@ -1064,6 +1064,10 @@ Event OnCastTGCurseEvent(String _eventName, String _args, Float _argc = 1.0, For
 		; PolymorphBimbo.Cast(PlayerActor,PlayerActor)
 		_SLH_QST_Bimbo.SetStage(6)
 
+		if (fctUtil.isMale(kActor))
+		    Game.ShowRaceMenu()
+		endif
+
 	endif
 
 endEvent
@@ -1172,14 +1176,14 @@ Event OnModHormoneRandomEvent(String _eventName, String _args, Float _argc = 1.0
  		_argc = 1.0
  	endif
  	
-	debugTrace(" Receiving 'mod hormone random level' event. Tag: " + _args )
+	debug.trace("[SLH] Receiving 'mod hormone random level' event. Tag: " + _args )
 
 	if (_args == "HRT")
 		if (fctUtil.isMale(kActor))
 			fctHormones.modHormoneLevel(kActor, "Metabolism", Utility.RandomFloat(10.0,20.0) * _argc )
 			fctHormones.modHormoneLevel(kActor, "Female", Utility.RandomFloat(5.0,10.0) * _argc )
 			fctHormones.modHormoneLevel(kActor, "Male", Utility.RandomFloat(-5.0,-10.0) * _argc )
-		Elseif (_args == "HRT") && (fctUtil.isFemale(kActor))
+		Elseif (fctUtil.isFemale(kActor))
 			fctHormones.modHormoneLevel(kActor, "Metabolism", Utility.RandomFloat(10.0,20.0) * _argc )
 			fctHormones.modHormoneLevel(kActor, "Female", Utility.RandomFloat(-5.0,10.0) * _argc )
 			fctHormones.modHormoneLevel(kActor, "Male", Utility.RandomFloat(5.0,10.0) * _argc )

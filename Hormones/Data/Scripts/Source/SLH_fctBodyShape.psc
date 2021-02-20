@@ -1444,6 +1444,8 @@ Bool function tryTGEvent(Actor kActor, float fHoursSleep) ; trans gender
 
 			fctHormones.modHormoneLevel(kActor, "Metabolism", 2.0 * fHoursSleep) ; accelerate path to transformation
 			fctHormones.modHormoneLevel(kActor, "Growth", -2.0 * fHoursSleep) ; make actor lose weight
+			fctHormones.modHormoneLevel(kActor, "Male", 2.0 * fHoursSleep) ; accelerate path to transformation
+			fctHormones.modHormoneLevel(kActor, "Female", 2.0 * fHoursSleep) ; accelerate path to transformation
 			alterBodyByPercent(kActor, "Weight", -2.0 * fHoursSleep * (1.0 + (fHormoneMetabolism / 100.0)))
 			fWeight = StorageUtil.GetFloatValue(kActor, "_SLH_fWeight")
 		endif
@@ -1470,9 +1472,12 @@ Bool function tryTGEvent(Actor kActor, float fHoursSleep) ; trans gender
 				fctHormones.modHormoneLevel(kActor, "Metabolism", -100.0) ; 
 
 				; No TG option for male yet - will try later with SoS compatible vagina
+				; For now, forcing a sex change to Female + Schlong
 
 				; debugTrace("	 Casting HRT curse")
 				; kActor.SendModEvent("SLHCastTGCurse", "Bimbo")
+				kActor.SendModEvent("SLHCastTGCurse", "Bimbo")
+
 			else
 				debugTrace("	 Casting Sex change curse failed - Schlong not small enough")
 				sMessage = sMessage + " Each night is filled with increasingly androgyne dreams and thoughts of cock turning into a beautiful vagina."
@@ -1493,6 +1498,9 @@ Bool function tryTGEvent(Actor kActor, float fHoursSleep) ; trans gender
 
 			fctHormones.modHormoneLevel(kActor, "Metabolism", 2.0 * fHoursSleep) ; accelerate path to transformation
 			fctHormones.modHormoneLevel(kActor, "Growth", -2.0 * fHoursSleep) ; make actor lose weight
+			fctHormones.modHormoneLevel(kActor, "Male", 2.0 * fHoursSleep) ; accelerate path to transformation
+			fctHormones.modHormoneLevel(kActor, "Female", 2.0 * fHoursSleep) ; accelerate path 
+
 			alterBodyByPercent(kActor, "Weight", -2.0 * fHoursSleep * (1.0 + (fHormoneMetabolism / 100.0)))
 			fWeight = StorageUtil.GetFloatValue(kActor, "_SLH_fWeight")	
 		endIf
@@ -1577,6 +1585,9 @@ Bool function tryHRTEvent(Actor kActor, float fHoursSleep) ; sex change
 
 			fctHormones.modHormoneLevel(kActor, "Metabolism", 2.0 * fHoursSleep) ; accelerate path to transformation
 			fctHormones.modHormoneLevel(kActor, "Growth", 2.0 * fHoursSleep) ; make actor lose weight
+			fctHormones.modHormoneLevel(kActor, "Male", 2.0 * fHoursSleep) ; accelerate path to transformation
+			fctHormones.modHormoneLevel(kActor, "Female", -2.0 * fHoursSleep) ; accelerate path 
+
 			alterBodyByPercent(kActor, "Weight", -2.0 * fHoursSleep * (1.0 + (fHormoneMetabolism / 100.0)))
 			fWeight = StorageUtil.GetFloatValue(kActor, "_SLH_fWeight")
 		endif
@@ -1624,6 +1635,9 @@ Bool function tryHRTEvent(Actor kActor, float fHoursSleep) ; sex change
 
 			fctHormones.modHormoneLevel(kActor, "Metabolism", 2.0 * fHoursSleep) ; accelerate path to transformation
 			fctHormones.modHormoneLevel(kActor, "Growth", -2.0 * fHoursSleep) ; make actor lose weight
+			fctHormones.modHormoneLevel(kActor, "Male", -2.0 * fHoursSleep) ; accelerate path to transformation
+			fctHormones.modHormoneLevel(kActor, "Female", 2.0 * fHoursSleep) ; accelerate path 
+
 			alterBodyByPercent(kActor, "Weight", -2.0 * fHoursSleep)
 			fWeight = StorageUtil.GetFloatValue(kActor, "_SLH_fWeight")	
 		endIf
@@ -1702,6 +1716,7 @@ Bool function tryBimboEvent(Actor kActor, float fHoursSleep) ; bimbo curse
 		StorageUtil.SetIntValue(kActor, "_SLH_iAllowBimboThoughts", 1)
 
 		fctHormones.modHormoneLevel(kActor, "Metabolism", 2.0 * fHoursSleep) ; accelerate path to transformation
+		fctHormones.modHormoneLevel(kActor, "Bimbo", 2.0 * fHoursSleep) ; accelerate path to transformation
 		fctHormones.modHormoneLevel(kActor, "SexDrive", 4.0 * fHoursSleep) ; make actor hornier
 		fctHormones.modHormoneLevel(kActor, "Growth", 1.0 * fHoursSleep) ; make breasts and butt larger
 	endif
@@ -1716,6 +1731,7 @@ Bool function tryBimboEvent(Actor kActor, float fHoursSleep) ; bimbo curse
 
 		fctHormones.modHormoneLevel(kActor, "Female", 2.0 * fHoursSleep) ; make actor more feminine
 		fctHormones.modHormoneLevel(kActor, "Male", -4.0 * fHoursSleep) ; 
+		fctHormones.modHormoneLevel(kActor, "Bimbo", 2.0 * fHoursSleep) ; accelerate path to transformation
 		fctHormones.modHormoneLevel(kActor, "Growth", 2.0 * fHoursSleep) ; make breasts and butt larger
 	endIf
 	
