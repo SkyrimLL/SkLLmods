@@ -193,7 +193,7 @@ float		_pigmentationMod = 0.1
 float		_growthMod = 0.5 
 float		_metabolismMod = 0.5	 
 float		_sleepMod = 1.2 
-float		_hungerMod = 1.2 		 
+float		_FertilityMod = 1.2 		 
 float		_immunityMod = 0.5	 
 float		_stressMod = 1.8 			 
 float		_moodMod = 0.5 			 
@@ -379,7 +379,7 @@ event OnPageReset(string a_page)
 	_growthMod 			= StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneGrowthMod" ) 
 	_metabolismMod 		= StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneMetabolismMod")	 
 	_sleepMod 			= StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneSleepMod" )  
-	_hungerMod 			= StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneHungerMod" )		 
+	_FertilityMod 		= StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneFertilityMod" )		 
 	_immunityMod 		= StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneImmunityMod")		 
 	_stressMod 			= StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneStressMod" ) 			 
 	_moodMod 			= StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneMoodMod" )  			 
@@ -446,7 +446,7 @@ event OnPageReset(string a_page)
 		AddSliderOptionST("STATE_LACTATION","Lactation hormone", _lactationMod as Float,"{1}") 
 		AddSliderOptionST("STATE_PIGMENTATION","Pigmentation hormone", _pigmentationMod as Float,"{1}") 
 		AddSliderOptionST("STATE_SLEEP","Sleep hormone", _sleepMod as Float,"{1}") 
-		AddSliderOptionST("STATE_HUNGER","Hunger hormone", _hungerMod as Float,"{1}") 
+		AddSliderOptionST("STATE_Fertility","Fertility hormone", _FertilityMod as Float,"{1}") 
 		AddSliderOptionST("STATE_IMMUNITY","Immunity hormone", _immunityMod as Float,"{1}") 
 		AddSliderOptionST("STATE_STRESS","Stress hormone", _stressMod as Float,"{1}") 
 		AddSliderOptionST("STATE_MOOD","Mood hormone", _moodMod as Float,"{1}") 
@@ -466,9 +466,9 @@ event OnPageReset(string a_page)
 		AddTextOption("     Growth: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneGrowth") as Int, "", OPTION_FLAG_DISABLED)
 		AddTextOption("     Pheromones: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormonePheromones") as Int, "", OPTION_FLAG_DISABLED)
 		AddTextOption("     Lactation: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneLactation") as Int, "", OPTION_FLAG_DISABLED)
+		AddTextOption("     Fertility: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneFertility") as Int, "", OPTION_FLAG_DISABLED)
 		AddTextOption("     Pigmentation: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormonePigmentation") as Int, "", OPTION_FLAG_DISABLED)
 		AddTextOption("     Sleep: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneSleep") as Int, "", OPTION_FLAG_DISABLED)
-		AddTextOption("     Hunger: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneHunger") as Int, "", OPTION_FLAG_DISABLED)
 		AddTextOption("     Immunity: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneImmunity") as Int, "", OPTION_FLAG_DISABLED)
 		AddTextOption("     Stress: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneStress") as Int, "", OPTION_FLAG_DISABLED)
 		AddTextOption("     Mood: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneMood") as Int, "", OPTION_FLAG_DISABLED)
@@ -784,29 +784,29 @@ state STATE_SLEEP ; SLIDER
 	endEvent
 endState
 
-; AddSliderOptionST("STATE_HUNGER","Hunger hormone", _hungerMod as Float) 
-state STATE_HUNGER ; SLIDER
+; AddSliderOptionST("STATE_Fertility","Fertility hormone", _FertilityMod as Float) 
+state STATE_Fertility ; SLIDER
 	event OnSliderOpenST()
-		SetSliderDialogStartValue( _hungerMod )
+		SetSliderDialogStartValue( _FertilityMod )
 		SetSliderDialogDefaultValue( 1.0 )  
 		SetSliderDialogRange( 0.0, 2.0 )
 		SetSliderDialogInterval( 0.1 )
 	endEvent
 
 	event OnSliderAcceptST(float value)
-		_hungerMod  = value 
-		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fHormoneHungerMod", _hungerMod) 
-		SetSliderOptionValueST( _hungerMod, "{1}" )
+		_FertilityMod  = value 
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fHormoneFertilityMod", _FertilityMod) 
+		SetSliderOptionValueST( _FertilityMod, "{1}" )
 	endEvent
 
 	event OnDefaultST()
-		_hungerMod = 1.0
-		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fHormoneHungerMod", _hungerMod) 
-		SetSliderOptionValueST( _hungerMod , "{1}" )
+		_FertilityMod = 1.0
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fHormoneFertilityMod", _FertilityMod) 
+		SetSliderOptionValueST( _FertilityMod , "{1}" )
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Hunger hormone - How quickly need for food happens (0: No change - 1: Normal rate - 2: Accelerated rate)")
+		SetInfoText("Fertility hormone - How quickly need for food happens (0: No change - 1: Normal rate - 2: Accelerated rate)")
 	endEvent
 endState
 
