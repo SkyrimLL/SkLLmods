@@ -168,18 +168,23 @@ Event OnModHormoneEvent(String _eventName, String _args, Float _argc = 1.0, Form
  	if (kActor == None)
  		kActor = Game.GetPlayer()
  	EndIf
+
+ 	if (_args == "")
+ 		_args = "Lactation"
+ 	EndIf
+
 	debug.Trace("[SLSDDi] Receiving 'mod hormone level' event. Actor: " + kActor )
 
 	; fctHormones.modHormoneLevel(kActor, _args, _argc)
-	Float fLactationHormoneLevel = StorageUtil.GetFloatValue( kActor , "_SLH_fHormoneLactation")  + _argc
+	Float fHormoneLevel = StorageUtil.GetFloatValue( kActor , "_SLH_fHormone" + _args)  + _argc
 
-	if (fLactationHormoneLevel > 100.0)
-		fLactationHormoneLevel = 100.0
-	elseif (fLactationHormoneLevel < 0.0)
-		fLactationHormoneLevel = 0.0
+	if (fHormoneLevel > 100.0)
+		fHormoneLevel = 100.0
+	elseif (fHormoneLevel < 0.0)
+		fHormoneLevel = 0.0
 	endif
 
-	StorageUtil.SetFloatValue( kActor , "_SLH_fHormoneLactation", fLactationHormoneLevel)
+	StorageUtil.SetFloatValue( kActor , "_SLH_fHormone" + _args, fHormoneLevel)
 
 EndEvent
 

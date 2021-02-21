@@ -183,7 +183,6 @@ Function registerCow(Actor kActor)
 		StorageUtil.SetIntValue(kActor, "_SLH_iMilkLevel", 0)
 		StorageUtil.SetIntValue(kActor, "_SLH_iMilkProduced", 0)
 		StorageUtil.SetIntValue(kActor, "_SLH_iDivineMilkProduced", 0)
-		StorageUtil.SetIntValue(kActor, "_SLH_iMilkProducedTotal", 0)
 	endif
 
  	; Add cow to HucowsList for Dialogue conditions
@@ -364,8 +363,11 @@ Function updateCowStatus(Actor kActor, String sUpdateMode = "", Int iNumberBottl
 
 	If (kActor == kPlayer)
 		GV_MilkLevel.SetValue(StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") as Int)
+		MilkProduced.SetValue(StorageUtil.GetIntValue(kActor, "_SLH_iMilkProduced") as Int)
 		GV_ProlactinLevel.SetValue( StorageUtil.GetFloatValue( kActor , "_SLH_fHormoneLactation") as Int)
 	Endif
+		
+	MilkProducedTotal.SetValue(StorageUtil.GetIntValue(kPlayer, "_SLH_iMilkProducedTotal") as Int)
 
 	StorageUtil.SetFormValue( none , "_SD_iLastCowMilked", kActor)
 
@@ -403,11 +405,12 @@ Function updateCowStatus(Actor kActor, String sUpdateMode = "", Int iNumberBottl
 			Endif
 		endif
 
-		If (iIndex != -1) 
-			pActorBase.SetSkin(MilkFarmCowSkin)
-			pLeveledActorBase.SetSkin(MilkFarmCowSkin)
-			kActor.UpdateWeight(0)
-		endif
+		; Dynamic skin gets reset after each game load - canceling this feature for now.
+		; If (iIndex != -1) 
+			; pActorBase.SetSkin(MilkFarmCowSkin)
+			; pLeveledActorBase.SetSkin(MilkFarmCowSkin)
+			; kActor.UpdateWeight(0)
+		; endif
 
 	EndIf
 
@@ -604,7 +607,7 @@ Function UpdateMilkAfterOrgasm(Actor kActor, Int iMilkDateOffset)
 		EndIf
 
 		Debug.Trace("[SLSDDi] Actor Milk Produced: " + StorageUtil.GetIntValue(kActor, "_SLH_iMilkProduced"))
-		Debug.Trace("[SLSDDi] Actor Milk Total: " + StorageUtil.GetIntValue(kActor, "_SLH_iMilkProducedTotal"))
+		Debug.Trace("[SLSDDi] Actor Divine Milk Produced: " + StorageUtil.GetIntValue(kActor, "_SLH_iDivineMilkProduced"))
 
 		; kActor.SendModEvent("_SLSDDi_UpdateCow","Milk")
 		updateCowStatus(kActor,"Milk",1)
@@ -671,8 +674,9 @@ Function UpdateMilkFromMachine(ObjectReference akFurniture)
 		; StorageUtil.SetIntValue(kPlayer, "_SLH_iProlactinLevel", StorageUtil.GetIntValue(kPlayer, "_SLH_iProlactinLevel") + 4)	
 		fLactationHormoneMod = fLactationHormoneMod + 4.0
 
-		Debug.Trace("[SLSDDi] NPC Milk Produced: " + StorageUtil.GetIntValue(kPlayer, "_SLH_iMilkProduced"))
-		Debug.Trace("[SLSDDi] NPC Milk Total: " + StorageUtil.GetIntValue(kPlayer, "_SLH_iMilkProducedTotal"))
+		Debug.Trace("[SLSDDi] Milk Produced: " + StorageUtil.GetIntValue(kPlayer, "_SLH_iMilkProduced"))
+		Debug.Trace("[SLSDDi] Divine Milk Produced: " + StorageUtil.GetIntValue(kPlayer, "_SLH_iDivineMilkProduced"))
+
 
 		GetMilk(kPlayer, 1)		
 		updateCowStatus(kPlayer,"Milk",1)
@@ -725,8 +729,9 @@ Function UpdateMilkFromMachine(ObjectReference akFurniture)
 		; StorageUtil.SetIntValue(kPlayer, "_SLH_iProlactinLevel", StorageUtil.GetIntValue(kPlayer, "_SLH_iProlactinLevel") + 7)	
 		fLactationHormoneMod = fLactationHormoneMod + 8.0
 
-		Debug.Trace("[SLSDDi] NPC Milk Produced: " + StorageUtil.GetIntValue(kPlayer, "_SLH_iMilkProduced"))
-		Debug.Trace("[SLSDDi] NPC Milk Total: " + StorageUtil.GetIntValue(kPlayer, "_SLH_iMilkProducedTotal"))
+		Debug.Trace("[SLSDDi] Milk Produced: " + StorageUtil.GetIntValue(kPlayer, "_SLH_iMilkProduced"))
+		Debug.Trace("[SLSDDi] Divine Milk Produced: " + StorageUtil.GetIntValue(kPlayer, "_SLH_iDivineMilkProduced"))
+
 
 
 		; SLSD_MilkOMaticSpell2.Remotecast(PlayerREF,kPlayer,PlayerREF)
@@ -753,10 +758,14 @@ Function GetMilk(Actor kActor, Int iNumberBottles=1)
  	Actor kPlayer= Game.GetPlayer() as Actor
 	Float fLactationHormoneLevel = StorageUtil.GetFloatValue( kActor , "_SLH_fHormoneLactation") 
 
+	; --------
 	Debug.Trace("[SLSDDi] GetMilk - Actor: " + kActor)
 	Debug.Trace("[SLSDDi] _SLH_iMilkProduced: " + StorageUtil.GetIntValue(kActor, "_SLH_iMilkProduced"))
 	Debug.Trace("[SLSDDi] _SLH_iDivineMilkProduced: " + StorageUtil.GetIntValue(kActor, "_SLH_iDivineMilkProduced"))
-	Debug.Trace("[SLSDDi] _SLH_iMilkProducedTotal: " + StorageUtil.GetIntValue(kActor, "_SLH_iMilkProducedTotal"))
+
+	; _SLH_iMilkProducedTotal - indexed on the Player. Total amount produced across all cows
+	Debug.Trace("[SLSDDi] _SLH_iMilkProducedTotal: " + StorageUtil.GetIntValue(kPlayer, "_SLH_iMilkProducedTotal"))
+
 	Debug.Trace("[SLSDDi] iNumberBottles: " + iNumberBottles)
 
 	if (kActor == kPlayer) && (isMale(kPlayer))
@@ -772,11 +781,23 @@ Function GetMilk(Actor kActor, Int iNumberBottles=1)
 		StorageUtil.SetIntValue(kActor, "_SLH_iMilkProduced", StorageUtil.GetIntValue(kActor, "_SLH_iMilkProduced") + iNumberBottles)
 	Endif
 
-	StorageUtil.SetIntValue(kActor, "_SLH_iMilkProducedTotal", StorageUtil.GetIntValue(kActor, "_SLH_iMilkProducedTotal") + iNumberBottles)	
+	; _SLH_iMilkProducedTotal - indexed on the Player. Total amount produced across all cows
+	StorageUtil.SetIntValue(kPlayer, "_SLH_iMilkProducedTotal", StorageUtil.GetIntValue(kPlayer, "_SLH_iMilkProducedTotal") + iNumberBottles)	
 
+
+	; Trigger quest stages based on milk production
+	if ( (!DivineCheeseQuest.GetStageDone(100)) && (StorageUtil.GetIntValue(kPlayer, "_SLH_iMilkProducedTotal") >= 5) )
+		; clear past objectives below 100
+	    DivineCheeseQuest.SetStage(100)
+	endif
+
+
+	; --------
 	Debug.Trace("[SLSDDi] after _SLH_iMilkProduced: " + StorageUtil.GetIntValue(kActor, "_SLH_iMilkProduced"))
 	Debug.Trace("[SLSDDi] after _SLH_iDivineMilkProduced: " + StorageUtil.GetIntValue(kActor, "_SLH_iDivineMilkProduced"))
-	Debug.Trace("[SLSDDi] after _SLH_iMilkProducedTotal: " + StorageUtil.GetIntValue(kActor, "_SLH_iMilkProducedTotal"))
+
+	; _SLH_iMilkProducedTotal - indexed on the Player. Total amount produced across all cows
+	Debug.Trace("[SLSDDi] after _SLH_iMilkProducedTotal: " + StorageUtil.GetIntValue(kPlayer, "_SLH_iMilkProducedTotal"))
 
 EndFunction
 
@@ -868,15 +889,15 @@ Function UpdateBusiness()
 	sBusinessStatusMsg += GetFarmCowStatus(SnowShodCowAltmerAlias.GetReference(), "Altmer cow") 
 	sBusinessStatusMsg += GetFarmCowStatus(SnowShodCowOrcAlias.GetReference(), "Orc cow") 
 
-	iTotalMilkProduced += StorageUtil.GetIntValue(game.getplayer(), "_SLH_iMilkProducedTotal")
+	iTotalMilkProduced += StorageUtil.GetIntValue( kPlayer, "_SLH_iMilkProducedTotal")
 
 	if (StorageUtil.GetIntValue(kPlayer, "_SLH_iLactating") == 1)
-		sBusinessStatusMsg += "\n Player: "  +  StorageUtil.GetIntValue(kPlayer, "_SLH_iMilkProducedTotal") + " L: " +StorageUtil.GetIntValue(kPlayer, "_SLH_iMilkLevel") + " H: " + StorageUtil.GetFloatValue( kPlayer , "_SLH_fHormoneLactation")
+		sBusinessStatusMsg += "\n Player: "  +  (StorageUtil.GetIntValue(kPlayer, "_SLH_iMilkProduced") + StorageUtil.GetIntValue(kPlayer, "_SLH_iDivineMilkProduced")) + " L: " +StorageUtil.GetIntValue(kPlayer, "_SLH_iMilkLevel") + " H: " + StorageUtil.GetFloatValue( kPlayer , "_SLH_fHormoneLactation")
 	endif
 
 	updateAllCows("")
 
-	sBusinessStatusMsg += "\n Total Milk Produced: " + iTotalMilkProduced
+	sBusinessStatusMsg += "\n Total Milk Produced: " + StorageUtil.GetIntValue( kPlayer, "_SLH_iMilkProducedTotal")
 	; sBusinessStatusMsg += "\n For the Nords and Imperials..." 
 
 	debug.Trace(sBusinessStatusMsg)
@@ -931,8 +952,7 @@ String Function GetFarmCowStatus(ObjectReference kCowActorRef, String sCowRace)
 	Actor kCowActor = kCowActorRef as Actor
 
 	if (kCowActorRef != None)
-		iTotalMilkProduced += StorageUtil.GetIntValue(kCowActorRef as Actor, "_SLH_iMilkProducedTotal")
-		sBusinessStatusMsg += "\n " + sCowRace + ": M: " +  StorageUtil.GetIntValue(kCowActor , "_SLH_iMilkProducedTotal") + " L: " +StorageUtil.GetIntValue(kCowActor, "_SLH_iMilkLevel") + " H: " + StorageUtil.GetFloatValue( kCowActor , "_SLH_fHormoneLactation")
+		sBusinessStatusMsg += "\n " + sCowRace + ": M: " +  (StorageUtil.GetIntValue(kCowActor, "_SLH_iMilkProduced") + StorageUtil.GetIntValue(kCowActor, "_SLH_iDivineMilkProduced"))  + " L: " +StorageUtil.GetIntValue(kCowActor, "_SLH_iMilkLevel") + " H: " + StorageUtil.GetFloatValue( kCowActor , "_SLH_fHormoneLactation")
 
 		; If  (!kCowActor.WornHasKeyword(SLSD_CowHarness) && !kCowActor.WornHasKeyword(SLSD_CowMilker))
 		;	kCowActor.SetOutfit(FarmCowOutfit)
