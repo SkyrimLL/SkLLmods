@@ -298,7 +298,8 @@ event OnPageReset(string a_page)
 			; AddTextOption(" _SLH_iProlactinLevel: " + StorageUtil.GetIntValue( kActor , "_SLH_iProlactinLevel")  as Int, "", OPTION_FLAG_DISABLED)
 			AddTextOption(" _SLH_fHormoneLactation: " + StorageUtil.GetFloatValue( kActor , "_SLH_fHormoneLactation")  as Int, "", OPTION_FLAG_DISABLED)
 			AddTextOption(" _SLH_fLactationThreshold: " + StorageUtil.GetFloatValue( kActor , "_SLH_fLactationThreshold")  as Int, "", OPTION_FLAG_DISABLED)
-
+			AddTextOption(" _SLH_fHormoneLactationCooldown: " + StorageUtil.GetFloatValue( kActor , "_SLH_fHormoneLactationCooldown")  as Int, "", OPTION_FLAG_DISABLED)
+ 
 			AddTextOption(" _SLH_iMilkLevel: " + StorageUtil.GetIntValue( kActor , "_SLH_iMilkLevel")  as Int, "", OPTION_FLAG_DISABLED)
 			AddTextOption(" _SLH_isPregnant: " + StorageUtil.GetIntValue( kActor , "_SLH_isPregnant")  as Int, "", OPTION_FLAG_DISABLED) 
 

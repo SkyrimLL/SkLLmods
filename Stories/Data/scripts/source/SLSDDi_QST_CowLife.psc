@@ -254,11 +254,11 @@ Function updateCowStatus(Actor kActor, String sUpdateMode = "", Int iNumberBottl
 	Float fLactationLevel = ( StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") ) as Float
 	Float fLactationMilkDate = ( Game.QueryStat("Days Passed") - StorageUtil.GetIntValue(kActor, "_SLH_iMilkDate") ) as Float
 	Float fLactationHormoneLevel = StorageUtil.GetFloatValue( kActor , "_SLH_fHormoneLactation") 
+	Float fLactationHormoneCooldownMod = StorageUtil.GetFloatValue( kActor , "_SLH_fHormoneLactationCooldown") / 100.0
 	Int	iLactationHormoneLevel = fLactationHormoneLevel  as Int
 	Int iMilkProductionMod = 1 + (iLactationHormoneLevel / 20) ; should be between 1 and 6, to accelerate milk production Lactation hormone is high
 	Int iMilkLevel = StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel")
-	
-	Int iIndex = MilkFarmList.Find(kActor as Form)
+	 
 
 	pActorBase = kActor.GetActorBase()
 	pLeveledActorBase = kActor.GetLeveledActorBase()
@@ -280,6 +280,11 @@ Function updateCowStatus(Actor kActor, String sUpdateMode = "", Int iNumberBottl
 		StorageUtil.SetIntValue(kActor, "_SLH_iMilkDate", Game.QueryStat("Days Passed"))
 	Endif
 
+	if (fLactationHormoneCooldownMod<=1.0) 
+		StorageUtil.SetFloatValue( kActor , "_SLH_fHormoneLactationCooldown", 50.0) 
+		fLactationHormoneCooldownMod = 0.5
+	endif
+
 	If (StorageUtil.GetIntValue(kActor, "_SLH_iMilkCow") == 0)
 		registerCow(kActor)
 	Endif
@@ -290,16 +295,16 @@ Function updateCowStatus(Actor kActor, String sUpdateMode = "", Int iNumberBottl
 
 	If (sUpdateMode == "NewDay")
 
-		If (iIndex != -1) 
+		If (kActor.IsInFaction(MilkFarmCowsFaction))
 			; If cow is at the farm, we can assume they keep getting stimulated if the player is away
-			fLactationHormoneMod = fLactationHormoneMod - 5.0 + Utility.RandomInt(0,5)
+			fLactationHormoneMod = fLactationHormoneMod - (-5.0 + Utility.RandomInt(0,5)) * fLactationHormoneCooldownMod
 			StorageUtil.SetIntValue(kActor, "_SLH_iMilkLevel", StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") + 4)
 
 		elseIf (StorageUtil.GetIntValue(kActor, "_SLH_isPregnant") == 1) 
-			fLactationHormoneMod = fLactationHormoneMod - 1.0
+			fLactationHormoneMod = fLactationHormoneMod - (2.5 * fLactationHormoneCooldownMod)
 			StorageUtil.SetIntValue(kActor, "_SLH_iMilkLevel", StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") + 2)
 		else
-			fLactationHormoneMod = fLactationHormoneMod - 5.0
+			fLactationHormoneMod = fLactationHormoneMod - 5.0 * fLactationHormoneCooldownMod
 
 			If (Utility.RandomInt(0,100)> (100-iLactationHormoneLevel))
 				StorageUtil.SetIntValue(kActor, "_SLH_iMilkLevel", StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") + 1)
