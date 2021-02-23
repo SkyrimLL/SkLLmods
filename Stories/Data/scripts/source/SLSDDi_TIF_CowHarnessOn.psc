@@ -6,6 +6,7 @@ Scriptname SLSDDi_TIF_CowHarnessOn Extends TopicInfo Hidden
 Function Fragment_1(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
+Actor kPlayer = Game.getPlayer()
 Actor pActor =  SexLab.PlayerRef
 ActorBase pActorBase = pActor.GetActorBase()
 ; Game.GetPlayer().RemoveItem(Milk, 1)
@@ -16,16 +17,12 @@ Debug.Notification( "Leonara opens your top excitedly..." )
 SendModEvent("_SLSDDi_EquipMilkingDevice")
 
 
-Game.GetPlayer().AddItem(Gold, ( (pActorBase.GetWeight() as Int) + 10 )  )
-
-MilkProduced.SetValue( 1 )
-MilkProducedTotal.SetValue( MilkProducedTotal.GetValue() + 1 )
-
-CowCount.SetValue( CowCount.GetValue() + 1 )
+kPlayer.AddItem(Gold, ( (pActorBase.GetWeight() as Int) + 10 )  )
+ 
 
 Utility.Wait(1.0)
 
-If  (SexLab.ValidateActor( SexLab.PlayerRef ) > 0) &&  (SexLab.ValidateActor(akSpeaker) > 0) 
+If  (SexLab.ValidateActor( kPlayer ) > 0) &&  (SexLab.ValidateActor(akSpeaker) > 0) 
 	actor[] sexActors = new actor[2]
 	sexActors[0] = Game.GetPlayer()
 	sexActors[1] = akSpeaker
@@ -56,6 +53,6 @@ GlobalVariable Property MilkProduced  Auto
 
 GlobalVariable Property MilkProducedTotal  Auto  
 
-SLS_QST_CowLife Property CowLife Auto
+SLSDDi_QST_CowLife Property CowLife Auto
 
 GlobalVariable Property CowCount  Auto  

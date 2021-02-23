@@ -12,7 +12,7 @@ kPlayer.RemoveItem(DwarvenCenturionDynamo, 1)
 
 AutoHarnessMarker.enable()
 
-; self.GetOwningQUest().SetStage(310)
+self.GetOwningQuest().SetStage(310)
 ;END CODE
 EndFunction
 ;END FRAGMENT
