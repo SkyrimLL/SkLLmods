@@ -3106,6 +3106,7 @@ Function FalmerBlue(Actor kActor, Actor kTarget)
 			if (isFemale(kTarget))
 				SendModEvent("SLHModHormone", "Metabolism", -15.0)
 				SendModEvent("SLHModHormone", "Lactation", 5.0)
+				SendModEvent("SLHModHormone", "Fertility", 5.0)
 			else
 				SendModEvent("SLHModHormone", "Metabolism", 15.0)
 			endif
