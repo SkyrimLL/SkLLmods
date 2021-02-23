@@ -306,6 +306,7 @@ Function maintenanceVersionEvents()
 	RegisterForModEvent("SexLabOrgasmSeparate",    "OnSexLabOrgasmSeparate")
 
 
+	RegisterForModEvent("SLHSetNiNode",   "OnSetNiNode")
 	RegisterForModEvent("SLHShaveHead",   "OnShaveHead")
 	RegisterForModEvent("SLHModHormone",    "OnModHormoneEvent")
 	RegisterForModEvent("SLHModHormoneRandom",    "OnModHormoneRandomEvent")
@@ -1289,13 +1290,39 @@ Event OnRefreshHairColorEvent(String _eventName, String _args, Float _argc = 1.0
 	Endif
 EndEvent
 
+Event OnSetNiNode(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+		
+ 	if (kActor == None)
+ 		kActor = Game.GetPlayer()
+ 	EndIf
+	debugTrace(" Detected Set NiNode event for node: " + _args + " - and Value: " + _argc)
+
+	if (_args == "Breast")
+		fctBodyShape.alterBreastNode(kActor, _argc)	
+
+	elseif (_args == "Belly")
+		fctBodyShape.alterBellyNode(kActor, _argc)	
+
+	elseif (_args == "Butt")
+		fctBodyShape.alterButtNode(kActor, _argc)	
+
+	elseif (_args == "Schlong")
+		fctBodyShape.alterSchlongNode(kActor, _argc)	
+
+	elseif (_args == "Weight")
+		fctBodyShape.alterWeight(kActor, _argc)		
+	endif
+
+EndEvent
+
 Event OnShaveHead(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
 		
  	if (kActor == None)
  		kActor = Game.GetPlayer()
  	EndIf
-	debugTrace(" Detected forced hair change")
+	debugTrace(" Detected forced hair change event")
 
 	fctBodyShape.shaveHair(kActor)		
 	
@@ -2515,6 +2542,6 @@ EndFunction
 
 Function debugTrace(string traceMsg)
 	if (StorageUtil.GetIntValue(none, "_SLH_debugTraceON")==1)
-		; Debug.Trace("[SLH_QST_HormoneGrowth]" + traceMsg)
+		Debug.Trace("[SLH_QST_HormoneGrowth]" + traceMsg)
 	endif
 endFunction

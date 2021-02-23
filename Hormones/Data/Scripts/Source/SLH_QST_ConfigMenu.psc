@@ -67,6 +67,7 @@ GlobalVariable      Property GV_shapeUpdateAfterSex		Auto
 GlobalVariable      Property GV_shapeUpdateOnTimer		Auto
 GlobalVariable      Property GV_enableNiNodeUpdate		Auto
 GlobalVariable      Property GV_enableNiNodeOverride	Auto
+; GlobalVariable      Property GV_enableBodyMorphs		Auto
 
 GlobalVariable      Property GV_allowExhibitionist		Auto
 GlobalVariable      Property GV_allowSelfSpells			Auto
@@ -171,8 +172,10 @@ bool		_changeOverrideToggle	= true
 bool		_shapeUpdateOnCellChange = true
 bool		_shapeUpdateAfterSex 	= true
 bool		_shapeUpdateOnTimer 	= true
+bool 		_enableBasicNetImmerse  = false
 bool		_enableNiNodeUpdate 	= false
 bool		_enableNiNodeOverride	= true
+bool		_enableBodyMorphs		= false
 
 bool		_useColors				= true
 int			_defaultColor 			= 0
@@ -412,8 +415,11 @@ event OnPageReset(string a_page)
 	_shapeUpdateOnCellChange = GV_shapeUpdateOnCellChange.GetValue()  as Int
 	_shapeUpdateAfterSex = GV_shapeUpdateAfterSex.GetValue()  as Int
 	_shapeUpdateOnTimer = GV_shapeUpdateOnTimer.GetValue()  as Int
-	_enableNiNodeUpdate = GV_enableNiNodeUpdate.GetValue()  as Int
+	; _enableNiNodeUpdate = GV_enableNiNodeUpdate.GetValue()  as Int
+	_enableBasicNetImmerse = StorageUtil.GetIntValue(none, "_SLH_BasicNetImmerseON")
+	_enableNiNodeUpdate = StorageUtil.GetIntValue(none, "_SLH_NiNodeUpdateON")
 	_enableNiNodeOverride = StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON")
+	_enableBodyMorphs = StorageUtil.GetIntValue(none, "_SLH_BodyMorphsON")
 
 	_setshapeToggle = GV_setshapeToggle.GetValue()  as Int
 	_resetToggle = GV_resetToggle.GetValue()  as Int
@@ -583,18 +589,27 @@ event OnPageReset(string a_page)
 		AddEmptyOption()
 		SetCursorPosition(1)
 		AddHeaderOption(" Shape change triggers ")
+		AddToggleOptionST("STATE_CHANGE_NODES","Change NetImmerse Nodes", _useNodes as Float)
+
 		AddToggleOptionST("STATE_UPDATE_ON_CELL","Update on cell change", _shapeUpdateOnCellChange as Float)
 		AddToggleOptionST("STATE_UPDATE_ON_SEX","Update after sex", _shapeUpdateAfterSex as Float)
 		AddToggleOptionST("STATE_UPDATE_ON_TIMER","Update on timer", _shapeUpdateOnTimer as Float)
-		AddToggleOptionST("STATE_ENABLE_NODE_UPDATE","Enable QueueNodeUpdate", _enableNiNodeUpdate as Float)
-		AddToggleOptionST("STATE_CHANGE_NODES","Change NetImmerse Nodes", _useNodes as Float)
+
+		; AddToggleOptionST("STATE_ENABLE_NODE_UPDATE","Enable QueueNodeUpdate", StorageUtil.GetIntValue(none, "_SLH_NiNodeUpdateON") as Float )
+
+		AddHeaderOption(" Shape change method ")
+ 		AddTextOption(" Pick one", "", OPTION_FLAG_DISABLED)
+		AddToggleOptionST("STATE_ENABLE_BASIC_NETIMMERSE","Enable Basic NetImmerse", StorageUtil.GetIntValue(none, "_SLH_BasicNetImmerseON"))
 
 		If CheckXPMSERequirements(PlayerActor, PlayerGender as Bool)
 			AddToggleOptionST("STATE_ENABLE_NODE_OVERRIDE","Enable NiOverride", StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON") as Float)
+			AddToggleOptionST("STATE_ENABLE_BODYMORPHS","Enable BodyMorphs", StorageUtil.GetIntValue(none, "_SLH_BodyMorphsON") as Float)
 		else
 			AddToggleOptionST("STATE_ENABLE_NODE_OVERRIDE","Enable NiOverride", StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON") as Float, OPTION_FLAG_DISABLED)
+			AddToggleOptionST("STATE_ENABLE_BODYMORPHS","Enable BodyMorphs", StorageUtil.GetIntValue(none, "_SLH_BodyMorphsON") as Float, OPTION_FLAG_DISABLED)
 		endif
-		AddToggleOptionST("STATE_BALANCE","NiO Node Balancing", _applyNodeBalancing  as Float)
+		
+		; AddToggleOptionST("STATE_BALANCE","NiO Node Balancing", _applyNodeBalancing  as Float)
 
 
 	elseIf (a_page == "Curses")
@@ -2895,15 +2910,18 @@ endState
 state STATE_ENABLE_NODE_UPDATE ; TOGGLE
 	event OnSelectST()
 		; NiOverride and QueueNodeUpdates are mutually exclusive
-		GV_enableNiNodeUpdate.SetValueInt( Math.LogicalXor( 1, GV_enableNiNodeUpdate.GetValueInt() ) )
-		StorageUtil.SetIntValue(none, "_SLH_NiNodeOverrideON", 0)
-		SetToggleOptionValueST( GV_enableNiNodeUpdate.GetValueInt() as Bool )
+		_enableNiNodeUpdate  = StorageUtil.GetIntValue(none, "_SLH_NiNodeUpdateON")
+		_enableNiNodeUpdate  = Math.LogicalXor( 1, _enableNiNodeUpdate  as Int ) 
+
+		StorageUtil.SetIntValue(none, "_SLH_NiNodeUpdateON", _enableNiNodeUpdate as Int)
+
+		SetToggleOptionValueST( _enableNiNodeUpdate as Bool )
 		refreshStorageFromGlobals()
 		ForcePageReset()
 	endEvent
 
 	event OnDefaultST()
-		GV_enableNiNodeUpdate.SetValueInt( 0 )
+		StorageUtil.SetIntValue(none, "_SLH_NiNodeUpdateON", 1)
 		SetToggleOptionValueST( false )
 		ForcePageReset()
 	endEvent
@@ -2913,14 +2931,45 @@ state STATE_ENABLE_NODE_UPDATE ; TOGGLE
 	endEvent
 
 endState
+
+; AddToggleOptionST("STATE_ENABLE_BASIC_NETIMMERSE","Enable Basic NetImmerse", _enableBasicNetImmerse as Float)
+state STATE_ENABLE_BASIC_NETIMMERSE ; TOGGLE
+	event OnSelectST()
+		; NiOverride and QueueNodeUpdates are mutually exclusive
+		_enableBasicNetImmerse  = StorageUtil.GetIntValue(none, "_SLH_BasicNetImmerseON")
+		_enableBasicNetImmerse  = Math.LogicalXor( 1, _enableBasicNetImmerse  as Int ) 
+
+		StorageUtil.SetIntValue(none, "_SLH_BasicNetImmerseON", _enableBasicNetImmerse as Int)
+
+		StorageUtil.SetIntValue(none, "_SLH_NiNodeOverrideON", Math.LogicalXor( 1, _enableBasicNetImmerse  as Int ))
+		StorageUtil.SetIntValue(none, "_SLH_BodyMorphsON", Math.LogicalXor( 1, _enableBasicNetImmerse  as Int ))
+		SetToggleOptionValueST( _enableBasicNetImmerse as Bool )
+		refreshStorageFromGlobals()
+		ForcePageReset()
+	endEvent
+
+	event OnDefaultST()
+		StorageUtil.SetIntValue(none, "_SLH_BasicNetImmerseON", 1)
+		SetToggleOptionValueST( false )
+		ForcePageReset()
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Legacy Method. Using NiOverride or BodyMorphs is preferred.")
+	endEvent
+
+endState
+
 ; AddToggleOptionST("STATE_ENABLE_NODE_OVERRIDE","Enable node override", _enableNiNodeOverride as Float)
 state STATE_ENABLE_NODE_OVERRIDE ; TOGGLE
 	event OnSelectST()
-		; NiOverride and QueueNodeUpdates are mutually exclusive
+		; NiOverride and BodyMorphs are mutually exclusive
 		_enableNiNodeOverride = StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON")
 		_enableNiNodeOverride = Math.LogicalXor( 1, _enableNiNodeOverride as Int ) 
 		StorageUtil.SetIntValue(none, "_SLH_NiNodeOverrideON", _enableNiNodeOverride as Int)
-		GV_enableNiNodeUpdate.SetValueInt( 0)
+
+		StorageUtil.SetIntValue(none, "_SLH_BodyMorphsON", Math.LogicalXor( 1, _enableNiNodeOverride  as Int ))
+		StorageUtil.SetIntValue(none, "_SLH_NiNodeUpdateON", Math.LogicalXor( 1, _enableNiNodeOverride  as Int ))
 		SetToggleOptionValueST( _enableNiNodeOverride as Bool )
 		refreshStorageFromGlobals()
 		ForcePageReset()
@@ -2937,6 +2986,35 @@ state STATE_ENABLE_NODE_OVERRIDE ; TOGGLE
 	endEvent
 
 endState
+
+; AddToggleOptionST("STATE_ENABLE_BODYMORPHS","Enable BodyMorphs", StorageUtil.GetIntValue(none, "_SLH_BodyMorphsON") as Float)
+state STATE_ENABLE_BODYMORPHS ; TOGGLE
+	event OnSelectST() 
+		; NiOverride and BodyMorphs are mutually exclusive
+		_enableBodyMorphs  = StorageUtil.GetIntValue(none, "_SLH_BodyMorphsON")
+		_enableBodyMorphs  = Math.LogicalXor( 1, _enableBodyMorphs  as Int ) 
+		StorageUtil.SetIntValue(none, "_SLH_BodyMorphsON", _enableBodyMorphs  as Int)
+		
+		StorageUtil.SetIntValue(none, "_SLH_NiNodeOverrideON", Math.LogicalXor( 1, _enableBodyMorphs  as Int ))
+		StorageUtil.SetIntValue(none, "_SLH_NiNodeUpdateON", Math.LogicalXor( 1, _enableBodyMorphs  as Int ))
+
+		SetToggleOptionValueST( _enableBodyMorphs  as Bool )
+		refreshStorageFromGlobals()
+		ForcePageReset()
+	endEvent
+
+	event OnDefaultST()
+		StorageUtil.SetIntValue(none, "_SLH_BodyMorphsON", 1)
+		SetToggleOptionValueST( true )
+		ForcePageReset()
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Check to let Hormones use advanced BodyMorphs. Useful if you are using customized BodySlides morphs controlled by an external JSON BodyMorph file.")
+	endEvent
+
+endState
+
 
 ; AddToggleOptionST("STATE_SETSHAPE","Reset changes", _resetToggle)
 state STATE_SETSHAPE ; TOGGLE
