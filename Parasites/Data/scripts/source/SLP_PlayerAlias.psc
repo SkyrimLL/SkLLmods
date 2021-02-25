@@ -1764,6 +1764,7 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 
 	If (fctParasites.ActorHasKeywordByString(PlayerActor, "ChaurusQueenVag"))
 		PlayerActor.SendModEvent("SLHModHormone", "Pheromones", 10.0 + Utility.RandomFloat(0.0,20.0))
+		PlayerActor.SendModEvent("SLHModHormone", "Lactation", -1.0 * Utility.RandomFloat(0.0,10.0))
 	endif 
 
 	; Bring Lastelle where she belongs if needed
