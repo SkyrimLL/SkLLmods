@@ -317,6 +317,10 @@ event OnPageReset(string a_page)
 			AddTextOption(" _SLH_iMilkProduced: " + StorageUtil.GetIntValue( kActor , "_SLH_iMilkProduced")  as Int, "", OPTION_FLAG_DISABLED)
 			AddTextOption(" _SLH_iDivineMilkProduced: " + StorageUtil.GetIntValue( kActor , "_SLH_iDivineMilkProduced")  as Int, "", OPTION_FLAG_DISABLED)
 
+			AddHeaderOption(" Milk Production (Player)") 
+			AddTextOption(" _SLH_iMilkProduced: " + StorageUtil.GetIntValue( kPlayer , "_SLH_iMilkProduced")  as Int, "", OPTION_FLAG_DISABLED)
+			AddTextOption(" _SLH_iDivineMilkProduced: " + StorageUtil.GetIntValue( kPlayer , "_SLH_iDivineMilkProduced")  as Int, "", OPTION_FLAG_DISABLED)
+
 			AddHeaderOption(" Milk Production (Total)") 
 			AddTextOption(" _SLH_iMilkProducedTotal: " + StorageUtil.GetIntValue( kPlayer , "_SLH_iMilkProducedTotal")  as Int, "", OPTION_FLAG_DISABLED)
 

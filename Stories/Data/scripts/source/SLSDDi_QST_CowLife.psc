@@ -252,7 +252,7 @@ Function updateCowStatus(Actor kActor, String sUpdateMode = "", Int iNumberBottl
 
 	Float fLactationBase = ( StorageUtil.GetIntValue(kActor, "_SLH_iMilkProduced") / 10) as Float
 	Float fLactationLevel = ( StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") ) as Float
-	Float fLactationMilkDate = ( Game.QueryStat("Days Passed") - StorageUtil.GetIntValue(kActor, "_SLH_iMilkDate") ) as Float
+	Float fLactationMilkDate = 1.0 + ( Game.QueryStat("Days Passed") - StorageUtil.GetIntValue(kActor, "_SLH_iMilkDate") ) as Float
 	Float fLactationHormoneLevel = StorageUtil.GetFloatValue( kActor , "_SLH_fHormoneLactation") 
 	Float fLactationHormoneCooldownMod = StorageUtil.GetFloatValue( kActor , "_SLH_fHormoneLactationCooldown") / 100.0
 	Int	iLactationHormoneLevel = fLactationHormoneLevel  as Int
@@ -285,6 +285,13 @@ Function updateCowStatus(Actor kActor, String sUpdateMode = "", Int iNumberBottl
 		fLactationHormoneCooldownMod = 0.5
 	endif
 
+	if (fLactationLevel > 100.0)
+		StorageUtil.SetIntValue(kActor, "_SLH_iMilkLevel", 100)
+	elseif (fLactationLevel < 0.0)
+		StorageUtil.SetIntValue(kActor, "_SLH_iMilkLevel", 0)
+	endif
+
+
 	If (StorageUtil.GetIntValue(kActor, "_SLH_iMilkCow") == 0)
 		registerCow(kActor)
 	Endif
@@ -298,16 +305,16 @@ Function updateCowStatus(Actor kActor, String sUpdateMode = "", Int iNumberBottl
 		If (kActor.IsInFaction(MilkFarmCowsFaction))
 			; If cow is at the farm, we can assume they keep getting stimulated if the player is away
 			fLactationHormoneMod = fLactationHormoneMod - (-5.0 + Utility.RandomInt(0,5)) * fLactationHormoneCooldownMod
-			StorageUtil.SetIntValue(kActor, "_SLH_iMilkLevel", StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") + 4)
+			StorageUtil.SetIntValue(kActor, "_SLH_iMilkLevel", StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") + 4 * (fLactationMilkDate as Int))
 
 		elseIf (StorageUtil.GetIntValue(kActor, "_SLH_isPregnant") == 1) 
 			fLactationHormoneMod = fLactationHormoneMod - (2.5 * fLactationHormoneCooldownMod)
-			StorageUtil.SetIntValue(kActor, "_SLH_iMilkLevel", StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") + 2)
+			StorageUtil.SetIntValue(kActor, "_SLH_iMilkLevel", StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") + 2 * (fLactationMilkDate as Int))
 		else
 			fLactationHormoneMod = fLactationHormoneMod - 5.0 * fLactationHormoneCooldownMod
 
 			If (Utility.RandomInt(0,100)> (100-iLactationHormoneLevel))
-				StorageUtil.SetIntValue(kActor, "_SLH_iMilkLevel", StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") + 1)
+				StorageUtil.SetIntValue(kActor, "_SLH_iMilkLevel", StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") + 1 * (fLactationMilkDate as Int))
 			endif
 		endIf
 
@@ -328,10 +335,10 @@ Function updateCowStatus(Actor kActor, String sUpdateMode = "", Int iNumberBottl
  		debug.trace("[SLSDDi] Milk removed: " + iMilkRemoved)
 
 		If (StorageUtil.GetIntValue(kActor, "_SLH_isPregnant") == 1) &&  (StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") > 5)
-			StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel", StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") - (iMilkRemoved / 2))
+			StorageUtil.SetIntValue(kActor, "_SLH_iMilkLevel", StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") - (iMilkRemoved / 2))
 
 		elseif (StorageUtil.GetIntValue(kActor, "_SLH_isPregnant") != 1) &&  (StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") > 5)
-			StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel", StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") - iMilkRemoved)
+			StorageUtil.SetIntValue(kActor, "_SLH_iMilkLevel", StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") - iMilkRemoved)
 		endIf
 
  	Elseif  (sUpdateMode == "Drink")
@@ -364,6 +371,13 @@ Function updateCowStatus(Actor kActor, String sUpdateMode = "", Int iNumberBottl
 
 	Endif
 
+
+	if (fLactationLevel > 100.0)
+		StorageUtil.SetIntValue(kActor, "_SLH_iMilkLevel", 100)
+	elseif (fLactationLevel < 0.0)
+		StorageUtil.SetIntValue(kActor, "_SLH_iMilkLevel", 0)
+	endif
+
 	fLactationLevel = ( StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") ) as Float
 
 	If (kActor == kPlayer)
@@ -378,7 +392,14 @@ Function updateCowStatus(Actor kActor, String sUpdateMode = "", Int iNumberBottl
 
 	; Update breast size
 	if isFemale(kActor)
-		Float fBreast  = 1.0 +  (fLactationBase * 0.2) + (fLactationLevel * 0.1) + (fLactationMilkDate * 0.15)
+		; Float fBreast  = 1.0 +  (fLactationBase * 0.2) + (fLactationLevel * 0.1) + (fLactationMilkDate * 0.15)
+		Float fBreast  = (fLactationLevel * StorageUtil.GetFloatValue(kPlayer, "_SLS_breastMaxMilkFarm"  )) / 100.0
+
+		if (kActor == kPlayer)
+			Debug.notification("[SLSDDi] Breast from milk level: " + fBreast)
+			Debug.notification("[SLSDDi]     fLactationLevel:" + fLactationLevel)
+			Debug.notification("[SLSDDi]     fLactationMilkDate:" + fLactationMilkDate)
+		endif
 
 		If (StorageUtil.GetIntValue(none, "_SLH_iHormones")!=1) && (kActor == kPlayer)
 			; if Hormones is detected, defer to mod event change for Hormones
@@ -399,15 +420,19 @@ Function updateCowStatus(Actor kActor, String sUpdateMode = "", Int iNumberBottl
 				fBreast = StorageUtil.GetFloatValue(kPlayer, "_SLS_breastMaxMilkFarm"  )
 			Endif
 		 
-			if (StorageUtil.GetIntValue(none, "_SLH_SlifON")==1)
-				SLIF_inflateMax(kActor, "slif_belly", fBreast, NINODE_MAX_SCALE, SLS_KEY)
+		 	if (StorageUtil.GetIntValue(none, "_SLH_iHormones") == 1)
+		 		kActor.SendModEvent("SLHSetNiNode","Breast",fBreast)
+		 	else
+				if (StorageUtil.GetIntValue(none, "_SLH_SlifON")==1)
+					SLIF_inflateMax(kActor, "slif_belly", fBreast, NINODE_MAX_SCALE, SLS_KEY)
 
-			elseif (bEnableBreast) || (StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON")==1) 
-				XPMSELib.SetNodeScale(kActor, true, NINODE_LEFT_BREAST, fBreast, SLS_KEY)
-				XPMSELib.SetNodeScale(kActor, true, NINODE_RIGHT_BREAST, fBreast, SLS_KEY)
-	
-				; Debug.Notification("[SLSDDi] Updating breast size to " + fBreast)
-			Endif
+				elseif (bEnableBreast) || (StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON")==1) 
+					XPMSELib.SetNodeScale(kActor, true, NINODE_LEFT_BREAST, fBreast, SLS_KEY)
+					XPMSELib.SetNodeScale(kActor, true, NINODE_RIGHT_BREAST, fBreast, SLS_KEY)
+		
+					; Debug.Notification("[SLSDDi] Updating breast size to " + fBreast)
+				Endif
+			endif
 		endif
 
 		; Dynamic skin gets reset after each game load - canceling this feature for now.
