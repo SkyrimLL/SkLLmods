@@ -1314,6 +1314,8 @@ Event OnSetNiNode(String _eventName, String _args, Float _argc = 1.0, Form _send
 		fctBodyShape.alterWeight(kActor, _argc)		
 	endif
 
+	NiOverride.UpdateModelWeight(kActor)
+
 EndEvent
 
 Event OnShaveHead(String _eventName, String _args, Float _argc = 1.0, Form _sender)
