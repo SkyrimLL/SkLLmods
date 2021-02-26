@@ -7,6 +7,7 @@ Armor Property setInventoryCloth Auto
 Armor Property setInventoryShoes Auto
 Weapon Property setInventoryDagger Auto
 
+
 ; PRIVATE VARIABLES -------------------------------------------------------------------------------
 
 ; String                   Property NINODE_SCHLONG	 	= "NPC Genitals01 [Gen01]" AutoReadOnly
@@ -135,7 +136,7 @@ event OnPageReset(string a_page)
 		StorageUtil.SetIntValue(kPlayer, "_SLS_toggleFetish", 1 )
 		StorageUtil.SetFloatValue(kPlayer, "_SLS_fetishMod", 30 )
 
-		StorageUtil.SetFloatValue(kPlayer, "_SLS_breastMaxMilkFarm", 1.0  )
+		StorageUtil.SetFloatValue(kPlayer, "_SLS_breastMaxMilkFarm", 2.0  )
  	EndIf
 
  	_toggleNPCRumors = StorageUtil.GetIntValue(kPlayer, "_SLS_toggleNPCRumors" )
@@ -296,13 +297,34 @@ event OnPageReset(string a_page)
 			AddTextOption(" _SLH_iLactating: " + StorageUtil.GetIntValue( kActor, "_SLH_iLactating")  as Int, "", OPTION_FLAG_DISABLED)
 			; AddTextOption(" _SLH_iProlactinLevel: " + StorageUtil.GetIntValue( kActor , "_SLH_iProlactinLevel")  as Int, "", OPTION_FLAG_DISABLED)
 			AddTextOption(" _SLH_fHormoneLactation: " + StorageUtil.GetFloatValue( kActor , "_SLH_fHormoneLactation")  as Int, "", OPTION_FLAG_DISABLED)
+			AddTextOption(" _SLH_fLactationThreshold: " + StorageUtil.GetFloatValue( kActor , "_SLH_fLactationThreshold")  as Int, "", OPTION_FLAG_DISABLED)
+			AddTextOption(" _SLH_fHormoneLactationCooldown: " + StorageUtil.GetFloatValue( kActor , "_SLH_fHormoneLactationCooldown")  as Int, "", OPTION_FLAG_DISABLED)
+ 
 			AddTextOption(" _SLH_iMilkLevel: " + StorageUtil.GetIntValue( kActor , "_SLH_iMilkLevel")  as Int, "", OPTION_FLAG_DISABLED)
 			AddTextOption(" _SLH_isPregnant: " + StorageUtil.GetIntValue( kActor , "_SLH_isPregnant")  as Int, "", OPTION_FLAG_DISABLED) 
 
-			AddHeaderOption(" Milk Production") 
+			AddHeaderOption(" Cow Enrollment ") 
+			AddTextOption(" _SLH_iMilkCow: " + StorageUtil.GetIntValue( kActor , "_SLH_iMilkCow")  as Int, "", OPTION_FLAG_DISABLED)
+
+			Faction HucowsFaction   = Game.GetFormFromFile(0x439E6 , "SexLab-StoriesDevious.esp") as Faction
+			Faction MilkFarmCowsFaction   = Game.GetFormFromFile(0x439E7 , "SexLab-StoriesDevious.esp") as Faction
+ 
+			AddTextOption(" In HucowsList: " + kActor.IsInFaction(HucowsFaction)  , "", OPTION_FLAG_DISABLED)	
+			 
+			AddTextOption(" In MilkFarmList: " + kActor.IsInFaction(MilkFarmCowsFaction) , "", OPTION_FLAG_DISABLED)	
+
+			AddHeaderOption(" Milk Production (Actor)") 
 			AddTextOption(" _SLH_iMilkProduced: " + StorageUtil.GetIntValue( kActor , "_SLH_iMilkProduced")  as Int, "", OPTION_FLAG_DISABLED)
 			AddTextOption(" _SLH_iDivineMilkProduced: " + StorageUtil.GetIntValue( kActor , "_SLH_iDivineMilkProduced")  as Int, "", OPTION_FLAG_DISABLED)
-			AddTextOption(" _SLH_iMilkProducedTotal: " + StorageUtil.GetIntValue( kActor , "_SLH_iMilkProducedTotal")  as Int, "", OPTION_FLAG_DISABLED)
+
+			AddHeaderOption(" Milk Production (Player)") 
+			AddTextOption(" _SLH_iMilkProduced: " + StorageUtil.GetIntValue( kPlayer , "_SLH_iMilkProduced")  as Int, "", OPTION_FLAG_DISABLED)
+			AddTextOption(" _SLH_iDivineMilkProduced: " + StorageUtil.GetIntValue( kPlayer , "_SLH_iDivineMilkProduced")  as Int, "", OPTION_FLAG_DISABLED)
+
+			AddHeaderOption(" Milk Production (Total)") 
+			AddTextOption(" _SLH_iMilkProducedTotal: " + StorageUtil.GetIntValue( kPlayer , "_SLH_iMilkProducedTotal")  as Int, "", OPTION_FLAG_DISABLED)
+
+					
 		else
 			AddTextOption(" Cow not initialized. " , "", OPTION_FLAG_DISABLED)	 
 			AddTextOption(" Milk an NPC first" , "", OPTION_FLAG_DISABLED)		

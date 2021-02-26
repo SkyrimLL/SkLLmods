@@ -67,6 +67,7 @@ GlobalVariable      Property GV_shapeUpdateAfterSex		Auto
 GlobalVariable      Property GV_shapeUpdateOnTimer		Auto
 GlobalVariable      Property GV_enableNiNodeUpdate		Auto
 GlobalVariable      Property GV_enableNiNodeOverride	Auto
+; GlobalVariable      Property GV_enableBodyMorphs		Auto
 
 GlobalVariable      Property GV_allowExhibitionist		Auto
 GlobalVariable      Property GV_allowSelfSpells			Auto
@@ -171,8 +172,10 @@ bool		_changeOverrideToggle	= true
 bool		_shapeUpdateOnCellChange = true
 bool		_shapeUpdateAfterSex 	= true
 bool		_shapeUpdateOnTimer 	= true
+bool 		_enableBasicNetImmerse  = false
 bool		_enableNiNodeUpdate 	= false
 bool		_enableNiNodeOverride	= true
+bool		_enableBodyMorphs		= false
 
 bool		_useColors				= true
 int			_defaultColor 			= 0
@@ -193,7 +196,7 @@ float		_pigmentationMod = 0.1
 float		_growthMod = 0.5 
 float		_metabolismMod = 0.5	 
 float		_sleepMod = 1.2 
-float		_hungerMod = 1.2 		 
+float		_FertilityMod = 1.2 		 
 float		_immunityMod = 0.5	 
 float		_stressMod = 1.8 			 
 float		_moodMod = 0.5 			 
@@ -379,7 +382,7 @@ event OnPageReset(string a_page)
 	_growthMod 			= StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneGrowthMod" ) 
 	_metabolismMod 		= StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneMetabolismMod")	 
 	_sleepMod 			= StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneSleepMod" )  
-	_hungerMod 			= StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneHungerMod" )		 
+	_FertilityMod 		= StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneFertilityMod" )		 
 	_immunityMod 		= StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneImmunityMod")		 
 	_stressMod 			= StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneStressMod" ) 			 
 	_moodMod 			= StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneMoodMod" )  			 
@@ -412,8 +415,11 @@ event OnPageReset(string a_page)
 	_shapeUpdateOnCellChange = GV_shapeUpdateOnCellChange.GetValue()  as Int
 	_shapeUpdateAfterSex = GV_shapeUpdateAfterSex.GetValue()  as Int
 	_shapeUpdateOnTimer = GV_shapeUpdateOnTimer.GetValue()  as Int
-	_enableNiNodeUpdate = GV_enableNiNodeUpdate.GetValue()  as Int
+	; _enableNiNodeUpdate = GV_enableNiNodeUpdate.GetValue()  as Int
+	_enableBasicNetImmerse = StorageUtil.GetIntValue(none, "_SLH_BasicNetImmerseON")
+	_enableNiNodeUpdate = StorageUtil.GetIntValue(none, "_SLH_NiNodeUpdateON")
 	_enableNiNodeOverride = StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON")
+	_enableBodyMorphs = StorageUtil.GetIntValue(none, "_SLH_BodyMorphsON")
 
 	_setshapeToggle = GV_setshapeToggle.GetValue()  as Int
 	_resetToggle = GV_resetToggle.GetValue()  as Int
@@ -446,7 +452,7 @@ event OnPageReset(string a_page)
 		AddSliderOptionST("STATE_LACTATION","$SLH_sLACTATION", _lactationMod as Float,"{1}") 
 		AddSliderOptionST("STATE_PIGMENTATION","$SLH_sPIGMENTATION", _pigmentationMod as Float,"{1}") 
 		AddSliderOptionST("STATE_SLEEP","$SLH_sSLEEP", _sleepMod as Float,"{1}") 
-		AddSliderOptionST("STATE_HUNGER","$SLH_sHUNGER", _hungerMod as Float,"{1}") 
+		AddSliderOptionST("STATE_FERTILITY","$SLH_sHUNGER", _hungerMod as Float,"{1}") 
 		AddSliderOptionST("STATE_IMMUNITY","$SLH_sIMMUNITY", _immunityMod as Float,"{1}") 
 		AddSliderOptionST("STATE_STRESS","$SLH_sSTRESS", _stressMod as Float,"{1}") 
 		AddSliderOptionST("STATE_MOOD","$SLH_sMOOD", _moodMod as Float,"{1}") 
@@ -466,9 +472,9 @@ event OnPageReset(string a_page)
 		AddTextOption("     Growth: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneGrowth") as Int, "", OPTION_FLAG_DISABLED)
 		AddTextOption("     Pheromones: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormonePheromones") as Int, "", OPTION_FLAG_DISABLED)
 		AddTextOption("     Lactation: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneLactation") as Int, "", OPTION_FLAG_DISABLED)
+		AddTextOption("     Fertility: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneFertility") as Int, "", OPTION_FLAG_DISABLED)
 		AddTextOption("     Pigmentation: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormonePigmentation") as Int, "", OPTION_FLAG_DISABLED)
 		AddTextOption("     Sleep: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneSleep") as Int, "", OPTION_FLAG_DISABLED)
-		AddTextOption("     Hunger: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneHunger") as Int, "", OPTION_FLAG_DISABLED)
 		AddTextOption("     Immunity: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneImmunity") as Int, "", OPTION_FLAG_DISABLED)
 		AddTextOption("     Stress: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneStress") as Int, "", OPTION_FLAG_DISABLED)
 		AddTextOption("     Mood: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneMood") as Int, "", OPTION_FLAG_DISABLED)
@@ -582,20 +588,30 @@ event OnPageReset(string a_page)
 
 		AddEmptyOption()
 		SetCursorPosition(1)
+
 		AddHeaderOption("$SLH_hShapeChangeTriggers")
+	  AddToggleOptionST("STATE_CHANGE_NODES","$SLH_sCHANGE_NODES", _useNodes as Float)
+
 		AddToggleOptionST("STATE_UPDATE_ON_CELL","$SLH_sUPDATE_ON_CELL", _shapeUpdateOnCellChange as Float)
 		AddToggleOptionST("STATE_UPDATE_ON_SEX","$SLH_sUPDATE_ON_SEX", _shapeUpdateAfterSex as Float)
 		AddToggleOptionST("STATE_UPDATE_ON_TIMER","$SLH_bUPDATE_ON_TIMER", _shapeUpdateOnTimer as Float)
-		AddToggleOptionST("STATE_ENABLE_NODE_UPDATE","$SLH_sENABLE_NODE_UPDATE", _enableNiNodeUpdate as Float)
-		AddToggleOptionST("STATE_CHANGE_NODES","$SLH_sCHANGE_NODES", _useNodes as Float)
+
+    ; AddToggleOptionST("STATE_ENABLE_NODE_UPDATE","$SLH_sENABLE_NODE_UPDATE", _enableNiNodeUpdate as Float)
+		; AddToggleOptionST("STATE_ENABLE_NODE_UPDATE","Enable QueueNodeUpdate", StorageUtil.GetIntValue(none, "_SLH_NiNodeUpdateON") as Float )
+
+		AddHeaderOption(" Shape change method ")
+ 		AddTextOption(" Pick one", "", OPTION_FLAG_DISABLED)
+		AddToggleOptionST("STATE_ENABLE_BASIC_NETIMMERSE","Enable Basic NetImmerse", StorageUtil.GetIntValue(none, "_SLH_BasicNetImmerseON"))
 
 		If CheckXPMSERequirements(PlayerActor, PlayerGender as Bool)
 			AddToggleOptionST("STATE_ENABLE_NODE_OVERRIDE","$SLH_bENABLE_NODE_OVERRIDE", StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON") as Float)
+			AddToggleOptionST("STATE_ENABLE_BODYMORPHS","Enable BodyMorphs", StorageUtil.GetIntValue(none, "_SLH_BodyMorphsON") as Float)
 		else
 			AddToggleOptionST("STATE_ENABLE_NODE_OVERRIDE","$SLH_bENABLE_NODE_OVERRIDE", StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON") as Float, OPTION_FLAG_DISABLED)
+			AddToggleOptionST("STATE_ENABLE_BODYMORPHS","Enable BodyMorphs", StorageUtil.GetIntValue(none, "_SLH_BodyMorphsON") as Float, OPTION_FLAG_DISABLED)
 		endif
-		AddToggleOptionST("STATE_BALANCE","$SLH_sBALANCE", _applyNodeBalancing  as Float)
-
+		
+		; AddToggleOptionST("STATE_BALANCE","$SLH_sBALANCE", _applyNodeBalancing  as Float)
 
 	elseIf (a_page == "$SLH_pCurses")
 		SetCursorFillMode(TOP_TO_BOTTOM)
@@ -784,25 +800,25 @@ state STATE_SLEEP ; SLIDER
 	endEvent
 endState
 
-; AddSliderOptionST("STATE_HUNGER","Hunger hormone", _hungerMod as Float) 
-state STATE_HUNGER ; SLIDER
+; AddSliderOptionST("STATE_Fertility","Fertility hormone", _FertilityMod as Float) 
+state STATE_Fertility ; SLIDER
 	event OnSliderOpenST()
-		SetSliderDialogStartValue( _hungerMod )
+		SetSliderDialogStartValue( _FertilityMod )
 		SetSliderDialogDefaultValue( 1.0 )  
 		SetSliderDialogRange( 0.0, 2.0 )
 		SetSliderDialogInterval( 0.1 )
 	endEvent
 
 	event OnSliderAcceptST(float value)
-		_hungerMod  = value 
-		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fHormoneHungerMod", _hungerMod) 
-		SetSliderOptionValueST( _hungerMod, "{1}" )
+		_FertilityMod  = value 
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fHormoneFertilityMod", _FertilityMod) 
+		SetSliderOptionValueST( _FertilityMod, "{1}" )
 	endEvent
 
 	event OnDefaultST()
-		_hungerMod = 1.0
-		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fHormoneHungerMod", _hungerMod) 
-		SetSliderOptionValueST( _hungerMod , "{1}" )
+		_FertilityMod = 1.0
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fHormoneFertilityMod", _FertilityMod) 
+		SetSliderOptionValueST( _FertilityMod , "{1}" )
 	endEvent
 
 	event OnHighlightST()
@@ -2895,15 +2911,18 @@ endState
 state STATE_ENABLE_NODE_UPDATE ; TOGGLE
 	event OnSelectST()
 		; NiOverride and QueueNodeUpdates are mutually exclusive
-		GV_enableNiNodeUpdate.SetValueInt( Math.LogicalXor( 1, GV_enableNiNodeUpdate.GetValueInt() ) )
-		StorageUtil.SetIntValue(none, "_SLH_NiNodeOverrideON", 0)
-		SetToggleOptionValueST( GV_enableNiNodeUpdate.GetValueInt() as Bool )
+		_enableNiNodeUpdate  = StorageUtil.GetIntValue(none, "_SLH_NiNodeUpdateON")
+		_enableNiNodeUpdate  = Math.LogicalXor( 1, _enableNiNodeUpdate  as Int ) 
+
+		StorageUtil.SetIntValue(none, "_SLH_NiNodeUpdateON", _enableNiNodeUpdate as Int)
+
+		SetToggleOptionValueST( _enableNiNodeUpdate as Bool )
 		refreshStorageFromGlobals()
 		ForcePageReset()
 	endEvent
 
 	event OnDefaultST()
-		GV_enableNiNodeUpdate.SetValueInt( 0 )
+		StorageUtil.SetIntValue(none, "_SLH_NiNodeUpdateON", 1)
 		SetToggleOptionValueST( false )
 		ForcePageReset()
 	endEvent
@@ -2913,14 +2932,45 @@ state STATE_ENABLE_NODE_UPDATE ; TOGGLE
 	endEvent
 
 endState
+
+; AddToggleOptionST("STATE_ENABLE_BASIC_NETIMMERSE","Enable Basic NetImmerse", _enableBasicNetImmerse as Float)
+state STATE_ENABLE_BASIC_NETIMMERSE ; TOGGLE
+	event OnSelectST()
+		; NiOverride and QueueNodeUpdates are mutually exclusive
+		_enableBasicNetImmerse  = StorageUtil.GetIntValue(none, "_SLH_BasicNetImmerseON")
+		_enableBasicNetImmerse  = Math.LogicalXor( 1, _enableBasicNetImmerse  as Int ) 
+
+		StorageUtil.SetIntValue(none, "_SLH_BasicNetImmerseON", _enableBasicNetImmerse as Int)
+
+		StorageUtil.SetIntValue(none, "_SLH_NiNodeOverrideON", Math.LogicalXor( 1, _enableBasicNetImmerse  as Int ))
+		StorageUtil.SetIntValue(none, "_SLH_BodyMorphsON", Math.LogicalXor( 1, _enableBasicNetImmerse  as Int ))
+		SetToggleOptionValueST( _enableBasicNetImmerse as Bool )
+		refreshStorageFromGlobals()
+		ForcePageReset()
+	endEvent
+
+	event OnDefaultST()
+		StorageUtil.SetIntValue(none, "_SLH_BasicNetImmerseON", 1)
+		SetToggleOptionValueST( false )
+		ForcePageReset()
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Legacy Method. Using NiOverride or BodyMorphs is preferred.")
+	endEvent
+
+endState
+
 ; AddToggleOptionST("STATE_ENABLE_NODE_OVERRIDE","Enable node override", _enableNiNodeOverride as Float)
 state STATE_ENABLE_NODE_OVERRIDE ; TOGGLE
 	event OnSelectST()
-		; NiOverride and QueueNodeUpdates are mutually exclusive
+		; NiOverride and BodyMorphs are mutually exclusive
 		_enableNiNodeOverride = StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON")
 		_enableNiNodeOverride = Math.LogicalXor( 1, _enableNiNodeOverride as Int ) 
 		StorageUtil.SetIntValue(none, "_SLH_NiNodeOverrideON", _enableNiNodeOverride as Int)
-		GV_enableNiNodeUpdate.SetValueInt( 0)
+
+		StorageUtil.SetIntValue(none, "_SLH_BodyMorphsON", Math.LogicalXor( 1, _enableNiNodeOverride  as Int ))
+		StorageUtil.SetIntValue(none, "_SLH_NiNodeUpdateON", Math.LogicalXor( 1, _enableNiNodeOverride  as Int ))
 		SetToggleOptionValueST( _enableNiNodeOverride as Bool )
 		refreshStorageFromGlobals()
 		ForcePageReset()
@@ -2937,6 +2987,35 @@ state STATE_ENABLE_NODE_OVERRIDE ; TOGGLE
 	endEvent
 
 endState
+
+; AddToggleOptionST("STATE_ENABLE_BODYMORPHS","Enable BodyMorphs", StorageUtil.GetIntValue(none, "_SLH_BodyMorphsON") as Float)
+state STATE_ENABLE_BODYMORPHS ; TOGGLE
+	event OnSelectST() 
+		; NiOverride and BodyMorphs are mutually exclusive
+		_enableBodyMorphs  = StorageUtil.GetIntValue(none, "_SLH_BodyMorphsON")
+		_enableBodyMorphs  = Math.LogicalXor( 1, _enableBodyMorphs  as Int ) 
+		StorageUtil.SetIntValue(none, "_SLH_BodyMorphsON", _enableBodyMorphs  as Int)
+		
+		StorageUtil.SetIntValue(none, "_SLH_NiNodeOverrideON", Math.LogicalXor( 1, _enableBodyMorphs  as Int ))
+		StorageUtil.SetIntValue(none, "_SLH_NiNodeUpdateON", Math.LogicalXor( 1, _enableBodyMorphs  as Int ))
+
+		SetToggleOptionValueST( _enableBodyMorphs  as Bool )
+		refreshStorageFromGlobals()
+		ForcePageReset()
+	endEvent
+
+	event OnDefaultST()
+		StorageUtil.SetIntValue(none, "_SLH_BodyMorphsON", 1)
+		SetToggleOptionValueST( true )
+		ForcePageReset()
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Check to let Hormones use advanced BodyMorphs. Useful if you are using customized BodySlides morphs controlled by an external JSON BodyMorph file.")
+	endEvent
+
+endState
+
 
 ; AddToggleOptionST("STATE_SETSHAPE","Reset changes", _resetToggle)
 state STATE_SETSHAPE ; TOGGLE

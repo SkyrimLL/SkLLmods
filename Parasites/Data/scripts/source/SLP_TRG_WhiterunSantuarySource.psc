@@ -20,6 +20,7 @@ Event OnContainerChanged(ObjectReference akNewContainer, ObjectReference akOldCo
 
 		 	fctParasites.infectEstrusChaurusEgg( akPlayer  )
 
+		 	QueenOfChaurusQuest.SetStage(255)
 		 	QueenOfChaurusQuest.SetStage(260)
 		endif
 

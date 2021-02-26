@@ -18,6 +18,7 @@ GlobalVariable Property _SLSD_isPlayerEnslaved auto
 
 Faction Property DibellaTempleFaction Auto
 
+Armor Property DibellaNecklace  Auto  
 MiscObject Property DibellaToken  Auto  
 Location Property DibellaTempleBaths  Auto  
 
@@ -302,7 +303,8 @@ Event OnSexLabOrgasm(String _eventName, String _args, Float _argc, Form _sender)
 
 	 		endIf	 		
 	 	EndIf
-	 ElseIf (_hasFaction(actors, DibellaTempleFaction)) && (_hasPlayer(actors))
+
+	 ElseIf ( (_hasFaction(actors, DibellaTempleFaction, false)) || (_hasItem(actors, DibellaToken as Form, false)) || (_hasItem(actors, DibellaNecklace as Form, false)) || (_hasRelationshipRank(actors, 1, false)) ) && (_hasPlayer(actors))
 	 	Debug.Trace("[SLSD] Orgasm with Sister of Dibella!")
 
 		iRandomNum = Utility.RandomInt(0,100)
@@ -347,6 +349,32 @@ float function fMax(float a, float b)
 	else
 		return a
 	EndIf
+EndFunction
+
+Bool Function _hasRelationshipRank(Actor[] _actors, Int _iRank,  bool includePlayer = False)
+	ObjectReference PlayerREF= PlayerAlias.GetReference()
+
+	int idx = 0
+	while idx < _actors.Length
+		if (( (_actors[idx] == (PlayerRef as Actor)) && includePlayer ) || ( (_actors[idx] != (PlayerRef as Actor)) && !includePlayer )) && (_actors[idx].GetRelationshipRank(PlayerRef as Actor) >= _iRank)
+			return True
+		endif
+		idx += 1
+	endwhile
+	Return False
+EndFunction
+
+Bool Function _hasItem(Actor[] _actors, Form _itemForm, bool includePlayer = False)
+	ObjectReference PlayerREF= PlayerAlias.GetReference()
+
+	int idx = 0
+	while idx < _actors.Length
+		if (( (_actors[idx] == (PlayerRef as Actor)) && includePlayer ) || ( (_actors[idx] != (PlayerRef as Actor)) && !includePlayer )) && (_actors[idx].GetItemCount(_itemForm) >= 1)
+			return True
+		endif
+		idx += 1
+	endwhile
+	Return False
 EndFunction
 
 Bool Function _hasFaction(Actor[] _actors, faction _faction, bool includePlayer = False)

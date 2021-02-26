@@ -114,7 +114,7 @@ Function _maintenance()
 	UnregisterForAllModEvents()
 	Debug.Trace("SexLab Stories Devious: Reset SexLab events")
 	RegisterForModEvent("AnimationStart", "OnSexLabStart")
-	; RegisterForModEvent("AnimationEnd",   "OnSexLabEnd")
+	RegisterForModEvent("AnimationEnd",   "OnSexLabEnd")
 	RegisterForModEvent("OrgasmStart",    "OnSexLabOrgasm")
 
 	RegisterForModEvent("_SLSDDi_UpdateCow", "OnUpdateCow")
@@ -168,26 +168,32 @@ Event OnModHormoneEvent(String _eventName, String _args, Float _argc = 1.0, Form
  	if (kActor == None)
  		kActor = Game.GetPlayer()
  	EndIf
+
+ 	if (_args == "")
+ 		_args = "Lactation"
+ 	EndIf
+
 	debug.Trace("[SLSDDi] Receiving 'mod hormone level' event. Actor: " + kActor )
 
 	; fctHormones.modHormoneLevel(kActor, _args, _argc)
-	Float fLactationHormoneLevel = StorageUtil.GetFloatValue( kActor , "_SLH_fHormoneLactation")  + _argc
+	Float fHormoneLevel = StorageUtil.GetFloatValue( kActor , "_SLH_fHormone" + _args)  + _argc
 
-	if (fLactationHormoneLevel > 100.0)
-		fLactationHormoneLevel = 100.0
-	elseif (fLactationHormoneLevel < 0.0)
-		fLactationHormoneLevel = 0.0
+	if (fHormoneLevel > 100.0)
+		fHormoneLevel = 100.0
+	elseif (fHormoneLevel < 0.0)
+		fHormoneLevel = 0.0
 	endif
 
-	StorageUtil.SetFloatValue( kActor , "_SLH_fHormoneLactation", fLactationHormoneLevel)
+	StorageUtil.SetFloatValue( kActor , "_SLH_fHormone" + _args, fHormoneLevel)
 
 EndEvent
 
-Event OnUpdateCow(String _eventName, String _args, Float _argc = -1.0, Form _sender)
+Event OnUpdateCow(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
- 	String bCreateMilk = _args
+ 	String sUpdateMode = _args
+ 	int iNumberBottles = _argc as Int
 
- 	CowLife.updateCowStatus(kActor, bCreateMilk)
+ 	CowLife.updateCowStatus(kActor, sUpdateMode, iNumberBottles)
 
 EndEvent
 
@@ -231,8 +237,8 @@ Event OnGropeCow(String _eventName, String _args, Float _argc = -1.0, Form _send
 		SexLab.StartSex(sexActors, anims)
 	EndIf
 
-	CowLife.updateCowStatus(kPlayer,"")
-	CowLife.updateCowStatus(kActor,"")
+	; CowLife.updateCowStatus(kPlayer,"")
+	; CowLife.updateCowStatus(kActor,"")
 
 EndEvent
 
@@ -281,11 +287,11 @@ Event OnDrinkCow(String _eventName, String _args, Float _argc = -1.0, Form _send
 		SexLab.StartSex(sexActors, anims)
 	EndIf
 
-	If (sPlayerCow == "PlayerCow")
-		CowLife.updateCowStatus(kPlayer,"Drink")
-	else
-		CowLife.updateCowStatus(kActor,"Drink")
-	endif
+	; If (sPlayerCow == "PlayerCow")
+	;	CowLife.updateCowStatus(kPlayer,"Drink")
+	; else
+	;	CowLife.updateCowStatus(kActor,"Drink")
+	; endif
 
 EndEvent
 
@@ -347,6 +353,13 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 	; Check for breast stimulation
 	Debug.Trace("[SLSDDi] Checking Player lactation: " )
 
+	If (_hasPlayer(actors))
+		if (actors.Length == 2) && ( ((actors[0]!=PlayerActor) && (actors[1]==PlayerActor) && (isFemale(actors[0]))) || ((actors[1]!=PlayerActor) && (actors[0]==PlayerActor) && (isFemale(actors[1]))) )
+			; Debug.Notification("[SLSDDi] Milk during sex ENABLED")
+			CowLife.updateMilkDuringSexFlag(1)
+		endif
+	endif
+
 	If (isFemale(PlayerActor)) && (_hasPlayer(actors))
 		Debug.Trace("[SLSDDi]    Player is female" )
 
@@ -374,7 +387,7 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 			CowLife.UpdateMilkAfterSex(PlayerActor)
 		else
 			Debug.Trace("[SLSDDi]    Player is not lactating" )
-
+			StorageUtil.SetFormValue( none , "_SD_iLastCowMilked", PlayerActor)
 		Endif
 	else
 		Debug.Trace("[SLSDDi]    Invalid player" )
@@ -415,6 +428,7 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 				CowLife.UpdateMilkAfterSex(actors[idx])
 			else
 				Debug.Trace("[SLSDDi]    Actor is not lactating" )
+				StorageUtil.SetFormValue( none , "_SD_iLastCowMilked", actors[idx])
 			EndIf
 		else
 			Debug.Trace("[SLSDDi]    Invalid actor" )
@@ -457,6 +471,11 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 	Actor   victim  = SexLab.HookVictim(_args)
 	Actor[] victims = new Actor[1]
 	victims[0] = victim
+
+	if (actors.Length == 2) && ( ((actors[0]!=PlayerActor) && (actors[1]==PlayerActor) && (isFemale(actors[0]))) || ((actors[1]!=PlayerActor) && (actors[0]==PlayerActor) && (isFemale(actors[1]))) )
+		; Debug.Notification("[SLSDDi] Milk during sex DISABLED")
+		CowLife.updateMilkDuringSexFlag(0)
+	endif
 	
 	; if config.bDebugMsg
 	; 	_listActors("End: ", actors)

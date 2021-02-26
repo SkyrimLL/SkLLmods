@@ -10,7 +10,7 @@ SLH_fctUtil Property fctUtil Auto
 ; Growth 		- _SLH_fHormoneGrowth 			- speed of weight change
 ; Metabolism 	- _SLH_fHormoneMetabolism 		- gain / burn fat / resistance to heat loss / used as switch for body transformation
 ; Sleep 		- _SLH_fHormoneSleep 			- need to sleep / stamina
-; Hunger 		- _SLH_fHormoneHunger 			- need to eat
+; Fertility 		- _SLH_fHormoneFertility 			- need to eat
 ; Immunity 		- _SLH_fHormoneImmunity 		- resistance to disease
 ; Stress 		- _SLH_fHormoneStress 			- fight or flight / boost health
 ; Mood 			- _SLH_fHormoneMood 			- focus / boost to magica/skill gain
@@ -37,7 +37,7 @@ function initHormonesLevels(Actor kActor)
 	StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneGrowth", 0.0 ) 		 
 	StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneMetabolism", 0.0 )	 
 	StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneSleep", 0.0 ) 	 
-	StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneHunger", 0.0 ) 		 
+	StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneFertility", 0.0 ) 		 
 	StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneImmunity", 0.0 )		 
 	StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneStress", 0.0 ) 			 
 	StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneMood", 0.0 ) 			 
@@ -60,7 +60,7 @@ function initHormonesLevels(Actor kActor)
 	StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneGrowthInit", StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneGrowth") ) 
 	StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneMetabolismInit", StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneMetabolism") ) 
 	StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneSleepInit", StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneSleep")	  ) 
-	StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneHungerInit", StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneHunger")	 )  
+	StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneFertilityInit", StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneFertility")	 )  
 	StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneImmunityInit", StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneImmunity")	  ) 
 	StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneStressInit", StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneStress") ) 		 
 	StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneMoodInit", StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneMood") ) 		 
@@ -94,7 +94,7 @@ function setHormonesLevels(Actor kActor)
 	StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneGrowth", (50.0 * StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneGrowthMod"))   ) 	 
 	StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneMetabolism", (50.0 * StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneMetabolismMod"))   )		 
 	StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneSleep", (50.0 * StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneSleepMod"))  ) 		 
-	StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneHunger", (50.0 * StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneHungerMod"))  ) 		 
+	StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneFertility", (50.0 * StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneFertilityMod"))  ) 		 
 	StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneImmunity", (50.0 * StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneImmunityMod"))   )		 
 	StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneStress", (50.0 * StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneStressMod"))  ) 		 
 	StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneMood", (50.0 * StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneMoodMod"))   ) 			 
@@ -148,7 +148,7 @@ Function capHormoneLevels(Actor kActor)
 	capHormoneLevel(kActor, "Growth")
 	capHormoneLevel(kActor, "Metabolism")
 	capHormoneLevel(kActor, "Sleep")
-	capHormoneLevel(kActor, "Hunger")
+	capHormoneLevel(kActor, "Fertility")
 	capHormoneLevel(kActor, "Immunity")
 	capHormoneLevel(kActor, "Stress")
 	capHormoneLevel(kActor, "Mood")
@@ -176,7 +176,7 @@ Function cooldownHormoneLevels(Actor kActor, Float fHours)
 	cooldownHormoneLevel(kActor, "Growth", fHours, 0.1)
 	cooldownHormoneLevel(kActor, "Metabolism", fHours, 0.1)
 	cooldownHormoneLevel(kActor, "Sleep", fHours, 8.0)
-	cooldownHormoneLevel(kActor, "Hunger", fHours, -2.0)
+	cooldownHormoneLevel(kActor, "Fertility", fHours, -2.0)
 	cooldownHormoneLevel(kActor, "Immunity", fHours, 0.1)
 	cooldownHormoneLevel(kActor, "Stress", fHours, 2.0)
 	cooldownHormoneLevel(kActor, "Mood", fHours, 2.0)
@@ -224,34 +224,38 @@ EndFunction
 
 function modHormoneLevel(Actor kActor, String sHormoneLevel, Float fModValue)
 	Float fHormoneLevel  = StorageUtil.GetFloatValue(kActor, "_SLH_fHormone" + sHormoneLevel)
-	; Racial adjustment of mod value
-	fModValue = fModValue * StorageUtil.GetFloatValue(kActor, "_SLH_fHormone" + sHormoneLevel + "Mod")
+	Float fRacialModifier = StorageUtil.GetFloatValue(kActor, "_SLH_fHormone" + sHormoneLevel + "Mod")
 
-	debugTrace("    :: Hormone Mod " + sHormoneLevel + " : Value = " + fHormoneLevel)
-
-	fHormoneLevel = fctUtil.fRange( fHormoneLevel + fModValue , 0.0, 100.0)
-
-	; minimum level to always keep a residue of hormone in body
-	if (fHormoneLevel<2.0)
-		fHormoneLevel=2.0
+	If (fRacialModifier == 0)
+		; fRacialModifier = 1.
+		setHormoneLevelsRacialMod( kActor)
 	endif
 
-	StorageUtil.SetFloatValue(kActor, "_SLH_fHormone" + sHormoneLevel, fHormoneLevel)
-	debugTrace("    :: Hormone Mod " + sHormoneLevel + " : New Value = " + fHormoneLevel)
+	; Racial adjustment of mod value
+	fModValue = fModValue * fRacialModifier
 
-	If (fModValue > 0)
-		; debug.Notification(sHormoneLevel + " Hormone Mod +" + fModValue)
-		debugTrace(sHormoneLevel + " Hormone Mod +" + fModValue)
-	Else
-		; debug.Notification(sHormoneLevel + " Hormone Mod " + fModValue)
-		debugTrace(sHormoneLevel + " Hormone Mod " + fModValue)
-	endIf
+	debug.trace("[SLH]    :: Hormone Mod " + sHormoneLevel + " : Value = " + fModValue)
+
+	; minimum level to always keep a residue of hormone in body
+	fHormoneLevel = fctUtil.fRange( fHormoneLevel + fModValue , 2.0, 100.0)
+
+	StorageUtil.SetFloatValue(kActor, "_SLH_fHormone" + sHormoneLevel, fHormoneLevel)
+	debug.trace("[SLH]    :: Hormone Mod " + sHormoneLevel + " : New Value = " + fHormoneLevel)
+
 EndFunction
 
 function modHormoneLevelPercent(Actor kActor, String sHormoneLevel, Float fModValue)
 	Float fHormoneLevel  = StorageUtil.GetFloatValue(kActor, "_SLH_fHormone" + sHormoneLevel)
+	Float fRacialModifier = StorageUtil.GetFloatValue(kActor, "_SLH_fHormone" + sHormoneLevel + "Mod")
+
+	If (fRacialModifier == 0)
+		; fRacialModifier = 1.
+		setHormoneLevelsRacialMod( kActor)
+	endif
+	
 	; Racial adjustment of mod value
-	fModValue = fModValue * StorageUtil.GetFloatValue(kActor, "_SLH_fHormone" + sHormoneLevel + "Mod")
+	fModValue = fModValue * fRacialModifier
+
 	fModValue = (fModValue / 100.0 ) * fHormoneLevel
 
 	; minimum level to prevent finding a percent of 0
@@ -261,18 +265,11 @@ function modHormoneLevelPercent(Actor kActor, String sHormoneLevel, Float fModVa
 
 	debugTrace("    :: Hormone Mod Percent " + sHormoneLevel + " : Value = " + fHormoneLevel)
 
-	fHormoneLevel = fctUtil.fRange( fHormoneLevel + fModValue , 0.0, 100.0)
+	fHormoneLevel = fctUtil.fRange( fHormoneLevel + fModValue , 2.0, 100.0)
 
 	StorageUtil.SetFloatValue(kActor, "_SLH_fHormone" + sHormoneLevel, fHormoneLevel)
-	debugTrace("    :: Hormone Mod Percente " + sHormoneLevel + " : New Value = " + fHormoneLevel)
-
-	If (fModValue > 0)
-		; debug.Notification(sHormoneLevel + " Hormone Mod +" + fModValue)
-		debugTrace(sHormoneLevel + " Hormone Mod +" + fModValue)
-	Else
-		; debug.Notification(sHormoneLevel + " Hormone Mod " + fModValue)
-		debugTrace(sHormoneLevel + " Hormone Mod " + fModValue)
-	endIf
+	debugTrace("    :: Hormone Mod Percent " + sHormoneLevel + " : New Value = " + fHormoneLevel)
+ 
 EndFunction
 
 
@@ -393,7 +390,7 @@ function setHormoneLevelsRacialMod(Actor kActor)
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneGrowthMod", 1.5 ) 		 
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneMetabolismMod", 1.5 )	 
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneSleepMod", 1.5 ) 	 
-		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneHungerMod", 1.5 ) 		 
+		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneFertilityMod", 1.5 ) 		 
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneImmunityMod", 1.5)		 
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneStressMod", 1.5 ) 			 
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneMoodMod", 1.5 ) 			 
@@ -411,7 +408,7 @@ function setHormoneLevelsRacialMod(Actor kActor)
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneGrowthMod", 0.5 ) 		 
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneMetabolismMod", 0.5 )	 
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneSleepMod", 1.2 ) 	 
-		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneHungerMod", 1.2 ) 		 
+		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneFertilityMod", 1.2 ) 		 
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneImmunityMod", 0.5)		 
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneStressMod", 1.8 ) 			 
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneMoodMod", 0.5 ) 			 
@@ -429,7 +426,7 @@ function setHormoneLevelsRacialMod(Actor kActor)
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneGrowthMod", 0.5 ) 		 
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneMetabolismMod", 0.5 )	 
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneSleepMod", 0.8 ) 	 
-		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneHungerMod", 1.2 ) 		 
+		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneFertilityMod", 1.2 ) 		 
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneImmunityMod", 0.2)		 
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneStressMod", 1.2 ) 			 
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneMoodMod", 1.2 ) 			 
@@ -447,7 +444,7 @@ function setHormoneLevelsRacialMod(Actor kActor)
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneGrowthMod", 1.2 ) 		 
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneMetabolismMod", 1.5 )	 
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneSleepMod", 0.1 ) 	 
-		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneHungerMod", 0.8 ) 		 
+		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneFertilityMod", 0.8 ) 		 
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneImmunityMod", 0.1)		 
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneStressMod", 1.8 ) 			 
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneMoodMod", 1.8 ) 			 
@@ -465,7 +462,7 @@ function setHormoneLevelsRacialMod(Actor kActor)
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneGrowthMod", 1.8 ) 		 
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneMetabolismMod", 0.5 )	 
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneSleepMod", 1.8 ) 	 
-		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneHungerMod", 1.8 ) 		 
+		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneFertilityMod", 1.8 ) 		 
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneImmunityMod", 0.1)		 
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneStressMod", 0.6 ) 			 
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneMoodMod", 1.9 ) 			 
@@ -483,7 +480,7 @@ function setHormoneLevelsRacialMod(Actor kActor)
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneGrowthMod", 0.1 ) 		 
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneMetabolismMod", 0.1 )	 
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneSleepMod", 1.2 ) 	 
-		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneHungerMod", 0.1 ) 		 
+		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneFertilityMod", 0.1 ) 		 
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneImmunityMod", 1.2)		 
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneStressMod", 1.8 ) 			 
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneMoodMod", 0.1 ) 			 
@@ -501,7 +498,7 @@ function setHormoneLevelsRacialMod(Actor kActor)
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneGrowthMod", 0.1 ) 		 
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneMetabolismMod", 0.4 )	 
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneSleepMod", 1.9 ) 	 
-		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneHungerMod", 1.7 ) 		 
+		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneFertilityMod", 1.7 ) 		 
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneImmunityMod", 1.7)		 
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneStressMod", 0.1 ) 			 
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneMoodMod", 0.1 ) 			 
@@ -519,7 +516,7 @@ function setHormoneLevelsRacialMod(Actor kActor)
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneGrowthMod", 0.05 ) 		 
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneMetabolismMod", 0.1 )	 
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneSleepMod", 1.8 ) 	 
-		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneHungerMod", 0.1 ) 		 
+		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneFertilityMod", 0.1 ) 		 
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneImmunityMod", 1.9)		 
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneStressMod", 0.1 ) 			 
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneMoodMod", 1.9 ) 			 
@@ -537,7 +534,7 @@ function setHormoneLevelsRacialMod(Actor kActor)
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneGrowthMod", 1.8 ) 		 
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneMetabolismMod", 0.1 )	 
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneSleepMod", 0.1) 	 
-		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneHungerMod", 0.1 ) 		 
+		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneFertilityMod", 0.1 ) 		 
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneImmunityMod", 1.9)		 
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneStressMod", 1.9 ) 			 
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneMoodMod", 1.9 ) 			 
@@ -555,7 +552,7 @@ function setHormoneLevelsRacialMod(Actor kActor)
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneGrowthMod", 0.5 ) 		 
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneMetabolismMod", 0.5 )	 
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneSleepMod", 1.2 ) 	 
-		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneHungerMod", 1.2 ) 		 
+		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneFertilityMod", 1.2 ) 		 
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneImmunityMod", 0.5)		 
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneStressMod", 1.8 ) 			 
 		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneMoodMod", 0.5 ) 			 

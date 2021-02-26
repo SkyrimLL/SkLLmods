@@ -25,4 +25,4 @@ GlobalVariable Property MilkProduced  Auto
 
 GlobalVariable Property MilkProducedTotal  Auto  
 
-SLS_QST_CowLife Property CowLife Auto
+SLSDDi_QST_CowLife Property CowLife Auto

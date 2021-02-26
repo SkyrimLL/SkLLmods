@@ -26,10 +26,15 @@ ObjectReference Property NordCowRef Auto
 FormList Property HucowsList Auto
 FormList Property MilkFarmList Auto
 
+Faction Property HucowsFaction Auto
+Faction Property MilkFarmCowsFaction Auto
+Faction Property CrimeFactionRiften Auto
+
 Potion Property Milk Auto
 Potion Property DivineMilk Auto
 MiscObject Property EmptyMilk Auto
 
+GlobalVariable Property GV_MilkDuringSex  Auto  
 GlobalVariable Property GV_MilkLevel  Auto  
 GlobalVariable Property GV_ProlactinLevel  Auto  
 GlobalVariable Property MilkProduced  Auto  
@@ -55,7 +60,10 @@ Armor Property cowHarnessRendered Auto
 Armor Property autoCowHarnessInventory Auto
 Armor Property autoCowHarnessRendered Auto
 
+Armor Property MilkFarmCowSkin Auto
+
 Outfit Property FarmCowOutfit Auto
+
 
 Keyword Property SLS_CowHarness Auto
 Keyword Property SLS_CowMilker Auto
@@ -160,28 +168,40 @@ Function PlayerRemovedAutoCowharness( Actor kActor )
 EndFunction
 
 Function registerCow(Actor kActor)
+	ActorBase pActorBase = kActor.GetActorBase()
+	Float fLactationHormoneLevel = StorageUtil.GetFloatValue( kActor , "_SLH_fHormoneLactation") 
+	Float fInitLactationLevel 
+	Float fWeight = pActorBase.GetWeight()
+	Float fBreast  = NetImmerse.GetNodeScale(kActor, NINODE_LEFT_BREAST, false)
+
+
 	If (StorageUtil.GetIntValue(kActor, "_SLH_iMilkCow") == 0)
+		debug.notification("[SLSDDi] Registering new cow: " + kActor )
 		StorageUtil.SetIntValue(kActor, "_SLH_iMilkCow", 1)
 		StorageUtil.FormListAdd(none, "_SLH_lMilkCowList", kActor)
 
 		StorageUtil.SetIntValue(kActor, "_SLH_iMilkLevel", 0)
 		StorageUtil.SetIntValue(kActor, "_SLH_iMilkProduced", 0)
 		StorageUtil.SetIntValue(kActor, "_SLH_iDivineMilkProduced", 0)
-		StorageUtil.SetIntValue(kActor, "_SLH_iMilkProducedTotal", 0)
-
-	 	; Add cow to HucowsList for Dialogue conditions
-		Int iIndex = HucowsList.Find(kActor as Form)
-		If iIndex == - 1
-			HucowsList.AddForm(kActor as Form)
-	 	EndIf
 	endif
+
+ 	; Add cow to HucowsList for Dialogue conditions
+	; Int iIndex = HucowsList.Find(kActor as Form)
+	; If iIndex == -1
+	;	HucowsList.AddForm(kActor as Form)
+ 	; EndIf
+
+ 	if (!kActor.IsInFaction(HucowsFaction))
+ 		kActor.AddToFaction(HucowsFaction)
+ 	endif
 
 	; if (StorageUtil.GetIntValue(kActor, "_SLH_iProlactinLevel") < 10)
 	;	StorageUtil.SetIntValue(kActor, "_SLH_iProlactinLevel", Utility.RandomInt(2,10)) 
 	; endif 
 
-	kActor.SendModEvent("SLHModHormone", "Lactation", Utility.RandomFloat(2.0,10.0) )
-	StorageUtil.SetIntValue(kActor, "_SLH_iLactating", 1)
+	checkIfLactating( kActor)
+	StorageUtil.SetFloatValue( kActor , "_SLH_fHormoneLactation", (fWeight / 10.0) +  (fBreast * 10.0) )
+ 
 
 EndFunction
 
@@ -194,16 +214,24 @@ Function updateAllCows(String sUpdateMode = "")
 
 	while(i < valueCount)
 		thisCow = StorageUtil.FormListGet(none, "_SLH_lMilkCowList", i)
-		updateCowStatus(thisCow as Actor, sUpdateMode)
+		updateCowStatus(thisCow as Actor, sUpdateMode, 0)
 		i = i + 1
 	endwhile
 
 EndFunction
 
-Function updateCowStatus(Actor kActor, String sUpdateMode = "")
- 	Actor PlayerActor= Game.GetPlayer() as Actor
+Function updateCowStatus(Actor kActor, String sUpdateMode = "", Int iNumberBottles=0)
+ 	Actor kPlayer= Game.GetPlayer() as Actor
  	ActorBase pActorBase
+	ActorBase pLeveledActorBase 
  	Float fLactationHormoneMod = 0.1
+
+	Debug.Trace("[SLSDDi] updateCowStatus - Actor: " + kActor)
+
+	if (kActor == kPlayer) && (isMale(kPlayer))
+		Debug.Trace("[SLSDDi] Actor is Player and Male - Aborting updateCowStatus.")
+		Return
+	endif
 
  	; sUpdateMode - allowed values 
  	; "Silent" - init values, correct errors, check status
@@ -219,17 +247,21 @@ Function updateCowStatus(Actor kActor, String sUpdateMode = "")
 	endif
 
 	If (kActor == None)
-		kActor = PlayerActor
+		kActor = kPlayer
 	EndIf
 
 	Float fLactationBase = ( StorageUtil.GetIntValue(kActor, "_SLH_iMilkProduced") / 10) as Float
 	Float fLactationLevel = ( StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") ) as Float
-	Float fLactationMilkDate = ( Game.QueryStat("Days Passed") - StorageUtil.GetIntValue(kActor, "_SLH_iMilkDate") ) as Float
+	Float fLactationMilkDate = 1.0 + ( Game.QueryStat("Days Passed") - StorageUtil.GetIntValue(kActor, "_SLH_iMilkDate") ) as Float
 	Float fLactationHormoneLevel = StorageUtil.GetFloatValue( kActor , "_SLH_fHormoneLactation") 
+	Float fLactationHormoneCooldownMod = StorageUtil.GetFloatValue( kActor , "_SLH_fHormoneLactationCooldown") / 100.0
 	Int	iLactationHormoneLevel = fLactationHormoneLevel  as Int
-
+	Int iMilkProductionMod = 1 + (iLactationHormoneLevel / 20) ; should be between 1 and 6, to accelerate milk production Lactation hormone is high
+	Int iMilkLevel = StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel")
+	 
 
 	pActorBase = kActor.GetActorBase()
+	pLeveledActorBase = kActor.GetLeveledActorBase()
 
 	checkIfLactating(kActor)
 
@@ -248,27 +280,41 @@ Function updateCowStatus(Actor kActor, String sUpdateMode = "")
 		StorageUtil.SetIntValue(kActor, "_SLH_iMilkDate", Game.QueryStat("Days Passed"))
 	Endif
 
+	if (fLactationHormoneCooldownMod<=1.0) 
+		StorageUtil.SetFloatValue( kActor , "_SLH_fHormoneLactationCooldown", 50.0) 
+		fLactationHormoneCooldownMod = 0.5
+	endif
+
+	if (fLactationLevel > 100.0)
+		StorageUtil.SetIntValue(kActor, "_SLH_iMilkLevel", 100)
+	elseif (fLactationLevel < 0.0)
+		StorageUtil.SetIntValue(kActor, "_SLH_iMilkLevel", 0)
+	endif
+
+
 	If (StorageUtil.GetIntValue(kActor, "_SLH_iMilkCow") == 0)
 		registerCow(kActor)
 	Endif
 
+ 	if (!kActor.IsInFaction(HucowsFaction))
+ 		kActor.AddToFaction(HucowsFaction)
+ 	endif
+
 	If (sUpdateMode == "NewDay")
 
-		Int iIndex = MilkFarmList.Find(kActor as Form)
-
-		If (iIndex != -1) 
+		If (kActor.IsInFaction(MilkFarmCowsFaction))
 			; If cow is at the farm, we can assume they keep getting stimulated if the player is away
-			fLactationHormoneMod = fLactationHormoneMod - 5.0 + Utility.RandomInt(0,5)
-			StorageUtil.SetIntValue(kActor, "_SLH_iMilkLevel", StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") + 2)
+			fLactationHormoneMod = fLactationHormoneMod - (-5.0 + Utility.RandomInt(0,5)) * fLactationHormoneCooldownMod
+			StorageUtil.SetIntValue(kActor, "_SLH_iMilkLevel", StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") + 4 * (fLactationMilkDate as Int))
 
 		elseIf (StorageUtil.GetIntValue(kActor, "_SLH_isPregnant") == 1) 
-			fLactationHormoneMod = fLactationHormoneMod - 1.0
-			StorageUtil.SetIntValue(kActor, "_SLH_iMilkLevel", StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") + 1)
+			fLactationHormoneMod = fLactationHormoneMod - (2.5 * fLactationHormoneCooldownMod)
+			StorageUtil.SetIntValue(kActor, "_SLH_iMilkLevel", StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") + 2 * (fLactationMilkDate as Int))
 		else
-			fLactationHormoneMod = fLactationHormoneMod - 5.0
+			fLactationHormoneMod = fLactationHormoneMod - 5.0 * fLactationHormoneCooldownMod
 
 			If (Utility.RandomInt(0,100)> (100-iLactationHormoneLevel))
-				StorageUtil.SetIntValue(kActor, "_SLH_iMilkLevel", StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") + 1)
+				StorageUtil.SetIntValue(kActor, "_SLH_iMilkLevel", StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") + 1 * (fLactationMilkDate as Int))
 			endif
 		endIf
 
@@ -283,30 +329,30 @@ Function updateCowStatus(Actor kActor, String sUpdateMode = "")
  		kActor.SendModEvent("SLHModHormone", "Lactation", fLactationHormoneMod )
 
  		; Reduce milk level from producing a bottle
- 		Int iMilkRemoved = 12 * (( StorageUtil.GetFloatValue( kActor , "_SLH_fHormoneLactation") / 100.0) as Int )
+ 		Int iMilkRemoved = iNumberBottles * ((12.0 * (( StorageUtil.GetFloatValue( kActor , "_SLH_fHormoneLactation") / 100.0))) as Int )
+
+ 		debug.notification("[SLSDDi] Milk removed: " + iMilkRemoved)
+ 		debug.trace("[SLSDDi] Milk removed: " + iMilkRemoved)
 
 		If (StorageUtil.GetIntValue(kActor, "_SLH_isPregnant") == 1) &&  (StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") > 5)
-			StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel", StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") - (iMilkRemoved / 2))
+			StorageUtil.SetIntValue(kActor, "_SLH_iMilkLevel", StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") - (iMilkRemoved / 2))
 
-		elseif (StorageUtil.GetIntValue(kActor, "_SLH_isPregnant") != 1) &&  (StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") > 8)
-			StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel", StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") - iMilkRemoved)
+		elseif (StorageUtil.GetIntValue(kActor, "_SLH_isPregnant") != 1) &&  (StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") > 5)
+			StorageUtil.SetIntValue(kActor, "_SLH_iMilkLevel", StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") - iMilkRemoved)
 		endIf
 
  	Elseif  (sUpdateMode == "Drink")
 
 		If (StorageUtil.GetIntValue(kActor, "_SLH_isPregnant") == 1) &&  (StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") > 5)
 			StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel", StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") - 2)
-		elseif (StorageUtil.GetIntValue(kActor, "_SLH_isPregnant") != 1) &&  (StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") > 8)
+
+		elseif (StorageUtil.GetIntValue(kActor, "_SLH_isPregnant") != 1) &&  (StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") > 5)
 			StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel", StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") - 1)
 		endIf
  
 
 	ElseIf (sUpdateMode == "AfterSex") ; Adjust levels from stimulation
-		If (StorageUtil.GetIntValue(kActor, "_SLH_isPregnant") == 1) &&  (StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") > 5)
-			StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel", StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") + 2)
-		elseif (StorageUtil.GetIntValue(kActor, "_SLH_isPregnant") != 1) &&  (StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") > 8)
-			StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel", StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") + 1)
-		endIf
+		; Level adjustments handled in Sex event
 
 	ElseIf (sUpdateMode == "Check") ; Messages from checking milk level
 		If (fLactationLevel<((MILK_LEVEL_TRIGGER as Float) - 10.0))
@@ -322,21 +368,40 @@ Function updateCowStatus(Actor kActor, String sUpdateMode = "")
 			Debug.Notification("Her breasts are full and ready to be milked - Level " + fLactationLevel as Int)
 		Endif
 
+
 	Endif
 
 
-	If (kActor == PlayerActor)
+	if (fLactationLevel > 100.0)
+		StorageUtil.SetIntValue(kActor, "_SLH_iMilkLevel", 100)
+	elseif (fLactationLevel < 0.0)
+		StorageUtil.SetIntValue(kActor, "_SLH_iMilkLevel", 0)
+	endif
+
+	fLactationLevel = ( StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") ) as Float
+
+	If (kActor == kPlayer)
 		GV_MilkLevel.SetValue(StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") as Int)
+		MilkProduced.SetValue(StorageUtil.GetIntValue(kActor, "_SLH_iMilkProduced") as Int)
 		GV_ProlactinLevel.SetValue( StorageUtil.GetFloatValue( kActor , "_SLH_fHormoneLactation") as Int)
 	Endif
+		
+	MilkProducedTotal.SetValue(StorageUtil.GetIntValue(kPlayer, "_SLH_iMilkProducedTotal") as Int)
 
 	StorageUtil.SetFormValue( none , "_SD_iLastCowMilked", kActor)
 
 	; Update breast size
-	if (pActorBase.GetSex()==1)
-		Float fBreast  = 1.0 +  (fLactationBase * 0.2) + (fLactationLevel * 0.1) + (fLactationMilkDate * 0.15)
+	if isFemale(kActor)
+		; Float fBreast  = 1.0 +  (fLactationBase * 0.2) + (fLactationLevel * 0.1) + (fLactationMilkDate * 0.15)
+		Float fBreast  = (fLactationLevel * StorageUtil.GetFloatValue(kPlayer, "_SLS_breastMaxMilkFarm"  )) / 100.0
 
-		If (StorageUtil.GetIntValue(none, "_SLH_iHormones")!=1) && (kActor == PlayerActor)
+		if (kActor == kPlayer)
+			Debug.notification("[SLSDDi] Breast from milk level: " + fBreast)
+			Debug.notification("[SLSDDi]     fLactationLevel:" + fLactationLevel)
+			Debug.notification("[SLSDDi]     fLactationMilkDate:" + fLactationMilkDate)
+		endif
+
+		If (StorageUtil.GetIntValue(none, "_SLH_iHormones")!=1) && (kActor == kPlayer)
 			; if Hormones is detected, defer to mod event change for Hormones
 			Float fCurrentWeight = StorageUtil.GetFloatValue(kActor, "_SLH_fWeight")
 			Float fNewWeight = fCurrentWeight + ((( (fLactationBase * 10.0) - fCurrentWeight) ) / 2.0 ) as Int
@@ -349,20 +414,34 @@ Function updateCowStatus(Actor kActor, String sUpdateMode = "")
 			
 		else
 			; Debug.Notification("[SLSDDi] Days since last milking: " + (fLactationMilkDate as Int))
-			if (fbreast > StorageUtil.GetFloatValue(PlayerActor, "_SLS_breastMaxMilkFarm"  ))
-				fBreast = StorageUtil.GetFloatValue(PlayerActor, "_SLS_breastMaxMilkFarm"  )
+			Bool bEnableBreast  = NetImmerse.HasNode(kActor, "NPC L Breast", false)
+
+			if (fbreast > StorageUtil.GetFloatValue(kPlayer, "_SLS_breastMaxMilkFarm"  ))
+				fBreast = StorageUtil.GetFloatValue(kPlayer, "_SLS_breastMaxMilkFarm"  )
 			Endif
 		 
-			if (StorageUtil.GetIntValue(kActor, "_SLH_SlifON")==1)
-				SLIF_inflateMax(kActor, "slif_belly", fBreast, NINODE_MAX_SCALE, SLS_KEY)
+		 	if (StorageUtil.GetIntValue(none, "_SLH_iHormones") == 1)
+		 		kActor.SendModEvent("SLHSetNiNode","Breast",fBreast)
+		 	else
+				if (StorageUtil.GetIntValue(none, "_SLH_SlifON")==1)
+					SLIF_inflateMax(kActor, "slif_belly", fBreast, NINODE_MAX_SCALE, SLS_KEY)
 
-			elseif (StorageUtil.GetIntValue(kActor, "_SLH_NiNodeOverrideON")==1) 
-				XPMSELib.SetNodeScale(kActor, true, NINODE_LEFT_BREAST, fBreast, SLS_KEY)
-				XPMSELib.SetNodeScale(kActor, true, NINODE_RIGHT_BREAST, fBreast, SLS_KEY)
-
-			Endif
-			; Debug.Notification("[SLSDDi] Updating breast size to " + fBreast)
+				elseif (bEnableBreast) || (StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON")==1) 
+					XPMSELib.SetNodeScale(kActor, true, NINODE_LEFT_BREAST, fBreast, SLS_KEY)
+					XPMSELib.SetNodeScale(kActor, true, NINODE_RIGHT_BREAST, fBreast, SLS_KEY)
+		
+					; Debug.Notification("[SLSDDi] Updating breast size to " + fBreast)
+				Endif
+			endif
 		endif
+
+		; Dynamic skin gets reset after each game load - canceling this feature for now.
+		; If (iIndex != -1) 
+			; pActorBase.SetSkin(MilkFarmCowSkin)
+			; pLeveledActorBase.SetSkin(MilkFarmCowSkin)
+			; kActor.UpdateWeight(0)
+		; endif
+
 	EndIf
 
 
@@ -383,6 +462,13 @@ Function UpdateMilkAfterSex(Actor kActor)
 	Int iMilkProductionMod = 1 + (iLactationHormoneLevel / 20) ; should be between 1 and 6, to accelerate milk production Lactation hormone is high
 
 	Debug.Trace("[SLSDDi] UpdateMilkAfterSex - Actor: " + kActor)
+	Debug.Trace("[SLSDDi] 	iMilkProductionMod: " + iMilkProductionMod)
+
+	if (kActor == kPlayer) && (isMale(kPlayer))
+		Debug.Trace("[SLSDDi] Actor is Player and Male - Aborting UpdateMilkAfterSex.")
+		Return
+	endif
+
 	StorageUtil.SetFormValue( none , "_SD_iLastCowMilked", kActor)
  
 	If (!StorageUtil.HasIntValue(kActor, "_SLH_iMilkLevel"))
@@ -404,12 +490,12 @@ Function UpdateMilkAfterSex(Actor kActor)
 		endif
 
 		If (StorageUtil.GetIntValue(kActor, "_SLH_isPregnant") == 1) 
-			StorageUtil.SetIntValue(kActor, "_SLH_iMilkLevel", StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") + (iMilkProductionMod *4) )
+			StorageUtil.SetIntValue(kActor, "_SLH_iMilkLevel", StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") + (iMilkProductionMod) + ((iMilkProductionMod)/2) + 1)
 			; StorageUtil.SetIntValue(kActor, "_SLH_iProlactinLevel", StorageUtil.GetIntValue(kActor, "_SLH_iProlactinLevel") + 4)
 			fLactationHormoneMod = fLactationHormoneMod + 4.0
 
 		else
-			StorageUtil.SetIntValue(kActor, "_SLH_iMilkLevel", StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") + (iMilkProductionMod *3) )
+			StorageUtil.SetIntValue(kActor, "_SLH_iMilkLevel", StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") + (iMilkProductionMod ) + 1)
 			; StorageUtil.SetIntValue(kActor, "_SLH_iProlactinLevel", StorageUtil.GetIntValue(kActor, "_SLH_iProlactinLevel") + 3)
 			fLactationHormoneMod = fLactationHormoneMod + 3.0
 
@@ -426,12 +512,12 @@ Function UpdateMilkAfterSex(Actor kActor)
 		endif
 
 		if (StorageUtil.GetIntValue(kActor, "_SLH_isPregnant") == 1)
-			StorageUtil.SetIntValue(kActor, "_SLH_iMilkLevel", StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") + (iMilkProductionMod *3) )
+			StorageUtil.SetIntValue(kActor, "_SLH_iMilkLevel", StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") + (iMilkProductionMod ) + 1 )
 			; StorageUtil.SetIntValue(kActor, "_SLH_iProlactinLevel", StorageUtil.GetIntValue(kActor, "_SLH_iProlactinLevel") + 3)
 			fLactationHormoneMod = fLactationHormoneMod + 3.0
 
 		elseif (StorageUtil.GetIntValue(kActor, "_SLH_isPregnant") != 1)
-			StorageUtil.SetIntValue(kActor, "_SLH_iMilkLevel", StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") + (iMilkProductionMod *2)  )
+			StorageUtil.SetIntValue(kActor, "_SLH_iMilkLevel", StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") + ((iMilkProductionMod) / 2) + 1+ 1 )
 			; StorageUtil.SetIntValue(kActor, "_SLH_iProlactinLevel", StorageUtil.GetIntValue(kActor, "_SLH_iProlactinLevel") + 2)
 			fLactationHormoneMod = fLactationHormoneMod + 2.0
 		endif
@@ -440,12 +526,12 @@ Function UpdateMilkAfterSex(Actor kActor)
 
 		if (StorageUtil.GetIntValue(kActor, "_SLH_isPregnant") == 1)
 			; StorageUtil.SetIntValue(kActor, "_SLH_iProlactinLevel", StorageUtil.GetIntValue(kActor, "_SLH_iProlactinLevel") + 2)
-			StorageUtil.SetIntValue(kActor, "_SLH_iMilkLevel", StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") + (iMilkProductionMod *2)  )
+			StorageUtil.SetIntValue(kActor, "_SLH_iMilkLevel", StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") + ((iMilkProductionMod) / 2) + 1 )
 			fLactationHormoneMod = fLactationHormoneMod + 2.0
 
 		elseif (StorageUtil.GetIntValue(kActor, "_SLH_isPregnant") != 1)
 			; StorageUtil.SetIntValue(kActor, "_SLH_iProlactinLevel", StorageUtil.GetIntValue(kActor, "_SLH_iProlactinLevel") + 1)
-			StorageUtil.SetIntValue(kActor, "_SLH_iMilkLevel", StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") + (iMilkProductionMod)  )
+			StorageUtil.SetIntValue(kActor, "_SLH_iMilkLevel", StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") + ((iMilkProductionMod) / 4) + 1 )
 			fLactationHormoneMod = fLactationHormoneMod + 1.0
 		endif
 
@@ -454,7 +540,7 @@ Function UpdateMilkAfterSex(Actor kActor)
 	; kActor.SendModEvent("_SLSDDi_UpdateCow")
 	kActor.SendModEvent("SLHModHormone", "Lactation", fLactationHormoneMod )
  
-	updateCowStatus(kActor, "AfterSex")
+	updateCowStatus(kActor, "AfterSex", 0)
 
 	Debug.Trace("[SLSDDi] Actor Hormone mod: " + fLactationHormoneMod  as Int )
 	Debug.Trace("[SLSDDi] Actor Lactation Hormone level: " + StorageUtil.GetFloatValue( kActor , "_SLH_fHormoneLactation")  as Int )
@@ -471,15 +557,32 @@ Function UpdateMilkAfterOrgasm(Actor kActor, Int iMilkDateOffset)
 	Int iEmptyBottleCount
 	Bool bGotMilk = false
 	Float fLactationHormoneLevel = StorageUtil.GetFloatValue( kActor , "_SLH_fHormoneLactation") 
+	Float fLactationThreshold = StorageUtil.GetFloatValue( kActor , "_SLH_fLactationThreshold") 
 	Int	iLactationHormoneLevel = fLactationHormoneLevel  as Int
 	Int iMilkProductionMod = 1 + (iLactationHormoneLevel / 20) ; should be between 1 and 6, to accelerate milk production Lactation hormone is high
 	Int iMilkLevel = StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel")
 
 	Debug.Trace("[SLSDDi] UpdateNPCMilkAfterOrgasm - Actor: " + kActor)
 
+	if (kActor == kPlayer) && (isMale(kPlayer))
+		Debug.Trace("[SLSDDi] Actor is Player and Male - Aborting UpdateMilkAfterOrgasm.")
+		Return
+	endif
+
+	MILK_LEVEL_TRIGGER = 50 + (fLactationThreshold as Int)
+
+	if (MILK_LEVEL_TRIGGER > 90)
+		MILK_LEVEL_TRIGGER = 90
+	endif
+
+	Debug.Trace("[SLSDDi]   iMilkLevel: " + iMilkLevel)
+	Debug.Trace("[SLSDDi]   iMilkDateOffset: " + iMilkDateOffset)
+	Debug.Trace("[SLSDDi] 	MILK_LEVEL_TRIGGER: " + MILK_LEVEL_TRIGGER)
+
 	; Add 10% chance of milking for each day since last milking
-	If ( (StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") + (iMilkDateOffset * 10)) >= MILK_LEVEL_TRIGGER)
+	If ( (iMilkLevel + (iMilkDateOffset * 10)) >= MILK_LEVEL_TRIGGER)
 		; 
+		Debug.Trace("[SLSDDi] 	>>> Milk is expressed ")
 
 		libs.Pant(kActor)
 		;	ApplySweatFX.RemoteCast(kActor as ObjectReference, kActor,kActor as ObjectReference)
@@ -509,21 +612,12 @@ Function UpdateMilkAfterOrgasm(Actor kActor, Int iMilkDateOffset)
 			endif
 
 			SexLab.AddCum(kActor,False,True,False)
-			StorageUtil.SetIntValue(kActor, "_SLH_iMilkLevel",  iMilkLevel - (iMilkLevel / iMilkProductionMod) )	
 
-			If (!DivineCheeseQuest.GetStageDone(48))
+			If (!DivineCheeseQuest.GetStageDone(48)) && (!DivineCheeseQuest.GetStageDone(49))
 				; Enable dialogues about Farm Items for sale
 				DivineCheeseQuest.SetStage(48)
 			endif
 		endif
-
-
-		; 2021-02-11 - Replace by mod events to Hormones fetish system eventually
-		If  (StorageUtil.GetIntValue(none, "_SLS_fetishID") == 10 )
-			slaUtil.UpdateActorExposure(kActor, 10, "producing breast milk as a cow.")
-		Else
-			slaUtil.UpdateActorExposure(kActor, -20, "producing breast milk as a cow.")
-		EndIf
 
 		if  (kActor.WornHasKeyword(SLSD_CowHarness) || kActor.WornHasKeyword(SLSD_CowMilker))
 			; StorageUtil.SetIntValue(kActor, "_SLH_iProlactinLevel", StorageUtil.GetIntValue(kActor, "_SLH_iProlactinLevel") + 2)	
@@ -535,11 +629,18 @@ Function UpdateMilkAfterOrgasm(Actor kActor, Int iMilkDateOffset)
 
 		kActor.SendModEvent("SLHModHormone", "Lactation", fLactationHormoneMod )
 
+		; 2021-02-11 - Replace by mod events to Hormones fetish system eventually
+		If  (StorageUtil.GetIntValue(none, "_SLS_fetishID") == 10 )
+			slaUtil.UpdateActorExposure(kActor, 10, "producing breast milk as a cow.")
+		Else
+			slaUtil.UpdateActorExposure(kActor, -20, "producing breast milk as a cow.")
+		EndIf
+
 		Debug.Trace("[SLSDDi] Actor Milk Produced: " + StorageUtil.GetIntValue(kActor, "_SLH_iMilkProduced"))
-		Debug.Trace("[SLSDDi] Actor Milk Total: " + StorageUtil.GetIntValue(kActor, "_SLH_iMilkProducedTotal"))
+		Debug.Trace("[SLSDDi] Actor Divine Milk Produced: " + StorageUtil.GetIntValue(kActor, "_SLH_iDivineMilkProduced"))
 
 		; kActor.SendModEvent("_SLSDDi_UpdateCow","Milk")
-		updateCowStatus(kActor,"Milk")
+		updateCowStatus(kActor,"Milk",1)
 
 	EndIf
 
@@ -549,7 +650,7 @@ Function UpdateMilkFromMachine(ObjectReference akFurniture)
 	; Only Player Actor for now
 
 	ObjectReference PlayerREF= PlayerAlias.GetReference()
-	Actor PlayerActor= PlayerAlias.GetReference() as Actor
+	Actor kPlayer= PlayerAlias.GetReference() as Actor
 	Actor LeonaraActor = LeonaraRef as Actor
 	Form fFurniture = akFurniture.GetBaseObject()
 	String sFurnitureName = fFurniture.GetName()
@@ -557,11 +658,18 @@ Function UpdateMilkFromMachine(ObjectReference akFurniture)
 	Int iCounter=0
 	Int iRandomEvent
 	Int iTimer
-	Float fLactationHormoneLevel = StorageUtil.GetFloatValue( PlayerActor , "_SLH_fHormoneLactation") 
+	Float fLactationHormoneLevel = StorageUtil.GetFloatValue( kPlayer , "_SLH_fHormoneLactation") 
 	Int	iLactationHormoneLevel = fLactationHormoneLevel  as Int
 	Float fLactationHormoneMod = 0.1
 	Int iMilkProductionMod = 1 + (iLactationHormoneLevel / 20) ; should be between 1 and 6, to accelerate milk production Lactation hormone is high
-	Int iMilkLevel = StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkLevel")
+	Int iMilkLevel = StorageUtil.GetIntValue(kPlayer, "_SLH_iMilkLevel")
+
+	Debug.Trace("[SLSDDi] UpdateMilkFromMachine - Actor: " + kPlayer)
+
+	if (isMale(kPlayer))
+		Debug.Trace("[SLSDDi] Actor is Player and Male - Aborting UpdateMilkFromMachine.")
+		Return
+	endif
 	
 	if (sFurnitureName == "Dwarven Milking Machine")  && (akFurniture.GetActorOwner() == LeonaraActor.GetActorBase() )
 		; Debug.Notification("We just sat on " + sFurnitureName)
@@ -577,11 +685,11 @@ Function UpdateMilkFromMachine(ObjectReference akFurniture)
 			iTimer = 1 + iCounter  / 60
 
 			if (iRandomEvent>70)
-				libs.SexlabMoan(PlayerActor)
+				libs.SexlabMoan(kPlayer)
 				Utility.Wait(2.0)
 
 			elseif (iRandomEvent>40)
-				libs.Pant(PlayerActor)
+				libs.Pant(kPlayer)
 				Utility.Wait(1.0)
 
 			elseif (iRandomEvent>20)
@@ -593,23 +701,24 @@ Function UpdateMilkFromMachine(ObjectReference akFurniture)
 		Game.EnablePlayerControls(abActivate = true)
 		MilkOMaticSoundFX.Disable()
 
-		; StorageUtil.SetIntValue(PlayerActor, "_SLH_iProlactinLevel", StorageUtil.GetIntValue(PlayerActor, "_SLH_iProlactinLevel") + 4)	
+		; StorageUtil.SetIntValue(kPlayer, "_SLH_iProlactinLevel", StorageUtil.GetIntValue(kPlayer, "_SLH_iProlactinLevel") + 4)	
 		fLactationHormoneMod = fLactationHormoneMod + 4.0
 
-		Debug.Trace("[SLSDDi] NPC Milk Produced: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkProduced"))
-		Debug.Trace("[SLSDDi] NPC Milk Total: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkProducedTotal"))
+		Debug.Trace("[SLSDDi] Milk Produced: " + StorageUtil.GetIntValue(kPlayer, "_SLH_iMilkProduced"))
+		Debug.Trace("[SLSDDi] Divine Milk Produced: " + StorageUtil.GetIntValue(kPlayer, "_SLH_iDivineMilkProduced"))
 
-		GetMilk(PlayerActor, 1)		
+
+		GetMilk(kPlayer, 1)		
+		updateCowStatus(kPlayer,"Milk",1)
 
 		If  (StorageUtil.GetIntValue(none, "_SLS_fetishID") == 10 )
-			slaUtil.UpdateActorExposure(PlayerActor, 10, "producing breast milk as a cow.")
+			slaUtil.UpdateActorExposure(kPlayer, 10, "producing breast milk as a cow.")
 		Else
-			slaUtil.UpdateActorExposure(PlayerActor, -20, "producing breast milk as a cow.")
+			slaUtil.UpdateActorExposure(kPlayer, -20, "producing breast milk as a cow.")
 		EndIf
 
-		; PlayerActor.SendModEvent("_SLSDDi_UpdateCow","Milk")
-		PlayerActor.SendModEvent("SLHModHormone", "Lactation", fLactationHormoneMod )
-		updateCowStatus(PlayerActor,"Milk")
+		; kPlayer.SendModEvent("_SLSDDi_UpdateCow","Milk")
+		kPlayer.SendModEvent("SLHModHormone", "Lactation", fLactationHormoneMod )
 
 
 	Elseif (sFurnitureName == "Dwarven Milking Machine II") && (akFurniture.GetActorOwner() == LeonaraActor.GetActorBase() )
@@ -626,20 +735,20 @@ Function UpdateMilkFromMachine(ObjectReference akFurniture)
 			iTimer = 1 + iCounter  / 60
 
 			if (iRandomEvent>80)
-				libs.SexlabMoan(PlayerActor)
+				libs.SexlabMoan(kPlayer)
 				Utility.Wait(2.0)
 
 			elseif (iRandomEvent>60)
-				libs.Moan(PlayerActor)
+				libs.Moan(kPlayer)
 				Utility.Wait(2.0)
 
 			elseif (iRandomEvent>40)
-				libs.Pant(PlayerActor)
+				libs.Pant(kPlayer)
 				Utility.Wait(3.0)
 
 			elseif (iRandomEvent>20)
 				Debug.Notification("Milk is pumping into the machine.. " + iTimer + " m left")
-				libs.Moan(PlayerActor)
+				libs.Moan(kPlayer)
 			endif
 
 			iCounter = iCounter - 1
@@ -647,68 +756,114 @@ Function UpdateMilkFromMachine(ObjectReference akFurniture)
 		Game.EnablePlayerControls(abActivate = true)
 		MilkOMaticSoundFX.Disable()
 
-		; StorageUtil.SetIntValue(PlayerActor, "_SLH_iProlactinLevel", StorageUtil.GetIntValue(PlayerActor, "_SLH_iProlactinLevel") + 7)	
+		; StorageUtil.SetIntValue(kPlayer, "_SLH_iProlactinLevel", StorageUtil.GetIntValue(kPlayer, "_SLH_iProlactinLevel") + 7)	
 		fLactationHormoneMod = fLactationHormoneMod + 8.0
 
-		Debug.Trace("[SLSDDi] NPC Milk Produced: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkProduced"))
-		Debug.Trace("[SLSDDi] NPC Milk Total: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkProducedTotal"))
+		Debug.Trace("[SLSDDi] Milk Produced: " + StorageUtil.GetIntValue(kPlayer, "_SLH_iMilkProduced"))
+		Debug.Trace("[SLSDDi] Divine Milk Produced: " + StorageUtil.GetIntValue(kPlayer, "_SLH_iDivineMilkProduced"))
 
 
-		; SLSD_MilkOMaticSpell2.Remotecast(PlayerREF,PlayerActor,PlayerREF)
+
+		; SLSD_MilkOMaticSpell2.Remotecast(PlayerREF,kPlayer,PlayerREF)
 		
-		GetMilk(PlayerActor, 2)		
+		GetMilk(kPlayer, 2)		
+		updateCowStatus(kPlayer,"Milk",2)
 
 		If  (StorageUtil.GetIntValue(none, "_SLS_fetishID") == 10 )
-			slaUtil.UpdateActorExposure(PlayerActor, 10, "producing breast milk as a cow.")
+			slaUtil.UpdateActorExposure(kPlayer, 10, "producing breast milk as a cow.")
 		Else
-			slaUtil.UpdateActorExposure(PlayerActor, -20, "producing breast milk as a cow.")
+			slaUtil.UpdateActorExposure(kPlayer, -20, "producing breast milk as a cow.")
 		EndIf
 
-		; PlayerActor.SendModEvent("_SLSDDi_UpdateCow","Milk")
-		PlayerActor.SendModEvent("SLHModHormone", "Lactation", fLactationHormoneMod )
-		updateCowStatus(PlayerActor,"Milk")
+		; kPlayer.SendModEvent("_SLSDDi_UpdateCow","Milk")
+		kPlayer.SendModEvent("SLHModHormone", "Lactation", fLactationHormoneMod )
 	EndIf
 
 
 EndFunction
 
 Function GetMilk(Actor kActor, Int iNumberBottles=1)
- 	Actor PlayerActor= Game.GetPlayer() as Actor
-	Float fLactationHormoneLevel = StorageUtil.GetFloatValue( kActor , "_SLH_fHormoneLactation") 
-	Int	iLactationHormoneLevel = fLactationHormoneLevel  as Int
-	Int iMilkProductionMod = 1 + (iLactationHormoneLevel / 20) ; should be between 1 and 6, to accelerate milk production Lactation hormone is high
-	Int iMilkLevel = StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel")
+	; Manages production of new milk bottles - decrease in milk level is handled in cow status update function
 
+ 	Actor kPlayer= Game.GetPlayer() as Actor
+	Float fLactationHormoneLevel = StorageUtil.GetFloatValue( kActor , "_SLH_fHormoneLactation") 
+
+	; --------
+	Debug.Trace("[SLSDDi] GetMilk - Actor: " + kActor)
+	Debug.Trace("[SLSDDi] _SLH_iMilkProduced: " + StorageUtil.GetIntValue(kActor, "_SLH_iMilkProduced"))
+	Debug.Trace("[SLSDDi] _SLH_iDivineMilkProduced: " + StorageUtil.GetIntValue(kActor, "_SLH_iDivineMilkProduced"))
+
+	; _SLH_iMilkProducedTotal - indexed on the Player. Total amount produced across all cows
+	Debug.Trace("[SLSDDi] _SLH_iMilkProducedTotal: " + StorageUtil.GetIntValue(kPlayer, "_SLH_iMilkProducedTotal"))
+
+	Debug.Trace("[SLSDDi] iNumberBottles: " + iNumberBottles)
+
+	if (kActor == kPlayer) && (isMale(kPlayer))
+		Debug.Trace("[SLSDDi] Actor is Player and Male - Aborting GetMilk.")
+		Return
+	endif
+	
 	If (fLactationHormoneLevel >= 90.0)
-		PlayerActor.AddItem(DivineMilk, iNumberBottles)	
+		kPlayer.AddItem(DivineMilk, iNumberBottles)	
 		StorageUtil.SetIntValue(kActor, "_SLH_iDivineMilkProduced", StorageUtil.GetIntValue(kActor, "_SLH_iDivineMilkProduced") + iNumberBottles)
 	Else
-		PlayerActor.AddItem(Milk, iNumberBottles)	
+		kPlayer.AddItem(Milk, iNumberBottles)	
 		StorageUtil.SetIntValue(kActor, "_SLH_iMilkProduced", StorageUtil.GetIntValue(kActor, "_SLH_iMilkProduced") + iNumberBottles)
 	Endif
 
-	iMilkLevel = iNumberBottles * (iMilkLevel - (iMilkLevel / iMilkProductionMod))
+	; _SLH_iMilkProducedTotal - indexed on the Player. Total amount produced across all cows
+	StorageUtil.SetIntValue(kPlayer, "_SLH_iMilkProducedTotal", StorageUtil.GetIntValue(kPlayer, "_SLH_iMilkProducedTotal") + iNumberBottles)	
 
-	if (iMilkLevel<0)
-		iMilkLevel = iMilkProductionMod * 5 ; between 5 and 30 - make it harder to fully empty a cow with high lactation hormone
+
+	; Trigger quest stages based on milk production
+	if ( (!DivineCheeseQuest.GetStageDone(100)) && (StorageUtil.GetIntValue(kPlayer, "_SLH_iMilkProducedTotal") >= 5) )
+		; clear past objectives below 100
+	    DivineCheeseQuest.SetStage(100)
 	endif
 
-	StorageUtil.SetIntValue(kActor, "_SLH_iMilkLevel",  iMilkLevel )	
-	StorageUtil.SetIntValue(kActor, "_SLH_iMilkProducedTotal", StorageUtil.GetIntValue(kActor, "_SLH_iMilkProducedTotal") + iNumberBottles)	
+
+	; --------
+	Debug.Trace("[SLSDDi] after _SLH_iMilkProduced: " + StorageUtil.GetIntValue(kActor, "_SLH_iMilkProduced"))
+	Debug.Trace("[SLSDDi] after _SLH_iDivineMilkProduced: " + StorageUtil.GetIntValue(kActor, "_SLH_iDivineMilkProduced"))
+
+	; _SLH_iMilkProducedTotal - indexed on the Player. Total amount produced across all cows
+	Debug.Trace("[SLSDDi] after _SLH_iMilkProducedTotal: " + StorageUtil.GetIntValue(kPlayer, "_SLH_iMilkProducedTotal"))
+
 EndFunction
 
 Function checkIfLactating(Actor kActor)
+	ActorBase pActorBase = kActor.GetActorBase()
+	Float fWeight = pActorBase.GetWeight()
+	Float fBreast  = NetImmerse.GetNodeScale(kActor, NINODE_LEFT_BREAST, false)
+	Float fLactationThreshold 
 	Bool isLactating = false
+
+	; High weight = lactation is easier
+	; Large breasts nodes = lactation is easier
+	fLactationThreshold = 40.0 - (fWeight / 10.0) - (fBreast * 10.0)
+
+	if (fLactationThreshold<5.0)
+		fLactationThreshold = 5.0
+	endif
 
 	If (StorageUtil.GetIntValue(kActor, "_SLH_iMilkCow") == 1)
 		isLactating = true
 	endif
 
+	StorageUtil.SetFloatValue( kActor , "_SLH_fLactationThreshold", fLactationThreshold)
+
 	; if (StorageUtil.GetIntValue(kActor, "_SLH_iProlactinLevel") > 0)
 	;	isLactating = true
 	; endif
 	
-	if (StorageUtil.GetFloatValue( kActor , "_SLH_fHormoneLactation") > 0.0)
+	; debug.notification("[SLSDDi] Lactation threshold: " + fLactationThreshold)
+	debug.trace("[SLSDDi] Checking lactation for actor: " + kActor)
+	debug.trace("[SLSDDi] 	_SLH_fHormoneLactation: " + StorageUtil.GetFloatValue( kActor , "_SLH_fHormoneLactation"))
+	debug.trace("[SLSDDi] 	Lactation threshold: " + fLactationThreshold)
+	debug.trace("[SLSDDi] 	fWeight: " + fWeight)
+	debug.trace("[SLSDDi] 	fBreast: " + fBreast)
+
+	if (StorageUtil.GetFloatValue( kActor , "_SLH_fHormoneLactation") > fLactationThreshold)
 		isLactating = true
 	endif
 
@@ -717,6 +872,10 @@ Function checkIfLactating(Actor kActor)
 	else
 		StorageUtil.SetIntValue(kActor, "_SLH_iLactating", 0)
 	endif
+EndFunction
+
+Function updateMilkDuringSexFlag(Int iFlagValue)
+	GV_MilkDuringSex.SetValue(iFlagValue)
 EndFunction
 
 ; -------------------------------------------------------------------
@@ -760,15 +919,15 @@ Function UpdateBusiness()
 	sBusinessStatusMsg += GetFarmCowStatus(SnowShodCowAltmerAlias.GetReference(), "Altmer cow") 
 	sBusinessStatusMsg += GetFarmCowStatus(SnowShodCowOrcAlias.GetReference(), "Orc cow") 
 
-	iTotalMilkProduced += StorageUtil.GetIntValue(game.getplayer(), "_SLH_iMilkProducedTotal")
+	iTotalMilkProduced += StorageUtil.GetIntValue( kPlayer, "_SLH_iMilkProducedTotal")
 
 	if (StorageUtil.GetIntValue(kPlayer, "_SLH_iLactating") == 1)
-		sBusinessStatusMsg += "\n Player: "  +  StorageUtil.GetIntValue(kPlayer, "_SLH_iMilkProducedTotal") + " L: " +StorageUtil.GetIntValue(kPlayer, "_SLH_iMilkLevel") + " H: " + StorageUtil.GetFloatValue( kPlayer , "_SLH_fHormoneLactation")
+		sBusinessStatusMsg += "\n Player: "  +  (StorageUtil.GetIntValue(kPlayer, "_SLH_iMilkProduced") + StorageUtil.GetIntValue(kPlayer, "_SLH_iDivineMilkProduced")) + " L: " +StorageUtil.GetIntValue(kPlayer, "_SLH_iMilkLevel") + " H: " + StorageUtil.GetFloatValue( kPlayer , "_SLH_fHormoneLactation")
 	endif
 
 	updateAllCows("")
 
-	sBusinessStatusMsg += "\n Total Milk Produced: " + iTotalMilkProduced
+	sBusinessStatusMsg += "\n Total Milk Produced: " + StorageUtil.GetIntValue( kPlayer, "_SLH_iMilkProducedTotal")
 	; sBusinessStatusMsg += "\n For the Nords and Imperials..." 
 
 	debug.Trace(sBusinessStatusMsg)
@@ -799,10 +958,18 @@ Function InitFarmCow(ObjectReference kCowActorRef, String sCowRace)
 	endif
 
  	; Add cow to HucowsList for Dialogue conditions
-	Int iIndex = MilkFarmList.Find(kCowActor as Form)
-	If iIndex == - 1
-		MilkFarmList.AddForm(kCowActor as Form)
- 	EndIf
+	; Int iIndex = MilkFarmList.Find(kCowActor as Form)
+	; If iIndex == - 1
+	;	MilkFarmList.AddForm(kCowActor as Form)
+ 	; EndIf
+
+  	if (!kCowActor.IsInFaction(HucowsFaction))
+ 		kCowActor.AddToFaction(HucowsFaction)
+ 	endif
+
+ 	if (!kCowActor.IsInFaction(MilkFarmCowsFaction))
+ 		kCowActor.AddToFaction(MilkFarmCowsFaction)
+ 	endif
 
 	registerCow(kCowActor)
 
@@ -815,8 +982,7 @@ String Function GetFarmCowStatus(ObjectReference kCowActorRef, String sCowRace)
 	Actor kCowActor = kCowActorRef as Actor
 
 	if (kCowActorRef != None)
-		iTotalMilkProduced += StorageUtil.GetIntValue(kCowActorRef as Actor, "_SLH_iMilkProducedTotal")
-		sBusinessStatusMsg += "\n " + sCowRace + ": M: " +  StorageUtil.GetIntValue(kCowActor , "_SLH_iMilkProducedTotal") + " L: " +StorageUtil.GetIntValue(kCowActor, "_SLH_iMilkLevel") + " H: " + StorageUtil.GetFloatValue( kCowActor , "_SLH_fHormoneLactation")
+		sBusinessStatusMsg += "\n " + sCowRace + ": M: " +  (StorageUtil.GetIntValue(kCowActor, "_SLH_iMilkProduced") + StorageUtil.GetIntValue(kCowActor, "_SLH_iDivineMilkProduced"))  + " L: " +StorageUtil.GetIntValue(kCowActor, "_SLH_iMilkLevel") + " H: " + StorageUtil.GetFloatValue( kCowActor , "_SLH_fHormoneLactation")
 
 		; If  (!kCowActor.WornHasKeyword(SLSD_CowHarness) && !kCowActor.WornHasKeyword(SLSD_CowMilker))
 		;	kCowActor.SetOutfit(FarmCowOutfit)
@@ -824,6 +990,14 @@ String Function GetFarmCowStatus(ObjectReference kCowActorRef, String sCowRace)
 	else
 		sBusinessStatusMsg += "\n " + sCowRace + ": - " 
 	endif
+
+  	if (!kCowActor.IsInFaction(HucowsFaction))
+ 		kCowActor.AddToFaction(HucowsFaction)
+ 	endif
+
+ 	if (!kCowActor.IsInFaction(MilkFarmCowsFaction))
+ 		kCowActor.AddToFaction(MilkFarmCowsFaction)
+ 	endif
 
 	Debug.Trace("[SLS] GetFarmCowStatus - sCowRace: " + sCowRace)
 
@@ -835,11 +1009,9 @@ Function PayEnrolledCow(Actor kActor)
 	Int iPlayerGold = kPlayer.GetItemCount(Gold)
 	Faction CrimeFaction = kActor.GetCrimeFaction()
 	Form fActorForm = kActor as Form
-	String sActorName 
+	String sActorName = fActorForm.GetName()
 
-	if (fActorForm != None)
-		sActorName = fActorForm.GetName()
-	else
+	if (sActorName == "")
 		sActorName = "her"
 	endif
 
@@ -852,12 +1024,17 @@ Function PayEnrolledCow(Actor kActor)
 	  	Debug.Notification("You pay " + sActorName + " a fee of 5 gold.")
 
 	elseif (kActor.GetRelationshipRank(kPlayer) == 4) 
-	  	Debug.Notification("You may stimulate " + sActorName + " for free")
+	  	; Debug.Notification("You may stimulate " + sActorName + " for free")
 
 	else
 		; Figure out what to do when player cannot pay enrolled cow
 	  	Debug.Notification("You could not pay " + sActorName + " and she reported you.")
-		CrimeFaction.ModCrimeGold(5)
+
+	  	if (CrimeFaction == None)
+	  		CrimeFactionRiften.ModCrimeGold(5)
+	  	Else
+			CrimeFaction.ModCrimeGold(5)
+		endif
 	endIf
 Endfunction
 
@@ -901,4 +1078,25 @@ function SLIF_inflateMax(Actor kActor, String sKey, float value, float maximum, 
 	SLIF_inflate(kActor, sKey, value, NiOString)
 endFunction
 
- 
+; -------------------------------------------------------------------
+Bool function isFemale(actor kActor)
+	Bool bIsFemale
+	ActorBase kActorBase = kActor.GetActorBase()
+
+	Debug.Trace("[SLP]Checking actor gender")
+	Debug.Trace("[SLP]    kActor: " + kActor)
+	Debug.Trace("[SLP]    kActorBase: " + kActorBase)
+
+	if (kActorBase.GetSex() == 1) ; female
+		bIsFemale = True
+	Else
+		bIsFemale = False
+	EndIf
+
+	return bIsFemale
+EndFunction
+
+Bool function isMale(actor kActor)
+	return !isFemale(kActor)
+EndFunction
+

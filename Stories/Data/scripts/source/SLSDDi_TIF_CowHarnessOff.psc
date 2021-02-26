@@ -6,24 +6,23 @@ Scriptname SLSDDi_TIF_CowHarnessOff Extends TopicInfo Hidden
 Function Fragment_1(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
+Actor kPlayer = Game.GetPlayer()
 Actor pActor =  SexLab.PlayerRef
 ActorBase pActorBase = pActor.GetActorBase()
+
 ; Game.GetPlayer().RemoveItem(Milk, 1)
 
 Debug.Notification( "Leonara removes your harness with a smile..." )
 
-CowLife.PlayerRemovedCowharness()
+CowLife.PlayerRemovedCowharness( kPlayer )
 
-Game.GetPlayer().AddItem(Gold, ( (pActorBase.GetWeight() as Int) + 10 )  )
-
-MilkProduced.SetValue( 0 )
-MilkProducedTotal.SetValue( MilkProducedTotal.GetValue() + 1 )
+kPlayer.AddItem(Gold, ( (pActorBase.GetWeight() as Int) + 10 )  )
 
 Utility.Wait(1.0)
 
-If  (SexLab.ValidateActor( SexLab.PlayerRef ) > 0) &&  (SexLab.ValidateActor(akSpeaker) > 0) 
+If  (SexLab.ValidateActor(  kPlayer  ) > 0) &&  (SexLab.ValidateActor(akSpeaker) > 0) 
 	actor[] sexActors = new actor[2]
-	sexActors[0] = Game.GetPlayer()
+	sexActors[0] =  kPlayer 
 	sexActors[1] = akSpeaker
 
 	sslBaseAnimation[] anims
@@ -52,4 +51,4 @@ GlobalVariable Property MilkProduced  Auto
 
 GlobalVariable Property MilkProducedTotal  Auto  
 
-SLS_QST_CowLife Property CowLife Auto
+SLSDDi_QST_CowLife Property CowLife Auto
