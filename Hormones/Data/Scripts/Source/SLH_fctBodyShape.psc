@@ -272,15 +272,74 @@ bool Function CheckXPMSERequirements(Actor akActor, bool isFemale)
 EndFunction
 
 function SLIF_inflate(Actor kActor, String sKey, float value, String NiOString)
-	int SLIF_event = ModEvent.Create("SLIF_inflate")
-	If (SLIF_event)
-		ModEvent.PushForm(SLIF_event, kActor)
-		ModEvent.PushString(SLIF_event, "Hormones")
-		ModEvent.PushString(SLIF_event, sKey)
-		ModEvent.PushFloat(SLIF_event, value)
-		ModEvent.PushString(SLIF_event, NiOString)
-		ModEvent.Send(SLIF_event)
-	EndIf
+
+	if (StorageUtil.GetIntValue(none, "_SLH_BodyMorphsON") == 1)
+		string JsonKey
+		If sKey == "Breasts"
+			JsonKey = "breasts"
+		ElseIf sKey == "BreastNewSH"
+			JsonKey = "breastssh"
+		ElseIf sKey == "BreastGravity2"
+			JsonKey = "breastgravity"
+		ElseIf sKey == "BreastCleavage"
+			JsonKey = "breaststogether"
+		ElseIf sKey == "DoubleMelon"
+			JsonKey = "doublemelon"
+		ElseIf sKey == "BreastsFantasy"
+			JsonKey = "breastsfantasy"
+		ElseIf sKey == "NipplePerkiness"
+			JsonKey = "nippleperkiness"
+		ElseIf sKey == "NippleLength"
+			JsonKey = "nipplelength"
+		ElseIf sKey == "Belly"
+			JsonKey = "belly"
+		ElseIf sKey == "BigBelly"
+			JsonKey = "bigbelly"
+		ElseIf sKey == "Hips"
+			JsonKey = "hips"
+		ElseIf sKey == "HipsUpperWidth"
+			JsonKey = "hipsupperwidth"
+		ElseIf sKey == "WideWaistLine"
+			JsonKey = "widewaistline"
+		ElseIf sKey == "Butt"
+			JsonKey = "butt"
+		ElseIf sKey == "AppleCheeks"
+			JsonKey = "applecheeks"
+		ElseIf sKey == "MuscleButt"
+			JsonKey = "musclebutt"
+		ElseIf sKey == "Thighs"
+			JsonKey = "thighs"
+		EndIf
+		
+		
+		float bodyslide_scale_modifier = JsonUtil.GetFloatValue("/SLHormones/Bodymorph", JsonKey)
+
+		;debug.notification("Node is: " + skey)
+		;debug.notification("Value was: " + value)
+		;debug.notification("Json Modifier was: " + bodyslide_scale_modifier)
+		
+		int SLIF_event = ModEvent.Create("SLIF_inflate")
+		If (SLIF_event)
+			ModEvent.PushForm(SLIF_event, kActor)
+			ModEvent.PushString(SLIF_event, "Hormones")
+			ModEvent.PushString(SLIF_event, sKey)
+			ModEvent.PushFloat(SLIF_event, value*bodyslide_scale_modifier)
+			ModEvent.PushString(SLIF_event, NiOString)
+			ModEvent.Send(SLIF_event)
+		EndIf
+	else
+
+		int SLIF_event = ModEvent.Create("SLIF_inflate")
+		If (SLIF_event)
+			ModEvent.PushForm(SLIF_event, kActor)
+			ModEvent.PushString(SLIF_event, "Hormones")
+			ModEvent.PushString(SLIF_event, sKey)
+			ModEvent.PushFloat(SLIF_event, value)
+			ModEvent.PushString(SLIF_event, NiOString)
+			ModEvent.Send(SLIF_event)
+		EndIf
+	endif
+
 endFunction
 
 function SLIF_setMax(Actor kActor, String sKey, float maximum)
@@ -295,8 +354,39 @@ function SLIF_setMax(Actor kActor, String sKey, float maximum)
 endFunction
 
 function SLIF_inflateMax(Actor kActor, String sKey, float value, float maximum, String NiOString)
-	SLIF_setMax(kActor, sKey, maximum)
-	SLIF_inflate(kActor, sKey, value, NiOString)
+
+	if (StorageUtil.GetIntValue(none, "_SLH_BodyMorphsON") == 1)
+		;Convert into the Nodes
+		;These are customized for myself and SE
+
+			If skey == "slif_breast"
+				SLIF_inflate(kActor, "Breasts", value, NiOString)
+				SLIF_inflate(kActor, "BreastNewSH", value, NiOString)
+				SLIF_inflate(kActor, "BreastGravity2", value, NiOString)
+				SLIF_inflate(kActor, "BreastCleavage", value, NiOString)
+				SLIF_inflate(kActor, "DoubleMelon", value, NiOString)
+				SLIF_inflate(kActor, "BreastsFantasy", value, NiOString)
+				SLIF_inflate(kActor, "NipplePerkiness", value, NiOString)
+				SLIF_inflate(kActor, "NippleLength", value, NiOString)
+				SLIF_inflate(kActor, "BreastsTogether", value, NiOString)
+			ElseIf sKey == "slif_belly"
+				SLIF_inflate(kActor, "Belly", value, NiOString)
+				SLIF_inflate(kActor, "BigBelly", value, NiOString)
+				SLIF_inflate(kActor, "HipsUpperWidth", value, NiOString)
+			ElseIf sKey == "slif_butt"
+				SLIF_inflate(kActor, "Butt", value, NiOString)
+				SLIF_inflate(kActor, "BigButt", value, NiOString)
+				SLIF_inflate(kActor, "MuscleButt", value, NiOString)
+				SLIF_inflate(kActor, "Hips", value, NiOString)
+				SLIF_inflate(kActor, "AppleCheeks", value, NiOString)
+			EndIf
+		;I don't care about it setting the max as I beleive that can be controled in the SLIF MCM menu, but you would need to do the same as above for each node
+		SLIF_setMax(kActor, "Breasts", maximum)
+	else
+		SLIF_setMax(kActor, sKey, maximum)
+		SLIF_inflate(kActor, sKey, value, NiOString)
+	endif	
+
 endFunction
 
 ;----------------------------------
@@ -429,11 +519,13 @@ function alterBodyAfterRest(Actor kActor)
 		If ((iSexCountToday > 0) || (fSwellFactor < 0)) && (GV_useBreastNode.GetValue() == 1)
 			if ( bBreastEnabled ) 
 				Float fCurrentBreast 
-				If (StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON")==0)
-					fCurrentBreast = SLHGetNodeScale(kActor, NINODE_RIGHT_BREAST, false)
-				else
-					fCurrentBreast = StorageUtil.GetFloatValue(kActor, "_SLH_fBreast")
-				endIf
+				If (StorageUtil.GetIntValue(none, "_SLH_BodyMorphsON")==1)
+                    fCurrentBreast = SLHGetNodeScale(kActor, NINODE_RIGHT_BREAST, false)
+                elseif (StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON")==0)
+                    fCurrentBreast = NetImmerse.GetNodeScale(kActor, NINODE_RIGHT_BREAST, false)
+                else
+                    fCurrentBreast = StorageUtil.GetFloatValue(kActor, "_SLH_fBreast")
+                endIf
 
 				if (bExternalChangeModActive) && (StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON")==0)
 					fNodeMax = fPregBreastMax
@@ -469,11 +561,13 @@ function alterBodyAfterRest(Actor kActor)
 		If ((iSexCountToday > 0) || (fSwellFactor < 0)) && (GV_useBellyNode.GetValue() == 1)
 			if ( bBellyEnabled )  
 				Float fCurrentBelly 
-				If (StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON")==0)
-					fCurrentBelly = SLHGetNodeScale(kActor, NINODE_BELLY, false)
-				else
-					fCurrentBelly = StorageUtil.GetFloatValue(kActor, "_SLH_fBelly")
-				endIf
+                If (StorageUtil.GetIntValue(none, "_SLH_BodyMorphsON")==1)
+                    fCurrentBelly = SLHGetNodeScale(kActor, NINODE_BELLY, false)
+                elseif (StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON")==0)
+                    fCurrentBelly = NetImmerse.GetNodeScale(kActor, NINODE_BELLY, false)
+                else
+                    fCurrentBelly = StorageUtil.GetFloatValue(kActor, "_SLH_fBelly")
+                endIf
 
 				if (bExternalChangeModActive) && (StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON")==0)
 					fNodeMax = fPregBellyMax
@@ -495,11 +589,13 @@ function alterBodyAfterRest(Actor kActor)
 		If ((iSexCountToday > 0) || (fSwellFactor < 0)) && (GV_useButtNode.GetValue() == 1)
 			if ( bButtEnabled )  
 				Float fCurrentButt 
-				If (StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON")==0)
-					fCurrentButt = SLHGetNodeScale(kActor, NINODE_RIGHT_BUTT, false)
-				else
-					fCurrentButt = StorageUtil.GetFloatValue(kActor, "_SLH_fButt")
-				endIf
+                If (StorageUtil.GetIntValue(none, "_SLH_BodyMorphsON")==1)
+                    fCurrentButt = SLHGetNodeScale(kActor, NINODE_RIGHT_BUTT, false)
+                elseif (StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON")==0)
+                    fCurrentButt = NetImmerse.GetNodeScale(kActor, NINODE_RIGHT_BUTT, false)
+                else
+                    fCurrentButt = StorageUtil.GetFloatValue(kActor, "_SLH_fButt")
+                endIf
 
 				if (bExternalChangeModActive) && (StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON")==0)
 					fNodeMax = fPregButtMax
@@ -1951,20 +2047,20 @@ function initShapeState(Actor kActor)
 	
 
 	if ( bBreastEnabled && pLeveledActorBase.GetSex() == 1 )
-		;fOrigLeftBreast  = SLHGetNodeScale(kActor, NINODE_LEFT_BREAST, false)
+		;fOrigLeftBreast  = NetImmerse.GetNodeScale(kActor, NINODE_LEFT_BREAST, false)
 		fOrigRightBreast = SLHGetNodeScale(kActor, NINODE_RIGHT_BREAST, false)
 		;fPregLeftBreast  = fOrigLeftBreast
 		fPregRightBreast = fOrigRightBreast
 		StorageUtil.SetFloatValue(kActor, "_SLH_fBreast", fOrigRightBreast)
 		if bTorpedoFixEnabled
-			;fOrigLeftBreast01  = SLHGetNodeScale(kActor, NINODE_LEFT_BREAST01, false)
-			fOrigRightBreast01 = SLHGetNodeScale(kActor, NINODE_RIGHT_BREAST01, false)
+			;fOrigLeftBreast01  = NetImmerse.GetNodeScale(kActor, NINODE_LEFT_BREAST01, false)
+			fOrigRightBreast01 = SLHGetNodeScale(kActor, NINODE_RIGHT_BREAST, false)
 			;fPregLeftBreast01  = fOrigLeftBreast01
 			fPregRightBreast01 = fOrigRightBreast01
 		endif
 	endif
 	if ( bButtEnabled )
-		;fOrigLeftButt    = SLHGetNodeScale(kActor, NINODE_LEFT_BUTT, false)
+		;fOrigLeftButt    = NetImmerse.GetNodeScale(kActor, NINODE_LEFT_BUTT, false)
 		fOrigRightButt   = SLHGetNodeScale(kActor, NINODE_RIGHT_BUTT, false)
 		;fPregLeftButt    = fOrigLeftButt
 		fPregRightButt   = fOrigRightButt
@@ -2041,7 +2137,7 @@ function setShapeStateDefault(Actor kActor)
 		StorageUtil.SetFloatValue(kActor, "_SLH_fBreast", fOrigRightBreast)
 		if bTorpedoFixEnabled
 			;fOrigLeftBreast01  = NetImmerse.GetNodeScale(kActor, NINODE_LEFT_BREAST01, false)
-			fOrigRightBreast01 = SLHGetNodeScale(kActor, NINODE_RIGHT_BREAST01, false)
+			fOrigRightBreast01 = SLHGetNodeScale(kActor, NINODE_RIGHT_BREAST, false)
 			;fPregLeftBreast01  = fOrigLeftBreast01
 			fPregRightBreast01 = fOrigRightBreast01
 		endif
