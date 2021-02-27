@@ -3,7 +3,7 @@ scriptname SLH_QST_ConfigMenu extends SKI_ConfigBase
 ; SCRIPT VERSION ----------------------------------------------------------------------------------
 
 int function GetVersion()
-	return 2019 ; Default version
+	return 2021 ; Default version
 endFunction
 
 ;--------------------------------------
@@ -271,8 +271,8 @@ event OnVersionUpdate(int a_version)
 	{Called when a version update of this script has been detected}
 
 	; Version 4 specific updating code
-	if (a_version >= 2019 && CurrentVersion < 2019)
-		Debug.Trace(self + ": Updating script to version 2019")
+	if (a_version >= 2021 && CurrentVersion < 2021)
+		Debug.Trace(self + ": Updating script to version 2021")
 		Pages = new string[5]
 		Pages[0] = "$SLH_pHormonelevels"
 		Pages[1] = "$SLH_pBodyChanges"
@@ -481,7 +481,7 @@ event OnPageReset(string a_page)
 
 
 
-	elseIf (a_page == "")
+	elseIf (a_page == "$SLH_pBodyChanges")
 		SetCursorFillMode(TOP_TO_BOTTOM)
 
 		AddHeaderOption("$SLH_hWeight")
