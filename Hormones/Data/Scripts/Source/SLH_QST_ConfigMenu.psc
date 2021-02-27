@@ -452,7 +452,7 @@ event OnPageReset(string a_page)
 		AddSliderOptionST("STATE_LACTATION","$SLH_sLACTATION", _lactationMod as Float,"{1}") 
 		AddSliderOptionST("STATE_PIGMENTATION","$SLH_sPIGMENTATION", _pigmentationMod as Float,"{1}") 
 		AddSliderOptionST("STATE_SLEEP","$SLH_sSLEEP", _sleepMod as Float,"{1}") 
-		AddSliderOptionST("STATE_FERTILITY","$SLH_sHUNGER", _hungerMod as Float,"{1}") 
+		AddSliderOptionST("STATE_FERTILITY","$SLH_sFERTILITY", _fertilityMod as Float,"{1}") 
 		AddSliderOptionST("STATE_IMMUNITY","$SLH_sIMMUNITY", _immunityMod as Float,"{1}") 
 		AddSliderOptionST("STATE_STRESS","$SLH_sSTRESS", _stressMod as Float,"{1}") 
 		AddSliderOptionST("STATE_MOOD","$SLH_sMOOD", _moodMod as Float,"{1}") 
@@ -590,26 +590,20 @@ event OnPageReset(string a_page)
 		SetCursorPosition(1)
 
 		AddHeaderOption("$SLH_hShapeChangeTriggers")
-	  AddToggleOptionST("STATE_CHANGE_NODES","$SLH_sCHANGE_NODES", _useNodes as Float)
+	  	AddToggleOptionST("STATE_CHANGE_NODES","$SLH_sCHANGE_NODES", _useNodes as Float)
 
 		AddToggleOptionST("STATE_UPDATE_ON_CELL","$SLH_sUPDATE_ON_CELL", _shapeUpdateOnCellChange as Float)
 		AddToggleOptionST("STATE_UPDATE_ON_SEX","$SLH_sUPDATE_ON_SEX", _shapeUpdateAfterSex as Float)
 		AddToggleOptionST("STATE_UPDATE_ON_TIMER","$SLH_bUPDATE_ON_TIMER", _shapeUpdateOnTimer as Float)
 
-    ; AddToggleOptionST("STATE_ENABLE_NODE_UPDATE","$SLH_sENABLE_NODE_UPDATE", _enableNiNodeUpdate as Float)
+    		; AddToggleOptionST("STATE_ENABLE_NODE_UPDATE","$SLH_sENABLE_NODE_UPDATE", _enableNiNodeUpdate as Float)
 		; AddToggleOptionST("STATE_ENABLE_NODE_UPDATE","Enable QueueNodeUpdate", StorageUtil.GetIntValue(none, "_SLH_NiNodeUpdateON") as Float )
 
 		AddHeaderOption(" Shape change method ")
  		AddTextOption(" Pick one", "", OPTION_FLAG_DISABLED)
-		AddToggleOptionST("STATE_ENABLE_BASIC_NETIMMERSE","Enable Basic NetImmerse", StorageUtil.GetIntValue(none, "_SLH_BasicNetImmerseON"))
-
-		If CheckXPMSERequirements(PlayerActor, PlayerGender as Bool)
-			AddToggleOptionST("STATE_ENABLE_NODE_OVERRIDE","$SLH_bENABLE_NODE_OVERRIDE", StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON") as Float)
-			AddToggleOptionST("STATE_ENABLE_BODYMORPHS","Enable BodyMorphs", StorageUtil.GetIntValue(none, "_SLH_BodyMorphsON") as Float)
-		else
-			AddToggleOptionST("STATE_ENABLE_NODE_OVERRIDE","$SLH_bENABLE_NODE_OVERRIDE", StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON") as Float, OPTION_FLAG_DISABLED)
-			AddToggleOptionST("STATE_ENABLE_BODYMORPHS","Enable BodyMorphs", StorageUtil.GetIntValue(none, "_SLH_BodyMorphsON") as Float, OPTION_FLAG_DISABLED)
-		endif
+		AddToggleOptionST("STATE_ENABLE_BASIC_NETIMMERSE","Enable Basic NetImmerse", StorageUtil.GetIntValue(none, "_SLH_BasicNetImmerseON") as Float)
+		AddToggleOptionST("STATE_ENABLE_NODE_OVERRIDE","$SLH_bENABLE_NODE_OVERRIDE", StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON") as Float)
+		AddToggleOptionST("STATE_ENABLE_BODYMORPHS","Enable BodyMorphs", StorageUtil.GetIntValue(none, "_SLH_BodyMorphsON") as Float)
 		
 		; AddToggleOptionST("STATE_BALANCE","$SLH_sBALANCE", _applyNodeBalancing  as Float)
 
@@ -2942,8 +2936,6 @@ state STATE_ENABLE_BASIC_NETIMMERSE ; TOGGLE
 
 		StorageUtil.SetIntValue(none, "_SLH_BasicNetImmerseON", _enableBasicNetImmerse as Int)
 
-		StorageUtil.SetIntValue(none, "_SLH_NiNodeOverrideON", Math.LogicalXor( 1, _enableBasicNetImmerse  as Int ))
-		StorageUtil.SetIntValue(none, "_SLH_BodyMorphsON", Math.LogicalXor( 1, _enableBasicNetImmerse  as Int ))
 		SetToggleOptionValueST( _enableBasicNetImmerse as Bool )
 		refreshStorageFromGlobals()
 		ForcePageReset()
@@ -2969,8 +2961,6 @@ state STATE_ENABLE_NODE_OVERRIDE ; TOGGLE
 		_enableNiNodeOverride = Math.LogicalXor( 1, _enableNiNodeOverride as Int ) 
 		StorageUtil.SetIntValue(none, "_SLH_NiNodeOverrideON", _enableNiNodeOverride as Int)
 
-		StorageUtil.SetIntValue(none, "_SLH_BodyMorphsON", Math.LogicalXor( 1, _enableNiNodeOverride  as Int ))
-		StorageUtil.SetIntValue(none, "_SLH_NiNodeUpdateON", Math.LogicalXor( 1, _enableNiNodeOverride  as Int ))
 		SetToggleOptionValueST( _enableNiNodeOverride as Bool )
 		refreshStorageFromGlobals()
 		ForcePageReset()
@@ -2995,9 +2985,6 @@ state STATE_ENABLE_BODYMORPHS ; TOGGLE
 		_enableBodyMorphs  = StorageUtil.GetIntValue(none, "_SLH_BodyMorphsON")
 		_enableBodyMorphs  = Math.LogicalXor( 1, _enableBodyMorphs  as Int ) 
 		StorageUtil.SetIntValue(none, "_SLH_BodyMorphsON", _enableBodyMorphs  as Int)
-		
-		StorageUtil.SetIntValue(none, "_SLH_NiNodeOverrideON", Math.LogicalXor( 1, _enableBodyMorphs  as Int ))
-		StorageUtil.SetIntValue(none, "_SLH_NiNodeUpdateON", Math.LogicalXor( 1, _enableBodyMorphs  as Int ))
 
 		SetToggleOptionValueST( _enableBodyMorphs  as Bool )
 		refreshStorageFromGlobals()

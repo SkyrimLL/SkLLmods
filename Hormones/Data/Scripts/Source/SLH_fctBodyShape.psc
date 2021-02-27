@@ -644,11 +644,13 @@ function alterBodyByPercent(Actor kActor, String sBodyPart, Float modFactor)
 		If  (sBodyPart=="Breast") && (GV_useBreastNode.GetValue() == 1)
 			if ( bBreastEnabled ) 
 				Float fCurrentBreast 
-				If (StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON")==0)
-					fCurrentBreast = SLHGetNodeScale(kActor, NINODE_RIGHT_BREAST, false)
-				else
-					fCurrentBreast = StorageUtil.GetFloatValue(kActor, "_SLH_fBreast")
-				endIf
+                If (StorageUtil.GetIntValue(none, "_SLH_BodyMorphsON")==1)
+                    fCurrentBreast = SLHGetNodeScale(kActor, NINODE_RIGHT_BREAST, false)
+                elseif (StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON")==0)
+                    fCurrentBreast = NetImmerse.GetNodeScale(kActor, NINODE_RIGHT_BREAST, false)
+                else
+                    fCurrentBreast = StorageUtil.GetFloatValue(kActor, "_SLH_fBreast")
+                endIf
 
 
 				if (bExternalChangeModActive) && (StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON")==0)
@@ -674,11 +676,13 @@ function alterBodyByPercent(Actor kActor, String sBodyPart, Float modFactor)
 		If (sBodyPart=="Belly")  && (GV_useBellyNode.GetValue() == 1)
 			if ( bBellyEnabled )  
 				Float fCurrentBelly 
-				If (StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON")==0)
-					fCurrentBelly = SLHGetNodeScale(kActor, NINODE_BELLY, false)
-				else
-					fCurrentBelly = StorageUtil.GetFloatValue(kActor, "_SLH_fBelly")
-				endIf
+                If (StorageUtil.GetIntValue(none, "_SLH_BodyMorphsON")==1)
+                    fCurrentBelly = SLHGetNodeScale(kActor, NINODE_BELLY, false)
+                elseif (StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON")==0)
+                    fCurrentBelly = NetImmerse.GetNodeScale(kActor, NINODE_BELLY, false)
+                else
+                    fCurrentBelly = StorageUtil.GetFloatValue(kActor, "_SLH_fBelly")
+                endIf
 
 				if (bExternalChangeModActive) && (StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON")==0)
 					fNodeMax = fPregBellyMax
@@ -697,11 +701,13 @@ function alterBodyByPercent(Actor kActor, String sBodyPart, Float modFactor)
 		If (sBodyPart=="Butt")  && (GV_useButtNode.GetValue() == 1)
 			if ( bButtEnabled )  
 				Float fCurrentButt 
-				If (StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON")==0)
-					fCurrentButt = SLHGetNodeScale(kActor, NINODE_RIGHT_BUTT, false)
-				else
-					fCurrentButt = StorageUtil.GetFloatValue(kActor, "_SLH_fButt")
-				endIf
+                If (StorageUtil.GetIntValue(none, "_SLH_BodyMorphsON")==1)
+                    fCurrentButt = SLHGetNodeScale(kActor, NINODE_RIGHT_BUTT, false)
+                elseif (StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON")==0)
+                    fCurrentButt = NetImmerse.GetNodeScale(kActor, NINODE_RIGHT_BUTT, false)
+                else
+                    fCurrentButt = StorageUtil.GetFloatValue(kActor, "_SLH_fButt")
+                endIf
 
 				if (bExternalChangeModActive) && (StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON")==0)
 					fNodeMax = fPregButtMax
