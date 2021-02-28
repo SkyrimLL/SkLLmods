@@ -32,7 +32,7 @@ EndFunction
 Function Execute(actor akActor)
 	;libs.Log("VibrateEffect("+chance+")")
 	int vibStrength = 0
-	int duration = 0
+	int duration = 5
 		if akActor.HasMagicEffectWithKeyword(libs.zad_EffectVibratingRandom)
 			vibStrength = utility.RandomInt(1,5)
 		elseif akActor.HasMagicEffectWithKeyword(libs.zad_EffectVibratingVeryStrong)

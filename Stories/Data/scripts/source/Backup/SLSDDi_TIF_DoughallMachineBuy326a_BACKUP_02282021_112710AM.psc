@@ -1,6 +1,6 @@
 ;BEGIN FRAGMENT CODE - Do not edit anything between this and the end comment
 ;NEXT FRAGMENT INDEX 2
-Scriptname SLSDDi_TIF_DoughallMachineBuy336a Extends TopicInfo Hidden
+Scriptname SLSDDi_TIF_DoughallMachineBuy326a Extends TopicInfo Hidden
 
 ;BEGIN FRAGMENT Fragment_0
 Function Fragment_0(ObjectReference akSpeakerRef)
@@ -8,20 +8,11 @@ Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
 Actor kPlayer = Game.getPlayer() 
 
-kPlayer.RemoveItem(Gold, 2000)
+kPlayer.RemoveItem(Gold, 1000)
 
-MilkMachineMarkerRef.disable()
+MilkMachineMarkerRef.enable()
 
 self.GetOwningQuest().SetStage(326)
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_1
-Function Fragment_1(ObjectReference akSpeakerRef)
-Actor akSpeaker = akSpeakerRef as Actor
-;BEGIN CODE
-;
 ;END CODE
 EndFunction
 ;END FRAGMENT

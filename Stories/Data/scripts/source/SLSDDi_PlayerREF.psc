@@ -360,8 +360,8 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 		endif
 	endif
 
-	If (isFemale(PlayerActor)) && (_hasPlayer(actors))
-		Debug.Trace("[SLSDDi]    Player is female" )
+	If (CowLife.checkHasBreasts(PlayerActor)) && (_hasPlayer(actors))
+		Debug.Trace("[SLSDDi]    Player has breasts" )
 
 		CowLife.checkIfLactating(PlayerActor)
 
@@ -532,7 +532,9 @@ Event OnSexLabOrgasm(String _eventName, String _args, Float _argc, Form _sender)
 EndEvent
 
 Event OnSit(ObjectReference akFurniture)
-	CowLife.UpdateMilkFromMachine(akFurniture)
+	Actor PlayerActor = Game.getPlayer()
+
+	CowLife.UpdateMilkFromMachine(PlayerActor, akFurniture)
 
 endEvent
 

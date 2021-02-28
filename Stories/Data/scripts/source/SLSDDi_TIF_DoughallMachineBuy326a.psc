@@ -2,6 +2,15 @@
 ;NEXT FRAGMENT INDEX 2
 Scriptname SLSDDi_TIF_DoughallMachineBuy326a Extends TopicInfo Hidden
 
+;BEGIN FRAGMENT Fragment_1
+Function Fragment_1(ObjectReference akSpeakerRef)
+Actor akSpeaker = akSpeakerRef as Actor
+;BEGIN CODE
+;
+;END CODE
+EndFunction
+;END FRAGMENT
+
 ;BEGIN FRAGMENT Fragment_0
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
@@ -10,7 +19,7 @@ Actor kPlayer = Game.getPlayer()
 
 kPlayer.RemoveItem(Gold, 1000)
 
-MilkMachineMarkerRef.enable()
+MilkMachineMarkerRef.disable()
 
 self.GetOwningQuest().SetStage(326)
 ;END CODE
