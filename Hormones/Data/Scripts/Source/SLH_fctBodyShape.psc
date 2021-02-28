@@ -1054,7 +1054,7 @@ function alterBreastNode(Actor kActor, float fNewBreast = 0.0)
 		XPMSELib.SetNodeScale(kActor, fctUtil.isFemale(kActor), NINODE_RIGHT_BREAST, fPregRightBreast * fApparelMod, SLH_KEY)
 
 	elseif (StorageUtil.GetIntValue(none, "_SLH_BodyMorphsON") == 1)
-		SLHSetNodeScale( kActor, NINODE_RIGHT_BREAST, fPregRightBreast * fApparelMod, false)
+		; SLHSetNodeScale( kActor, NINODE_LEFT_BREAST, fPregLeftBreast * fApparelMod, false)
 		SLHSetNodeScale( kActor, NINODE_RIGHT_BREAST, fPregRightBreast * fApparelMod, true)	
 	endIf
 EndFunction
@@ -1117,7 +1117,7 @@ function alterBellyNode(Actor kActor, float fNewBelly = 0.0)
 	elseif (StorageUtil.GetIntValue(none, "_SLH_BodyMorphsON") == 1)
 		; kTarget.SetAnimationVariableFloat("ecBellySwell", fBellySwell)
 		SLHSetNodeScale( kActor, NINODE_BELLY, fPregBelly * fApparelMod, false)
-		SLHSetNodeScale( kActor, NINODE_BELLY, fPregBelly * fApparelMod, true)
+		; SLHSetNodeScale( kActor, NINODE_BELLY, fPregBelly * fApparelMod, true)
 
 	endIf
 	; Debug.Notification("SexLab Hormones: Set Belly scale: " + fPregBelly)
@@ -1182,7 +1182,7 @@ function alterButtNode(Actor kActor, float fNewButt = 0.0)
 		XPMSELib.SetNodeScale(kActor, fctUtil.isFemale(kActor),  NINODE_RIGHT_BUTT, fPregRightButt * fApparelMod, SLH_KEY) 
 
 	elseif (StorageUtil.GetIntValue(none, "_SLH_BodyMorphsON") == 1)
-		SLHSetNodeScale( kActor, NINODE_RIGHT_BUTT, fPregRightButt * fApparelMod, false)
+		; SLHSetNodeScale( kActor, NINODE_LEFT_BUTT, fPregLeftButt * fApparelMod, false)
 		SLHSetNodeScale( kActor, NINODE_RIGHT_BUTT, fPregRightButt * fApparelMod, true)
 
 	endIf
