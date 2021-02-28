@@ -822,15 +822,15 @@ Event OnUpdate()
 						Debug.Notification("I love the taste of cum on my lips.")
 					EndIf
 				EndIf
-				If (StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkLevel") > 5)
-					If (StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkLevel") > 8) 
-						Debug.Notification("My boobies need to be milked so bad!")
-					ElseIf (StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkLevel") > 6) 
-						Debug.Notification("My boobies are so full and bouncy!")
-					Else
-						Debug.Notification("My titties are moist and tingling.")
-					EndIf
+				
+				If ( StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneLactation") > 80.0) 
+					Debug.Notification("My boobies need to be milked so bad!")
+				ElseIf (StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneLactation") > 60.0) 
+					Debug.Notification("My boobies are so full and bouncy!")
+				ElseIf ( StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneLactation") > 50.0)
+					Debug.Notification("My titties are moist and tingling.")
 				EndIf
+	
 			else
 				; Third person thought
 				If (iVaginalCountToday > 0) 
