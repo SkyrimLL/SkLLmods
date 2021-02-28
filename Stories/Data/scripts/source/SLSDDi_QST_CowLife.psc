@@ -790,11 +790,11 @@ Function GetMilk(Actor kActor, Int iNumberBottles=1)
 
 	; --------
 	Debug.Trace("[SLSDDi] GetMilk - Actor: " + kActor)
-	Debug.Trace("[SLSDDi] _SLH_iMilkProduced: " + StorageUtil.GetIntValue(kActor, "_SLH_iMilkProduced"))
-	Debug.Trace("[SLSDDi] _SLH_iDivineMilkProduced: " + StorageUtil.GetIntValue(kActor, "_SLH_iDivineMilkProduced"))
+	; Debug.Trace("[SLSDDi] _SLH_iMilkProduced: " + StorageUtil.GetIntValue(kActor, "_SLH_iMilkProduced"))
+	; Debug.Trace("[SLSDDi] _SLH_iDivineMilkProduced: " + StorageUtil.GetIntValue(kActor, "_SLH_iDivineMilkProduced"))
 
 	; _SLH_iMilkProducedTotal - indexed on the Player. Total amount produced across all cows
-	Debug.Trace("[SLSDDi] _SLH_iMilkProducedTotal: " + StorageUtil.GetIntValue(kPlayer, "_SLH_iMilkProducedTotal"))
+	; Debug.Trace("[SLSDDi] _SLH_iMilkProducedTotal: " + StorageUtil.GetIntValue(kPlayer, "_SLH_iMilkProducedTotal"))
 
 	Debug.Trace("[SLSDDi] iNumberBottles: " + iNumberBottles)
 
@@ -806,13 +806,14 @@ Function GetMilk(Actor kActor, Int iNumberBottles=1)
 	If (fLactationHormoneLevel >= 90.0)
 		kPlayer.AddItem(DivineMilk, iNumberBottles)	
 		StorageUtil.SetIntValue(kActor, "_SLH_iDivineMilkProduced", StorageUtil.GetIntValue(kActor, "_SLH_iDivineMilkProduced") + iNumberBottles)
+		StorageUtil.SetIntValue(kPlayer, "_SLH_iDivineMilkProducedTotal", StorageUtil.GetIntValue(kPlayer, "_SLH_iDivineMilkProducedTotal") + iNumberBottles)	
 	Else
 		kPlayer.AddItem(Milk, iNumberBottles)	
 		StorageUtil.SetIntValue(kActor, "_SLH_iMilkProduced", StorageUtil.GetIntValue(kActor, "_SLH_iMilkProduced") + iNumberBottles)
+		StorageUtil.SetIntValue(kPlayer, "_SLH_iMilkProducedTotal", StorageUtil.GetIntValue(kPlayer, "_SLH_iMilkProducedTotal") + iNumberBottles)	
 	Endif
 
 	; _SLH_iMilkProducedTotal - indexed on the Player. Total amount produced across all cows
-	StorageUtil.SetIntValue(kPlayer, "_SLH_iMilkProducedTotal", StorageUtil.GetIntValue(kPlayer, "_SLH_iMilkProducedTotal") + iNumberBottles)	
 
 
 	; Trigger quest stages based on milk production
@@ -821,13 +822,27 @@ Function GetMilk(Actor kActor, Int iNumberBottles=1)
 	    DivineCheeseQuest.SetStage(100)
 	endif
 
+	if ( (!DivineCheeseQuest.GetStageDone(200)) && (StorageUtil.GetIntValue(kActor, "_SLH_iDivineMilkProduced") >= 1) )
+		; clear past objectives below 100
+	    DivineCheeseQuest.SetStage(200)
+	endif
+
+	if ( (!DivineCheeseQuest.GetStageDone(320)) && (StorageUtil.GetIntValue(kActor, "_SLH_iDivineMilkProduced") >= 5) )
+		; clear past objectives below 100
+	    DivineCheeseQuest.SetStage(320)
+	endif
+
+	if ( (!DivineCheeseQuest.GetStageDone(330)) && (StorageUtil.GetIntValue(kActor, "_SLH_iDivineMilkProduced") >= 10) )
+		; clear past objectives below 100
+	    DivineCheeseQuest.SetStage(330)
+	endif
 
 	; --------
-	Debug.Trace("[SLSDDi] after _SLH_iMilkProduced: " + StorageUtil.GetIntValue(kActor, "_SLH_iMilkProduced"))
-	Debug.Trace("[SLSDDi] after _SLH_iDivineMilkProduced: " + StorageUtil.GetIntValue(kActor, "_SLH_iDivineMilkProduced"))
+	; Debug.Trace("[SLSDDi] after _SLH_iMilkProduced: " + StorageUtil.GetIntValue(kActor, "_SLH_iMilkProduced"))
+	; Debug.Trace("[SLSDDi] after _SLH_iDivineMilkProduced: " + StorageUtil.GetIntValue(kActor, "_SLH_iDivineMilkProduced"))
 
 	; _SLH_iMilkProducedTotal - indexed on the Player. Total amount produced across all cows
-	Debug.Trace("[SLSDDi] after _SLH_iMilkProducedTotal: " + StorageUtil.GetIntValue(kPlayer, "_SLH_iMilkProducedTotal"))
+	; Debug.Trace("[SLSDDi] after _SLH_iMilkProducedTotal: " + StorageUtil.GetIntValue(kPlayer, "_SLH_iMilkProducedTotal"))
 
 EndFunction
 

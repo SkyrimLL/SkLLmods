@@ -323,6 +323,7 @@ event OnPageReset(string a_page)
 
 			AddHeaderOption(" Milk Production (Total)") 
 			AddTextOption(" _SLH_iMilkProducedTotal: " + StorageUtil.GetIntValue( kPlayer , "_SLH_iMilkProducedTotal")  as Int, "", OPTION_FLAG_DISABLED)
+			AddTextOption(" _SLH_iDivineMilkProducedTotal: " + StorageUtil.GetIntValue( kPlayer , "_SLH_iDivineMilkProducedTotal")  as Int, "", OPTION_FLAG_DISABLED)
 
 					
 		else
