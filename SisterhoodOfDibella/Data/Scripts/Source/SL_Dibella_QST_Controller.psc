@@ -19,6 +19,7 @@ GlobalVariable Property _SLSD_isPlayerEnslaved auto
 Faction Property DibellaTempleFaction Auto
 
 Armor Property DibellaNecklace  Auto  
+Armor Property DibellaWreath  Auto  
 MiscObject Property DibellaToken  Auto  
 Location Property DibellaTempleBaths  Auto  
 
@@ -304,16 +305,18 @@ Event OnSexLabOrgasm(String _eventName, String _args, Float _argc, Form _sender)
 	 		endIf	 		
 	 	EndIf
 
-	 ElseIf ( (_hasFaction(actors, DibellaTempleFaction, false)) || (_hasItem(actors, DibellaToken as Form, false)) || (_hasItem(actors, DibellaNecklace as Form, false)) || (_hasRelationshipRank(actors, 1, false)) ) && (_hasPlayer(actors))
-	 	Debug.Trace("[SLSD] Orgasm with Sister of Dibella!")
+	 Elseif (PlayerActor.GetItemCount(DibellaWreath)>=1)
+	 	If ( (_hasFaction(actors, DibellaTempleFaction, false)) || (_hasItem(actors, DibellaToken as Form, false)) || (_hasItem(actors, DibellaNecklace as Form, false)) || (_hasRelationshipRank(actors, 1, false)) ) && (_hasPlayer(actors))
+		 	Debug.Trace("[SLSD] Orgasm with Sister of Dibella!")
 
-		iRandomNum = Utility.RandomInt(0,100)
+			iRandomNum = Utility.RandomInt(0,100)
 
-		If (iRandomNum > 60)
-	 		Game.getPlayer().AddItem(DibellaToken,1)
+			If (iRandomNum > 60)
+		 		PlayerActor.AddItem(DibellaToken,1)
 
-	 		Debug.Notification("Your lover gives you a Mark of Dibella.")
-	 	EndIf
+		 		Debug.Notification("Your lover gives you a Mark of Dibella.")
+		 	EndIf
+		 endif
 	EndIf
 
 EndEvent
