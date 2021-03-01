@@ -1324,7 +1324,7 @@ Event OnShaveHead(String _eventName, String _args, Float _argc = 1.0, Form _send
  	if (kActor == None)
  		kActor = Game.GetPlayer()
  	EndIf
-	debugTrace(" Detected forced hair change event")
+	debugTrace(" Receiving forced hair change event - Actor: " + kActor )
 
 	fctBodyShape.shaveHair(kActor)		
 	

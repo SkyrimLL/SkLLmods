@@ -282,6 +282,8 @@ function SLIF_inflate(Actor kActor, String sKey, float value, String NiOString)
 		ElseIf sKey == "BreastGravity2"
 			JsonKey = "breastgravity"
 		ElseIf sKey == "BreastCleavage"
+			JsonKey = "breastcleavage"
+		ElseIf sKey == "BreastsTogether"
 			JsonKey = "breaststogether"
 		ElseIf sKey == "DoubleMelon"
 			JsonKey = "doublemelon"
@@ -1054,7 +1056,7 @@ function alterBreastNode(Actor kActor, float fNewBreast = 0.0)
 		XPMSELib.SetNodeScale(kActor, fctUtil.isFemale(kActor), NINODE_RIGHT_BREAST, fPregRightBreast * fApparelMod, SLH_KEY)
 
 	elseif (StorageUtil.GetIntValue(none, "_SLH_BodyMorphsON") == 1)
-		; SLHSetNodeScale( kActor, NINODE_LEFT_BREAST, fPregLeftBreast * fApparelMod, false)
+		SLHSetNodeScale( kActor, NINODE_RIGHT_BREAST, fPregRightBreast * fApparelMod, false)
 		SLHSetNodeScale( kActor, NINODE_RIGHT_BREAST, fPregRightBreast * fApparelMod, true)	
 	endIf
 EndFunction
@@ -1117,7 +1119,7 @@ function alterBellyNode(Actor kActor, float fNewBelly = 0.0)
 	elseif (StorageUtil.GetIntValue(none, "_SLH_BodyMorphsON") == 1)
 		; kTarget.SetAnimationVariableFloat("ecBellySwell", fBellySwell)
 		SLHSetNodeScale( kActor, NINODE_BELLY, fPregBelly * fApparelMod, false)
-		; SLHSetNodeScale( kActor, NINODE_BELLY, fPregBelly * fApparelMod, true)
+		SLHSetNodeScale( kActor, NINODE_BELLY, fPregBelly * fApparelMod, true)
 
 	endIf
 	; Debug.Notification("SexLab Hormones: Set Belly scale: " + fPregBelly)
@@ -1182,7 +1184,7 @@ function alterButtNode(Actor kActor, float fNewButt = 0.0)
 		XPMSELib.SetNodeScale(kActor, fctUtil.isFemale(kActor),  NINODE_RIGHT_BUTT, fPregRightButt * fApparelMod, SLH_KEY) 
 
 	elseif (StorageUtil.GetIntValue(none, "_SLH_BodyMorphsON") == 1)
-		; SLHSetNodeScale( kActor, NINODE_LEFT_BUTT, fPregLeftButt * fApparelMod, false)
+		SLHSetNodeScale( kActor, NINODE_RIGHT_BUTT, fPregRightButt * fApparelMod, false)
 		SLHSetNodeScale( kActor, NINODE_RIGHT_BUTT, fPregRightButt * fApparelMod, true)
 
 	endIf
@@ -1231,7 +1233,7 @@ function shaveHair ( Actor kActor)
 	ActorBase pLeveledActorBase = kActor.GetLeveledActorBase()
 	Int   iPlayerGender = pLeveledActorBase.GetSex() as Int
 
-	If (StorageUtil.GetIntValue(kActor, "_SLH_iUseHair") == 1) && (StorageUtil.GetIntValue(kActor, "_SLH_iUseHairColor") == 1)
+	If (StorageUtil.GetIntValue(kActor, "_SLH_iUseHair") == 1)
 		If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
 			; YPS Fashion override if detected
 			; See - http://www.loverslab.com/topic/56627-immersive-hair-growth-and-styling-yps-devious-immersive-fashion-v5/
@@ -1281,6 +1283,8 @@ function shaveHair ( Actor kActor)
 		debugTrace("       -> Forced hair change applied")
 	Else
 		debugTrace("       -> Forced hair change skipped (Hair change disabled)")
+		debugTrace("       -> _SLH_iUseHair : " + StorageUtil.GetIntValue(kActor, "_SLH_iUseHair"))
+ 
 	Endif
  
 EndFunction
@@ -2312,6 +2316,7 @@ Function SLHSetNodeScale(Actor akActor, string nodeName, float value, bool isFem
 		SLHSetMorphScale(akActor, "BreastsSH", value)
 		SLHSetMorphScale(akActor, "BreastGravity", value)
 		SLHSetMorphScale(akActor, "BreastCleavage", value)
+		SLHSetMorphScale(akActor, "BreastsTogether", value)
 		SLHSetMorphScale(akActor, "DoubleMelon", value)
 		SLHSetMorphScale(akActor, "BreastsFantasy", value)
 		SLHSetMorphScale(akActor, "NipplePerkiness", value)
@@ -2323,6 +2328,7 @@ Function SLHSetNodeScale(Actor akActor, string nodeName, float value, bool isFem
 		SLHSetMorphScale(akActor, "WideWaistLine", value)
 	ElseIf nodeName == "NPC R Butt"
 		SLHSetMorphScale(akActor, "Butt", value)
+		SLHSetMorphScale(akActor, "AppleCheeks", value)
 		SLHSetMorphScale(akActor, "ChubbyButt", value)
 		SLHSetMorphScale(akActor, "MuscleButt", value)
 		SLHSetMorphScale(akActor, "Hips", value)
@@ -2342,6 +2348,8 @@ Function SLHSetMorphScale(Actor akActor, string nodeName, float value)
 		JsonKey = "breastgravity"
 	ElseIf nodeName == "BreastCleavage"
 		JsonKey = "breastcleavage"
+	ElseIf nodeName == "BreastsTogether"
+		JsonKey = "breaststogether"
 	ElseIf nodeName == "DoubleMelon"
 		JsonKey = "doublemelon"
 	ElseIf nodeName == "BreastsFantasy"
@@ -2362,6 +2370,8 @@ Function SLHSetMorphScale(Actor akActor, string nodeName, float value)
 		JsonKey = "widewaistline"
 	ElseIf nodeName == "Butt"
 		JsonKey = "butt"
+	ElseIf nodeName == "AppleCheeks"
+		JsonKey = "applecheeks"
 	ElseIf nodeName == "ChubbyButt"
 		JsonKey = "chubbybutt"
 	ElseIf nodeName == "MuscleButt"
@@ -2387,10 +2397,14 @@ Function SLHSetMorphScale(Actor akActor, string nodeName, float value)
 		NiOverride.SetBodyMorph(akActor, "Breasts", modName, bodyslide_value * bodyslide_scale_modifier)
 	ElseIf nodeName == "BreastsSH"
 		NiOverride.SetBodyMorph(akActor, "BreastsNewSH", modName, bodyslide_value * bodyslide_scale_modifier)
+		NiOverride.SetBodyMorph(akActor, "BreastsSH", modName, bodyslide_value * bodyslide_scale_modifier)
 	ElseIf nodeName == "BreastGravity"
 		NiOverride.SetBodyMorph(akActor, "BreastGravity2", modName, bodyslide_value * bodyslide_scale_modifier)
+		NiOverride.SetBodyMorph(akActor, "BreastGravity", modName, bodyslide_value * bodyslide_scale_modifier)
 	ElseIf nodeName == "BreastCleavage"
 		NiOverride.SetBodyMorph(akActor, "BreastCleavage", modName, bodyslide_value * bodyslide_scale_modifier)
+	ElseIf nodeName == "BreastsTogether"
+		NiOverride.SetBodyMorph(akActor, "BreastsTogether", modName, bodyslide_value * bodyslide_scale_modifier)
 	ElseIf nodeName == "DoubleMelon"
 		NiOverride.SetBodyMorph(akActor, "DoubleMelon", modName, bodyslide_value * bodyslide_scale_modifier)
 	ElseIf nodeName == "BreastsFantasy"
@@ -2411,6 +2425,8 @@ Function SLHSetMorphScale(Actor akActor, string nodeName, float value)
 	;butt scale
 	ElseIf nodeName == "Butt"
 		NiOverride.SetBodyMorph(akActor, "Butt", modName, bodyslide_value * bodyslide_scale_modifier)
+	ElseIf nodeName == "AppleCheeks"
+		NiOverride.SetBodyMorph(akActor, "AppleCheeks", modName, bodyslide_value * bodyslide_scale_modifier)
 	ElseIf nodeName == "ChubbyButt"
 		NiOverride.SetBodyMorph(akActor, "ChubbyButt", modName, bodyslide_value * bodyslide_scale_modifier)
 	ElseIf nodeName == "MuscleButt"

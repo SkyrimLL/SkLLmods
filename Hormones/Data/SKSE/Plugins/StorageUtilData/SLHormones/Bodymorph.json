@@ -1,9 +1,11 @@
 {
 	"float" : 
 	{
-		"breasts" : 0.75,
+		"breasts" : 0.8,
 		"breastssh" : 0.15,
-		"breastgravity" : 0.4,
+		"breastgravity" : 0.25,
+		"breastcleavage" : 0.25,
+		"breaststogether" : 0.0,
 		"doublemelon" : 0.25,
 		"breastsfantasy" : 0.0,
 		"nippleperkiness" : 0.0,
@@ -15,6 +17,7 @@
 		"hipsupperwidth" : -0.25,
 		"widewaistline" : 0.1,
 		"butt" : 0.5,
+		"applecheeks" : 0.05,
 		"chubbybutt" : 0.2,
 		"musclebutt" : 0.5,
 		"thighs" : 0.2
