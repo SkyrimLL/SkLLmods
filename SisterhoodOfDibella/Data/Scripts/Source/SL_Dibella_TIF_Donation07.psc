@@ -49,7 +49,7 @@ Self.GetOwningQuest().ModObjectiveGlobal( 1, TempleDonations, 10, 10, True, True
 			animTag = animTag + ",Lesbian"
 		EndIf
 
-		Thread.SetAnimations(SexLab.GetAnimationsByTags(2, "Foreplay"))
+		Thread.SetAnimations(SexLab.GetAnimationsByTags(2, animTag))
 
 		Thread.StartThread()
 

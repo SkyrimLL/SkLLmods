@@ -61,6 +61,7 @@ Function _Maintenance()
 	; RegisterForModEvent("AnimationStart", "OnSexLabStart")
 	RegisterForModEvent("AnimationEnd",   "OnSexLabEnd")
 	RegisterForModEvent("OrgasmStart",    "OnSexLabOrgasm")
+	RegisterForModEvent("SexlabOrgasmSeparate", "OnSexlabOrgasmS")
 	RegisterForModEvent("SLSDMarkOfDibella",   "OnSLSDMarkOfDibella")
 	RegisterForSleep()
 
@@ -320,7 +321,94 @@ Event OnSexLabOrgasm(String _eventName, String _args, Float _argc, Form _sender)
 	EndIf
 
 EndEvent
+Event OnSexLabOrgasmS(Form ActorRef, Int Thread)
+	ObjectReference PlayerREF= PlayerAlias.GetReference()
+	Actor PlayerActor= PlayerAlias.GetReference() as Actor
+	ActorBase pActorBase = PlayerActor.GetActorBase()
+	Float fBreastScale 
+	Int iRandomNum
 
+	if !Self || !SexLab 
+		Debug.Trace("[SLSD] Critical error on SexLab Separate Orgasm")
+		Return
+	EndIf
+	string _args = Thread as string
+	Actor[] actors  = SexLab.HookActors(_args)
+	Actor   victim  = SexLab.HookVictim(_args)
+	Actor[] victims = new Actor[1]
+	victims[0] = victim
+
+	; If (_hasPlayer(actors))
+	; 	Debug.Trace("[SLSD] Orgasm!")
+	; EndIf
+	actor akActor = ActorRef as actor
+	If (akActor == (FjotraRef as Actor)) && (_hasPlayer(actors))
+		if ( (Game.GetPlayer().HasMagicEffect(AgentOfDibella  )) && (_SLSD_HormonesSexChange.GetValue() == 1) && (pActorBase.GetSex() == 0) )
+			; Do nothing... message box will open from SexLab End event
+		Else
+		 	Debug.Trace("[SLSD] Orgasm with Fjotra!")
+
+			iRandomNum = Utility.RandomInt(0,100)
+
+			If (iRandomNum > 70) && (TempleCorruption.getValue()>0)
+		 		DibellaKissFX.Cast(FjotraRef as Actor ,FjotraRef as Actor )
+		 		Utility.Wait(2.0)
+
+		 		iRandomNum = Utility.RandomInt(0,100)
+		 		If (iRandomNum > 80) 
+		 			; [Dibella after orgasm] There is a disease in my temple. Help my Sybil and show her the path!
+		 			Debug.MessageBox("The Sybil reaches for your arm and gasps in an otherworldly voice 'There is a disease in my temple. Help my Sybil and show her the path!'")
+
+		 		ElseIf (iRandomNum > 50)
+					; [Dibella after orgasm] My Sybil needs you!
+					Debug.MessageBox("The Sybil cries out, transfixed 'My Sybil needs you! Hurry!'.")
+
+		 		ElseIf (iRandomNum > 20)
+					; [Dibella after orgasm] Trust Senna.
+					Debug.MessageBox("The Sybil is collapses and whispers 'Trust Senna.. she will help you.'.")
+
+				Else
+					Debug.MessageBox("The Sybil is possessed by the essence of Dibella, transfixed, eyes glowing and looking right through you.")
+
+				EndIf
+			ElseIf  (TempleCorruption.getValue()<=0)
+		 		DibellaKissFX.Cast(FjotraRef as Actor ,FjotraRef as Actor )
+		 		Utility.Wait(2.0)
+				Debug.MessageBox("The eyes of the Sybil glow in extasy.")
+
+	 		Endif
+
+	 		If (iRandomNum > 80) 
+				; Hormones compatibility
+				if (pActorBase.GetSex() == 0)
+					StorageUtil.SetFloatValue(PlayerActor, "_SLH_fSchlong",  StorageUtil.GetFloatValue(PlayerActor, "_SLH_fSchlong")  * 1.5) 	
+				else
+					StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast",  StorageUtil.GetFloatValue(PlayerActor, "_SLH_fBreast")  * 2.0) 	
+					StorageUtil.SetFloatValue(PlayerActor, "_SLH_fButt",  StorageUtil.GetFloatValue(PlayerActor, "_SLH_fButt")  * 1.5) 	
+				endIf
+
+				PlayerActor.SendModEvent("SLHRefresh")
+
+	 		endIf	 		
+	 	EndIf
+
+	 ElseIf (akActor!=PlayerActor && ((akActor.IsInFaction(DibellaTempleFaction)) || (akActor.GetItemCount(DibellaToken as Form) >= 1) || (akActor.GetItemCount(DibellaNecklace as Form) >= 1) || akActor.GetRelationshipRank(PlayerActor) >= 1 ) && (_hasPlayer(actors)))
+	 	Debug.Trace("[SLSD] Orgasm with Sister of Dibella!")
+
+		iRandomNum = Utility.RandomInt(0,100)
+
+		If (iRandomNum > 60)
+	 		Game.getPlayer().AddItem(DibellaToken,1)
+
+	 		Debug.Notification("Your lover gives you a Mark of Dibella.")
+	 	EndIf
+	EndIf
+EndEvent
+ 
+
+
+
+ 
 
 int function iMin(int a, int b)
 	if (a<=b)
