@@ -153,6 +153,9 @@ Event OnPCStartRedWave(String _eventName, String _args, Float _argc = -1.0, Form
 
 	StorageUtil.SetIntValue(none, "_SLS_iPlayerStartRedWave", 1)
 
+	; Enable Hormone changes
+	StorageUtil.SetIntValue(none, "_SLH_iHormonesSleepInit", 1)
+
 	PlayerActor.MoveTo(SLS_PlayerRedWaveStartMarker)
 	PlayerActor.addtofaction(RedWaveShipFaction)  
 	PlayerActor.addtofaction(RedWaveFaction) 
@@ -172,6 +175,9 @@ Event OnPCStartSexbot(String _eventName, String _args, Float _argc = -1.0, Form 
 
 	StorageUtil.SetIntValue(none, "_SLS_iPlayerStartSexbot", 1)
 
+	; Enable Hormone changes
+	StorageUtil.SetIntValue(none, "_SLH_iHormonesSleepInit", 1)
+
 	PlayerActor.MoveTo(SLS_PlayerSexBotStartMarker)
 	PlayerActor.addtofaction(DwemerBotFaction) 
 	StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryLevel", 5)
@@ -188,6 +194,9 @@ Event OnPCStartPet(String _eventName, String _args, Float _argc = -1.0, Form _se
  	Actor PlayerActor= Game.GetPlayer() as Actor
 
 	StorageUtil.SetIntValue(none, "_SLS_iPlayerStartPet", 1)
+
+	; Enable Hormone changes
+	StorageUtil.SetIntValue(none, "_SLH_iHormonesSleepInit", 1)
 
 	PlayerActor.MoveTo(SLS_PlayerPetStartMarker)
 	PlayerActor.addtofaction(NecromancerFaction) 
@@ -215,11 +224,15 @@ Event OnPCStartMilkFarm(String _eventName, String _args, Float _argc = -1.0, For
 
 	StorageUtil.SetIntValue(none, "_SLS_iPlayerStartMilkFarm", 1)
 
+	; Enable Hormone changes
+	StorageUtil.SetIntValue(none, "_SLH_iHormonesSleepInit", 1)
+
 	PlayerActor.MoveTo(SLS_PlayerMilkFarmStartMarker)
-	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast", 2.0 ) 
-	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fWeight", 100.0 ) 
-	PlayerActor.SendModEvent("SLHRefresh") 
-	PlayerActor.SendModEvent("_SLSDDi_EquipMilkingDevice")
+
+	; StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast", 2.0 ) 
+	; StorageUtil.SetFloatValue(PlayerActor, "_SLH_fWeight", 100.0 ) 
+	; PlayerActor.SendModEvent("SLHRefresh") 
+	; PlayerActor.SendModEvent("_SLSDDi_EquipMilkingDevice")
 
 	StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryLevel", 2)
 	StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryExposure", 20)
@@ -228,7 +241,7 @@ Event OnPCStartMilkFarm(String _eventName, String _args, Float _argc = -1.0, For
 
 	SendModEvent("_SLS_PlayerMilkFarm")
 
-	Debug.MessageBox("You are so happy as one of Mistress Leonara's special flock. Each day, you can feel more milk flowing through your heavy breasts. If only you could find a way to produce more milk for her Divine Cheese...")
+	Debug.MessageBox("You are so excited to have been chosen as one of Mistress Leonara's special flock. Any day now, you are ready to feel milk flowing through your breasts. If only you could find a way to produce more milk for her Divine Cheese...")
 
 EndEvent
 
@@ -237,6 +250,9 @@ Event OnPCStartAlicia(String _eventName, String _args, Float _argc = -1.0, Form 
  	Actor PlayerActor= Game.GetPlayer() as Actor
 
 	StorageUtil.SetIntValue(none, "_SLS_iPlayerStartAlicia", 1)
+
+	; Enable Hormone changes
+	StorageUtil.SetIntValue(none, "_SLH_iHormonesSleepInit", 1)
 
 	If (!StorageUtil.HasIntValue(none, "_SD_iSanguine")) && (!StorageUtil.HasIntValue(none, "_SD_version"))
 		PlayerActor.MoveTo(SLS_PlayerAliciaStartMarker)
@@ -270,6 +286,9 @@ Event OnPCStartSpriggan(String _eventName, String _args, Float _argc = -1.0, For
 
 	StorageUtil.SetIntValue(none, "_SLS_iPlayerStartSpriggan", 1)
 
+	; Enable Hormone changes
+	StorageUtil.SetIntValue(none, "_SLH_iHormonesSleepInit", 1)
+
 	PlayerActor.MoveTo(SLS_PlayerSprigganStartMarker)
 
 	PlayerActor.addtofaction(SprigganFaction) 
@@ -296,6 +315,9 @@ Event OnPCStartKin(String _eventName, String _args, Float _argc = -1.0, Form _se
  	Actor PlayerActor= Game.GetPlayer() as Actor
 
 	StorageUtil.SetIntValue(none, "_SLS_iPlayerStartKin", 1)
+
+	; Enable Hormone changes
+	StorageUtil.SetIntValue(none, "_SLH_iHormonesSleepInit", 1)
 
 	PlayerActor.MoveTo(SLS_PlayerKinStartMarker)
 	PlayerActor.addtofaction(ForswornFaction) 
@@ -324,6 +346,9 @@ Event OnPCStartDibella(String _eventName, String _args, Float _argc = -1.0, Form
 
 	StorageUtil.SetIntValue(none, "_SLS_iPlayerStartDibella", 1)
 
+	; Enable Hormone changes
+	StorageUtil.SetIntValue(none, "_SLH_iHormonesSleepInit", 1)
+
 	PlayerActor.MoveTo(SLS_PlayerDibellaStartMarker)
  
 	Debug.MessageBox("You made it... the Temple of Dibella in Markarth. Your childhood dream of becoming a servant of the Goddess is about to become reality. Talk to the Sister in charge in the Temple and ask her to join the Order.")
@@ -336,6 +361,9 @@ Event OnPCStartNordicQueen(String _eventName, String _args, Float _argc = -1.0, 
  	Actor PlayerActor= Game.GetPlayer() as Actor
 
 	StorageUtil.SetIntValue(none, "_SLS_iPlayerStartNordicQueen", 1)
+
+	; Enable Hormone changes
+	StorageUtil.SetIntValue(none, "_SLH_iHormonesSleepInit", 1)
 
 	PlayerActor.MoveTo(SLS_PlayerNordicQueenStartMarker)
 	PlayerActor.addtofaction(DraugrFaction) 
@@ -358,6 +386,9 @@ Event OnPCStartChaurusQueen(String _eventName, String _args, Float _argc = -1.0,
  	Actor PlayerActor= Game.GetPlayer() as Actor
 
 	StorageUtil.SetIntValue(none, "_SLS_iPlayerStartChaurusQueen", 1)
+
+	; Enable Hormone changes
+	StorageUtil.SetIntValue(none, "_SLH_iHormonesSleepInit", 1)
 
 	; Not needed - already covered by LAL start from Content Consumer
 	; PlayerActor.MoveTo(SLS_PlayerChaurusQueenStartMarker)
@@ -386,6 +417,9 @@ Event OnPCStartBroodMaiden(String _eventName, String _args, Float _argc = -1.0, 
  	Actor PlayerActor= Game.GetPlayer() as Actor
 
 	StorageUtil.SetIntValue(none, "_SLS_iPlayerStartBroodMaiden", 1)
+
+	; Enable Hormone changes
+	StorageUtil.SetIntValue(none, "_SLH_iHormonesSleepInit", 1)
 
 	; PlayerActor.MoveTo(SLS_PlayerBroodMaidenStartMarker)
 	PlayerActor.addtofaction(ChaurusFaction) 

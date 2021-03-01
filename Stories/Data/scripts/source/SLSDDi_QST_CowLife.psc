@@ -950,10 +950,10 @@ Function InitBusiness()
 
 	If (!StorageUtil.HasIntValue(none, "_SLS_iMilkFarmBusiness"))
  
-		InitFarmCow(BretonCowRef, "Breton") 
+		InitFarmCow(BretonCowRef, "Breton cow") 
 		kBretonCow.SendModEvent("SLHModHormone", "Lactation", 70.0 )
 
-		InitFarmCow(NordCowRef, "Nord")  
+		InitFarmCow(NordCowRef, "Nord cow")  
 		kNordCow.SendModEvent("SLHModHormone", "Lactation", 40.0 )
 
 		StorageUtil.SetIntValue(none, "_SLS_iMilkFarmBusiness", 1)
@@ -1057,17 +1057,18 @@ String Function GetFarmCowStatus(ObjectReference kCowActorRef, String sCowRace)
 		; If  (!kCowActor.WornHasKeyword(SLSD_CowHarness) && !kCowActor.WornHasKeyword(SLSD_CowMilker))
 		;	kCowActor.SetOutfit(FarmCowOutfit)
 		; endif
+		
+	  	if (!kCowActor.IsInFaction(HucowsFaction))
+	 		kCowActor.AddToFaction(HucowsFaction)
+	 	endif
+
+	 	if (!kCowActor.IsInFaction(MilkFarmCowsFaction))
+	 		kCowActor.AddToFaction(MilkFarmCowsFaction)
+	 	endif
 	else
 		; sBusinessStatusMsg += "\n " + sCowRace + ": - " 
 	endif
 
-  	if (!kCowActor.IsInFaction(HucowsFaction))
- 		kCowActor.AddToFaction(HucowsFaction)
- 	endif
-
- 	if (!kCowActor.IsInFaction(MilkFarmCowsFaction))
- 		kCowActor.AddToFaction(MilkFarmCowsFaction)
- 	endif
 
 	Debug.Trace("[SLS] GetFarmCowStatus - sCowRace: " + sCowRace)
 

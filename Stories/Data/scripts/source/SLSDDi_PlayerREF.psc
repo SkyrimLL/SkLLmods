@@ -12,6 +12,7 @@ GlobalVariable Property GV_MilkLevel  Auto
 GlobalVariable Property GV_ProlactinLevel  Auto  
 GlobalVariable Property MilkProduced  Auto  
 GlobalVariable Property MilkProducedTotal  Auto  
+GlobalVariable Property PlayerStartMilkFarm  Auto  
 
 Keyword Property SLSD_CowHarness Auto
 Keyword Property SLSD_CowMilker Auto
@@ -24,6 +25,8 @@ SPELL Property ApplySweatFX  Auto
 
 ObjectReference Property MilkOMaticSoundFX  Auto  
 ObjectReference Property LeonaraRef  Auto  
+ObjectReference Property SLSD_PlayerBagRef  Auto  
+
 
 SLSDDi_QST_CowLife Property CowLife Auto
 
@@ -149,7 +152,14 @@ Event OnUpdate()
  	if (iGameDateLastCheck == -1)
  		iGameDateLastCheck = daysPassed
  	endIf
- 
+
+	if ( (StorageUtil.GetIntValue(none, "_SLS_iPlayerStartMilkFarm") == 1) && (PlayerStartMilkFarm.GetValue()==0) )
+		PlayerStartMilkFarm.SetValue(1)
+		safeRemoveAllItems(PlayerActor, SLSD_PlayerBagRef)
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iForcedHairLoss", 1)
+		PlayerActor.SendModEvent("SLHShaveHead")
+	endif
+
 	iDaysSinceLastCheck = (daysPassed - iGameDateLastCheck ) as Int
 
 	If (iDaysSinceLastCheck > 0)
@@ -211,6 +221,9 @@ Event OnGropeCow(String _eventName, String _args, Float _argc = -1.0, Form _send
 	Float fLactationHormoneMod = 0.1
 
 	If  (SexLab.ValidateActor( kPlayer ) > 0) &&  (SexLab.ValidateActor(kActor) > 0) 
+		SendModEvent("dhlp-Suspend")
+		StorageUtil.SetIntValue(none, "_SLS_iPlayerMilkFarmSex", 1)
+
 		actor[] sexActors = new actor[2]
 		If (sPlayerCow == "PlayerCow")
 			sexActors[0] = kPlayer
@@ -261,6 +274,9 @@ Event OnDrinkCow(String _eventName, String _args, Float _argc = -1.0, Form _send
 
 
 	If  (SexLab.ValidateActor( kPlayer ) > 0) &&  (SexLab.ValidateActor(kActor) > 0) 
+		SendModEvent("dhlp-Suspend")
+		StorageUtil.SetIntValue(none, "_SLS_iPlayerMilkFarmSex", 1)
+
 		actor[] sexActors = new actor[2]
 		If (sPlayerCow == "PlayerCow")
 			sexActors[0] = kPlayer
@@ -476,6 +492,11 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 		; Debug.Notification("[SLSDDi] Milk during sex DISABLED")
 		CowLife.updateMilkDuringSexFlag(0)
 	endif
+
+	if (StorageUtil.GetIntValue(none, "_SLS_iPlayerMilkFarmSex") == 1)
+		SendModEvent("dhlp-Resume")
+		StorageUtil.SetIntValue(none, "_SLS_iPlayerMilkFarmSex", 0)
+	endif
 	
 	; if config.bDebugMsg
 	; 	_listActors("End: ", actors)
@@ -539,6 +560,34 @@ Event OnSit(ObjectReference akFurniture)
 endEvent
 
 
+; -------------------------------------------------------------------
+Function safeRemoveAllItems ( ObjectReference akContainer, ObjectReference akTransferTo = None)
+	Int iFormIndex = 0
+	Bool bIgnoreItem = False
+	Actor kPlayer = Game.GetPlayer()
+	Actor kActor = akContainer as Actor
+
+	; form[] slaveEquipment = SexLab.StripActor(kActor)
+	; iFormIndex = slaveEquipment.Length
+
+	iFormIndex = akContainer.GetNumItems()
+
+	While ( iFormIndex > 0 )
+		iFormIndex -= 1
+		; Form kForm = slaveEquipment[iFormIndex]
+		Form kForm = akContainer.GetNthForm(iFormIndex)
+
+		If ( kForm )
+			bIgnoreItem = ( (!SexLab.IsStrippable(kForm)) && !kForm.hasKeywordString("zad_BlockGeneric") && !kForm.hasKeywordString("VendorNoSale") && !kForm.hasKeywordString("SexLabNoStrip") && !kForm.HasKeywordString("MagicDisallowEnchanting")  && !kForm.HasKeywordString("SOS_Underwear")  && !kForm.HasKeywordString("SOS_Genitals") && !kForm.HasKeywordString("_SLMC_MCDevice") ) 
+
+			If ( !bIgnoreItem  ) 
+				akContainer.RemoveItem(kForm, akContainer.GetItemCount( kForm ), True, akTransferTo)
+				; akTransferTo.AddItem(kForm, akContainer.GetItemCount( kForm ))
+			EndIf
+		Endif
+	EndWhile
+
+EndFunction
 
 ; -------------------------------------------------------------------
 Bool function isFemale(actor kActor)
@@ -610,3 +659,4 @@ EndFunction
 bool Function CheckXPMSERequirements(Actor akActor, bool isFemale)
 	return XPMSELib.CheckXPMSEVersion(akActor, isFemale, XPMSE_VERSION, true) && XPMSELib.CheckXPMSELibVersion(XPMSELIB_VERSION) && SKSE.GetPluginVersion("NiOverride") >= NIOVERRIDE_VERSION && NiOverride.GetScriptVersion() >= NIOVERRIDE_SCRIPT_VERSION
 EndFunction
+
