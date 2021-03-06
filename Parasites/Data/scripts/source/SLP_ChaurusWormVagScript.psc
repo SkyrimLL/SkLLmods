@@ -86,14 +86,13 @@ Function DeviceMenu(Int msgChoice = 0)
 		libs.EquipDevice(libs.PlayerRef, deviceInventory, deviceRendered, zad_DeviousDevice)
 	elseif msgChoice==1 ; Wearing a belt, no plugs
 		Debug.MessageBox(strFailEquip)
-	elseif msgChoice==2 ; Not wearing a belt, plugs
-		Actor kPlayer = Game.getPlayer()
+	elseif msgChoice==2 ; Not wearing a belt, plugs 
 		string msg = ""
-		int iDexterity = 10 + (Game.GetPlayer().GetAV("Pickpocket") as Int) / 10
+		int iDexterity = 10 + (libs.PlayerRef.GetActorValue("Pickpocket") as Int) / 10
 		Debug.Notification("Dexterity: " + iDexterity )
 
-		If (StorageUtil.GetIntValue(kPlayer, "_SLP_iChaurusWormKnown")==1)
-			if (kPlayer.GetItemCount(TrollFat) == 0)
+		If (StorageUtil.GetIntValue(libs.PlayerRef, "_SLP_iChaurusWormKnown")==1)
+			if (libs.PlayerRef.GetItemCount(TrollFat) == 0)
 				msg = "You can't possibly remove the worm without Troll fat"
 				libs.NotifyPlayer(msg, true)
 			else
@@ -103,7 +102,7 @@ Function DeviceMenu(Int msgChoice = 0)
 					If (Utility.RandomInt(0,100) < iDexterity) 
 						msg = "The worm squirms as it slides out your hole, leaving a slipery trail behind."
 						libs.NotifyPlayer(msg, true)
-						kPlayer.RemoveItem(TrollFat,1)
+						libs.PlayerRef.RemoveItem(TrollFat,1)
 						RemoveDevice(libs.PlayerRef)
 					else
 						msg = "Your fingers slip, causing the worm to retract deeper and making you wet in the process. You will have to give it another try when you are not so horny."

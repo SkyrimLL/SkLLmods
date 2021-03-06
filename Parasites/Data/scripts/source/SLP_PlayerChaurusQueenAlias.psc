@@ -339,16 +339,7 @@ bool function isPregnant(actor kActor)
 EndFunction
 
 Bool function isFemale(actor kActor)
-	Bool bIsFemale
-	ActorBase kActorBase = kActor.GetActorBase()
-
-	if (kActorBase.GetSex() == 1) ; female
-		bIsFemale = True
-	Else
-		bIsFemale = False
-	EndIf
-
-	return bIsFemale
+	return (kActor.GetActorBase().GetSex() == 1)
 EndFunction
 
 
