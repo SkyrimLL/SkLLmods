@@ -591,20 +591,7 @@ EndFunction
 
 ; -------------------------------------------------------------------
 Bool function isFemale(actor kActor)
-	Bool bIsFemale
-	ActorBase kActorBase = kActor.GetActorBase()
-
-	Debug.Trace("[SLP]Checking actor gender")
-	Debug.Trace("[SLP]    kActor: " + kActor)
-	Debug.Trace("[SLP]    kActorBase: " + kActorBase)
-
-	if (kActorBase.GetSex() == 1) ; female
-		bIsFemale = True
-	Else
-		bIsFemale = False
-	EndIf
-
-	return bIsFemale
+	return (kActor.GetActorBase().GetSex() == 1)
 EndFunction
 
 Bool function isMale(actor kActor)
