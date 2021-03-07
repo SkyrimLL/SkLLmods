@@ -616,7 +616,7 @@ EndFunction
 Bool Function isInfectedByString( Actor akActor,  String sParasite  )
 	Bool isInfected = False
 
-	if ( akActor.WornHasKeyword(getDeviousKeywordByString(sParasite)) || (StorageUtil.GetIntValue(akActor, "_SLP_iHiddenParasite_" + sParasite)==1) || (StorageUtil.GetIntValue(akActor, "_SLP_iHiddenParasiteCount")>0))
+	if (akActor && sParasite && akActor.WornHasKeyword(getDeviousKeywordByString(sParasite)) || (StorageUtil.GetIntValue(akActor, "_SLP_iHiddenParasite_" + sParasite)==1) || (StorageUtil.GetIntValue(akActor, "_SLP_iHiddenParasiteCount")>0))
 		isInfected = True
 	Endif
 

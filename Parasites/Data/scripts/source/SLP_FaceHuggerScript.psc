@@ -184,11 +184,13 @@ EndFunction
 
 
 Function OnContainerChangedPre(ObjectReference akNewContainer, ObjectReference akOldContainer)
-	if ( Utility.RandomInt(0,120) > Aroused.GetActorArousal(libs.PlayerRef) ) 
-		libs.NotifyPlayer("You pulls at the hip hugger desperately...", true)
-		akActor.SendModEvent("SLPSexCure","FaceHugger",1)
-	else
-		libs.NotifyPlayer("The critter remains firmly locked around your hips.")
+	if akOldContainer == libs.PlayerRef && (libs.PlayerRef.IsEquipped(deviceInventory) || libs.PlayerRef.IsEquipped(deviceRendered))
+		if ( Utility.RandomInt(0,120) > Aroused.GetActorArousal(libs.PlayerRef) ) 
+			libs.NotifyPlayer("You pulls at the hip hugger desperately...", true)
+			libs.PlayerRef.SendModEvent("SLPSexCure","FaceHugger",1)
+		else
+			libs.NotifyPlayer("The critter remains firmly locked around your hips.")
+		endif
 	endif
 EndFunction
 
