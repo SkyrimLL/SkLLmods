@@ -37,6 +37,8 @@ int daysPassed
 int iGameDateLastCheck = -1
 int iDaysSinceLastCheck
 
+int                      Property SKEE_VERSION  = 1 AutoReadOnly
+
 ; NiOverride version data
 int                      Property NIOVERRIDE_VERSION    = 4 AutoReadOnly
 int                      Property NIOVERRIDE_SCRIPT_VERSION = 4 AutoReadOnly
@@ -644,6 +646,10 @@ Bool Function _hasRace(Actor[] _actors, Race thisRace)
 EndFunction
 
 bool Function CheckXPMSERequirements(Actor akActor, bool isFemale)
-	return XPMSELib.CheckXPMSEVersion(akActor, isFemale, XPMSE_VERSION, true) && XPMSELib.CheckXPMSELibVersion(XPMSELIB_VERSION) && SKSE.GetPluginVersion("NiOverride") >= NIOVERRIDE_VERSION && NiOverride.GetScriptVersion() >= NIOVERRIDE_SCRIPT_VERSION
+	if (SKSE.GetPluginVersion("SKEE") >= SKEE_VERSION) ; SKEE detected - Skyrim SE
+		return XPMSELib.CheckXPMSEVersion(akActor, isFemale, XPMSE_VERSION, true) && XPMSELib.CheckXPMSELibVersion(XPMSELIB_VERSION) && (SKSE.GetPluginVersion("SKEE") >= SKEE_VERSION && SKSE.GetPluginVersion("NiOverride") >= NIOVERRIDE_VERSION) && NiOverride.GetScriptVersion() >= NIOVERRIDE_SCRIPT_VERSION
+	else
+		return XPMSELib.CheckXPMSEVersion(akActor, isFemale, XPMSE_VERSION, true) && XPMSELib.CheckXPMSELibVersion(XPMSELIB_VERSION) && SKSE.GetPluginVersion("NiOverride") >= NIOVERRIDE_VERSION && NiOverride.GetScriptVersion() >= NIOVERRIDE_SCRIPT_VERSION
+	endif
 EndFunction
 

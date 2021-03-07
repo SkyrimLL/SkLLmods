@@ -71,6 +71,7 @@ Sound Property SuctionSoundFX Auto
 Keyword Property SLS_CowHarness Auto
 Keyword Property SLS_CowMilker Auto
 
+ 
 ; String                   Property NINODE_SCHLONG	 	= "NPC Genitals01 [Gen01]" AutoReadOnly
 string                   Property SLS_KEY               = "SLSDDi_MilkFarm" AutoReadOnly
 String                   Property NINODE_SCHLONG	 	= "NPC GenitalsBase [GenBase]" AutoReadOnly
