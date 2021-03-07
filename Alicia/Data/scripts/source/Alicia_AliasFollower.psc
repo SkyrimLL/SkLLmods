@@ -465,7 +465,7 @@ Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile,
 	If (akAggressor == Game.GetPlayer())
 		Weapon wSourceWeapon = akSource as Weapon
 		Keyword kwControlRod = Keyword.GetKeyword("_Alicia_ControlRod")
-		if(wSourceWeapon.HasKeyword(kwControlRod))
+		if(wSourceWeapon && wSourceWeapon.HasKeyword(kwControlRod))
 		  	Debug.Notification("[Alicia] Control rod is used on Alicia")
 			AliciaLustLevel.Setvalue(10000)
 		 
