@@ -489,12 +489,27 @@ function alterBodyAfterRest(Actor kActor)
 		fSchlongSwellMod = -1.0 * fSchlongSwellMod
 	endif
 
+	debugTrace( ">>>>> alterBodyAfterRest detected " )
+	debugTrace( "fSwellFactor: " + fSwellFactor)
+	debugTrace( "isSlifInstalled: " + isSlifInstalled)
+	debugTrace( "_SLH_BasicNetImmerseON: " + StorageUtil.GetIntValue(none, "_SLH_BasicNetImmerseON"))
+	debugTrace( "isNiOInstalled: " + isNiOInstalled)
+	debugTrace( "_SLH_NiNodeOverrideON: " + StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON"))
+	debugTrace( "_SLH_BodyMorphsON: " + StorageUtil.GetIntValue(none, "_SLH_BodyMorphsON"))
+	debugTrace( "GV_useWeight.GetValue(): " + GV_useWeight.GetValue())
+	debugTrace( "GV_useNodes.GetValue(): " + GV_useNodes.GetValue())
+	debugTrace( "GV_useBreastNode.GetValue(): " + GV_useBreastNode.GetValue())
+	debugTrace( "GV_useBellyNode.GetValue(): " + GV_useBellyNode.GetValue())
+	debugTrace( "GV_useButtNode.GetValue(): " + GV_useButtNode.GetValue())
+	debugTrace( "GV_useSchlongNode.GetValue(): " + GV_useSchlongNode.GetValue()) 
+
 	if (GV_useWeight.GetValue() == 1)
 		debug.trace( "[SLH] alterBodyAfterRest Weight")
 		debugTrace( " Actorbase weight: " + pActorBase.GetWeight())
 		; debugTrace( "[SLH] Current weight: " + fWeight)
-		debugTrace( " StorageUtil: " + StorageUtil.GetFloatValue(kActor, "_SLH_fWeight") )
+		debugTrace( " _SLH_fWeight: " + StorageUtil.GetFloatValue(kActor, "_SLH_fWeight") )
 		debugTrace( " Global Value: " + GV_weightValue.GetValue() )
+
 
 		; WEIGHT CHANGE ====================================================
 		fCurrentWeight = pActorBase.GetWeight()
@@ -652,7 +667,9 @@ function alterBodyAfterRest(Actor kActor)
 	EndIf
 	
 	; Imported from MME Morphs code - Double check if this needs to be here
-	NiOverride.UpdateModelWeight(kActor)
+	if (StorageUtil.GetIntValue(none, "_SLH_BodyMorphsON") == 1)
+		NiOverride.UpdateModelWeight(kActor)
+	endif
 	; StorageUtil.SetFloatValue(kActor, "_SLH_fSwellFactor",  fSwellFactor) 
  
 	
@@ -716,8 +733,20 @@ function alterBodyByPercent(Actor kActor, String sBodyPart, Float modFactor)
 		StorageUtil.SetFormValue(kActor, "_SLH_fOrigRace",thisRace) 
 	EndIf
 
-	debugTrace( "alterBodyByPercent " + sBodyPart)
+	debugTrace( "alterBodyByPercent detected " + sBodyPart)
 	debugTrace( "modFactor: " + modFactor)
+	debugTrace( "sBodyPart: " + sBodyPart)
+	debugTrace( "isSlifInstalled: " + isSlifInstalled)
+	debugTrace( "_SLH_BasicNetImmerseON: " + StorageUtil.GetIntValue(none, "_SLH_BasicNetImmerseON"))
+	debugTrace( "isNiOInstalled: " + isNiOInstalled)
+	debugTrace( "_SLH_NiNodeOverrideON: " + StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON"))
+	debugTrace( "_SLH_BodyMorphsON: " + StorageUtil.GetIntValue(none, "_SLH_BodyMorphsON"))
+	debugTrace( "GV_useWeight.GetValue(): " + GV_useWeight.GetValue())
+	debugTrace( "GV_useNodes.GetValue(): " + GV_useNodes.GetValue())
+	debugTrace( "GV_useBreastNode.GetValue(): " + GV_useBreastNode.GetValue())
+	debugTrace( "GV_useBellyNode.GetValue(): " + GV_useBellyNode.GetValue())
+	debugTrace( "GV_useButtNode.GetValue(): " + GV_useButtNode.GetValue())
+	debugTrace( "GV_useSchlongNode.GetValue(): " + GV_useSchlongNode.GetValue()) 
 
 	if (GV_useWeight.GetValue() == 1) && (sBodyPart=="Weight")
 		; 2020-03-14 - force positive value of fWeightSwellMod - losing weight always means a decrease here
@@ -851,7 +880,9 @@ function alterBodyByPercent(Actor kActor, String sBodyPart, Float modFactor)
 	EndIf
 	
 	; Imported from MME Morphs code - Double check if this needs to be here
-	NiOverride.UpdateModelWeight(kActor)
+	if (StorageUtil.GetIntValue(none, "_SLH_BodyMorphsON") == 1)
+		NiOverride.UpdateModelWeight(kActor)
+	endif
 	; StorageUtil.SetFloatValue(kActor, "_SLH_fSwellFactor",  modFactor) 
  
 EndFunction
@@ -966,6 +997,8 @@ function alterWeight(Actor kActor, float fNewWeight = 0.0)
 		Return
 	Endif
 
+	debugTrace(">>> alterWeight called ")
+
 	if (fManualWeightChange != -1)
 	 	debugTrace(" Weight inconsistency - maybe after showracemenu? " + fManualWeightChange)
 		StorageUtil.SetFloatValue(kActor, "_SLH_fManualWeightChange",  -1) 
@@ -977,9 +1010,10 @@ function alterWeight(Actor kActor, float fNewWeight = 0.0)
 	if (fWeightOrig != fWeight) 
 		Float NeckDelta = (fWeightOrig / 100) - (fWeight / 100) ;Work out the neckdelta.
 
-		debugTrace(" Old weight: " + fWeightOrig)
-		debugTrace(" New weight: " + fWeight)
-		debugTrace(" NeckDelta: " + NeckDelta)
+		debugTrace(" 	Applying new weight")
+		debugTrace(" 		Old weight: " + fWeightOrig)
+		debugTrace(" 		New weight: " + fWeight)
+		debugTrace(" 		NeckDelta: " + NeckDelta)
 	 
 		pActorBase.SetWeight(fWeight) 
 		kActor.UpdateWeight(NeckDelta) ;Apply the changes.
@@ -1008,6 +1042,8 @@ function alterBreastNode(Actor kActor, float fNewBreast = 0.0)
 		; Mod Init safety - sleep first
 		Return
 	Endif
+
+	debugTrace(">>> alterBreastNode called ")
 
 	If (bArmorOn)
 		fApparelMod = GV_armorMod.GetValue() as Float
@@ -1038,31 +1074,38 @@ function alterBreastNode(Actor kActor, float fNewBreast = 0.0)
 		fNodeMax = fBreastMax
 	EndIf
 
-	debugTrace("  Breast Old: " + StorageUtil.GetFloatValue(kActor, "_SLH_fBreast")  + " New: " + fNewBreast + " Min: " + fBreastMin + " - Max: " + fNodeMax)
+	debugTrace("	Applying new breast node value")
+	debugTrace("  		Breast Old: " + StorageUtil.GetFloatValue(kActor, "_SLH_fBreast")  + " New: " + fNewBreast + " Min: " + fBreastMin + " - Max: " + fNodeMax)
 
 	; fBreast = fctUtil.fRange(fBreast, NINODE_MIN_SCALE), fNodeMax)
 	Float fBreast = fctUtil.fRange(fNewBreast, fBreastMin, fNodeMax)
 	GV_breastValue.SetValue(fBreast)
 	StorageUtil.SetFloatValue(kActor, "_SLH_fBreast",  fBreast) 
 
-	debugTrace("  Breast New: " + fBreast )
+	debugTrace("  		Breast New: " + fBreast )
+	debugTrace("  		fApparelMod: " + fApparelMod )
 	
 	fPregLeftBreast    = fBreast
 	fPregRightBreast   = fBreast
 
 
 	if (isSlifInstalled)
+		debugTrace("	Using SLIF")
 		SLIF_inflateMax(kActor, "slif_breast", fPregLeftBreast * fApparelMod, fNodeMax, SLH_KEY)
 
 	elseIf (StorageUtil.GetIntValue(none, "_SLH_BasicNetImmerseON")==1)
+		debugTrace("	Using NetImmerse")
 		NetImmerse.SetNodeScale( kActor, NINODE_LEFT_BREAST, fPregLeftBreast * fApparelMod, false)
 		NetImmerse.SetNodeScale( kActor, NINODE_LEFT_BREAST, fPregLeftBreast * fApparelMod, true)
 
 	elseIf (isNiOInstalled && (StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON")==1) )
+		debugTrace("	Using NiNodeOverride")
+		debugTrace("		fctUtil.isFemale(kActor): " + fctUtil.isFemale(kActor))
 		XPMSELib.SetNodeScale(kActor, fctUtil.isFemale(kActor), NINODE_LEFT_BREAST, fPregLeftBreast * fApparelMod, SLH_KEY)
 		XPMSELib.SetNodeScale(kActor, fctUtil.isFemale(kActor), NINODE_RIGHT_BREAST, fPregRightBreast * fApparelMod, SLH_KEY)
 
 	elseif (StorageUtil.GetIntValue(none, "_SLH_BodyMorphsON") == 1)
+		debugTrace("	Using BodyMorphs")
 		SLHSetNodeScale( kActor, NINODE_RIGHT_BREAST, fPregRightBreast * fApparelMod, false)
 		SLHSetNodeScale( kActor, NINODE_RIGHT_BREAST, fPregRightBreast * fApparelMod, true)	
 	endIf
@@ -1086,6 +1129,8 @@ function alterBellyNode(Actor kActor, float fNewBelly = 0.0)
 		Return
 	Endif
 
+	debugTrace(">>> alterBellyNode called ")
+
 	If (bArmorOn)
 		fApparelMod = GV_armorMod.GetValue() as Float
 	ElseIf (bClothingOn)
@@ -1103,27 +1148,33 @@ function alterBellyNode(Actor kActor, float fNewBelly = 0.0)
 		fNodeMax = fBellyMax
 	EndIf
 
-	debugTrace("  Belly Old: " + StorageUtil.GetFloatValue(kActor, "_SLH_fBelly")  + " New: " + fNewBelly + " Min: " + fBellyMin + " - Max: " + fNodeMax)
+	debugTrace("	Applying new belly node value")
+	debugTrace("  		Belly Old: " + StorageUtil.GetFloatValue(kActor, "_SLH_fBelly")  + " New: " + fNewBelly + " Min: " + fBellyMin + " - Max: " + fNodeMax)
 
 	; fPregBelly = fctUtil.iMin(fPregBelly, NINODE_MAX_SCALE * 2.0)
 	Float fBelly = fctUtil.fRange(fNewBelly, fBellyMin, fNodeMax)
 	GV_bellyValue.SetValue(fBelly)
 	StorageUtil.SetFloatValue(kActor, "_SLH_fBelly",  fBelly) 
 	
-	debugTrace("  Belly New: " + fBelly )
+	debugTrace("  		Belly New: " + fBelly )
 
 	fPregBelly     = fBelly
 
 	if (isSlifInstalled)
+		debugTrace("	Using SLIF")
 		SLIF_inflateMax(kActor, "slif_belly", fPregBelly * fApparelMod, fNodeMax, SLH_KEY)
 
 	elseIf (StorageUtil.GetIntValue(none, "_SLH_BasicNetImmerseON")==1)
+		debugTrace("	Using NetImmerse")
 		NetImmerse.SetNodeScale( kActor, NINODE_BELLY, fPregBelly * fApparelMod, false)
 
 	elseIf (isNiOInstalled && (StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON")==1) )
+		debugTrace("	Using NiNodeOverride")
+		debugTrace("		fctUtil.isFemale(kActor): " + fctUtil.isFemale(kActor))
 		XPMSELib.SetNodeScale(kActor, fctUtil.isFemale(kActor),  NINODE_BELLY, fPregBelly * fApparelMod, SLH_KEY) 
 	
 	elseif (StorageUtil.GetIntValue(none, "_SLH_BodyMorphsON") == 1)
+		debugTrace("	Using BodyMorphs")
 		; kTarget.SetAnimationVariableFloat("ecBellySwell", fBellySwell)
 		SLHSetNodeScale( kActor, NINODE_BELLY, fPregBelly * fApparelMod, false)
 		SLHSetNodeScale( kActor, NINODE_BELLY, fPregBelly * fApparelMod, true)
@@ -1150,6 +1201,8 @@ function alterButtNode(Actor kActor, float fNewButt = 0.0)
 		Return
 	Endif
 
+	debugTrace(">>> alterButtNode called ")
+
 	If (bArmorOn)
 		fApparelMod = GV_armorMod.GetValue() as Float
 	ElseIf (bClothingOn)
@@ -1167,30 +1220,36 @@ function alterButtNode(Actor kActor, float fNewButt = 0.0)
 		fNodeMax = fButtMax
 	EndIf
 
-	debugTrace("  Butt Old: " + StorageUtil.GetFloatValue(kActor, "_SLH_fButt")  + " New: " + fNewButt + " Min: " + fButtMin + " - Max: " + fNodeMax)
+	debugTrace("	Applying new butt node value")
+	debugTrace("  		Butt Old: " + StorageUtil.GetFloatValue(kActor, "_SLH_fButt")  + " New: " + fNewButt + " Min: " + fButtMin + " - Max: " + fNodeMax)
 
 	Float fButt = fctUtil.fRange(fNewButt, fButtMin, fNodeMax)
 	GV_buttValue.SetValue(fButt)
 	StorageUtil.SetFloatValue(kActor, "_SLH_fButt",  fButt) 
 
-	debugTrace("  Butt New: " + fButt )
+	debugTrace("  		Butt New: " + fButt )
 
 	fPregLeftButt = fButt
 	fPregRightButt = fButt
 
 	if (isSlifInstalled)
+		debugTrace("	Using SLIF")
 		SLIF_inflateMax(kActor, "slif_butt", fPregLeftButt * fApparelMod, fNodeMax, SLH_KEY)
 
 	elseIf (StorageUtil.GetIntValue(none, "_SLH_BasicNetImmerseON")==1)
+		debugTrace("	Using NetImmerse")
 		NetImmerse.SetNodeScale( kActor, NINODE_LEFT_BUTT, fPregLeftButt * fApparelMod, false)
 		NetImmerse.SetNodeScale( kActor, NINODE_LEFT_BUTT, fPregLeftButt * fApparelMod, true)
 
 
 	elseIf (isNiOInstalled && (StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON")==1) )
+		debugTrace("	Using NiNodeOverride")
+		debugTrace("		fctUtil.isFemale(kActor): " + fctUtil.isFemale(kActor))
 		XPMSELib.SetNodeScale(kActor, fctUtil.isFemale(kActor),  NINODE_LEFT_BUTT, fPregLeftButt * fApparelMod, SLH_KEY) 
 		XPMSELib.SetNodeScale(kActor, fctUtil.isFemale(kActor),  NINODE_RIGHT_BUTT, fPregRightButt * fApparelMod, SLH_KEY) 
 
 	elseif (StorageUtil.GetIntValue(none, "_SLH_BodyMorphsON") == 1)
+		debugTrace("	Using BodyMorphs")
 		SLHSetNodeScale( kActor, NINODE_RIGHT_BUTT, fPregRightButt * fApparelMod, false)
 		SLHSetNodeScale( kActor, NINODE_RIGHT_BUTT, fPregRightButt * fApparelMod, true)
 
@@ -1210,25 +1269,34 @@ function alterSchlongNode(Actor kActor, float fNewSchlong = 0.0)
 		Return
 	Endif
 
-	debugTrace("  Schlong Old: " + StorageUtil.GetFloatValue(kActor, "_SLH_fSchlong")  + " New: " + fNewSchlong + " Min: " + fSchlongMin + " - Max: " + fSchlongMax)
+	debugTrace(">>> alterSchlongNode called ")
+
+	debugTrace("	Applying new schlong node value")
+
+	debugTrace("  		Schlong Old: " + StorageUtil.GetFloatValue(kActor, "_SLH_fSchlong")  + " New: " + fNewSchlong + " Min: " + fSchlongMin + " - Max: " + fSchlongMax)
 
 	Float fSchlong = fctUtil.fRange(fNewSchlong, fSchlongMin, fSchlongMax)
 	GV_schlongValue.SetValue(fSchlong)
 	StorageUtil.SetFloatValue(kActor, "_SLH_fSchlong",  fSchlong) 
 
- 	debugTrace("  Schlong New: " + fSchlong )
+ 	debugTrace("  		Schlong New: " + fSchlong )
 
 	if (isSlifInstalled)
+		debugTrace("	Using SLIF")
 		SLIF_inflateMax(kActor, "slif_schlong", fSchlong, fSchlongMax, SLH_KEY)
 
 	elseif (StorageUtil.GetIntValue(none, "_SLH_BasicNetImmerseON")==1)
+		debugTrace("	Using NetImmerse")
 		NetImmerse.SetNodeScale( kActor, NINODE_SCHLONG, fSchlong, false)
 		NetImmerse.SetNodeScale( kActor, NINODE_SCHLONG, fSchlong, true)
 
 	elseIf (isNiOInstalled && (StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON")==1) )
+		debugTrace("	Using NiNodeOverride")
+		debugTrace("		fctUtil.isFemale(kActor): " + fctUtil.isFemale(kActor))
 		XPMSELib.SetNodeScale(kActor, fctUtil.isFemale(kActor), NINODE_SCHLONG, fSchlong , SLH_KEY)
 
 	elseif (StorageUtil.GetIntValue(none, "_SLH_BodyMorphsON") == 1)
+		debugTrace("	Using BodyMorphs")
 		XPMSELib.SetNodeScale(kActor, fctUtil.isFemale(kActor), NINODE_SCHLONG, fSchlong , SLH_KEY)
 
 	endIf
