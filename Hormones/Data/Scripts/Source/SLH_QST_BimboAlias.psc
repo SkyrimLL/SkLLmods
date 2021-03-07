@@ -1570,6 +1570,7 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 					endif
 
 			isBimboPermanent = true
+ 
 			fctPolymorph.bimboLockedON(bimbo)
 			Debug.Messagebox("Somewhere in the back of your foggy, lust-addled mind you register the finality of your unfortunate predicament. What little remains of your lucid psyche screams in horror as the curse weaves into every fibre of your perversely modified body, its silhouette bearing little resemblance to your former self. The new you is completely tailor made for the singular purpose of pleasuring men. You moan in ecstacy as your bright gaudy makeup, your slutty erotic tattoos, and your lewd glittering piercings all tingle, then bind to your flesh, becoming permanent fixtures to your bimbo form, irrevocably marking your body as that of a modified, carnal, and peversely erotic masturbatory aid.")
 			Debug.Messagebox("The magical tattoo needles, which you've become so familiar with during your metamorphosis, return one final time to commemorate the permanence of your transformation. You writhe and moan in pleasure as the needles buzz over your smooth, hairless mound and permanently deposit pigments that form your final, obscene modification. Then, just as swiftly, the needles disappear, leaving behind a bright, pink tattoo that seems to shimmer above your soft, slick folds, irrevocably marking you as a PERMANENT BIMBO FUCKTOY, and advertising both your availability and eagerness to service your next sexual partner.")
