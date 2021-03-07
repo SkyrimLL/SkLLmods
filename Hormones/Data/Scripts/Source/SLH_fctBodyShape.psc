@@ -327,7 +327,7 @@ function SLIF_inflate(Actor kActor, String sKey, float value, String NiOString)
 		;debug.notification("Value was: " + value)
 		;debug.notification("Json Modifier was: " + bodyslide_scale_modifier)
 		
-		int SLIF_event = ModEvent.Create("SLIF_inflate")
+		int SLIF_event = ModEvent.Create("SLIF_morph")
 		If (SLIF_event)
 			ModEvent.PushForm(SLIF_event, kActor)
 			ModEvent.PushString(SLIF_event, "Hormones")
@@ -338,7 +338,7 @@ function SLIF_inflate(Actor kActor, String sKey, float value, String NiOString)
 		EndIf
 	else
 
-		int SLIF_event = ModEvent.Create("SLIF_inflate")
+		int SLIF_event = ModEvent.Create("SLIF_morph")
 		If (SLIF_event)
 			ModEvent.PushForm(SLIF_event, kActor)
 			ModEvent.PushString(SLIF_event, "Hormones")
