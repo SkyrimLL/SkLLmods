@@ -20,8 +20,10 @@ Event OnContainerChanged(ObjectReference akNewContainer, ObjectReference akOldCo
 
 		 	fctParasites.infectEstrusChaurusEgg( akPlayer  )
 
-		 	QueenOfChaurusQuest.SetStage(255)
-		 	QueenOfChaurusQuest.SetStage(260)
+		 	QueenOfChaurusQuest.SetStage(255) 
+		 	; checkpoint flag to mark the end of corruption of the temple
+		 	; Talk to Danica again to move to stage 260
+		 	; QueenOfChaurusQuest.SetStage(260)
 		endif
 
 	endIf
