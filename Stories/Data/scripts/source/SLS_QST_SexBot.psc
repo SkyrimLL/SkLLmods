@@ -17,50 +17,42 @@ EndEvent
 
 Function _Maintenance()
 	ObjectReference SexBotREF= SexBotAlias.GetReference()
-	Actor SexBotActor= SexBotAlias.GetReference() as Actor
-	ActorBase akActorBase = SexBotActor.GetActorBase()
+	Actor SexBotActor = SexBotAlias.GetReference() as Actor
 
-	String currentSkin = StorageUtil.GetStringValue(SexBotActor, "_SLS_SexBotSkin")
+	if SexBotActor
+		ActorBase akActorBase = SexBotActor.GetActorBase()
 
-	StorageUtil.SetFormValue(none, "_SLS_fSexBot", SexBotActor as Form)
+		String currentSkin = StorageUtil.GetStringValue(SexBotActor, "_SLS_SexBotSkin")
 
-	; Debug.Notification("SexBot: init");
-	; Debug.Notification("SexBot: _SLS_SexBotSkin: " + currentSkin);
+		StorageUtil.SetFormValue(none, "_SLS_fSexBot", SexBotActor as Form)
 
-	if (currentSkin == "") || (currentSkin == "Basic")
-		akActorBase.SetSkin(SexBotBasicSkin)
-		StorageUtil.SetStringValue(SexBotActor, "_SLS_SexBotSkin", "Basic")
-
-	elseif (currentSkin == "Mixed")
-		akActorBase.SetSkin(SexBotMixedSkin)
-		StorageUtil.SetStringValue(SexBotActor, "_SLS_SexBotSkin", "Mixed")
-
-	elseif (currentSkin == "Pleasure")
-		akActorBase.SetSkin(SexBotPleasureSkin)
-		StorageUtil.SetStringValue(SexBotActor, "_SLS_SexBotSkin", "Pleasure")
-
-	elseif (currentSkin == "Evolved")
-		akActorBase.SetSkin(SexBotEvolvedSkin)
-		StorageUtil.SetStringValue(SexBotActor, "_SLS_SexBotSkin", "Evolved")
-
+		if (currentSkin == "") || (currentSkin == "Basic")
+			akActorBase.SetSkin(SexBotBasicSkin)
+			StorageUtil.SetStringValue(SexBotActor, "_SLS_SexBotSkin", "Basic")
+		elseif (currentSkin == "Mixed")
+			akActorBase.SetSkin(SexBotMixedSkin)
+			StorageUtil.SetStringValue(SexBotActor, "_SLS_SexBotSkin", "Mixed")
+		elseif (currentSkin == "Pleasure")
+			akActorBase.SetSkin(SexBotPleasureSkin)
+			StorageUtil.SetStringValue(SexBotActor, "_SLS_SexBotSkin", "Pleasure")
+		elseif (currentSkin == "Evolved")
+			akActorBase.SetSkin(SexBotEvolvedSkin)
+			StorageUtil.SetStringValue(SexBotActor, "_SLS_SexBotSkin", "Evolved")
+		endif
+		SexBotREF.AddItem(RefreshToken, 1)
+		SexBotActor.EquipItem(RefreshToken)
+		SexBotREF.RemoveItem(RefreshToken)
+		SexBotActor.EvaluatePackage()
+		; StorageUtil.SetIntValue(SexBotActor, "_SD_iCanBeEnslaved", 0)
+		StorageUtil.SetIntValue(SexBotActor, "_SD_iCanBeStripped", -1)
+		StorageUtil.SetIntValue(SexBotActor, "_SD_iRelationshipType" , 5 )
 	endif
-
-	SexBotREF.AddItem(RefreshToken, 1)
-	SexBotActor.EquipItem(RefreshToken)
-	SexBotREF.RemoveItem(RefreshToken)
-
-	SexBotActor.EvaluatePackage()
 
 	UnregisterForAllModEvents()
 	Debug.Trace("SexLab SexBot: Reset SexLab events")
 	RegisterForModEvent("AnimationStart", "OnSexLabStart")
 	RegisterForModEvent("AnimationEnd",   "OnSexLabEnd")
 	RegisterForModEvent("OrgasmStart",    "OnSexLabOrgasm")
-
-	; StorageUtil.SetIntValue(SexBotActor, "_SD_iCanBeEnslaved", 0)
-	StorageUtil.SetIntValue(SexBotActor, "_SD_iCanBeStripped", -1)
-
-	StorageUtil.SetIntValue(SexBotActor, "_SD_iRelationshipType" , 5 )
 
 EndFunction
 

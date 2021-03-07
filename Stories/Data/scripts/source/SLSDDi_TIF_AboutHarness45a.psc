@@ -12,7 +12,7 @@ iItemReadyChance = iItemReadyChance + 10
 
 _SLSDDi_BalimundItemReadyCheck.SetValueInt( iItemReadyChance ) 
 
-Debug.Messagebox("Balimund chance is now " + _SLSDDi_BalimundItemReadyCheck.getValue() as Int)
+; Debug.Messagebox("Balimund chance is now " + _SLSDDi_BalimundItemReadyCheck.getValue() as Int)
 
 if (utility.RandomInt(0,100) <= iItemReadyChance  )
 	; random chance to clear the next check
