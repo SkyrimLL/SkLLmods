@@ -1217,6 +1217,7 @@ state STATE_CHANGE_NODES ; TOGGLE
 	event OnSelectST()
 		GV_useNodes.SetValueInt( Math.LogicalXor( 1, GV_useNodes.GetValueInt() ) )
 		SetToggleOptionValueST( GV_useNodes.GetValueInt() as Bool )
+		StorageUtil.SetIntValue(none, "_SLH_NiNodeUpdateON", GV_useNodes.GetValueInt())
 		ForcePageReset()
 	endEvent
 

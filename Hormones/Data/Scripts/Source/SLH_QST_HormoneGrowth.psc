@@ -2102,7 +2102,9 @@ Function refreshShape(Actor kActor)
 
 	bExternalChangeModActive = fctUtil.isExternalChangeModActive(kActor)
 
-	debugTrace(" Updating shape" )
+	debugTrace(" >>> Updating shape" )
+	debugTrace(" 		bExternalChangeModActive: " + bExternalChangeModActive)
+	debugTrace(" 		NextAllowed: " + NextAllowed)
 
 	fctBodyShape.getShapeState(kActor)
 	fctBodyShape.refreshBodyShape(kActor)

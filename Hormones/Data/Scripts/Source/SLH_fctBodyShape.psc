@@ -1497,7 +1497,9 @@ function refreshBodyShape(Actor kActor)
 	EndIf
 	
 	; Imported from MME Morphs code - Double check if this needs to be here
-	NiOverride.UpdateModelWeight(kActor)
+	if (StorageUtil.GetIntValue(none, "_SLH_BodyMorphsON") == 1)
+		NiOverride.UpdateModelWeight(kActor)
+	endif
 
 
 endFunction
@@ -1554,7 +1556,7 @@ function applyBodyShapeChanges(Actor kActor)
 	EndIf
 
  	; If (StorageUtil.GetIntValue(none, "_SLH_NiNodeUpdateON") == 1)
-	;	If ((GV_useNodes.GetValue() == 1) || (GV_useWeight.GetValue() == 1))
+	If ((GV_useNodes.GetValue() == 1) || (GV_useWeight.GetValue() == 1))
 
 	; 2019-12-13 - Testing a forced QueueNiNodeUpdate to fully refresh shape and colors
 			debugTrace("  QueueNiNodeUpdate")
@@ -1567,17 +1569,17 @@ function applyBodyShapeChanges(Actor kActor)
 			Utility.SetINIBool(facegen, true)
 			Utility.Wait(1.0)
 
-	;	Else
-	;		debugTrace("  QueueNiNodeUpdate aborted - " + GV_useNodes.GetValue() + " - " +GV_useWeight.GetValue() )
+	Else
+		debugTrace("  QueueNiNodeUpdate aborted - " + GV_useNodes.GetValue() + " - " +GV_useWeight.GetValue() )
 	;	Endif	
-	;EndIf
+	EndIf
  
-	; If (StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON")==1)
+	If (StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON")==1)
 		; If (GV_useWeight.GetValue() == 1)
-			; debugTrace("  NiOverride.UpdateModelWeight")
-			; NiOverride.UpdateModelWeight(kActor)
+			debugTrace("  NiOverride.UpdateModelWeight")
+			NiOverride.UpdateModelWeight(kActor)
 		; endif
-	; endif
+	endif
 
 	Utility.Wait(1.0)
 endFunction
@@ -2719,6 +2721,6 @@ EndFunction
 Function debugTrace(string traceMsg)
 	if (StorageUtil.GetIntValue(none, "_SLH_debugTraceON")==1)
 		; Disabled for body shape feedback
-		Debug.Trace("[SLH_fctBodyShape] " + traceMsg)
+	;	Debug.Trace("[SLH_fctBodyShape] " + traceMsg)
 	endif
 endFunction
