@@ -277,20 +277,33 @@ event OnPageReset(string a_page)
 		; AddHeaderOption(" The Chaurus Queen")
 		
 	ElseIf (a_page == "Devious Stories")
+		ObjectReference kActorRef = StorageUtil.GetFormValue( none , "_SD_iLastCowMilked")	as ObjectReference
+		Actor kActor = kActorRef	as Actor
+
 		SetCursorFillMode(TOP_TO_BOTTOM)
-	
+		
 		; AddHeaderOption(" Placeholder - No option yet")
 
 		AddHeaderOption(" The Milk Farm")
 		AddSliderOptionST("STATE_MILKFARM_BREAST","Max breast size", _breastMaxMilkFarm,"{1}")
 		; AddToggleOptionST("STATE_MILKFARM_START","Player starting quest", _startMilkFarm as Float, OPTION_FLAG_DISABLED)
-    
 
+
+		AddHeaderOption(" Player Milk info")
+		AddTextOption(" _SLH_iLactating: " + StorageUtil.GetIntValue( kPlayer, "_SLH_iLactating")  as Int, "", OPTION_FLAG_DISABLED)
+		AddTextOption(" _SLH_fHormoneLactation: " + StorageUtil.GetFloatValue( kPlayer , "_SLH_fHormoneLactation")  as Int, "", OPTION_FLAG_DISABLED)
+		AddTextOption(" _SLH_fLactationThreshold: " + StorageUtil.GetFloatValue( kPlayer , "_SLH_fLactationThreshold")  as Int, "", OPTION_FLAG_DISABLED)
+		AddTextOption(" _SLH_fHormoneLactationCooldown: " + StorageUtil.GetFloatValue( kPlayer , "_SLH_fHormoneLactationCooldown")  as Int, "", OPTION_FLAG_DISABLED)
+
+		AddTextOption(" _SLH_iMilkLevel: " + StorageUtil.GetIntValue( kPlayer , "_SLH_iMilkLevel")  as Int, "", OPTION_FLAG_DISABLED)
+		AddTextOption(" _SLH_isPregnant: " + StorageUtil.GetIntValue( kPlayer , "_SLH_isPregnant")  as Int, "", OPTION_FLAG_DISABLED) 
+
+		AddHeaderOption(" Milk Production (Player)") 
+		AddTextOption(" _SLH_iMilkProduced: " + StorageUtil.GetIntValue( kPlayer , "_SLH_iMilkProduced")  as Int, "", OPTION_FLAG_DISABLED)
+		AddTextOption(" _SLH_iDivineMilkProduced: " + StorageUtil.GetIntValue( kPlayer , "_SLH_iDivineMilkProduced")  as Int, "", OPTION_FLAG_DISABLED)
+   
 		SetCursorPosition(1)
-		AddHeaderOption(" Last Cow Milked info")
-
-		ObjectReference kActorRef = StorageUtil.GetFormValue( none , "_SD_iLastCowMilked")	as ObjectReference
-		Actor kActor = kActorRef	as Actor
+		AddHeaderOption(" Last Cow Milk info")
 
 		AddTextOption(" Cow (actor): " + kActor, "", OPTION_FLAG_DISABLED)
 		AddTextOption(" Cow (name): " +  kActor.GetBaseObject().GetName(), "", OPTION_FLAG_DISABLED) 
@@ -319,9 +332,6 @@ event OnPageReset(string a_page)
 			AddTextOption(" _SLH_iMilkProduced: " + StorageUtil.GetIntValue( kActor , "_SLH_iMilkProduced")  as Int, "", OPTION_FLAG_DISABLED)
 			AddTextOption(" _SLH_iDivineMilkProduced: " + StorageUtil.GetIntValue( kActor , "_SLH_iDivineMilkProduced")  as Int, "", OPTION_FLAG_DISABLED)
 
-			AddHeaderOption(" Milk Production (Player)") 
-			AddTextOption(" _SLH_iMilkProduced: " + StorageUtil.GetIntValue( kPlayer , "_SLH_iMilkProduced")  as Int, "", OPTION_FLAG_DISABLED)
-			AddTextOption(" _SLH_iDivineMilkProduced: " + StorageUtil.GetIntValue( kPlayer , "_SLH_iDivineMilkProduced")  as Int, "", OPTION_FLAG_DISABLED)
 
 			AddHeaderOption(" Milk Production (Total)") 
 			AddTextOption(" _SLH_iMilkProducedTotal: " + StorageUtil.GetIntValue( kPlayer , "_SLH_iMilkProducedTotal")  as Int, "", OPTION_FLAG_DISABLED)
