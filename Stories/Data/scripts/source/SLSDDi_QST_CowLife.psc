@@ -395,7 +395,7 @@ Function updateCowStatus(Actor kActor, String sUpdateMode = "", Int iNumberBottl
 	StorageUtil.SetFormValue( none , "_SD_iLastCowMilked", kActor)
 
 	; Update breast size
-	if isFemale(kActor)
+	if hasBreasts(kActor)
 		; Float fBreast  = 1.0 +  (fLactationBase * 0.2) + (fLactationLevel * 0.1) + (fLactationMilkDate * 0.15)
 		Float fBreast  = (fLactationLevel * StorageUtil.GetFloatValue(kPlayer, "_SLS_breastMaxMilkFarm"  )) / 100.0
 
@@ -437,6 +437,18 @@ Function updateCowStatus(Actor kActor, String sUpdateMode = "", Int iNumberBottl
 					; Debug.Notification("[SLSDDi] Updating breast size to " + fBreast)
 				Endif
 			endif
+		endif
+
+		if (StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel")> StorageUtil.GetFloatValue( kActor , "_SLH_fLactationThreshold") ) 
+			sendSlaveTatModEvent(kActor, "milkfarm","Milk Drip", bRefresh = True )
+		else
+			sendSlaveTatRemoveModEvent(kActor, "milkfarm","Milk Drip", bRefresh = True )
+		endif
+
+		if (StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneLactation")>50.0)
+			sendSlaveTatModEvent(kActor, "milkfarm","Milk Veins", iColor = 0x99b3d6e7, bRefresh = True )
+		else
+			sendSlaveTatRemoveModEvent(kActor, "milkfarm","Milk Veins", bRefresh = True )
 		endif
 
 		; Dynamic skin gets reset after each game load - canceling this feature for now.
@@ -615,7 +627,8 @@ Function UpdateMilkAfterOrgasm(Actor kActor, Int iMilkDateOffset)
 				Debug.Notification("Milk spills all over her chest.")
 			endif
 
-			SexLab.AddCum(kActor,False,True,False)
+			; SexLab.AddCum(kActor,False,True,False)
+			sendSlaveTatModEvent(kActor, "milkfarm","Milk Drip", bRefresh = True )
 
 			If (!DivineCheeseQuest.GetStageDone(48)) && (!DivineCheeseQuest.GetStageDone(49))
 				; Enable dialogues about Farm Items for sale
@@ -1120,6 +1133,46 @@ Function UpdateBalimundMerchantChest()
  	endif
 Endfunction
 
+; Requires SlaveTts Event Bridge
+function sendSlaveTatModEvent(actor akActor, string sType, string sTatooName, int iColor = 0x99000000, bool bRefresh = False)
+	; SlaveTats.simple_add_tattoo(bimbo, "Bimbo", "Tramp Stamp", last = false, silent = true)
+  	int STevent = ModEvent.Create("STSimpleAddTattoo")  
+
+  	if (STevent) 
+  		debug.trace("Applying slavetat: " + sTatooName)
+  		debug.trace("	Applying actor: " + akActor)
+        ModEvent.PushForm(STevent, akActor)      	; Form - actor
+        ModEvent.PushString(STevent, sType)    	; String - type of tattoo?
+        ModEvent.PushString(STevent, sTatooName)  	; String - name of tattoo
+        ModEvent.PushInt(STevent, iColor)  			; Int - color
+        ModEvent.PushBool(STevent, bRefresh)        	; Bool - last = false
+        ModEvent.PushBool(STevent, true)         	; Bool - silent = true
+
+        ModEvent.Send(STevent)
+  	else
+  		debug.trace("Applying slavetat failed: " + sTatooName)
+  		debug.Trace("[SLSDDi_QST_CowLife] Send slave tat event failed.")
+	endIf
+endfunction
+
+function sendSlaveTatRemoveModEvent(actor akActor, string sType, string sTatooName, int iColor = 0x99000000, bool bRefresh = False)
+	; akSlave.RemoveFromFaction( slaveFaction as Faction )
+	int STevent = ModEvent.Create("STSimpleRemoveTattoo") 
+	if (STevent)
+  		debug.trace("Clearing slavetat: " + sTatooName)
+  		debug.trace("	Clearing actor: " + akActor)
+	    ModEvent.PushForm(STevent, akActor)        ; Form - actor
+	    ModEvent.PushString(STevent, sType)     	; String - tattoo section (the folder name)
+	    ModEvent.PushString(STevent, sTatooName)    ; String - name of tattoo
+	    ModEvent.PushBool(STevent, true)            ; Bool - last = false (the tattoos are only removed when last = true, use it on batches)
+	    ModEvent.PushBool(STevent, true)            ; Bool - silent = true (do not show a message)
+	    ModEvent.Send(STevent)
+  	else
+  		debug.trace("Clearing slavetat failed: " + sTatooName)
+  		debug.Trace("[SLSDDi_QST_CowLife] Send slave tat remove event failed.")
+	endif
+endfunction
+
 ; Local inflation support - defer to Hormones if available
 
 function SLIF_inflate(Actor kActor, String sKey, float value, String NiOString)
@@ -1152,23 +1205,15 @@ endFunction
 
 ; -------------------------------------------------------------------
 Bool function isFemale(actor kActor)
-	Bool bIsFemale
-	ActorBase kActorBase = kActor.GetActorBase()
-
-	Debug.Trace("[SLP]Checking actor gender")
-	Debug.Trace("[SLP]    kActor: " + kActor)
-	Debug.Trace("[SLP]    kActorBase: " + kActorBase)
-
-	if (kActorBase.GetSex() == 1) ; female
-		bIsFemale = True
-	Else
-		bIsFemale = False
-	EndIf
-
-	return bIsFemale
+	return (kActor.GetActorBase().GetSex() == 1)
 EndFunction
 
 Bool function isMale(actor kActor)
 	return !isFemale(kActor)
 EndFunction
 
+Bool function hasBreasts(actor kActor)
+	return NetImmerse.HasNode(kActor, "NPC L Breast", false)
+EndFunction
+
+ 

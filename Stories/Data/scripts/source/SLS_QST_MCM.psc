@@ -318,6 +318,15 @@ event OnPageReset(string a_page)
 			AddTextOption(" _SLH_iMilkLevel: " + StorageUtil.GetIntValue( kActor , "_SLH_iMilkLevel")  as Int, "", OPTION_FLAG_DISABLED)
 			AddTextOption(" _SLH_isPregnant: " + StorageUtil.GetIntValue( kActor , "_SLH_isPregnant")  as Int, "", OPTION_FLAG_DISABLED) 
 
+			AddHeaderOption(" Milk Production (Actor)") 
+			AddTextOption(" _SLH_iMilkProduced: " + StorageUtil.GetIntValue( kActor , "_SLH_iMilkProduced")  as Int, "", OPTION_FLAG_DISABLED)
+			AddTextOption(" _SLH_iDivineMilkProduced: " + StorageUtil.GetIntValue( kActor , "_SLH_iDivineMilkProduced")  as Int, "", OPTION_FLAG_DISABLED)
+
+
+			AddHeaderOption(" Milk Production (Total)") 
+			AddTextOption(" _SLH_iMilkProducedTotal: " + StorageUtil.GetIntValue( kPlayer , "_SLH_iMilkProducedTotal")  as Int, "", OPTION_FLAG_DISABLED)
+			AddTextOption(" _SLH_iDivineMilkProducedTotal: " + StorageUtil.GetIntValue( kPlayer , "_SLH_iDivineMilkProducedTotal")  as Int, "", OPTION_FLAG_DISABLED)
+
 			AddHeaderOption(" Cow Enrollment ") 
 			AddTextOption(" _SLH_iMilkCow: " + StorageUtil.GetIntValue( kActor , "_SLH_iMilkCow")  as Int, "", OPTION_FLAG_DISABLED)
 
@@ -327,15 +336,6 @@ event OnPageReset(string a_page)
 			AddTextOption(" In HucowsList: " + kActor.IsInFaction(HucowsFaction)  , "", OPTION_FLAG_DISABLED)	
 			 
 			AddTextOption(" In MilkFarmList: " + kActor.IsInFaction(MilkFarmCowsFaction) , "", OPTION_FLAG_DISABLED)	
-
-			AddHeaderOption(" Milk Production (Actor)") 
-			AddTextOption(" _SLH_iMilkProduced: " + StorageUtil.GetIntValue( kActor , "_SLH_iMilkProduced")  as Int, "", OPTION_FLAG_DISABLED)
-			AddTextOption(" _SLH_iDivineMilkProduced: " + StorageUtil.GetIntValue( kActor , "_SLH_iDivineMilkProduced")  as Int, "", OPTION_FLAG_DISABLED)
-
-
-			AddHeaderOption(" Milk Production (Total)") 
-			AddTextOption(" _SLH_iMilkProducedTotal: " + StorageUtil.GetIntValue( kPlayer , "_SLH_iMilkProducedTotal")  as Int, "", OPTION_FLAG_DISABLED)
-			AddTextOption(" _SLH_iDivineMilkProducedTotal: " + StorageUtil.GetIntValue( kPlayer , "_SLH_iDivineMilkProducedTotal")  as Int, "", OPTION_FLAG_DISABLED)
 
 					
 		else

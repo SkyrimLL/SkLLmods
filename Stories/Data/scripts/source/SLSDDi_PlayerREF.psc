@@ -121,6 +121,7 @@ Function _maintenance()
 	RegisterForModEvent("AnimationStart", "OnSexLabStart")
 	RegisterForModEvent("AnimationEnd",   "OnSexLabEnd")
 	RegisterForModEvent("OrgasmStart",    "OnSexLabOrgasm")
+	RegisterForModEvent("SexLabOrgasmSeparate",    "OnSexLabOrgasmSeparate")
 
 	RegisterForModEvent("_SLSDDi_UpdateCow", "OnUpdateCow")
 	RegisterForModEvent("_SLSDDi_UpdateCowList", "OnUpdateCowList")
@@ -510,7 +511,35 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 
 EndEvent 
 
-Event OnSexLabOrgasm(String _eventName, String _args, Float _argc, Form _sender)
+Event OnSexLabOrgasmSeparate(Form ActorRef, Int Thread)
+	ObjectReference PlayerREF= PlayerAlias.GetReference()
+	Actor PlayerActor= PlayerAlias.GetReference() as Actor
+	string _args = Thread as string
+	actor kActor = ActorRef as actor
+	PlayerREF= Game.GetPlayer() ; PlayerAlias.GetReference()
+	PlayerActor= PlayerREF as Actor
+
+	if (kActor==PlayerActor)
+		doOrgasm(_args)
+	endIf
+	
+EndEvent
+
+Event OnSexLabOrgasm(String _eventName, String _args, Float _argc, Form _sender) 
+	ObjectReference PlayerREF= PlayerAlias.GetReference()
+	Actor PlayerActor= PlayerAlias.GetReference() as Actor
+ 	Actor kActor = _sender as Actor
+
+	PlayerREF= Game.GetPlayer() ; PlayerAlias.GetReference()
+	PlayerActor= PlayerREF as Actor
+
+	if (kActor==PlayerActor)
+		doOrgasm(_args)
+	endIf
+	
+EndEvent
+
+Function doOrgasm(String _args)
 	ObjectReference PlayerREF= PlayerAlias.GetReference()
 	Actor PlayerActor= PlayerAlias.GetReference() as Actor
 	Float fBreastScale 
@@ -552,7 +581,7 @@ Event OnSexLabOrgasm(String _eventName, String _args, Float _argc, Form _sender)
 		EndIf
 		idx += 1
 	endwhile
-EndEvent
+EndFunction
 
 Event OnSit(ObjectReference akFurniture)
 	Actor PlayerActor = Game.getPlayer()
