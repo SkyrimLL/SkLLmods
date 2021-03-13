@@ -1,0 +1,4 @@
+[
+{"name": "Milk Drip", "section":"hormones", "texture":"hormones\\lactation.dds", "area":"Body"},
+{"name": "Milk Veins", "section":"hormones", "texture":"hormones\\MammaryVeins.dds", "area":"Body"}
+]
