@@ -519,9 +519,11 @@ Event OnSexLabOrgasmSeparate(Form ActorRef, Int Thread)
 	PlayerREF= Game.GetPlayer() ; PlayerAlias.GetReference()
 	PlayerActor= PlayerREF as Actor
 
-	if (kActor==PlayerActor)
-		doOrgasm(_args)
-	endIf
+	If (kActor == None)
+		kActor = PlayerActor
+	EndIf
+		
+	doOrgasm(_args)
 	
 EndEvent
 
@@ -533,10 +535,11 @@ Event OnSexLabOrgasm(String _eventName, String _args, Float _argc, Form _sender)
 	PlayerREF= Game.GetPlayer() ; PlayerAlias.GetReference()
 	PlayerActor= PlayerREF as Actor
 
-	if (kActor==PlayerActor)
-		doOrgasm(_args)
-	endIf
-	
+	If (kActor == None)
+		kActor = PlayerActor
+	EndIf
+		
+	doOrgasm(_args)
 EndEvent
 
 Function doOrgasm(String _args)

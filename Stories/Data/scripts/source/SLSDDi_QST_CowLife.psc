@@ -388,9 +388,9 @@ Function updateCowStatus(Actor kActor, String sUpdateMode = "", Int iNumberBottl
 		GV_MilkLevel.SetValue(StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") as Int)
 		MilkProduced.SetValue(StorageUtil.GetIntValue(kActor, "_SLH_iMilkProduced") as Int)
 		GV_ProlactinLevel.SetValue( StorageUtil.GetFloatValue( kActor , "_SLH_fHormoneLactation") as Int)
+		MilkProducedTotal.SetValue((StorageUtil.GetIntValue(kActor, "_SLH_iMilkProducedTotal") as Int) + (StorageUtil.GetIntValue(kActor, "_SLH_iDivineMilkProducedTotal") as Int))
 	Endif
 		
-	MilkProducedTotal.SetValue(StorageUtil.GetIntValue(kPlayer, "_SLH_iMilkProducedTotal") as Int)
 
 	StorageUtil.SetFormValue( none , "_SD_iLastCowMilked", kActor)
 
@@ -445,12 +445,23 @@ Function updateCowStatus(Actor kActor, String sUpdateMode = "", Int iNumberBottl
 			sendSlaveTatRemoveModEvent(kActor, "milkfarm","Milk Drip", bRefresh = True )
 		endif
 
-		if (StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneLactation")>50.0)
-			sendSlaveTatModEvent(kActor, "milkfarm","Milk Veins", iColor = 0x99b3d6e7, bRefresh = True )
+		if (StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneLactation")>80.0)
+			sendSlaveTatModEvent(kActor, "milkfarm","Milk Veins", iColor = 0x99184f6b, bRefresh = True )
 		else
 			sendSlaveTatRemoveModEvent(kActor, "milkfarm","Milk Veins", bRefresh = True )
 		endif
 
+		; Milk Mod Economy integration - register NPC as Milk Maid after their first bottle produced in Stories
+		if ( (StorageUtil.GetFloatValue(kActor,"MME.MilkMaid.BreastRows")>0.0) && ((StorageUtil.GetIntValue(kActor, "_SLH_iMilkProducedTotal") + StorageUtil.GetIntValue(kActor, "_SLH_iDivineMilkProducedTotal"))>0) )
+
+			;Send Add MilkSlave Event
+			int MME_AddMilkSlave = ModEvent.Create("MME_AddMilkSlave")
+			if (MME_AddMilkSlave)
+				ModEvent.PushForm(MME_AddMilkSlave, kActor)
+				ModEvent.Send(MME_AddMilkSlave)
+			endif
+
+		endif
 		; Dynamic skin gets reset after each game load - canceling this feature for now.
 		; If (iIndex != -1) 
 			; pActorBase.SetSkin(MilkFarmCowSkin)
@@ -866,25 +877,26 @@ Function GetMilk(Actor kActor, Int iNumberBottles=1)
 	Endif
 
 	; _SLH_iMilkProducedTotal - indexed on the Player. Total amount produced across all cows
+	iTotalMilkProduced = (StorageUtil.GetIntValue(kPlayer, "_SLH_iMilkProducedTotal") as Int) + (StorageUtil.GetIntValue(kPlayer, "_SLH_iDivineMilkProducedTotal") as Int)
 
 
 	; Trigger quest stages based on milk production
-	if ( (!DivineCheeseQuest.GetStageDone(100)) && (StorageUtil.GetIntValue(kPlayer, "_SLH_iMilkProducedTotal") >= 5) ) 
+	if ( (!DivineCheeseQuest.GetStageDone(100)) && ( iTotalMilkProduced >= 5) ) 
 		; Ask to improve lactation
 	    DivineCheeseQuest.SetStage(100)
 	endif
 
-	if ( (!DivineCheeseQuest.GetStageDone(200)) && (StorageUtil.GetIntValue(kActor, "_SLH_iDivineMilkProduced") >= 1) ) 
+	if ( (!DivineCheeseQuest.GetStageDone(200)) && ((StorageUtil.GetIntValue(kPlayer, "_SLH_iDivineMilkProducedTotal") as Int) >= 1) ) 
 		; Ask about Divine Milk
 	    DivineCheeseQuest.SetStage(200)
 	endif
 
-	if ( (!DivineCheeseQuest.GetStageDone(320)) && (StorageUtil.GetIntValue(kActor, "_SLH_iDivineMilkProduced") >= 5) ) 
+	if ( (!DivineCheeseQuest.GetStageDone(320)) && ((StorageUtil.GetIntValue(kPlayer, "_SLH_iDivineMilkProducedTotal") as Int) >= 5) ) 
 		; Ask about improved production (milk machine)
 	    DivineCheeseQuest.SetStage(320)
 	endif
 
-	if ( (!DivineCheeseQuest.GetStageDone(330)) && (StorageUtil.GetIntValue(kActor, "_SLH_iDivineMilkProduced") >= 10) ) 
+	if ( (!DivineCheeseQuest.GetStageDone(330)) && ((StorageUtil.GetIntValue(kPlayer, "_SLH_iDivineMilkProducedTotal") as Int) >= 10) ) 
 		; Ask about optimal production (milk machine mark II)
 	    DivineCheeseQuest.SetStage(330)
 	endif
@@ -988,7 +1000,6 @@ Function UpdateBusiness()
 		InitBusiness()
 	endif
  
-	iTotalMilkProduced = 0
 	sBusinessStatusMsg += GetFarmCowStatus(SnowShodCowNordAlias.GetReference(), "Nord cow") 
 	sBusinessStatusMsg += GetFarmCowStatus(SnowShodCowBretonAlias.GetReference(), "Breton cow") 
 	sBusinessStatusMsg += GetFarmCowStatus(SnowShodCowImperialAlias.GetReference(), "Imperial cow") 
@@ -998,15 +1009,13 @@ Function UpdateBusiness()
 	sBusinessStatusMsg += GetFarmCowStatus(SnowShodCowAltmerAlias.GetReference(), "Altmer cow") 
 	sBusinessStatusMsg += GetFarmCowStatus(SnowShodCowOrcAlias.GetReference(), "Orc cow") 
 
-	iTotalMilkProduced += StorageUtil.GetIntValue( kPlayer, "_SLH_iMilkProducedTotal")
-
 	if (StorageUtil.GetIntValue(kPlayer, "_SLH_iLactating") == 1)
 		sBusinessStatusMsg += "\n Player: "  +  (StorageUtil.GetIntValue(kPlayer, "_SLH_iMilkProduced") + StorageUtil.GetIntValue(kPlayer, "_SLH_iDivineMilkProduced")) + " L: " +StorageUtil.GetIntValue(kPlayer, "_SLH_iMilkLevel") + " H: " + StorageUtil.GetFloatValue( kPlayer , "_SLH_fHormoneLactation")
 	endif
 
 	updateAllCows("")
 
-	sBusinessStatusMsg += "\n Total Milk: " + StorageUtil.GetIntValue( kPlayer, "_SLH_iMilkProducedTotal")
+	sBusinessStatusMsg += "\n Total Milk: " + (StorageUtil.GetIntValue( kPlayer, "_SLH_iMilkProducedTotal") + StorageUtil.GetIntValue( kPlayer, "_SLH_iDivineMilkProducedTotal"))
 
 	if (StorageUtil.GetIntValue( kPlayer, "_SLH_iDivineMilkProducedTotal")>0)
 		sBusinessStatusMsg += "\n Total Divine Milk: " + StorageUtil.GetIntValue( kPlayer, "_SLH_iDivineMilkProducedTotal")
