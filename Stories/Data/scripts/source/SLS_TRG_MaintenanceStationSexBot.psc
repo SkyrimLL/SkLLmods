@@ -21,6 +21,11 @@ Event OnTriggerEnter(ObjectReference akActionRef)
 	; Debug.Notification("SybilREF: " + SybilREF)
 	; Debug.Notification("TRG Quest: " + InitiationQuest)
 
+	; disable button if ELLE was not found in Shimmermist cave
+	if (SexBotQuest.GetStageDone(20) == 0)
+		return
+	endif
+
 	; 3d will not be loaded in some situations, such as werewolf transformations.
 	; Skip body update if 3d not loaded.
 	If ( !(akActionRef as Actor).Is3DLoaded() )

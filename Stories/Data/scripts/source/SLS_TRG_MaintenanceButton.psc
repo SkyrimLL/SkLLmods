@@ -4,6 +4,7 @@ ObjectReference Property SexBotRefRef  Auto
 ObjectReference Property LexiconMarkerRef  Auto  
 ObjectReference Property WorkerBotRef  Auto  
 Spell Property TonalAdjustmentSpell  Auto 
+Quest Property SexBotQuest  Auto  
 
 Auto STATE Waiting
 Event OnActivate(ObjectReference akActionRef)
@@ -11,6 +12,11 @@ Event OnActivate(ObjectReference akActionRef)
 	Actor akPlayer = Game.getPlayer() as Actor
 	Actor SexBotActor = SexBotRefRef as Actor
 
+	; disable button if ELLE was not found in Shimmermist cave
+	if (SexBotQuest.GetStageDone(20) == 0)
+		return
+	endif
+	
 	If (akActor == akPlayer)  
 		; Debug.Notification("Sybil  is in the Sanctum : Initiation Level " + SybilLevel.GetValue())
 		; Debug.Notification("Initiation quest stage: " + InitiationQuest.GetStage() )

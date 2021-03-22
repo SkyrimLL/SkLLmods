@@ -38,6 +38,7 @@ GlobalVariable Property GV_MilkDuringSex  Auto
 GlobalVariable Property GV_MilkLevel  Auto  
 GlobalVariable Property GV_ProlactinLevel  Auto  
 GlobalVariable Property MilkProduced  Auto  
+GlobalVariable Property MilkDivineProduced  Auto  
 GlobalVariable Property MilkProducedTotal  Auto  
 
 Keyword Property SLSD_CowHarness Auto
@@ -388,6 +389,8 @@ Function updateCowStatus(Actor kActor, String sUpdateMode = "", Int iNumberBottl
 		GV_MilkLevel.SetValue(StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") as Int)
 		MilkProduced.SetValue(StorageUtil.GetIntValue(kActor, "_SLH_iMilkProduced") as Int)
 		GV_ProlactinLevel.SetValue( StorageUtil.GetFloatValue( kActor , "_SLH_fHormoneLactation") as Int)
+		MilkProduced.SetValue(StorageUtil.GetIntValue(kActor, "_SLH_iMilkProducedTotal") as Int)
+		MilkDivineProduced.SetValue(StorageUtil.GetIntValue(kActor, "_SLH_iDivineMilkProducedTotal") as Int)
 		MilkProducedTotal.SetValue((StorageUtil.GetIntValue(kActor, "_SLH_iMilkProducedTotal") as Int) + (StorageUtil.GetIntValue(kActor, "_SLH_iDivineMilkProducedTotal") as Int))
 	Endif
 		
@@ -452,7 +455,7 @@ Function updateCowStatus(Actor kActor, String sUpdateMode = "", Int iNumberBottl
 		endif
 
 		; Milk Mod Economy integration - register NPC as Milk Maid after their first bottle produced in Stories
-		if ( (StorageUtil.GetFloatValue(kActor,"MME.MilkMaid.BreastRows")>0.0) && ((StorageUtil.GetIntValue(kActor, "_SLH_iMilkProducedTotal") + StorageUtil.GetIntValue(kActor, "_SLH_iDivineMilkProducedTotal"))>0) )
+		if ( (StorageUtil.GetFloatValue(kActor,"MME.MilkMaid.BreastCount")>0.0) && ((StorageUtil.GetIntValue(kActor, "_SLH_iMilkProducedTotal") + StorageUtil.GetIntValue(kActor, "_SLH_iDivineMilkProducedTotal"))>0) )
 
 			;Send Add MilkSlave Event
 			int MME_AddMilkSlave = ModEvent.Create("MME_AddMilkSlave")

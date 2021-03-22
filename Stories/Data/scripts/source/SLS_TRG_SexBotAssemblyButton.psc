@@ -45,6 +45,11 @@ Event OnActivate(ObjectReference akActionRef)
 	Bool bEvolvedDataCube = False
 	Bool bTransform = False
 
+	; disable button if ELLE was not found in Shimmermist cave
+	if (SexBotQuest.GetStageDone(20) == 0)
+		return
+	endif
+	
 	If (akActor == akPlayer)  
 		; Debug.Notification("Sybil  is in the Sanctum : Initiation Level " + SybilLevel.GetValue())
 		; Debug.Notification("Initiation quest stage: " + InitiationQuest.GetStage() )
