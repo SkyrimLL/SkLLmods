@@ -54,6 +54,15 @@ ObjectReference Property MilkOMaticSoundFX  Auto
 ObjectReference Property LeonaraRef  Auto  
 ObjectReference Property BalimundMerchantChest Auto
 
+ObjectReference Property TrophiesMarkerRef Auto
+ObjectReference Property GrummitesMarkerRef Auto
+ObjectReference Property SkeeversMarkerRef Auto
+ObjectReference Property KnightsMarkerRef Auto
+ObjectReference Property WabbajackMarkerRef Auto
+SPELL Property WabbajackSpell Auto
+Sound Property CardSoundFX Auto
+ObjectReference[] Property ShiveringGroveHazards  Auto  
+
 MiscObject Property Gold Auto
 
 Armor Property cowHarnessInventory Auto
@@ -1143,6 +1152,43 @@ Function UpdateBalimundMerchantChest()
  	;	BalimundMerchantChest.AddItem(EmptyMilk, 24)
  	;	BalimundMerchantChest.AddItem(cowHarnessInventory, 2)
  	endif
+Endfunction
+
+
+Function triggerCard(String sCardEvent) 
+	Actor kPlayer = Game.Getplayer()
+
+	CardSoundFX.play(kPlayer) 
+
+	if (sCardEvent == "Trophies")
+		TrophiesMarkerRef.enable()
+		; cast wabbajack effect on sheo statue
+
+	elseif (sCardEvent == "Grummites")
+		GrummitesMarkerRef.enable()
+
+	elseif (sCardEvent == "Skeevers")
+		SkeeversMarkerRef.enable()
+
+	elseif (sCardEvent == "Knights")
+		KnightsMarkerRef.enable()
+
+	elseif (sCardEvent == "Wabbajack")
+		WabbajackMarkerRef.enable()
+
+		; Loop through ShiveringGroveHazards 
+		; if random int and actor is not dead, cast wabbajack effect
+
+	elseif (sCardEvent == "Random")
+
+		; on randon int
+		; 	cast hormone scrambling effect
+		; 	max milk level and lactation
+		; 	cast EC dwemer machine (check if even in Stories for ELLE?)
+		;  	equip harness if no harness on and female
+		
+	Endif
+ 
 Endfunction
 
 ; Requires SlaveTts Event Bridge

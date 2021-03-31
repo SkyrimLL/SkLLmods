@@ -129,6 +129,7 @@ Function _maintenance()
 	RegisterForModEvent("_SLSDDi_DrinkCow", "OnDrinkCow")
 	RegisterForModEvent("_SLSDDi_EquipMilkingDevice", "OnEquipMilkingDevice")
 	RegisterForModEvent("_SLSDDi_RemoveMilkingDevice", "OnRemoveMilkingDevice")
+	RegisterForModEvent("_SLSDDi_TriggerCard", "OnTriggerCard")
 
 	If (StorageUtil.GetIntValue(none, "_SLH_iHormones") != 1)
 		; Hormones is not installed - register fallback mod event
@@ -201,6 +202,25 @@ Event OnModHormoneEvent(String _eventName, String _args, Float _argc = 1.0, Form
 
 EndEvent
 
+Event OnTriggerCard(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+
+ 	if (kActor == None)
+ 		kActor = Game.GetPlayer()
+ 	EndIf
+
+ 	if (_args == "")
+ 		return
+ 	EndIf
+
+	debug.Trace("[SLSDDi] Receiving 'trigger card' event. Actor: " + kActor )
+
+	CowLife.triggerCard(_args)
+
+EndEvent
+
+
+
 Event OnUpdateCow(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
  	String sUpdateMode = _args
@@ -217,7 +237,7 @@ Event OnUpdateCowList(String _eventName, String _args, Float _argc = -1.0, Form 
 
 EndEvent
 
-Event OnGropeCow(String _eventName, String _args, Float _argc = -1.0, Form _sender)
+Function _startBrestSexScene(String _args, Form _sender)
  	Actor kActor = _sender as Actor
  	Actor kPlayer = Game.GetPlayer() as Actor
  	String sPlayerCow = _args
@@ -250,11 +270,23 @@ Event OnGropeCow(String _eventName, String _args, Float _argc = -1.0, Form _send
 			anims = SexLab.GetAnimationsByTags(2, "Breast","Estrus,Dwemer")
 		endif
 
+		if (anims[0] ==None)
+			anims = SexLab.GetAnimationsByTags(2, "Boob","Estrus,Dwemer")
+		endif
+
+		if (anims[0] ==None)
+			anims = SexLab.GetAnimationsByTags(2, "Boobjob","Estrus,Dwemer")
+		endif
+
 		SexLab.StartSex(sexActors, anims)
 	EndIf
 
 	; CowLife.updateCowStatus(kPlayer,"")
 	; CowLife.updateCowStatus(kActor,"")
+Endfunction
+
+Event OnGropeCow(String _eventName, String _args, Float _argc = -1.0, Form _sender)
+	_startBrestSexScene( _args,  _sender)
 
 EndEvent
 
@@ -276,35 +308,8 @@ Event OnDrinkCow(String _eventName, String _args, Float _argc = -1.0, Form _send
 	Endif
 
 
-	If  (SexLab.ValidateActor( kPlayer ) > 0) &&  (SexLab.ValidateActor(kActor) > 0) 
-		SendModEvent("dhlp-Suspend")
-		StorageUtil.SetIntValue(none, "_SLS_iPlayerMilkFarmSex", 1)
+	_startBrestSexScene( _args,  _sender)
 
-		actor[] sexActors = new actor[2]
-		If (sPlayerCow == "PlayerCow")
-			sexActors[0] = kPlayer
-			sexActors[1] = kActor
-		else
-			sexActors[0] = kActor
-			sexActors[1] = kPlayer
-		endif
-
-		sslBaseAnimation[] anims
-		anims = new sslBaseAnimation[1]
-		Int rnum = Utility.RandomInt(0,100)
-
-		if (rnum > 50)
-			anims[0] = SexLab.GetAnimationByName("3J Straight Breastfeeding")
-		else
-			anims[0] = SexLab.GetAnimationByName("3J Lesbian Breastfeeding")
-		endif
-
-		if (anims[0] ==None)
-			anims = SexLab.GetAnimationsByTags(2, "Breast","Estrus,Dwemer")
-		endif
-
-		SexLab.StartSex(sexActors, anims)
-	EndIf
 
 	; If (sPlayerCow == "PlayerCow")
 	;	CowLife.updateCowStatus(kPlayer,"Drink")
