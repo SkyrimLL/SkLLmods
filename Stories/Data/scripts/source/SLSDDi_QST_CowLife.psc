@@ -1163,30 +1163,88 @@ Function triggerCard(String sCardEvent)
 	if (sCardEvent == "Trophies")
 		TrophiesMarkerRef.enable()
 		; cast wabbajack effect on sheo statue
+		WabbajackSpell.cast(kPlayer, WabbajackMarkerRef)
+		Debug.Notification("What happened to the trophies?")
 
 	elseif (sCardEvent == "Grummites")
 		GrummitesMarkerRef.enable()
+		Debug.Notification("The halls echo of wet grunts.")
 
 	elseif (sCardEvent == "Skeevers")
 		SkeeversMarkerRef.enable()
+		Debug.Notification("Is that rats in the halls?")
 
 	elseif (sCardEvent == "Knights")
 		KnightsMarkerRef.enable()
+		Debug.Notification("Something big is happening outside.")
 
-	elseif (sCardEvent == "Wabbajack")
-		WabbajackMarkerRef.enable()
+	elseif (sCardEvent == "Wabbajack") 
+		Debug.Notification("Booring! Let's change things a bit.")
 
 		; Loop through ShiveringGroveHazards 
 		; if random int and actor is not dead, cast wabbajack effect
 
+		Int iIdx = 0
+		Actor kActor
+		While ( iIdx < ShiveringGroveHazards.Length )
+			if (Utility.RandomInt(0,100)>10) 
+				kActor = ShiveringGroveHazards[iIdx] as Actor
+				if (!kActor.IsDead()) && (ShiveringGroveHazards[iIdx].IsEnabled()) 
+					; Debug.Notification("Wabbajack! " + iIdx)
+					WabbajackSpell.cast(ShiveringGroveHazards[iIdx], ShiveringGroveHazards[iIdx])
+				elseif (kActor.IsDead()) && (Utility.RandomInt(0,100)>50) 
+					kActor.Resurrect()
+				elseif (ShiveringGroveHazards[iIdx].IsEnabled()) && (Utility.RandomInt(0,100)>50) 
+					; Disable() is causing a bug - find something else
+					; ShiveringGroveHazards[iIdx].disable()
+				endif
+			Else
+				; Nothing happens
+				; Debug.Notification("Nothing " + iIdx)
+			Endif
+			iIdx += 1
+		EndWhile
+
 	elseif (sCardEvent == "Random")
 
 		; on randon int
-		; 	cast hormone scrambling effect
-		; 	max milk level and lactation
-		; 	cast EC dwemer machine (check if even in Stories for ELLE?)
-		;  	equip harness if no harness on and female
+
+		Int iNum = Utility.RandomInt(0,100)
+ 		int ECTrap = ModEvent.Create("ECStartAnimation")  ; Int  Does not have to be named "ECTrap" any name would do
 		
+		if (iNum>80) && (StorageUtil.GetIntValue(none, "_SLH_iHormones")!=1)
+		; 	cast hormone scrambling effect
+			Debug.Notification("You feel dizzy and very hot.")
+			kPlayer.SendModEvent("SLHModHormoneRandom", "Succubus")
+
+		elseif (iNum>60) && hasBreasts(kPlayer)
+		; 	max milk level and lactation
+			Debug.Notification("Your chest tingles.")
+
+			kPlayer.SendModEvent("SLHModHormone", "Lactation", 100.0 )
+			StorageUtil.SetIntValue(kPlayer, "_SLH_iMilkLevel", 100)
+			updateCowStatus(kPlayer, sUpdateMode = "Silent", iNumberBottles=0)
+
+		elseif (iNum>40) && (ECTrap)
+		; 	cast EC dwemer machine (check if even in Stories for ELLE?)
+			Debug.Notification("The ground shakes around you.")
+
+	        ModEvent.PushForm(ECTrap, self)             ; Form (Some SendModEvent scripting "black magic" - required)
+	        ModEvent.PushForm(ECTrap, kPlayer)          ; Form The animation target
+	        ModEvent.PushInt(ECTrap, 1)    ; Int  The animation required    0 = Tentacles, 1 = Machine
+	        ModEvent.PushBool(ECTrap, true)             ; Bool Apply the linked EC effect (Ovipostion for Tentacles, Exhaustion for Machine) 
+	        ModEvent.Pushint(ECTrap, 500)               ; Int  Alarm radius in units (0 to disable) 
+	        ModEvent.PushBool(ECTrap, true)             ; Bool Use EC (basic) crowd control on hostiles 
+	        ModEvent.Send(ECtrap)
+
+		elseif (iNum>20) && (!kPlayer.WornHasKeyword(SLSD_CowMilker))
+		;  	equip harness if no harness on and female
+			Debug.Notification("A milker appears on your chest.")
+			PlayerReceivedAutoCowharness(kPlayer)
+		else
+			Debug.Notification("Isn't this fun?")
+		endif
+
 	Endif
  
 Endfunction

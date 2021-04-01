@@ -33,19 +33,19 @@ Event OnTriggerEnter(ObjectReference akActionRef)
 			ShiveringGroveExitMarker.Enable()
 			; MUSCombatBoss.Add()
 
-			If (DivineCheeseQuest.GetStageDone(530) == 0)
-				DivineCheeseQuest.SetStage(530)
+			If (DivineCheeseQuest.GetStageDone(540) == 0)
+				DivineCheeseQuest.SetStage(540)
 
 			Endif
 
-		elseif ( (kPlayer.GetItemCount(DivineCheese)<1) && (kPlayer.GetItemCount(DivineCheeseWheel)<1) ) || (DivineCheeseQuest.GetStageDone(530)==1)
+		elseif ( (kPlayer.GetItemCount(DivineCheese)<1) && (kPlayer.GetItemCount(DivineCheeseWheel)<1) ) || (DivineCheeseQuest.GetStageDone(540)==1)
 
 			; Disable exit and add planks
 			ShiveringGroveExitMarker.Disable()
 			; MUSCombatBoss.Add()
 
-			If (DivineCheeseQuest.GetStageDone(520) == 0)
-				DivineCheeseQuest.SetStage(520)
+			If (DivineCheeseQuest.GetStageDone(515) == 0)
+				DivineCheeseQuest.SetStage(515)
 
 			Endif
 		endif
