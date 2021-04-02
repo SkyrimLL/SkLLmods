@@ -14,8 +14,8 @@ EVENT onLoad()
 endEVENT
 
 STATE active
-	EVENT OnMagicEffectApply(ObjectReference akCaster, MagicEffect akEffect)
-		if _SLSDDi_QST_DivineCheese.GetStageDone(528)
+	EVENT OnTrigger(ObjectReference akCaster)
+		if (_SLSDDi_QST_DivineCheese.GetStageDone(528)==1)
 			gotoState("inactive")
 			wait(0.1)
 			placeAtMe(crExplosionFrostSM)

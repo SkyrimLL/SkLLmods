@@ -88,6 +88,7 @@ EVENT onEffectStart(Actor akTarget, Actor akCaster)
 	victim = akTarget
 
 	IF (akCaster == kPlayer) && (akTarget == kPlayer)
+		; Debug.Notification("Wabbajack!")
 		; If player casts on him/herself
 		randEffect = utility.randomInt(1, 100)
 		explosionMarker.moveTo(akTarget)
@@ -143,11 +144,11 @@ EVENT onEffectStart(Actor akTarget, Actor akCaster)
 		ELSEIF(randEffect >= 58 && randEffect < 65)
 			randomCreatureRabbit(akTarget)	
 			
-		ELSEIF(randEffect >= 65 && randEffect < 72)
+		ELSEIF(randEffect >= 65 && randEffect < 77)
 			randomCreatureMudcrab(akTarget)	
 		
-		ELSEIF(randEffect >= 72 && randEffect < 77)
-			castInvis(akTarget)
+		; ELSEIF(randEffect >= 72 && randEffect < 77)
+		; 	castInvis(akTarget)
 
 		ELSEIF(randEffect >= 77 && randEffect < 82)
 			hsmTransfer(akTarget)

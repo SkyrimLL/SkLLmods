@@ -190,7 +190,7 @@ Function registerCow(Actor kActor)
 
 
 	If (StorageUtil.GetIntValue(kActor, "_SLH_iMilkCow") == 0)
-		debug.notification("[SLSDDi] Registering new cow: " + kActor )
+		debug.trace("[SLSDDi] Registering new cow: " + kActor )
 		StorageUtil.SetIntValue(kActor, "_SLH_iMilkCow", 1)
 		StorageUtil.FormListAdd(none, "_SLH_lMilkCowList", kActor)
 
@@ -1121,7 +1121,7 @@ Function PayEnrolledCow(Actor kActor)
 		sActorName = "her"
 	endif
 
-	if (kActor.GetRelationshipRank(kPlayer) == 2) && (iPlayerGold > 10)
+	if (kActor.GetRelationshipRank(kPlayer) >= 1) && (iPlayerGold > 10)
 		kPlayer.RemoveItem(Gold, 10, True)
 	  	Debug.Notification("You pay " + sActorName + " a fee of 10 gold.")
 
@@ -1163,7 +1163,7 @@ Function triggerCard(String sCardEvent)
 	if (sCardEvent == "Trophies")
 		TrophiesMarkerRef.enable()
 		; cast wabbajack effect on sheo statue
-		WabbajackSpell.cast(kPlayer, WabbajackMarkerRef)
+		; WabbajackSpell.cast(kPlayer, WabbajackMarkerRef)
 		Debug.Notification("What happened to the trophies?")
 
 	elseif (sCardEvent == "Grummites")
@@ -1192,10 +1192,9 @@ Function triggerCard(String sCardEvent)
 				if (!kActor.IsDead()) && (ShiveringGroveHazards[iIdx].IsEnabled()) 
 					; Debug.Notification("Wabbajack! " + iIdx)
 					WabbajackSpell.cast(ShiveringGroveHazards[iIdx], ShiveringGroveHazards[iIdx])
-				elseif (kActor.IsDead()) && (Utility.RandomInt(0,100)>50) 
-					kActor.Resurrect()
-				elseif (ShiveringGroveHazards[iIdx].IsEnabled()) && (Utility.RandomInt(0,100)>50) 
-					; Disable() is causing a bug - find something else
+				; elseif (kActor.IsDead()) && (Utility.RandomInt(0,100)>50) 
+					; kActor.Resurrect()
+				; elseif (ShiveringGroveHazards[iIdx].IsEnabled()) && (Utility.RandomInt(0,100)>50) 
 					; ShiveringGroveHazards[iIdx].disable()
 				endif
 			Else
