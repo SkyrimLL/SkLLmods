@@ -2767,6 +2767,9 @@ Function tryPlayerChaurusStage()
 	if (iChaurusQueenStage>=3) && (QueenOfChaurusQuest.GetStageDone(350))
 		if (!PlayerActor.HasSpell( SeedSpawnChaurus ))
 	 		PlayerActor.AddSpell( SeedSpawnChaurus ) 
+
+	 		SeedSpawnChaurus.Cast(PlayerActor as ObjectReference, PlayerActor as ObjectReference)
+	 			
 	 		debug.messagebox("The Seed expands inside you in response to the chaurus, flooding your mind with strange symbols and visions of alien skies. Your womb aches from the urge to fertilize and spawn chaurus eggs.")
 	 	endif 	
 	endif
