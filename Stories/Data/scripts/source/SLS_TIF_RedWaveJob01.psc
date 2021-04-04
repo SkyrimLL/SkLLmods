@@ -6,9 +6,9 @@ Scriptname SLS_TIF_RedWaveJob01 Extends TopicInfo Hidden
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
-RedWavePlayerDebt.SetValue(2000)
+Actor kPlayer = Game.GetPlayer() 
 
-Game.GetPlayer().SendModEvent("_SLS_PlayerRedWave")
+kPlayer.SendModEvent("_SLS_PlayerRedWave")
 ;END CODE
 EndFunction
 ;END FRAGMENT

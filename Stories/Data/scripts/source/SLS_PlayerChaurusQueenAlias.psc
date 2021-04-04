@@ -130,6 +130,8 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 	Actor PlayerActor= PlayerAlias.GetReference() as Actor
 	Float fBreastScale 
 
+
+	Return ; Unused for now
  
 	if !Self || !SexLab   || (StorageUtil.GetIntValue(none, "_SLS_iStoriesPlayerChaurusQueen")==0)
 	;	Debug.Trace("SexLab Stories: Critical error on SexLab Start")
@@ -174,6 +176,8 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
     sslBaseAnimation animation = SexLab.HookAnimation(_args)
     Float fBreastScale 
 
+	Return ; Unused for now
+
 	if !Self || !SexLab  || (StorageUtil.GetIntValue(none, "_SLS_iStoriesPlayerChaurusQueen")==0)
 	;	Debug.Trace("SexLab Stories: Critical error on SexLab End")
 		Return
@@ -200,6 +204,8 @@ Event OnSexLabOrgasm(String _eventName, String _args, Float _argc, Form _sender)
 	ObjectReference PlayerREF= PlayerAlias.GetReference()
 	Actor PlayerActor= PlayerAlias.GetReference() as Actor
 	Float fBreastScale 
+
+	Return ; Unused for now
 
 	if !Self || !SexLab  || (StorageUtil.GetIntValue(none, "_SLS_iStoriesPlayerChaurusQueen")==0)
 	;	Debug.Trace("SexLab Stories: Critical error on SexLab Orgasm")

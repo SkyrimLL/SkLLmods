@@ -6,9 +6,10 @@ Scriptname SLS_TIF_RedWavePlayerTask01 Extends TopicInfo Hidden
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
+Actor kPlayer = Game.GetPlayer()
 Int randomNum = Utility.RandomInt(0, 100)
-; StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akSpeaker)
-StorageUtil.SetIntValue( Game.GetPlayer() , "_SD_iSub", StorageUtil.GetIntValue( Game.GetPlayer(), "_SD_iSub") + 1)
+; StorageUtil.SetFormValue( kPlayer , "_SD_TempAggressor", akSpeaker)
+StorageUtil.SetIntValue( kPlayer , "_SD_iSub", StorageUtil.GetIntValue( kPlayer, "_SD_iSub") + 1)
 StorageUtil.SetIntValue( akSpeaker, "_SD_iDisposition", StorageUtil.GetIntValue( akSpeaker, "_SD_iDisposition"  ) + 1  )
  
 
@@ -24,9 +25,9 @@ if(Quest.GetQuest("_SD_controller"))
 	Else
 		akSpeaker.SendModEvent("PCSubSex") ; Sex
 	EndIf
-	Game.GetPlayer().AddItem(Gold, (randomNum/10) + 10)
-	RedWaveDebt.SetValue(  RedWaveDebt.GetValue() -  (randomNum - (randomNum/10) ) )
-	Debug.Notification("You now owe " + RedWaveDebt.GetValue() as Int + " gold.")
+	; kPlayer.AddItem(Gold, (randomNum/10) + 10)
+	; RedWaveDebt.SetValue(  RedWaveDebt.GetValue() -  (randomNum - (randomNum/10) ) )
+	; Debug.Notification("You now owe " + RedWaveDebt.GetValue() as Int + " gold.")
 else
 	If (randomNum > 95)
 		akSpeaker.SendModEvent("RedWaveEntertain", "Dance")
@@ -40,7 +41,6 @@ else
 		akSpeaker.SendModEvent("RedWaveSex") ; Sex
 	EndIf
 endif
-
 ;END CODE
 EndFunction
 ;END FRAGMENT

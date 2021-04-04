@@ -7,27 +7,28 @@ Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akActor = SexLab.PlayerRef
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
+Actor kPlayer = Game.GetPlayer()
 
-ActorBase PlayerBase = Game.GetPlayer().GetBaseObject() as ActorBase
+ActorBase PlayerBase = kPlayer.GetBaseObject() as ActorBase
 ActorBase SpeakerBase = akSpeaker.GetBaseObject() as ActorBase
 Int PlayerGender = PlayerBase.GetSex() ; 0 = Male ; 1 = Female
 Int SpeakerGender = SpeakerBase.GetSex() ; 0 = Male ; 1 = Female
 ;		Debug.MessageBox( "The Sister quietly peels off your clothes to reveal your beauty to the world." )
-;  		SexLab.ActorLib.StripActor(Game.GetPlayer(), DoAnimate= false)
+;  		SexLab.ActorLib.StripActor(kPlayer, DoAnimate= false)
 
-	If  (SexLab.ValidateActor(akActor) > 0) &&  (SexLab.ValidateActor(akSpeaker) > 0) 
+	If  (SexLab.ValidateActor(kPlayer) > 0) &&  (SexLab.ValidateActor(akSpeaker) > 0) 
 		
-		Game.GetPlayer().RemoveItem(Skooma, 1)
+		kPlayer.RemoveItem(Skooma, 1)
 		
 		If (PlayerGender == 1 && SpeakerGender == 1)
-			SexLab.QuickStart(akSpeaker, akActor, Victim=akSpeaker, AnimationTags="FemDom,Lesbian")
+			SexLab.QuickStart(akSpeaker, kPlayer, Victim=akSpeaker, AnimationTags="FemDom,Lesbian")
 		elseIf (PlayerGender == 0 && SpeakerGender == 0)
-			SexLab.QuickStart(akSpeaker, akActor, Victim=akSpeaker, AnimationTags="Gay,MM")
+			SexLab.QuickStart(akSpeaker, kPlayer, Victim=akSpeaker, AnimationTags="Gay,MM")
 		else
-			SexLab.QuickStart(akSpeaker, akActor, Victim=akSpeaker, AnimationTags="FM,MF")
+			SexLab.QuickStart(akSpeaker, kPlayer, Victim=akSpeaker, AnimationTags="FM,MF")
 		endIf
 	else
-		Debug.Notification("Ask me again when both be found less occupied!")
+		Debug.Notification("Ask me again when we are both less occupied!")
 	endIf
 ;END CODE
 EndFunction

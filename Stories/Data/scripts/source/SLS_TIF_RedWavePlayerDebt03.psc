@@ -6,12 +6,11 @@ Scriptname SLS_TIF_RedWavePlayerDebt03 Extends TopicInfo Hidden
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
-Game.GetPlayer().AddToFaction(RedWaveWhore)
-Game.GetPlayer().EquipItem(WhoreCollar)
-
-RedWaveDebt.SetValue(Utility.RandomInt(10) * 100 + 500)
-
-Debug.Notification("You now owe " + RedWaveDebt.GetValue() as Int + " gold.")
+Actor kPlayer = Game.GetPlayer()
+kPlayer.AddToFaction(RedWaveWhore)
+kPlayer.EquipItem(WhoreCollar)
+ 
+RedWaveController.RedWaveStart()
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -23,3 +22,4 @@ Faction Property RedWaveWhore  Auto
 Armor Property WhoreCollar  Auto  
 
 GlobalVariable Property RedWaveDebt  Auto  
+SLS_QST_RedWaveController Property RedWaveController Auto

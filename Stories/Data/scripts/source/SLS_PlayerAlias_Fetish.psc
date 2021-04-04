@@ -407,6 +407,9 @@ Event OnPCStartChaurusQueen(String _eventName, String _args, Float _argc = -1.0,
 	PlayerActor.SendModEvent("SLHRefresh")
 	PlayerActor.SendModEvent("SLHRefreshColors")
 
+	PlayerActor.SendModEvent("SLHModHormone", "Lactation", 50.0 )
+	StorageUtil.SetIntValue(PlayerActor, "_SLH_iMilkLevel", 80)
+
 	SendModEvent("_SLP_PlayerChaurusQueen")
 
 	Debug.MessageBox("Repeated exposure to the Falmer's foul touch changed your body. Your growing breasts and pale blue skin make your purpose clear... you are theirs to breed.")

@@ -25,8 +25,7 @@ GlobalVariable Property PlayerDayPass Auto
 Quest Property SLS_PlayerRedWaveQuest  Auto  
 
 Location Property RedWaveLocation Auto
-
-bool  bIsPregnant = false 
+ 
 bool  bBeeingFemale = false 
 bool  bEstrusChaurus = false 
 
@@ -57,7 +56,7 @@ Function _Maintenance()
 
 	UnregisterForAllModEvents()
 	; Debug.Trace("SexLab Stories: Reset SexLab events")
-	; RegisterForModEvent("AnimationStart", "OnSexLabStart")
+	RegisterForModEvent("AnimationStart", "OnSexLabStart")
 	; RegisterForModEvent("AnimationEnd",   "OnSexLabEnd")
 	; RegisterForModEvent("OrgasmStart",    "OnSexLabOrgasm")
 
@@ -188,16 +187,68 @@ Event OnPlayerRedWave(String _eventName, String _args, Float _argc = -1.0, Form 
 		SLS_PlayerRedWaveQuest.SetStage(10)
 	EndIf
 
-	if PlayerRedWaveDebt.GetValue() <= 0
-		PlayerRedWaveDebt.SetValue(2000)
-	endIf
+	RedWaveController.RedWaveStart()
 
 	RegisterForSingleUpdate(10)
 
 EndEvent
 
 
+Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
+	ObjectReference PlayerREF= PlayerAlias.GetReference()
+	Actor PlayerActor= PlayerAlias.GetReference() as Actor
+	Float fBreastScale 
+	Int iGoldAmount
+ 	Int randomNum = Utility.RandomInt(1, 10)
 
+ 
+	if !Self || !SexLab   || (StorageUtil.GetIntValue(none, "_SLS_iStoriesPlayerRedWave")==0)
+	;	Debug.Trace("SexLab Stories: Critical error on SexLab Start")
+		Return
+	EndIf
+
+	If (StorageUtil.GetIntValue(none, "_SLS_iStoriesPlayerRedWave")==0)
+		Return
+	endif
+	
+	; Debug.Notification("SexLab Hormones: Sex start")
+
+	Actor[] actors = SexLab.HookActors(_args)
+	Actor   victim = SexLab.HookVictim(_args)
+	Actor[] victims = new Actor[1]
+	victims[0] = victim
+	
+	; Debug.Notification("Has player: " + _hasPlayer(actors))
+	; Debug.Notification("Arousal trigger: " + (slaUtil.GetActorExposure(akRef = PlayerActor) / 3))
+
+	If (_hasPlayer(actors)) && (StorageUtil.GetIntValue(PlayerActor, "_SLS_iStoriesRedWaveJob") == 1)
+		; Pay the player for sex is RedWave Job is active
+		int idx = 0
+		while idx < actors.Length
+			if (!(actors[idx] == PlayerActor))
+				iGoldAmount += ( ((randomNum) * (actors[idx].GetRelationshipRank(PlayerActor)+1)  + 10)) 
+			endif
+			idx += 1
+		endwhile
+
+		iGoldAmount += RedWaveController.GetPlayerValueModifier(PlayerActor) * 10
+
+
+		RedWaveController.RedWavePayPlayer(iGoldAmount)
+	EndIf
+
+	; Debug.Notification("SexLab Hormones: Forced refresh flag: " + StorageUtil.GetIntValue(none, "_SLH_iForcedRefresh"))
+	
+	; If victim	;none consensual
+		;
+
+	; Else        ;consensual
+		;
+		
+	; EndIf
+
+
+EndEvent
 
 Event OnSDStorySex(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
@@ -232,8 +283,8 @@ Event OnSDStorySex(String _eventName, String _args, Float _argc = 1.0, Form _sen
 
 		fGold = RedWaveController.RedWavePlayerSex( akActor = kTempAggressor, goldAmount = 50, sexTags = _args, isSolo = False)
 	EndIf
-	PlayerRedWaveDebt.SetValue(  PlayerRedWaveDebt.GetValue() -  (fGold - (fGold/10) ) )
-	Debug.Notification("You now owe " + PlayerRedWaveDebt.GetValue() as Int + " gold.")
+	; PlayerRedWaveDebt.SetValue(  PlayerRedWaveDebt.GetValue() -  (fGold - (fGold/10) ) )
+	; Debug.Notification("You now owe " + PlayerRedWaveDebt.GetValue() as Int + " gold.")
 EndEvent
 
 Event OnSDStoryEntertain(String _eventName, String _args, Float _argc = 1.0, Form _sender)
@@ -284,8 +335,8 @@ Event OnSDStoryEntertain(String _eventName, String _args, Float _argc = 1.0, For
 		fGold = RedWaveController.RedWavePlayerSex( akActor = kTempAggressor, goldAmount = 10, sexTags = "", isSolo = True)
 
 	EndIf
-	PlayerRedWaveDebt.SetValue(  PlayerRedWaveDebt.GetValue() -  (fGold - (fGold/10) ) )
-	Debug.Notification("You now owe " + PlayerRedWaveDebt.GetValue() as Int + " gold.")
+	; PlayerRedWaveDebt.SetValue(  PlayerRedWaveDebt.GetValue() -  (fGold - (fGold/10) ) )
+	; Debug.Notification("You now owe " + PlayerRedWaveDebt.GetValue() as Int + " gold.")
 
 EndEvent
 
@@ -313,8 +364,8 @@ Event OnSDStoryWhip(String _eventName, String _args, Float _argc = 1.0, Form _se
 		fGold = RedWaveController.RedWavePlayerSex( akActor = kTempAggressor, goldAmount = 50, sexTags = "Aggressive", isSolo = False)
 	Endif
 
-	PlayerRedWaveDebt.SetValue(  PlayerRedWaveDebt.GetValue() -  (fGold - (fGold/10) ) )
-	Debug.Notification("You now owe " + PlayerRedWaveDebt.GetValue() as Int + " gold.")
+	; PlayerRedWaveDebt.SetValue(  PlayerRedWaveDebt.GetValue() -  (fGold - (fGold/10) ) )
+	; Debug.Notification("You now owe " + PlayerRedWaveDebt.GetValue() as Int + " gold.")
 
 EndEvent
 
@@ -349,43 +400,12 @@ Event OnSDStoryPunish(String _eventName, String _args, Float _argc = 1.0, Form _
 	Else
 		fGold = RedWaveController.RedWavePlayerSex( akActor = kTempAggressor, goldAmount = 50, sexTags = "Aggressive", isSolo = False)
 	Endif
-	PlayerRedWaveDebt.SetValue(  PlayerRedWaveDebt.GetValue() -  (fGold - (fGold/10) ) )
-	Debug.Notification("You now owe " + PlayerRedWaveDebt.GetValue() as Int + " gold.")
+	; PlayerRedWaveDebt.SetValue(  PlayerRedWaveDebt.GetValue() -  (fGold - (fGold/10) ) )
+	; Debug.Notification("You now owe " + PlayerRedWaveDebt.GetValue() as Int + " gold.")
 EndEvent
 
 
-bool function isPregnantBySoulGemOven(actor kActor) 
-  	return (StorageUtil.GetIntValue(Game.GetPlayer(), "sgo_IsBellyScaling") == 1) || (StorageUtil.GetIntValue(Game.GetPlayer(), "sgo_IsBreastScaling ") == 1)
 
-endFunction
-
-bool function isPregnantBySimplePregnancy(actor kActor) 
-  	return StorageUtil.HasFloatValue(kActor, "SP_Visual")
-
-endFunction
-
-bool function isPregnantByBeeingFemale(actor kActor)
-  if ( (StorageUtil.GetIntValue(none, "_SLS_isBeeingFemaleON")==1 ) &&  ( (StorageUtil.GetIntValue(kActor, "FW.CurrentState")>=4) && (StorageUtil.GetIntValue(kActor, "FW.CurrentState")<=8))  )
-    return true
-  endIf
-  return false
-endFunction
- 
-bool function isPregnantByEstrusChaurus(actor kActor)
-  spell  ChaurusBreeder 
-  if (StorageUtil.GetIntValue(none, "_SLS_isEstrusChaurusON") ==  1) 
-  	ChaurusBreeder = StorageUtil.GetFormValue(none, "_SLS_getEstrusChaurusBreederSpell") as Spell
-  	if (ChaurusBreeder != none)
-    	return kActor.HasSpell(ChaurusBreeder)
-    endif
-  endIf
-  return false
-endFunction
-
-bool function isPregnant(actor kActor)
-	bIsPregnant = ( isPregnantBySoulGemOven(kActor) || isPregnantBySimplePregnancy(kActor) || isPregnantByBeeingFemale(kActor) || isPregnantByEstrusChaurus(kActor) || ((StorageUtil.GetIntValue(Game.GetPlayer(), "PSQ_SuccubusON") == 1) && (StorageUtil.GetIntValue(Game.GetPlayer(), "PSQ_SoulGemPregnancyON") == 1)) )
-	Return bIsPregnant
-EndFunction
 
 Bool function isFemale(actor kActor)
 	Bool bIsFemale
@@ -398,4 +418,17 @@ Bool function isFemale(actor kActor)
 	EndIf
 
 	return bIsFemale
+EndFunction
+
+Bool Function _hasPlayer(Actor[] _actors)
+	ObjectReference PlayerREF= PlayerAlias.GetReference()
+
+	int idx = 0
+	while idx < _actors.Length
+		if _actors[idx] == PlayerRef
+			return True
+		endif
+		idx += 1
+	endwhile
+	Return False
 EndFunction

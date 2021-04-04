@@ -6,6 +6,8 @@ Scriptname SLS_TIF_RedWavePlayerDebt01 Extends TopicInfo Hidden
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
+self.GetOwningQuest().Setstage(18)
+
 Debug.MessageBox("You still owe " + RedWavePlayerDebt.GetValue() as Int + " gold to the Red Wave crew.")
 ;END CODE
 EndFunction

@@ -1,5 +1,5 @@
 ;BEGIN FRAGMENT CODE - Do not edit anything between this and the end comment
-;NEXT FRAGMENT INDEX 12
+;NEXT FRAGMENT INDEX 13
 Scriptname SLS_QST_PlayerRedWave Extends Quest Hidden
 
 ;BEGIN ALIAS PROPERTY SLS_RedWavePlayerRef
@@ -16,22 +16,31 @@ RedWaveQuest.RedWaveStart()
 EndFunction
 ;END FRAGMENT
 
+;BEGIN FRAGMENT Fragment_8
+Function Fragment_8()
+;BEGIN CODE
+SetObjectiveDisplayed(10, false) 
+SetObjectiveDisplayed(18, false)
+;SetObjectiveDisplayed(20)
+RedWaveQuest.RedWaveStop()
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_12
+Function Fragment_12()
+;BEGIN CODE
+SetObjectiveDisplayed(10,false)
+SetObjectiveDisplayed(18)
+;END CODE
+EndFunction
+;END FRAGMENT
+
 ;BEGIN FRAGMENT Fragment_6
 Function Fragment_6()
 ;BEGIN CODE
 SetObjectiveDisplayed(10)
 RedWaveQuest.RedWaveStart()
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_8
-Function Fragment_8()
-;BEGIN CODE
-SetObjectiveDisplayed(10, false)
-SetObjectiveDisplayed(15, false)
-SetObjectiveDisplayed(20)
-RedWaveQuest.RedWaveStop()
 ;END CODE
 EndFunction
 ;END FRAGMENT

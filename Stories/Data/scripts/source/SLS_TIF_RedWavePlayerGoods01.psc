@@ -6,16 +6,14 @@ Scriptname SLS_TIF_RedWavePlayerGoods01 Extends TopicInfo Hidden
 Function Fragment_2(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
+Actor kPlayer = Game.GetPlayer()
 Int randomNum = Utility.RandomInt(150, 300)
 
 StorageUtil.SetIntValue( akSpeaker, "_SD_iDisposition", StorageUtil.GetIntValue( akSpeaker, "_SD_iDisposition"  ) + 1  )
 
 
-Game.GetPlayer().AddItem(Gold, (randomNum/10) + 10)
-
-RedWaveDebt.SetValue(  RedWaveDebt.GetValue() -  (randomNum - (randomNum/10) ) )
-
-Debug.Notification("You now owe " + RedWaveDebt.GetValue() as Int + " gold.")
+kPlayer.AddItem(Gold, (randomNum/10) * (akSpeaker.GetRelationshipRank(kPlayer)+1)  + 10)
+ 
 ;END CODE
 EndFunction
 ;END FRAGMENT

@@ -10,19 +10,46 @@ ObjectReference Property _SLS_TempWhore  Auto
 
 
 MiscObject Property Gold001  Auto  
+GlobalVariable Property RedWavePlayerDebt  Auto  
+GlobalVariable Property RedWavePlayerEarnings  Auto  
 
 Function RedWaveStart()
 	Actor PlayerActor = Game.GetPlayer()
 	; Stop other mods like Deviously Enslaved while in RedWave
 	SendModEvent("dhlp-Suspend")
 	StorageUtil.SetIntValue(PlayerActor, "_SLS_iStoriesRedWaveJob", 1)
+	SetPlayerStartingDebt(PlayerActor)
 EndFunction
 
 Function RedWaveStop()
 	Actor PlayerActor = Game.GetPlayer()
 	SendModEvent("dhlp-Resume")
 	StorageUtil.SetIntValue(PlayerActor, "_SLS_iStoriesRedWaveJob", -1)
+	RedWavePlayerDebt.SetValue(0)
+	RedWavePlayerEarnings.SetValue(0)
 EndFunction
+
+Function RedWavePayPlayer(Int iGoldAmount)
+	Actor PlayerActor = Game.GetPlayer()
+	PlayerActor.AddItem(Gold001, iGoldAmount)
+EndFunction
+
+Function RedWavePayDebt(Int iGoldAmount)
+	Actor PlayerActor = Game.GetPlayer()
+	Int iCurrentDebt = RedWavePlayerDebt.GetValue() as Int
+
+	iCurrentDebt = iCurrentDebt - iGoldAmount
+
+	if (iCurrentDebt<0)
+		iCurrentDebt = 0
+	Endif
+
+	RedWavePlayerDebt.SetValue(iCurrentDebt)
+	RedWavePlayerEarnings.SetValue( (RedWavePlayerEarnings.GetValue() as Int ) + iGoldAmount )
+
+	Debug.Notification("You now owe " + RedWavePlayerDebt.GetValue() as Int + " gold.")
+EndFunction
+
 
 Bool Function ReserveFollowerWhore()
 
@@ -221,3 +248,85 @@ float Function RedWavePlayerSex(Actor akActor, Int goldAmount = 10, string sexTa
 	Endif
 	return Earnings
 Endfunction
+
+function SetPlayerStartingDebt(Actor kActor)
+	int iDebtAmount = Utility.RandomInt(10) * 100 + 500
+
+	iDebtAmount += GetPlayerValueModifier(kActor) * 100
+
+    RedWavePlayerDebt.SetValue(iDebtAmount) 
+	RedWavePlayerEarnings.SetValue(0)   
+
+	Debug.Notification("You now owe " + RedWavePlayerDebt.GetValue() as Int + " gold.")
+
+Endfunction
+
+Int function GetPlayerValueModifier(Actor kActor)
+	Int iPlayerValueMod = 0
+
+	; Modifiers based on player's status
+	if (isPregnant(kActor))
+		iPlayerValueMod += 5
+	endif
+
+
+	if (StorageUtil.GetIntValue(kActor, "_SLP_toggleSpiderEgg" )==1) || (StorageUtil.GetIntValue(kActor, "_SLP_toggleChaurusWorm" )==1) || (StorageUtil.GetIntValue(kActor, "_SLP_toggleChaurusWormVag" )==1)
+		iPlayerValueMod += 2
+	endif
+
+	if (StorageUtil.GetIntValue(kActor, "_SLP_toggleFaceHugger" )==1) || (StorageUtil.GetIntValue(kActor, "_SLP_toggleTentacleMonster" )==1) || (StorageUtil.GetIntValue(kActor, "_SLP_toggleLivingArmor" )==1) || (StorageUtil.GetIntValue(kActor, "_SLP_toggleBarnacles" )==1) || (StorageUtil.GetIntValue(kActor, "_SLP_toggleChaurusQueenVag" )==1) || (StorageUtil.GetIntValue(kActor, "_SLP_toggleChaurusQueenGag" )==1)
+		iPlayerValueMod += 1
+	endif
+
+	If (StorageUtil.GetIntValue(kActor, "_SLH_iLactating") == 1)
+		iPlayerValueMod += 1
+	endif
+
+	if (StorageUtil.GetIntValue(kActor, "_SLH_iSuccubus") == 1)
+		iPlayerValueMod += 10
+	endif
+
+	if (StorageUtil.GetIntValue(kActor, "_SLH_iBimbo") == 1)
+		iPlayerValueMod += 5
+	endif
+
+	if (StorageUtil.GetIntValue(kActor, "_SLH_iHRT") == 1) || (StorageUtil.GetIntValue(kActor, "_SLH_iTG") == 1)
+		iPlayerValueMod += 2
+	endif
+
+	return iPlayerValueMod
+Endfunction
+ 
+
+bool function isPregnantBySoulGemOven(actor kActor) 
+  	return (StorageUtil.GetIntValue(Game.GetPlayer(), "sgo_IsBellyScaling") == 1) || (StorageUtil.GetIntValue(Game.GetPlayer(), "sgo_IsBreastScaling ") == 1)
+
+endFunction
+
+bool function isPregnantBySimplePregnancy(actor kActor) 
+  	return StorageUtil.HasFloatValue(kActor, "SP_Visual")
+
+endFunction
+
+bool function isPregnantByBeeingFemale(actor kActor)
+  if ( (StorageUtil.GetIntValue(none, "_SLS_isBeeingFemaleON")==1 ) &&  ( (StorageUtil.GetIntValue(kActor, "FW.CurrentState")>=4) && (StorageUtil.GetIntValue(kActor, "FW.CurrentState")<=8))  )
+    return true
+  endIf
+  return false
+endFunction
+ 
+bool function isPregnantByEstrusChaurus(actor kActor)
+  spell  ChaurusBreeder 
+  if (StorageUtil.GetIntValue(none, "_SLS_isEstrusChaurusON") ==  1) 
+  	ChaurusBreeder = StorageUtil.GetFormValue(none, "_SLS_getEstrusChaurusBreederSpell") as Spell
+  	if (ChaurusBreeder != none)
+    	return kActor.HasSpell(ChaurusBreeder)
+    endif
+  endIf
+  return false
+endFunction
+
+bool function isPregnant(actor kActor)
+	return ( isPregnantBySoulGemOven(kActor) || isPregnantBySimplePregnancy(kActor) || isPregnantByBeeingFemale(kActor) || isPregnantByEstrusChaurus(kActor) || ((StorageUtil.GetIntValue(Game.GetPlayer(), "PSQ_SuccubusON") == 1) && (StorageUtil.GetIntValue(Game.GetPlayer(), "PSQ_SoulGemPregnancyON") == 1)) )
+ 
+EndFunction

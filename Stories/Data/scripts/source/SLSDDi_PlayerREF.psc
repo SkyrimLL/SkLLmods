@@ -85,23 +85,23 @@ Function _maintenance()
 				FormList CampHeatSourcesAll = Game.GetFormFromFile(0x28F06, "Campfire.esm") as FormList
 				If CampHeatSourcesAll && !CampHeatSourcesAll.HasForm(Flame)
 					CampHeatSourcesAll.AddForm(Flame)
-					Debug.Trace("SexLab Stories Devious: Adding Flame to Campfire:CampHeatSourcesAll")
+					debugTrace("SexLab Stories Devious: Adding Flame to Campfire:CampHeatSourcesAll")
 				else
-					Debug.Trace("SexLab Stories Devious: Flame is already on Campfire:CampHeatSourcesAll")
+					debugTrace("SexLab Stories Devious: Flame is already on Campfire:CampHeatSourcesAll")
 				EndIf
 				FormList CampHeatSourcesFire = Game.GetFormFromFile(0x2899F, "Campfire.esm") as FormList
 				If CampHeatSourcesFire && !CampHeatSourcesFire.HasForm(Flame)
 					CampHeatSourcesFire.AddForm(Flame)
-					Debug.Trace("SexLab Stories Devious: Adding Flame to Campfire:CampHeatSourcesFire")
+					debugTrace("SexLab Stories Devious: Adding Flame to Campfire:CampHeatSourcesFire")
 				else
-					Debug.Trace("SexLab Stories Devious: Flame is already on Campfire:CampHeatSourcesFire")
+					debugTrace("SexLab Stories Devious: Flame is already on Campfire:CampHeatSourcesFire")
 				EndIf
 				FormList CampHeatSourcesFireMedium = Game.GetFormFromFile(0x28F03, "Campfire.esm") as FormList
 				If CampHeatSourcesFireMedium && !CampHeatSourcesFireMedium.HasForm(Flame)
 					CampHeatSourcesFireMedium.AddForm(Flame)
-					Debug.Trace("SexLab Stories Devious: Adding Flame to Campfire:CampHeatSourcesFireMedium")
+					debugTrace("SexLab Stories Devious: Adding Flame to Campfire:CampHeatSourcesFireMedium")
 				else
-					Debug.Trace("SexLab Stories Devious: Flame is already on Campfire:CampHeatSourcesFireMedium")
+					debugTrace("SexLab Stories Devious: Flame is already on Campfire:CampHeatSourcesFireMedium")
 				EndIf
 			else
 				; debug.messagebox("[SLSDDi] Flame (pet) not found")
@@ -117,7 +117,7 @@ Function _maintenance()
 	EndIf
 
 	UnregisterForAllModEvents()
-	Debug.Trace("SexLab Stories Devious: Reset SexLab events")
+	debugTrace("SexLab Stories Devious: Reset SexLab events")
 	RegisterForModEvent("AnimationStart", "OnSexLabStart")
 	RegisterForModEvent("AnimationEnd",   "OnSexLabEnd")
 	RegisterForModEvent("OrgasmStart",    "OnSexLabOrgasm")
@@ -187,7 +187,7 @@ Event OnModHormoneEvent(String _eventName, String _args, Float _argc = 1.0, Form
  		_args = "Lactation"
  	EndIf
 
-	debug.Trace("[SLSDDi] Receiving 'mod hormone level' event. Actor: " + kActor )
+	debugTrace(" Receiving 'mod hormone level' event. Actor: " + kActor )
 
 	; fctHormones.modHormoneLevel(kActor, _args, _argc)
 	Float fHormoneLevel = StorageUtil.GetFloatValue( kActor , "_SLH_fHormone" + _args)  + _argc
@@ -213,7 +213,7 @@ Event OnTriggerCard(String _eventName, String _args, Float _argc = 1.0, Form _se
  		return
  	EndIf
 
-	debug.Trace("[SLSDDi] Receiving 'trigger card' event. Actor: " + kActor )
+	debugTrace(" Receiving 'trigger card' event. Actor: " + kActor )
 
 	CowLife.triggerCard(_args)
 
@@ -360,7 +360,7 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
     sslBaseAnimation animation = SexLab.HookAnimation(_args)
 
 	if !Self || !SexLab 
-		Debug.Trace("SexLab Stories Devious: Critical error on SexLab Start")
+		debugTrace("SexLab Stories Devious: Critical error on SexLab Start")
 		Return
 	EndIf
 	
@@ -375,7 +375,7 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 	; Debug.Notification("Arousal trigger: " + (slaUtil.GetActorExposure(PlayerActor) / 3))
 
 	; Check for breast stimulation
-	Debug.Trace("[SLSDDi] Checking Player lactation: " )
+	debugTrace(" Checking Player lactation: " )
 
 	If (_hasPlayer(actors))
 		if (actors.Length == 2) && ( ((actors[0]!=PlayerActor) && (actors[1]==PlayerActor) && (isFemale(actors[0]))) || ((actors[1]!=PlayerActor) && (actors[0]==PlayerActor) && (isFemale(actors[1]))) )
@@ -385,14 +385,14 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 	endif
 
 	If (CowLife.checkHasBreasts(PlayerActor)) && (_hasPlayer(actors))
-		Debug.Trace("[SLSDDi]    Player has breasts" )
+		debugTrace("    Player has breasts" )
 
 		CowLife.checkIfLactating(PlayerActor)
 
 		if (animation.HasTag("Breast") || animation.HasTag("Boobs") || animation.HasTag("Boobjob")) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iLactating") ==0 ) 
 	        if (Utility.RandomInt(0,100)>90)
 	        	StorageUtil.SetIntValue(PlayerActor, "_SLH_iLactating", 1)
-				Debug.Trace("[SLSDDi]    Player starts lactating" )
+				debugTrace("    Player starts lactating" )
 
 	        endif
 	    EndIf
@@ -402,39 +402,39 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 		if ( PlayerActor.WornHasKeyword(SLSD_CowHarness) || PlayerActor.WornHasKeyword(SLSD_CowMilker) ) 
 			if (!StorageUtil.HasIntValue(PlayerActor, "_SLH_iLactating") || (StorageUtil.GetIntValue(PlayerActor, "_SLH_iLactating") == 0) )
 				StorageUtil.SetIntValue(PlayerActor, "_SLH_iLactating", 1)
-				Debug.Trace("[SLSDDi]    Player starts lactating" )
+				debugTrace("    Player starts lactating" )
 			endif
 		endif
 
 		If (StorageUtil.GetIntValue(PlayerActor, "_SLH_iLactating") == 1) 
-			Debug.Trace("[SLSDDi]    Player is lactating - updating milk" )
+			debugTrace("    Player is lactating - updating milk" )
 			CowLife.UpdateMilkAfterSex(PlayerActor)
 		else
-			Debug.Trace("[SLSDDi]    Player is not lactating" )
+			debugTrace("    Player is not lactating" )
 			StorageUtil.SetFormValue( none , "_SD_iLastCowMilked", PlayerActor)
 		Endif
 	else
-		Debug.Trace("[SLSDDi]    Invalid player" )
-		Debug.Trace("[SLSDDi]       (_hasPlayer(actors): " + (_hasPlayer(actors)) )
-		Debug.Trace("[SLSDDi]       isFemale(actors[idx]): " + isFemale(actors[idx]))
+		debugTrace("    Invalid player" )
+		debugTrace("       (_hasPlayer(actors): " + (_hasPlayer(actors)) )
+		debugTrace("       isFemale(actors[idx]): " + isFemale(actors[idx]))
 
 	endif
 
 	int idx = 0
 	while idx < actors.Length
 		; Check for breast stimulation
-		Debug.Trace("[SLSDDi] Checking actor list for lactation: " + idx + " / " + actors.Length )
-		Debug.Trace("[SLSDDi] Checking actor lactation: " + actors[idx] )
+		debugTrace(" Checking actor list for lactation: " + idx + " / " + actors.Length )
+		debugTrace(" Checking actor lactation: " + actors[idx] )
 
 		If (actors[idx]) && ( actors[idx] != PlayerActor) && (isFemale(actors[idx]))
-			Debug.Trace("[SLSDDi]    Actor is female and not the player" )
+			debugTrace("    Actor is female and not the player" )
 
 			CowLife.checkIfLactating(actors[idx])
 
 			if (animation.HasTag("Breast") || animation.HasTag("Boobs") || animation.HasTag("Boobjob")) && (StorageUtil.GetIntValue(actors[idx], "_SLH_iLactating") ==0 )
 		        if (Utility.RandomInt(0,100)>90)
 		        	StorageUtil.SetIntValue(actors[idx], "_SLH_iLactating", 1)
-					Debug.Trace("[SLSDDi]    Actor starts lactating" )
+					debugTrace("    Actor starts lactating" )
 
 		        endif
 		    EndIf
@@ -443,22 +443,22 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 			if ( actors[idx].WornHasKeyword(SLSD_CowHarness) || actors[idx].WornHasKeyword(SLSD_CowMilker) ) 
 				if  (!StorageUtil.HasIntValue(actors[idx], "_SLH_iLactating") || (StorageUtil.GetIntValue(actors[idx], "_SLH_iLactating") == 0) )
 					StorageUtil.SetIntValue(actors[idx], "_SLH_iLactating", 1)
-					Debug.Trace("[SLSDDi]    Actor starts lactating" )
+					debugTrace("    Actor starts lactating" )
 				endif
 			endif
 
 			if (StorageUtil.GetIntValue(actors[idx], "_SLH_iLactating") == 1)
-				Debug.Trace("[SLSDDi]    Actor is lactating - updating milk" )
+				debugTrace("    Actor is lactating - updating milk" )
 				CowLife.UpdateMilkAfterSex(actors[idx])
 			else
-				Debug.Trace("[SLSDDi]    Actor is not lactating" )
+				debugTrace("    Actor is not lactating" )
 				StorageUtil.SetFormValue( none , "_SD_iLastCowMilked", actors[idx])
 			EndIf
 		else
-			Debug.Trace("[SLSDDi]    Invalid actor" )
-			Debug.Trace("[SLSDDi]       actors[idx]: " + actors[idx] )
-			Debug.Trace("[SLSDDi]       ( actors[idx] != PlayerActor): " + ( actors[idx] != PlayerActor) )
-			Debug.Trace("[SLSDDi]       isFemale(actors[idx]): " + isFemale(actors[idx]))
+			debugTrace("    Invalid actor" )
+			debugTrace("       actors[idx]: " + actors[idx] )
+			debugTrace("       ( actors[idx] != PlayerActor): " + ( actors[idx] != PlayerActor) )
+			debugTrace("       isFemale(actors[idx]): " + isFemale(actors[idx]))
 
 		Endif
 
@@ -486,7 +486,7 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
     Float fBreastScale 
 
 	if !Self || !SexLab 
-		Debug.Trace("SexLab Stories Devious: Critical error on SexLab End")
+		debugTrace("SexLab Stories Devious: Critical error on SexLab End")
 		Return
 	EndIf
 
@@ -554,7 +554,7 @@ Function doOrgasm(String _args)
 	Int iMilkDateOffset
 
 	if !Self || !SexLab 
-		Debug.Trace("SexLab Stories Devious: Critical error on SexLab Orgasm")
+		debugTrace("SexLab Stories Devious: Critical error on SexLab Orgasm")
 		Return
 	EndIf
 
@@ -564,7 +564,7 @@ Function doOrgasm(String _args)
 	victims[0] = victim
 
 	If (_hasPlayer(actors)) && (StorageUtil.GetIntValue(PlayerActor, "_SLH_iLactating") == 1)
-		Debug.Trace("SexLab Stories: Orgasm!")
+		debugTrace("SexLab Stories: Orgasm!")
 		If (!StorageUtil.HasIntValue(PlayerActor, "_SLH_iMilkDate") || (StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkDate") == 0) ) 
 			StorageUtil.SetIntValue(PlayerActor, "_SLH_iMilkDate", Game.QueryStat("Days Passed"))
 		Endif
@@ -690,3 +690,9 @@ bool Function CheckXPMSERequirements(Actor akActor, bool isFemale)
 	endif
 EndFunction
 
+
+Function debugTrace(string traceMsg)
+	if (StorageUtil.GetIntValue(none, "_SLS_debugTraceON")==1)
+	;	debugTrace("[SLSDDi_PlayerREF]" + traceMsg)
+	endif
+endFunction

@@ -7,18 +7,19 @@ Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 Actor akActor = _SLS_ShowDogRef as Actor
 ;BEGIN CODE
+Actor kPlayer = Game.GetPlayer()
 
 ;		Debug.MessageBox( "The Sister quietly peels off your clothes to reveal your beauty to the world." )
 ;  		SexLab.ActorLib.StripActor(Game.GetPlayer(), DoAnimate= false)
 
-	If  (SexLab.ValidateActor(akActor) > 0) &&  (SexLab.ValidateActor(akSpeaker) > 0) 
+	If  (SexLab.ValidateActor(kPlayer) > 0) &&  (SexLab.ValidateActor(akSpeaker) > 0) 
 		
-		Game.GetPlayer().RemoveItem(Gold001, 200)
+		kPlayer.RemoveItem(Gold001, 200)
 
-		SexLab.QuickStart(akSpeaker, akActor)
+		SexLab.QuickStart(akSpeaker, kPlayer)
 
 	else
-		Debug.Notification("Ask me again when both be found less occupied!")
+		Debug.Notification("Ask me again when we are both less occupied!")
 	endIf
 ;END CODE
 EndFunction

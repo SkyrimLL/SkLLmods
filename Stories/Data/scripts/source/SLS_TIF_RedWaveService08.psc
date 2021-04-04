@@ -6,18 +6,19 @@ Scriptname SLS_TIF_RedWaveService08 Extends TopicInfo Hidden
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
+Actor kPlayer = Game.GetPlayer()
 Int randomNum = Utility.RandomInt(0,100)
 
-ActorBase PlayerBase = Game.GetPlayer().GetBaseObject() as ActorBase
+ActorBase PlayerBase = kPlayer.GetBaseObject() as ActorBase
 Int PlayerGender = PlayerBase.GetSex() ; 0 = Male ; 1 = Female
 
 if (randomNum<=97)
-	Game.GetPlayer().RemoveItem(Gold001, 150)
-	Game.GetPlayer().AddItem(Skooma, 2)
+	kPlayer.RemoveItem(Gold001, 150)
+	kPlayer.AddItem(Skooma, 2)
 
 else
 	Debug.Notification("Here... this is on the house..")
-	Game.GetPlayer().AddItem(Skooma, 1)
+	kPlayer.AddItem(Skooma, 1)
 
 endif
 ;END CODE

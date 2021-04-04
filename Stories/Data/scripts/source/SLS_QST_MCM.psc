@@ -247,7 +247,8 @@ event OnPageReset(string a_page)
 		SetCursorFillMode(TOP_TO_BOTTOM)
 	
 		; AddHeaderOption(" Placeholder - No option yet")
-		; AddHeaderOption(" The Red Wave")
+		AddHeaderOption(" The Red Wave")
+		AddTextOption(" _SLS_iStoriesRedWaveJob: " + StorageUtil.GetIntValue( kPlayer, "_SLS_iStoriesRedWaveJob")  as Int, "", OPTION_FLAG_DISABLED)
 		; AddToggleOptionST("STATE_REDWAVE_START","Player starting quest", _startRedWave as Float, OPTION_FLAG_DISABLED)
 
 		AddHeaderOption(" E.L.L.E SexBot")

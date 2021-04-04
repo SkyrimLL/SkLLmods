@@ -6,9 +6,10 @@ Scriptname SLS_TIF_RedWaveService12 Extends TopicInfo Hidden
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
+Actor kPlayer = Game.GetPlayer()
 Int randomNum = Utility.RandomInt(0,100)
 
-ActorBase PlayerBase = Game.GetPlayer().GetBaseObject() as ActorBase
+ActorBase PlayerBase = kPlayer.GetBaseObject() as ActorBase
 Int PlayerGender = PlayerBase.GetSex() ; 0 = Male ; 1 = Female
 
 
@@ -17,8 +18,8 @@ Int PlayerGender = PlayerBase.GetSex() ; 0 = Male ; 1 = Female
 Bool bWhoreAvailable = RedWaveQuest.ReserveFollowerWhore()
 
 If (bWhoreAvailable )
-	Game.GetPlayer().AddItem(Gold001, 1000)
-	Game.GetPlayer().AddItem(_SLS_RedWaveWhoreCollar, 1)
+	kPlayer.AddItem(Gold001, 1000)
+	kPlayer.AddItem(_SLS_RedWaveWhoreCollar, 1)
 
 	Debug.Messagebox("Thanks... We are always looking for new talents.\n Here.. put this collar around the neck of your whore to complete the transaction. ")
 

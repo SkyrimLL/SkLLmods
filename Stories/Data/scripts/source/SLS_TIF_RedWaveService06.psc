@@ -4,15 +4,16 @@ Scriptname SLS_TIF_RedWaveService06 Extends TopicInfo Hidden
 
 ;BEGIN FRAGMENT Fragment_0
 Function Fragment_0(ObjectReference akSpeakerRef)
-Actor akActor = Game.GetPlayer()
+Actor akActor = kPlayer
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
+Actor kPlayer = Game.GetPlayer()
 
-	If  (SexLab.ValidateActor(akActor) > 0) &&  (SexLab.ValidateActor(akSpeaker) > 0) 
-		Game.GetPlayer().RemoveItem(Gold001, 100)
-		SexLab.QuickStart(akSpeaker, akActor, Victim=akSpeaker, AnimationTags="Pole,Pillory,Stockade,Xcross")
+	If  (SexLab.ValidateActor(kPlayer) > 0) &&  (SexLab.ValidateActor(akSpeaker) > 0) 
+		kPlayer.RemoveItem(Gold001, 100)
+		SexLab.QuickStart(akSpeaker, kPlayer, Victim=akSpeaker, AnimationTags="Pole,Pillory,Stockade,Xcross")
 	else
-		Debug.Notification("Ask me again when both be found less occupied!")
+		Debug.Notification("Ask me again when we are both less occupied!")
 	endIf
 ;END CODE
 EndFunction
