@@ -330,13 +330,29 @@ function applyColorChanges(Actor kActor)
 
 		Endif
 	EndIf
+
+	tryHormonesTats(kActor) 
 endFunction
 
 
-;-------------
-;-------------
+function tryHormonesTats(Actor kActor) 
+	if (StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel")> StorageUtil.GetFloatValue( kActor , "_SLH_fLactationThreshold") ) 
+		sendSlaveTatModEvent(kActor, "hormones","Milk Drip", bRefresh = True )
+	else
+		sendSlaveTatRemoveModEvent(kActor, "hormones","Milk Drip", bRefresh = True )
+	endif
 
+	if (StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneLactation")>80.0)
+		sendSlaveTatModEvent(kActor, "hormones","Milk Veins", iColor = 0x99184f6b, bRefresh = True )
+	else
+		sendSlaveTatRemoveModEvent(kActor, "hormones","Milk Veins", bRefresh = True )
+	endif
 
+endFunction
+
+;-------------
+; Requires SlaveTats Event Bridge
+;-------------
 
 ; STRemoveAllSectionTattoo(Form _form, String _section, bool _ignoreLock, bool _silent): remove all tattoos from determined section (ie, the folder name on disk, like "Bimbo")
 
@@ -347,6 +363,8 @@ function sendSlaveTatModEvent(actor akActor, string sType, string sTatooName, in
   	int STevent = ModEvent.Create("STSimpleAddTattoo")  
 
   	if (STevent) 
+  		debugTrace(" Applying slavetat: " + sTatooName)
+  		debugTrace(" 	Applying actor: " + akActor)
         ModEvent.PushForm(STevent, akActor)      	; Form - actor
         ModEvent.PushString(STevent, sType)    	; String - type of tattoo?
         ModEvent.PushString(STevent, sTatooName)  	; String - name of tattoo
@@ -356,8 +374,27 @@ function sendSlaveTatModEvent(actor akActor, string sType, string sTatooName, in
 
         ModEvent.Send(STevent)
   	else
-  		debugTrace(" SLH_fctColor: Send slave tat event failed.")
+  		debugTrace(" Applying slavetat failed: " + sTatooName)
+  		debugTrace(" Send slave tat event failed.")
 	endIf
+endfunction
+
+function sendSlaveTatRemoveModEvent(actor akActor, string sType, string sTatooName, int iColor = 0x99000000, bool bRefresh = False)
+	; akSlave.RemoveFromFaction( slaveFaction as Faction )
+	int STevent = ModEvent.Create("STSimpleRemoveTattoo") 
+	if (STevent)
+  		debugTrace(" Clearing slavetat: " + sTatooName)
+  		debugTrace(" 	Clearing actor: " + akActor)
+	    ModEvent.PushForm(STevent, akActor)        ; Form - actor
+	    ModEvent.PushString(STevent, sType)     	; String - tattoo section (the folder name)
+	    ModEvent.PushString(STevent, sTatooName)    ; String - name of tattoo
+	    ModEvent.PushBool(STevent, true)            ; Bool - last = false (the tattoos are only removed when last = true, use it on batches)
+	    ModEvent.PushBool(STevent, true)            ; Bool - silent = true (do not show a message)
+	    ModEvent.Send(STevent)
+  	else
+  		debugTrace(" Clearing slavetat failed: " + sTatooName)
+  		debugTrace(" Send slave tat remove event failed.")
+	endif
 endfunction
 
 

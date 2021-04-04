@@ -306,8 +306,9 @@ Function maintenanceVersionEvents()
 	RegisterForModEvent("SexLabOrgasmSeparate",    "OnSexLabOrgasmSeparate")
 
 
-	RegisterForModEvent("SLHSetNiNode",   "OnSetNiNode")
-	RegisterForModEvent("SLHShaveHead",   "OnShaveHead")
+	RegisterForModEvent("SLHSetNiNode",   "OnSetNiNodeEvent")
+	RegisterForModEvent("SLHShaveHead",   "OnShaveHeadEvent")
+	RegisterForModEvent("SLHTryHormoneTats",   "OnTryHormoneTatsEvent")
 	RegisterForModEvent("SLHModHormone",    "OnModHormoneEvent")
 	RegisterForModEvent("SLHModHormoneRandom",    "OnModHormoneRandomEvent")
 	RegisterForModEvent("SLHResetHormones",    "OnResetHormonesEvent")
@@ -967,6 +968,7 @@ Event OnLocationChange(Location akOldLoc, Location akNewLoc)
 		fctColor.applyColorChanges(PlayerActor)
 		fctBodyShape.getShapeState(PlayerActor) 
 
+
 		; fctBodyShape.applyBodyShapeChanges(PlayerActor)
 	EndIf
 endEvent
@@ -1290,7 +1292,7 @@ Event OnRefreshHairColorEvent(String _eventName, String _args, Float _argc = 1.0
 	Endif
 EndEvent
 
-Event OnSetNiNode(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+Event OnSetNiNodeEvent(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
 		
  	if (kActor == None)
@@ -1318,7 +1320,7 @@ Event OnSetNiNode(String _eventName, String _args, Float _argc = 1.0, Form _send
 
 EndEvent
 
-Event OnShaveHead(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+Event OnShaveHeadEvent(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
 		
  	if (kActor == None)
@@ -1327,6 +1329,18 @@ Event OnShaveHead(String _eventName, String _args, Float _argc = 1.0, Form _send
 	debugTrace(" Receiving forced hair change event - Actor: " + kActor )
 
 	fctBodyShape.shaveHair(kActor)		
+	
+EndEvent
+
+Event OnTryHormoneTatsEvent(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+		
+ 	if (kActor == None)
+ 		kActor = Game.GetPlayer()
+ 	EndIf
+	debugTrace(" Receiving try Hormones tats event - Actor: " + kActor )
+
+	fctColor.tryHormonesTats(kActor)		
 	
 EndEvent
 
@@ -1816,6 +1830,8 @@ Function doOrgasm(String _args)
 		StorageUtil.SetIntValue(PlayerActor, "_SLH_iDaysSinceLastSex", iDaysSinceLastSex) 
 
 		fctHormones.modHormoneLevel(PlayerActor, "Pigmentation", 2.5)
+
+		fctColor.tryHormonesTats(PlayerActor)	
 
 		If (fctUtil.IsMale(PlayerActor))
 			; Male - larger drop of sex drive after orgasm, small chance of multiple orgasms
