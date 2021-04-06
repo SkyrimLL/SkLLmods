@@ -8,10 +8,10 @@ Event OnContainerChanged(ObjectReference akNewContainer, ObjectReference akOldCo
 	EndIf
 	
 	If (  akNewContainer == Game.GetPlayer() )
-		Debug.Notification("[SLS] Whore collar in player")
+		; Debug.Notification("[SLS] Whore collar in player")
 
 	Else
-		Debug.Notification("[SLS] Whore collar in NPC")
+		; Debug.Notification("[SLS] Whore collar in NPC")
 
 		RedWaveQuest.AddFollowerWhore(akNewContainer)
 

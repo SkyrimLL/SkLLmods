@@ -8,14 +8,46 @@ ObjectReference[] Property _SLS_RedWaveFollowerWhores  Auto
 
 ObjectReference Property _SLS_TempWhore  Auto  
 
+Faction Property RedWaveFaction Auto
+Faction Property RedWaveWhoreFaction Auto
+Faction Property RedWaveShipFaction  Auto  
+
+Armor Property RedWaveWhoreCollar Auto
+
+FormList Property RedWaveDrinks Auto
 
 MiscObject Property Gold001  Auto  
 GlobalVariable Property RedWavePlayerDebt  Auto  
 GlobalVariable Property RedWavePlayerEarnings  Auto  
 
+GlobalVariable Property _SLS_isPregnant  Auto  
+GlobalVariable Property _SLS_isParasiteVag  Auto  
+GlobalVariable Property _SLS_isParasiteBody  Auto  
+GlobalVariable Property _SLS_isLactating  Auto  
+GlobalVariable Property _SLS_isSuccubus  Auto  
+GlobalVariable Property _SLS_isBimbo  Auto  
+GlobalVariable Property _SLS_isTG  Auto  
+GlobalVariable Property _SLS_isBigBelly  Auto  
+GlobalVariable Property _SLS_isBigBreast  Auto  
+GlobalVariable Property _SLS_isBigButt  Auto  
+GlobalVariable Property _SLS_isBigSchlong  Auto  
+
+String                   Property NINODE_SCHLONG	 	= "NPC GenitalsBase [GenBase]" AutoReadOnly
+String                   Property NINODE_RIGHT_BREAST   = "NPC R Breast" AutoReadOnly
+String                   Property NINODE_RIGHT_BUTT     = "NPC R Butt" AutoReadOnly
+String                   Property NINODE_BELLY          = "NPC Belly" AutoReadOnly
+
+
 Function RedWaveStart()
 	Actor PlayerActor = Game.GetPlayer()
 	; Stop other mods like Deviously Enslaved while in RedWave
+
+	PlayerActor.AddToFaction(RedWaveFaction)
+	PlayerActor.AddToFaction(RedWaveShipFaction)
+	PlayerActor.AddToFaction(RedWaveWhoreFaction)
+	PlayerActor.EquipItem(RedWaveWhoreCollar)
+	 
+
 	SendModEvent("dhlp-Suspend")
 	StorageUtil.SetIntValue(PlayerActor, "_SLS_iStoriesRedWaveJob", 1)
 	SetPlayerStartingDebt(PlayerActor)
@@ -23,6 +55,15 @@ EndFunction
 
 Function RedWaveStop()
 	Actor PlayerActor = Game.GetPlayer()
+
+	PlayerActor.RemoveFromFaction(RedWaveShipFaction)
+	PlayerActor.RemoveFromFaction(RedWaveFaction)
+	PlayerActor.RemoveFromFaction(RedWaveWhoreFaction)
+
+	if (PlayerActor.GetItemCount(RedWaveWhoreCollar)>=1)
+		PlayerActor.RemoveItem(RedWaveWhoreCollar)
+	endif
+
 	SendModEvent("dhlp-Resume")
 	StorageUtil.SetIntValue(PlayerActor, "_SLS_iStoriesRedWaveJob", -1)
 	RedWavePlayerDebt.SetValue(0)
@@ -32,6 +73,37 @@ EndFunction
 Function RedWavePayPlayer(Int iGoldAmount)
 	Actor PlayerActor = Game.GetPlayer()
 	PlayerActor.AddItem(Gold001, iGoldAmount)
+EndFunction
+
+Function RedWaveSellDrink()
+	Actor PlayerActor = Game.GetPlayer()
+	Form nthForm
+	Int index = 0
+	Int size = RedWaveDrinks.GetSize()
+	Bool ret = False
+	int iDrinkPrice = Utility.RandomInt(10) 
+
+	iDrinkPrice += GetPlayerValueModifier(PlayerActor) * 2
+	debug.trace("[SLS] Selling drinks for " + iDrinkPrice + " gold")
+ 
+	While ( index < size )
+		Potion nTHpotion = RedWaveDrinks.GetAt(index) as Potion
+		nthForm = nTHpotion as Form
+
+		debug.trace("[SLS] Checking for " + nTHpotion)
+		debug.trace("[SLS]    Count in inventory: " + PlayerActor.GetItemCount( nTHpotion ))
+		If (PlayerActor.GetItemCount( nTHpotion ) >= 1)
+			debug.trace("[SLS]    Selling one  " + nTHpotion)
+			PlayerActor.RemoveItem(nTHpotion, 1)
+			PlayerActor.AddItem(Gold001, iDrinkPrice)
+ 			return
+ 		else
+			debug.trace("[SLS]    Not found in inventory")
+		EndIf
+		index += 1
+	EndWhile
+ 
+
 EndFunction
 
 Function RedWavePayDebt(Int iGoldAmount)
@@ -263,36 +335,91 @@ Endfunction
 
 Int function GetPlayerValueModifier(Actor kActor)
 	Int iPlayerValueMod = 0
+	Float fNodeSize
 
 	; Modifiers based on player's status
 	if (isPregnant(kActor))
 		iPlayerValueMod += 5
+		_SLS_isPregnant.SetValue(1)
+	else
+		_SLS_isPregnant.SetValue(0)
 	endif
 
 
-	if (StorageUtil.GetIntValue(kActor, "_SLP_toggleSpiderEgg" )==1) || (StorageUtil.GetIntValue(kActor, "_SLP_toggleChaurusWorm" )==1) || (StorageUtil.GetIntValue(kActor, "_SLP_toggleChaurusWormVag" )==1)
+	if (StorageUtil.GetIntValue(kActor, "_SLP_toggleSpiderEgg" )==1) || (StorageUtil.GetIntValue(kActor, "_SLP_toggleChaurusWorm" )==1) || (StorageUtil.GetIntValue(kActor, "_SLP_toggleChaurusWormVag" )==1) || (StorageUtil.GetIntValue(kActor, "_SLP_toggleChaurusQueenVag" )==1)
 		iPlayerValueMod += 2
+		_SLS_isParasiteVag.SetValue(1)
+	else
+		_SLS_isParasiteVag.SetValue(0)
 	endif
 
-	if (StorageUtil.GetIntValue(kActor, "_SLP_toggleFaceHugger" )==1) || (StorageUtil.GetIntValue(kActor, "_SLP_toggleTentacleMonster" )==1) || (StorageUtil.GetIntValue(kActor, "_SLP_toggleLivingArmor" )==1) || (StorageUtil.GetIntValue(kActor, "_SLP_toggleBarnacles" )==1) || (StorageUtil.GetIntValue(kActor, "_SLP_toggleChaurusQueenVag" )==1) || (StorageUtil.GetIntValue(kActor, "_SLP_toggleChaurusQueenGag" )==1)
+	if (StorageUtil.GetIntValue(kActor, "_SLP_toggleFaceHugger" )==1) || (StorageUtil.GetIntValue(kActor, "_SLP_toggleTentacleMonster" )==1) || (StorageUtil.GetIntValue(kActor, "_SLP_toggleLivingArmor" )==1) || (StorageUtil.GetIntValue(kActor, "_SLP_toggleBarnacles" )==1) || (StorageUtil.GetIntValue(kActor, "_SLP_toggleChaurusQueenGag" )==1)
 		iPlayerValueMod += 1
+		_SLS_isParasiteBody.SetValue(1)
+	else
+		_SLS_isParasiteBody.SetValue(0)
 	endif
 
 	If (StorageUtil.GetIntValue(kActor, "_SLH_iLactating") == 1)
 		iPlayerValueMod += 1
+		_SLS_isLactating.SetValue(1)
+	else
+		_SLS_isLactating.SetValue(0)		
 	endif
 
 	if (StorageUtil.GetIntValue(kActor, "_SLH_iSuccubus") == 1)
 		iPlayerValueMod += 10
+		_SLS_isSuccubus.SetValue(1)
+	else
+		_SLS_isSuccubus.SetValue(0)
 	endif
 
 	if (StorageUtil.GetIntValue(kActor, "_SLH_iBimbo") == 1)
 		iPlayerValueMod += 5
+		_SLS_isBimbo.SetValue(1)
+	else
+		_SLS_isBimbo.SetValue(0)
 	endif
 
-	if (StorageUtil.GetIntValue(kActor, "_SLH_iHRT") == 1) || (StorageUtil.GetIntValue(kActor, "_SLH_iTG") == 1)
+	if (StorageUtil.GetIntValue(kActor, "_SLH_iTG") == 1)
 		iPlayerValueMod += 2
+		_SLS_isTG.SetValue(1)
+	else
+		_SLS_isTG.SetValue(0)
 	endif
+
+	fNodeSize = NetImmerse.GetNodeScale(kActor, NINODE_RIGHT_BREAST, false)
+	if (fNodeSize >= 1.5)
+		iPlayerValueMod += 2
+		_SLS_isBigBreast.SetValue(1)
+	else
+		_SLS_isBigBreast.SetValue(0)
+	endif
+
+	fNodeSize = NetImmerse.GetNodeScale(kActor, NINODE_RIGHT_BUTT, false)
+	if (fNodeSize >= 1.5)
+		iPlayerValueMod += 2
+		_SLS_isBigButt.SetValue(1)
+	else
+		_SLS_isBigButt.SetValue(0)
+	endif
+
+	fNodeSize = NetImmerse.GetNodeScale(kActor, NINODE_BELLY, false)
+	if (fNodeSize >= 2)
+		iPlayerValueMod += 2
+		_SLS_isBigBelly.SetValue(1)
+	else
+		_SLS_isBigBelly.SetValue(0)
+	endif
+
+	fNodeSize = NetImmerse.GetNodeScale(kActor, NINODE_SCHLONG, false)
+	if (fNodeSize >= 1.5)
+		iPlayerValueMod += 2
+		_SLS_isBigSchlong.SetValue(1)
+	else
+		_SLS_isBigSchlong.SetValue(0)
+	endif
+
 
 	return iPlayerValueMod
 Endfunction

@@ -156,10 +156,7 @@ Event OnPCStartRedWave(String _eventName, String _args, Float _argc = -1.0, Form
 	; Enable Hormone changes
 	StorageUtil.SetIntValue(none, "_SLH_iHormonesSleepInit", 1)
 
-	PlayerActor.MoveTo(SLS_PlayerRedWaveStartMarker)
-	PlayerActor.addtofaction(RedWaveShipFaction)  
-	PlayerActor.addtofaction(RedWaveFaction) 
-	PlayerActor.addtofaction(RedWaveWhoreFaction )  
+	PlayerActor.MoveTo(SLS_PlayerRedWaveStartMarker)  
 	StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryLevel", 3)
 	StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryExposure", 30)
 
@@ -325,7 +322,7 @@ Event OnPCStartKin(String _eventName, String _args, Float _argc = -1.0, Form _se
 	StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryLevel", 2)
 	StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryExposure", 20)
 
-	If (bBeeingFemale) && isFemale(PlayerActor)
+	If (StorageUtil.GetIntValue(none, "_SLS_isBeeingFemaleON")==1) && isFemale(PlayerActor)
 	 	PlayerActor.SendModEvent("BeeingFemale", "ChangeState", 6)  ;5, 6, 7 for 2nd, 3rd, labor
 		StorageUtil.SetFloatValue(PlayerActor,"FW.UnbornHealth",100.0)
 		StorageUtil.UnsetIntValue(PlayerActor,"FW.Abortus")

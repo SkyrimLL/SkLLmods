@@ -70,7 +70,8 @@ Function _Maintenance()
 EndFunction
 
 Event OnUpdate()
-	Actor PlayerActor= Game.GetPlayer() as Actor
+	Actor PlayerActor= Game.GetPlayer() as Actor 
+	Int daysSinceLastPass 
 
 	If  !Self || !SexLab || (StorageUtil.GetIntValue(none, "_SLS_iStoriesPlayerRedWave")==0)
 		Return
@@ -96,6 +97,30 @@ Event OnUpdate()
 
 	If (iDaysSinceLastCheck > 0)
 		iDebtLastCheck = PlayerRedWaveDebt.GetValue() as Int
+
+	 	if (PlayerDayPass.GetValue() == 0)
+	 		PlayerDayPass.SetValue(daysPassed)
+	 	endif
+
+		daysSinceLastPass = daysPassed - (PlayerDayPass.GetValue() as Int )
+		if (PlayerActor.GetCurrentLocation() == RedWaveLocation)
+			; New day, player is in RedWave location -> reset runaway and day pass flags
+			StorageUtil.SetIntValue(PlayerActor, "_SLS_iStoriesRedWaveRunaway", 0)
+			StorageUtil.SetIntValue(PlayerActor, "_SLS_iStoriesRedWaveDayPass", 0)
+	 		PlayerDayPass.SetValue(daysPassed)
+	 	else	
+			; New day, player is not in RedWave location -> set runaway and revoke day pass flags
+			StorageUtil.SetIntValue(PlayerActor, "_SLS_iStoriesRedWaveRunaway", 1)
+			StorageUtil.SetIntValue(PlayerActor, "_SLS_iStoriesRedWaveDayPass", 0)
+	 		PlayerDayPass.SetValue(daysPassed)
+
+			Debug.Notification("Run away whores are not looked upon kindly. Return to the Red Wave at once!")
+			if (RedWaveCrimeFaction.GetCrimeGold() < 10000)
+				RedWaveCrimeFaction.ModCrimeGold(100)
+			endif
+			Debug.Notification("Your bounty is set to " + RedWaveCrimeFaction.GetCrimeGold())
+		endif
+
 	endIf
 
 	iGameDateLastCheck = daysPassed  
@@ -104,6 +129,14 @@ Event OnUpdate()
 EndEvent
 
 Event OnLocationChange(Location akOldLoc, Location akNewLoc)
+	; Debug.notification("[SLS] OnLocation Change: " + StorageUtil.GetIntValue(none, "_SLS_iStoriesPlayerRedWave"))
+
+	if (akNewLoc != RedWaveLocation)
+	;	Debug.notification("[SLS] OnLocation Change: Not in Solitude Docks" )
+	Else
+	;	Debug.notification("[SLS] OnLocation Change: In Solitude Docks" )
+	Endif
+
 	If  !Self || !SexLab || (StorageUtil.GetIntValue(none, "_SLS_iStoriesPlayerRedWave")==0)
 		Return
 	EndIf
@@ -113,33 +146,98 @@ Event OnLocationChange(Location akOldLoc, Location akNewLoc)
 	Int daysSinceLastPass 
 	Int iGold 
 
+	; Debug.notification("[SLS] OnLocation Change Job: " + StorageUtil.GetIntValue(akActor, "_SLS_iStoriesRedWaveJob"))
+
 	If (StorageUtil.GetIntValue(akActor, "_SLS_iStoriesRedWaveJob") == -1)
 		Return
 	EndIf
 	 
  	daysPassed = Game.QueryStat("Days Passed")
+ 	if (PlayerDayPass.GetValue() == 0)
+ 		PlayerDayPass.SetValue(daysPassed)
+ 	endif
+
 	daysSinceLastPass = daysPassed - (PlayerDayPass.GetValue() as Int )
-	
 
-	If (daysSinceLastPass < 1) &&  (PlayerRedWaveDebt.GetValue()>0) && (akOldLoc == RedWaveLocation) && (akNewLoc != RedWaveLocation)
-		; Day pass is in effect - no penalty
+	; Debug.notification("[SLS] Debt: " + PlayerRedWaveDebt.GetValue())
 
-	ElseIf (daysSinceLastPass >= 1) &&  (PlayerRedWaveDebt.GetValue()>0) && (akNewLoc == RedWaveLocation)  
-		; Day pass is over but player returned to RedWave in time
+	if (StorageUtil.GetIntValue(akActor, "_SLS_iStoriesRedWaveDayPass") == 1)
 
-		; Pay bounty and add to debt
-		iGold = RedWaveCrimeFaction.GetCrimeGold()
-		RedWaveCrimeFaction.PlayerPayCrimeGold( True, False )
-		PlayerRedWaveDebt.SetValue( (PlayerRedWaveDebt.GetValue() as Int ) + iGold )
+		If (daysSinceLastPass < 1) && (akNewLoc != RedWaveLocation)  
+			; Day pass is active, less than a day has passed, location is outside RedWave -> no change
+			Debug.Notification("Day pass is active, player is away")
+			StorageUtil.SetIntValue(akActor, "_SLS_iStoriesRedWaveRunaway", 0) 
 
-		Debug.Notification("Your bounty has been paid.")
-		Debug.Notification("You now owe " + (PlayerRedWaveDebt.GetValue() as Int ) + " gold.")
+		elseIf (daysSinceLastPass < 1) && (akNewLoc == RedWaveLocation)   
+			; Day pass is active, less than a day has passed, location is inside RedWave -> no change
+			Debug.Notification("Day pass is active, player is in range")
+			StorageUtil.SetIntValue(akActor, "_SLS_iStoriesRedWaveRunaway", 0) 
+ 
+		elseIf (daysSinceLastPass >= 1) && (akNewLoc != RedWaveLocation)   
+			; Day pass is active, more than a day has passed, location is outside RedWave - Become runaway, revoke day pass
+			Debug.Notification("Day pass has expired, player is running away")
+			StorageUtil.SetIntValue(akActor, "_SLS_iStoriesRedWaveRunaway", 1)
+			StorageUtil.SetIntValue(akActor, "_SLS_iStoriesRedWaveDayPass", 0)
+	 		PlayerDayPass.SetValue(daysPassed)
+			
+			Debug.Notification("Run away whores are not looked upon kindly. Return to the Red Wave at once!")
+			if (RedWaveCrimeFaction.GetCrimeGold() < 10000)
+				RedWaveCrimeFaction.ModCrimeGold(100)
+			endif
+			Debug.Notification("Your bounty is set to " + RedWaveCrimeFaction.GetCrimeGold())
 
-	ElseIf (PlayerRedWaveDebt.GetValue()>0) && (akOldLoc == RedWaveLocation) && (akNewLoc != RedWaveLocation)
-		Debug.Notification("Run away whores are not looked upon kindly.")
-		if (RedWaveCrimeFaction.GetCrimeGold() < 5000)
-			RedWaveCrimeFaction.ModCrimeGold(100)
+		elseIf (daysSinceLastPass >= 1) && (akNewLoc == RedWaveLocation)    
+			; Day pass is active, more than a day has passed, location is inside RedWave -> Pay bounty
+			Debug.Notification("Day pass has expired, player is back in range")
+			StorageUtil.SetIntValue(akActor, "_SLS_iStoriesRedWaveRunaway", 0)
+			StorageUtil.SetIntValue(akActor, "_SLS_iStoriesRedWaveDayPass", 0)
+	 		PlayerDayPass.SetValue(daysPassed)
+
+			; Pay bounty and add to debt
+			iGold = RedWaveCrimeFaction.GetCrimeGold()
+			if (iGold >0)
+				RedWaveCrimeFaction.PlayerPayCrimeGold( True, False )
+				PlayerRedWaveDebt.SetValue( (PlayerRedWaveDebt.GetValue() as Int ) + iGold )
+
+				Debug.Notification("Your bounty has been paid.")
+				Debug.Notification("You now owe " + (PlayerRedWaveDebt.GetValue() as Int ) + " gold.")
+			endif
 		endif
+
+	else 
+
+		If (akNewLoc != RedWaveLocation)  
+			; Runaway is active, more than a day has passed, location is outside RedWave - Keep runaway, increase bounty
+			Debug.Notification("Player is running away")
+			Debug.Trace("Player is running away: New location: " + akNewLoc as Form)
+			StorageUtil.SetIntValue(akActor, "_SLS_iStoriesRedWaveRunaway", 1)
+			StorageUtil.SetIntValue(akActor, "_SLS_iStoriesRedWaveDayPass", 0)
+	 		PlayerDayPass.SetValue(daysPassed)
+			
+			Debug.Notification("Run away whores are not looked upon kindly. Return to the Red Wave at once!")
+			if (RedWaveCrimeFaction.GetCrimeGold() < 10000)
+				RedWaveCrimeFaction.ModCrimeGold(100)
+			endif
+			Debug.Notification("Your bounty is set to " + RedWaveCrimeFaction.GetCrimeGold())
+
+		elseIf (akNewLoc == RedWaveLocation)    
+			; Runaway is active, location is inside RedWave -> Pay bounty
+			Debug.Notification("Player is back in Red Wave range")
+			StorageUtil.SetIntValue(akActor, "_SLS_iStoriesRedWaveRunaway", 0)
+			StorageUtil.SetIntValue(akActor, "_SLS_iStoriesRedWaveDayPass", 0)
+	 		PlayerDayPass.SetValue(daysPassed)
+
+			; Pay bounty and add to debt
+			iGold = RedWaveCrimeFaction.GetCrimeGold()
+			if (iGold >0)
+				RedWaveCrimeFaction.PlayerPayCrimeGold( True, False )
+				PlayerRedWaveDebt.SetValue( (PlayerRedWaveDebt.GetValue() as Int ) + iGold )
+
+				Debug.Notification("Your bounty has been paid.")
+				Debug.Notification("You now owe " + (PlayerRedWaveDebt.GetValue() as Int ) + " gold.")
+			endif
+		endif
+
 	endif
 
 EndEvent
@@ -158,9 +256,9 @@ Event OnPlayerRedWave(String _eventName, String _args, Float _argc = -1.0, Form 
 
 	PlayerActor.RemoveAllItems(akTransferTo = SLS_PlayerRedWaveSorage, abKeepOwnership = True)
 
-	PlayerActor.addtofaction(RedWaveShipFaction)  
-	PlayerActor.addtofaction(RedWaveFaction) 
-	PlayerActor.addtofaction(RedWaveWhoreFaction )  
+	; PlayerActor.addtofaction(RedWaveShipFaction)  
+	; PlayerActor.addtofaction(RedWaveFaction) 
+	; PlayerActor.addtofaction(RedWaveWhoreFaction )  
 
 	PlayerActor.EquipItem(WhoreCollar)
 	PlayerActor.EquipItem(WhoreDress)
@@ -174,7 +272,7 @@ Event OnPlayerRedWave(String _eventName, String _args, Float _argc = -1.0, Form 
 	StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryExposure", 30)
 
 
-	If (bBeeingFemale) && isFemale(PlayerActor) && (StorageUtil.GetIntValue(none, "_SLS_iPlayerStartRedWave") == 1) && (_args == "Pregnancy")
+	If (StorageUtil.GetIntValue(none, "_SLS_isBeeingFemaleON")==1) && isFemale(PlayerActor) && (StorageUtil.GetIntValue(none, "_SLS_iPlayerStartRedWave") == 1) && (_args == "Pregnancy")
 		PlayerActor.SendModEvent("BeeingFemale", "ChangeState", 5)  ;5, 6, 7 for 2nd, 3rd, labor
 		StorageUtil.SetFloatValue(PlayerActor,"FW.UnbornHealth",100.0)
 		StorageUtil.UnsetIntValue(PlayerActor,"FW.Abortus")
@@ -187,7 +285,8 @@ Event OnPlayerRedWave(String _eventName, String _args, Float _argc = -1.0, Form 
 		SLS_PlayerRedWaveQuest.SetStage(10)
 	EndIf
 
-	RedWaveController.RedWaveStart()
+	; Already included in SetStage
+	; RedWaveController.RedWaveStart()
 
 	RegisterForSingleUpdate(10)
 

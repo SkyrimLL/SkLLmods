@@ -96,7 +96,7 @@ Event OnPlayerKin(String _eventName, String _args, Float _argc = -1.0, Form _sen
 		StorageUtil.SetIntValue(none, "_SLS_iPlayerStartKin", 0)
 	EndIf
 
-	If (bBeeingFemale) && isFemale(PlayerActor) && (StorageUtil.GetIntValue(none, "_SLS_iPlayerStartKin") == 1) && (playerRace != BretonRace)
+	If (StorageUtil.GetIntValue(none, "_SLS_isBeeingFemaleON")==1) && isFemale(PlayerActor) && (StorageUtil.GetIntValue(none, "_SLS_iPlayerStartKin") == 1) && (playerRace != BretonRace)
 		PlayerActor.SendModEvent("BeeingFemale", "ChangeState", 5)  ;5, 6, 7 for 2nd, 3rd, labor
 		StorageUtil.SetFloatValue(PlayerActor,"FW.UnbornHealth",100.0)
 		StorageUtil.UnsetIntValue(PlayerActor,"FW.Abortus")
@@ -105,7 +105,7 @@ Event OnPlayerKin(String _eventName, String _args, Float _argc = -1.0, Form _sen
 		StorageUtil.FormListAdd(PlayerActor,"FW.ChildFather", none )
 
 		SLS_PlayerKinQuest.SetStage(15)
-	ElseIf (bBeeingFemale) && isFemale(PlayerActor) && (StorageUtil.GetIntValue(none, "_SLS_iPlayerStartKin") == 1) && (playerRace == BretonRace)
+	ElseIf (StorageUtil.GetIntValue(none, "_SLS_isBeeingFemaleON")==1) && isFemale(PlayerActor) && (StorageUtil.GetIntValue(none, "_SLS_iPlayerStartKin") == 1) && (playerRace == BretonRace)
 		PlayerActor.SendModEvent("BeeingFemale", "ChangeState", 5)  ;5, 6, 7 for 2nd, 3rd, labor
 		StorageUtil.SetFloatValue(PlayerActor,"FW.UnbornHealth",100.0)
 		StorageUtil.UnsetIntValue(PlayerActor,"FW.Abortus")
