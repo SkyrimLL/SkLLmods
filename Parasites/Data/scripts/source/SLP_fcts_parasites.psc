@@ -2551,17 +2551,28 @@ Function triggerEstrusChaurusBirth( Actor kActor, String  sParasite, Int iBirthI
 	ElseIf (sParasite == "ChaurusEgg")
 		fBirthItem = ChaurusEgg as Form
 
+	ElseIf (sParasite == "ChaurusWorm")
+		fBirthItem = IngredientChaurusWorm as Form
+
+	ElseIf (sParasite == "ChaurusWormVag")
+		fBirthItem = IngredientChaurusWorm as Form
+
 	ElseIf (sParasite == "Barnacles")
 		fBirthItem = BarnaclesCluster as Form
 
 	Endif
+
+	Debug.Trace("[SLP] triggerEstrusChaurusBirth - Actor: " + kActor)
+	Debug.Trace("[SLP] 		sParasite: " + sParasite)
+	Debug.Trace("[SLP] 		fBirthItem: " + fBirthItem)
 
 	If (fBirthItem != None)
 		; Testing EC birth event
 		;To call an EC Birth event use the following code:
 		;
 		int ECBirth = ModEvent.Create("ECGiveBirth") ; Int          Int does not have to be named "ECBirth" any name would do
-		if (ECBirth)
+		if (ECBirth) && (!(isPregnantByEstrusChaurus( kActor)))
+			Debug.Trace("[SLP] 		EC event detected - ECBirth")
 		    ModEvent.PushForm(ECBirth, self)         ; Form         Pass the calling form to the event
 
 		    ModEvent.PushForm(ECBirth, kActor)      ; Form         The Actor to give birth
@@ -2569,11 +2580,12 @@ Function triggerEstrusChaurusBirth( Actor kActor, String  sParasite, Int iBirthI
 		    ModEvent.PushInt(ECBirth, iBirthItemCount)            ; Int    The number of Items to give birth too
 		    ModEvent.Send(ECBirth)
 		else
+			Debug.Trace("[SLP] 		Fallback animation")
 		    ;EC is not installed
             Debug.SendAnimationEvent(PlayerRef, "bleedOutStart")
             utility.wait(4)
             Debug.SendAnimationEvent(PlayerRef, "IdleForceDefaultState")
-		    PlayerRef.PlaceAtMe(SmallSpiderEgg, iBirthItemCount)
+		    PlayerRef.PlaceAtMe(fBirthItem, iBirthItemCount)
 		endIf
 		;
 		;   **NB** The birth event will not fire if the actor is already infected with the Chaurus Parasite effect
@@ -2711,6 +2723,32 @@ Bool Function tryParasiteNextStage(Actor kActor, String sParasite)
 				itriggerNextStageChaurusQueen = itriggerNextStageChaurusQueen +  (iChaurusQueenStage * 10)
 				StorageUtil.SetIntValue(kActor, "_SLP_triggerNextStageChaurusQueen",itriggerNextStageChaurusQueen)
 			endif
+
+		ElseIf (sParasite == "SpiderPenis")  
+			Debug.MessageBox("The remains of the spider penis finally slide out of you.")
+			; PlayerActor.SendModEvent("SLPCureSpiderPenis")
+			cureSpiderPenis( PlayerActor   )
+		
+		ElseIf (sParasite == "SpiderEgg")  
+			Debug.Messagebox("Your whole body is convulsing as violent cramps force the eggs out of you.")
+			cureSpiderEgg( PlayerActor, "None", false ) 
+			triggerEstrusChaurusBirth( PlayerActor, "SpiderEgg", Utility.RandomInt(1, 5))
+		
+		ElseIf (sParasite == "ChaurusWorm")  
+			Debug.Messagebox("You feel nauseous as your body suddenly rejects the worm.")
+			cureChaurusWorm( PlayerActor, false )
+			triggerEstrusChaurusBirth( PlayerActor, "ChaurusWorm", 1)
+		
+		ElseIf (sParasite == "ChaurusWormVag")  
+			Debug.Messagebox("You feel nauseous as your body suddenly rejects the worm.")
+			cureChaurusWormVag( PlayerActor, false ) 
+			triggerEstrusChaurusBirth( PlayerActor, "ChaurusWormVag", 1)
+		
+		ElseIf (sParasite == "Barnacles")  
+			Debug.Messagebox("The spores evaporated on their own.")
+			cureBarnacles( PlayerActor, False  )
+			; PlayerActor.SendModEvent("SLPTriggerEstrusChaurusBirth", "Barnacles", Utility.RandomInt(1, 5))
+		
 		endif
 	endif
 
