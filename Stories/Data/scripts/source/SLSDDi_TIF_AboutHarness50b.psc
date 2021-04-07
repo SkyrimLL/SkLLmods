@@ -10,6 +10,7 @@ Actor kPlayer = Game.GetPlayer()
 
 kPlayer.AddItem(MilkHarness, 1)
 
+Self.GetOwningQuest().SetStage(49)
 Self.GetOwningQuest().SetStage(59)
 ;END CODE
 EndFunction

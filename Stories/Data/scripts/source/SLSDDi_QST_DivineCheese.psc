@@ -2,29 +2,9 @@
 ;NEXT FRAGMENT INDEX 53
 Scriptname SLSDDi_QST_DivineCheese Extends Quest Hidden
 
-;BEGIN ALIAS PROPERTY _SLSDDi_SnowShodCowImperial
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SLSDDi_SnowShodCowImperial Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY PlayerRef
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias_PlayerRef Auto
-;END ALIAS PROPERTY
-
 ;BEGIN ALIAS PROPERTY _SLSDDi_SnowShodCowCustom
 ;ALIAS PROPERTY TYPE ReferenceAlias
 ReferenceAlias Property Alias__SLSDDi_SnowShodCowCustom Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SLSDDi_SnowShodCowOrc
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SLSDDi_SnowShodCowOrc Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SLSDDi_SnowShodCowRedguard
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SLSDDi_SnowShodCowRedguard Auto
 ;END ALIAS PROPERTY
 
 ;BEGIN ALIAS PROPERTY _SLSDDi_SnowShodCowNord
@@ -32,19 +12,9 @@ ReferenceAlias Property Alias__SLSDDi_SnowShodCowRedguard Auto
 ReferenceAlias Property Alias__SLSDDi_SnowShodCowNord Auto
 ;END ALIAS PROPERTY
 
-;BEGIN ALIAS PROPERTY _SLSDDi_SnowShodCowBreton
+;BEGIN ALIAS PROPERTY _SLSDDi_SnowShodCowImperial
 ;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SLSDDi_SnowShodCowBreton Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SLSDDi_SnowShodCowBosmer
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SLSDDi_SnowShodCowBosmer Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SLSDDi_SnowShodCowDunmer
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SLSDDi_SnowShodCowDunmer Auto
+ReferenceAlias Property Alias__SLSDDi_SnowShodCowImperial Auto
 ;END ALIAS PROPERTY
 
 ;BEGIN ALIAS PROPERTY _SLSDDi_SnowShodCowAltmer
@@ -52,11 +22,132 @@ ReferenceAlias Property Alias__SLSDDi_SnowShodCowDunmer Auto
 ReferenceAlias Property Alias__SLSDDi_SnowShodCowAltmer Auto
 ;END ALIAS PROPERTY
 
-;BEGIN FRAGMENT Fragment_27
-Function Fragment_27()
+;BEGIN ALIAS PROPERTY _SLSDDi_SnowShodCowRedguard
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SLSDDi_SnowShodCowRedguard Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SLSDDi_SnowShodCowDunmer
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SLSDDi_SnowShodCowDunmer Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SLSDDi_SnowShodCowBosmer
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SLSDDi_SnowShodCowBosmer Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SLSDDi_SnowShodCowBreton
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SLSDDi_SnowShodCowBreton Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY PlayerRef
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias_PlayerRef Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SLSDDi_SnowShodCowOrc
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SLSDDi_SnowShodCowOrc Auto
+;END ALIAS PROPERTY
+
+;BEGIN FRAGMENT Fragment_49
+Function Fragment_49()
 ;BEGIN CODE
-SetObjectiveDisplayed(300, false)
-SetObjectiveDisplayed(310)
+; Sheogorath gives the player the key
+SetObjectiveDisplayed(526,false)
+SetObjectiveDisplayed(528)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_3
+Function Fragment_3()
+;BEGIN CODE
+SetObjectiveDisplayed(10, false)
+SetObjectiveDisplayed(20)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_5
+Function Fragment_5()
+;BEGIN CODE
+SetObjectiveDisplayed(5)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_36
+Function Fragment_36()
+;BEGIN CODE
+SetObjectiveDisplayed(330, false)
+SetObjectiveDisplayed(332)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_52
+Function Fragment_52()
+;BEGIN CODE
+; End of quest?
+SetObjectiveDisplayed(530,false)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_2
+Function Fragment_2()
+;BEGIN CODE
+SetObjectiveDisplayed(5, false)
+SetObjectiveDisplayed(10)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_45
+Function Fragment_45()
+;BEGIN CODE
+; Skeevers - Spades
+SendModEvent("_SLSDDi_TriggerCard","Skeevers")
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_19
+Function Fragment_19()
+;BEGIN CODE
+SetStage(49)
+SetObjectiveDisplayed(48)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_21
+Function Fragment_21()
+;BEGIN CODE
+; Stages 200 - 300 : Boost milk production and learn about Divine Cheese
+SetObjectiveDisplayed(59, false)
+SetObjectiveDisplayed(200)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_41
+Function Fragment_41()
+;BEGIN CODE
+; Door back to farm is locked
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_9
+Function Fragment_9()
+;BEGIN CODE
+SetStage(49)
+SetObjectiveDisplayed(47, false)
+SetObjectiveDisplayed(55)
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -65,25 +156,10 @@ EndFunction
 Function Fragment_14()
 ;BEGIN CODE
 ; First harness is ready
+SetStage(49)
 SetObjectiveDisplayed(50, false)
 SetObjectiveDisplayed(55, false)
 SetObjectiveDisplayed(59)
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_29
-Function Fragment_29()
-;BEGIN CODE
-; Ask the cow to join the farm
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_28
-Function Fragment_28()
-;BEGIN CODE
-; Meet potential unique Reguard cow
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -97,37 +173,115 @@ SetObjectiveDisplayed(330)
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_42
-Function Fragment_42()
+;BEGIN FRAGMENT Fragment_11
+Function Fragment_11()
 ;BEGIN CODE
-; Door back to freezer is open
-SetObjectiveDisplayed(528,false)
-SetObjectiveDisplayed(530)
+SetObjectiveDisplayed(42, false)
+SetObjectiveDisplayed(45)
 ;END CODE
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_26
-Function Fragment_26()
+;BEGIN FRAGMENT Fragment_43
+Function Fragment_43()
 ;BEGIN CODE
-; Get Leonara's notes
-SetObjectiveDisplayed(100, false)
+; Trophies - Hearts
+SendModEvent("_SLSDDi_TriggerCard","Trophies")
 ;END CODE
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_41
-Function Fragment_41()
+;BEGIN FRAGMENT Fragment_13
+Function Fragment_13()
 ;BEGIN CODE
-; Door back to farm is locked
+; Harness is almost ready - Talk to Leonara about the harness
+SetObjectiveDisplayed(45, false)
+SetObjectiveDisplayed(47)
 ;END CODE
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_23
-Function Fragment_23()
+;BEGIN FRAGMENT Fragment_16
+Function Fragment_16()
 ;BEGIN CODE
-; Stages 400 - 500: Enroll Unique Cows
+; Enable Balimund Milk Farm items for sale
+SetObjectiveDisplayed(48, false)
+SetObjectiveDisplayed(49)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_46
+Function Fragment_46()
+;BEGIN CODE
+; Knights - Diamonds
+SendModEvent("_SLSDDi_TriggerCard","Knights")
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_28
+Function Fragment_28()
+;BEGIN CODE
+; Meet potential unique Reguard cow
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_29
+Function Fragment_29()
+;BEGIN CODE
+; Ask the cow to join the farm
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_27
+Function Fragment_27()
+;BEGIN CODE
+SetObjectiveDisplayed(300, false)
+SetObjectiveDisplayed(310)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_39
+Function Fragment_39()
+;BEGIN CODE
+; Milk machines Mk II are unlocked
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_8
+Function Fragment_8()
+;BEGIN CODE
+SetStage(49)
+SetObjectiveDisplayed(47, false)
+SetObjectiveDisplayed(50)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_20
+Function Fragment_20()
+;BEGIN CODE
+; Stages 100 - 200: Use manual harness to enroll other cows (or yourself if female)
+SetObjectiveDisplayed(20, false)
+SetObjectiveDisplayed(48, false)
+SetObjectiveDisplayed(49, false)
+SetObjectiveDisplayed(50, false)
+SetObjectiveDisplayed(55, false)
+SetObjectiveDisplayed(59, false)
+SetObjectiveDisplayed(100)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_17
+Function Fragment_17()
+;BEGIN CODE
+; Come back later - harness will be ready next time
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -142,41 +296,6 @@ SetObjectiveDisplayed(520)
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_13
-Function Fragment_13()
-;BEGIN CODE
-SetObjectiveDisplayed(45, false)
-SetObjectiveDisplayed(47)
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_40
-Function Fragment_40()
-;BEGIN CODE
-; Activate door to Shivering Grove for the first time
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_2
-Function Fragment_2()
-;BEGIN CODE
-SetObjectiveDisplayed(5, false)
-SetObjectiveDisplayed(10)
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_11
-Function Fragment_11()
-;BEGIN CODE
-SetObjectiveDisplayed(42, false)
-SetObjectiveDisplayed(45)
-;END CODE
-EndFunction
-;END FRAGMENT
-
 ;BEGIN FRAGMENT Fragment_32
 Function Fragment_32()
 ;BEGIN CODE
@@ -187,83 +306,12 @@ SetObjectiveDisplayed(320)
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_3
-Function Fragment_3()
+;BEGIN FRAGMENT Fragment_37
+Function Fragment_37()
 ;BEGIN CODE
-SetObjectiveDisplayed(10, false)
-SetObjectiveDisplayed(20)
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_47
-Function Fragment_47()
-;BEGIN CODE
-; Wabbajack - SHEO
-SendModEvent("_SLSDDi_TriggerCard","Wabbajack")
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_33
-Function Fragment_33()
-;BEGIN CODE
-SetObjectiveDisplayed(320, false)
-SetObjectiveDisplayed(322)
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_10
-Function Fragment_10()
-;BEGIN CODE
-SetObjectiveDisplayed(40, false)
-SetObjectiveDisplayed(42)
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_52
-Function Fragment_52()
-;BEGIN CODE
-; End of quest?
-SetObjectiveDisplayed(530,false)
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_45
-Function Fragment_45()
-;BEGIN CODE
-; Skeevers - Spades
-SendModEvent("_SLSDDi_TriggerCard","Skeevers")
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_24
-Function Fragment_24()
-;BEGIN CODE
-; Stages 500 - 600: Meet the Patron
-SetObjectiveDisplayed(310, false)
-SetObjectiveDisplayed(500)
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_17
-Function Fragment_17()
-;BEGIN CODE
-; Come back later - harness will be ready next time
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_7
-Function Fragment_7()
-;BEGIN CODE
-SetObjectiveDisplayed(30, false)
-SetObjectiveDisplayed(40)
+; Doughall has the new plans
+SetObjectiveDisplayed(332, false)
+; SetObjectiveDisplayed(334)
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -296,10 +344,10 @@ SetObjectiveDisplayed(300)
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_5
-Function Fragment_5()
+;BEGIN FRAGMENT Fragment_23
+Function Fragment_23()
 ;BEGIN CODE
-SetObjectiveDisplayed(5)
+; Stages 400 - 500: Enroll Unique Cows
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -313,63 +361,39 @@ SendModEvent("_SLSDDi_TriggerCard", "Grummites")
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_20
-Function Fragment_20()
+;BEGIN FRAGMENT Fragment_33
+Function Fragment_33()
 ;BEGIN CODE
-; Stages 100 - 200: Use manual harness to enroll other cows (or yourself if female)
-SetObjectiveDisplayed(20, false)
-SetObjectiveDisplayed(48, false)
-SetObjectiveDisplayed(49, false)
-SetObjectiveDisplayed(50, false)
-SetObjectiveDisplayed(55, false)
-SetObjectiveDisplayed(59, false)
-SetObjectiveDisplayed(100)
+SetObjectiveDisplayed(320, false)
+SetObjectiveDisplayed(322)
 ;END CODE
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_50
-Function Fragment_50()
+;BEGIN FRAGMENT Fragment_24
+Function Fragment_24()
 ;BEGIN CODE
-; Door back to farm is open
+; Stages 500 - 600: Meet the Patron
+SetObjectiveDisplayed(310, false)
+SetObjectiveDisplayed(500)
 ;END CODE
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_37
-Function Fragment_37()
+;BEGIN FRAGMENT Fragment_38
+Function Fragment_38()
 ;BEGIN CODE
-; Doughall has the new plans
-SetObjectiveDisplayed(332, false)
-; SetObjectiveDisplayed(334)
+; Milk machines are unlocked
 ;END CODE
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_9
-Function Fragment_9()
+;BEGIN FRAGMENT Fragment_42
+Function Fragment_42()
 ;BEGIN CODE
-SetObjectiveDisplayed(47, false)
-SetObjectiveDisplayed(55)
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_43
-Function Fragment_43()
-;BEGIN CODE
-; Trophies - Hearts
-SendModEvent("_SLSDDi_TriggerCard","Trophies")
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_16
-Function Fragment_16()
-;BEGIN CODE
-; Enable Balimund Milk Farm items for sale
-SetObjectiveDisplayed(48, false)
-SetObjectiveDisplayed(49)
+; Door back to freezer is open
+SetObjectiveDisplayed(528,false)
+SetObjectiveDisplayed(530)
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -382,38 +406,20 @@ Function Fragment_30()
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_39
-Function Fragment_39()
+;BEGIN FRAGMENT Fragment_47
+Function Fragment_47()
 ;BEGIN CODE
-; Milk machines Mk II are unlocked
+; Wabbajack - SHEO
+SendModEvent("_SLSDDi_TriggerCard","Wabbajack")
 ;END CODE
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_36
-Function Fragment_36()
+;BEGIN FRAGMENT Fragment_26
+Function Fragment_26()
 ;BEGIN CODE
-SetObjectiveDisplayed(330, false)
-SetObjectiveDisplayed(332)
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_49
-Function Fragment_49()
-;BEGIN CODE
-; Sheogorath gives the player the key
-SetObjectiveDisplayed(526,false)
-SetObjectiveDisplayed(528)
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_46
-Function Fragment_46()
-;BEGIN CODE
-; Knights - Diamonds
-SendModEvent("_SLSDDi_TriggerCard","Knights")
+; Get Leonara's notes
+SetObjectiveDisplayed(100, false)
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -427,19 +433,18 @@ SetObjectiveDisplayed(30)
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_19
-Function Fragment_19()
+;BEGIN FRAGMENT Fragment_50
+Function Fragment_50()
 ;BEGIN CODE
-SetObjectiveDisplayed(48)
+; Door back to farm is open
 ;END CODE
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_8
-Function Fragment_8()
+;BEGIN FRAGMENT Fragment_40
+Function Fragment_40()
 ;BEGIN CODE
-SetObjectiveDisplayed(47, false)
-SetObjectiveDisplayed(50)
+; Activate door to Shivering Grove for the first time
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -453,20 +458,20 @@ SetObjectiveDisplayed(322,false)
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_21
-Function Fragment_21()
+;BEGIN FRAGMENT Fragment_10
+Function Fragment_10()
 ;BEGIN CODE
-; Stages 200 - 300 : Boost milk production and learn about Divine Cheese
-SetObjectiveDisplayed(59, false)
-SetObjectiveDisplayed(200)
+SetObjectiveDisplayed(40, false)
+SetObjectiveDisplayed(42)
 ;END CODE
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_38
-Function Fragment_38()
+;BEGIN FRAGMENT Fragment_7
+Function Fragment_7()
 ;BEGIN CODE
-; Milk machines are unlocked
+SetObjectiveDisplayed(30, false)
+SetObjectiveDisplayed(40)
 ;END CODE
 EndFunction
 ;END FRAGMENT
