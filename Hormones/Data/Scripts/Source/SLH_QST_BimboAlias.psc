@@ -111,7 +111,10 @@ EndFunction
 ;[mod] stumbling happens here
 ;===========================================================================
 Event OnUpdateGameTime()
+	float bimboArousal = slaUtil.GetActorArousal(BimboActor) as float
 	Actor kPlayer = Game.GetPlayer()
+	Int rollFirstPerson 
+	Bool bAbortUpdate = false
 	; Safeguard - Exit if alias not set
 	if (StorageUtil.GetIntValue(kPlayer, "_SLH_iBimbo")==0)
 		; try again later
@@ -127,68 +130,8 @@ Event OnUpdateGameTime()
     	RegisterForSingleUpdate( 10 )
 		Return
 	Endif
-
-	RegisterForSingleUpdateGameTime(1)
-
-	updateClumsyBimbo() ;[mod] clumsy bimbo
-EndEvent
-
-Event OnActorAction(int actionType, Actor akActor, Form source, int slot)
-	; Safeguard - Exit if alias not set
-	if (StorageUtil.GetIntValue(Game.GetPlayer(), "_SLH_iBimbo")==0)
-		;debugTrace(" bimbo OnActorAction, None")
-		Return
-	Endif
-
-	BimboActor= BimboAliasRef.GetReference() as Actor
-
-	; Safeguard - Evaluate the rest only when transformation happened
-	if (StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") == -1)
-		Return
-	Endif
-
-	if (akActor == BimboActor)
-		clumsyBimboHands(actionType, akActor, source, slot)
-	EndIf
-EndEvent
-
-Event OnUpdate()
-	; Safeguard - Exit if alias not set
-	float bimboArousal = slaUtil.GetActorArousal(BimboActor) as float
-	Actor kPlayer = Game.GetPlayer()
-	Int rollFirstPerson 
-	Bool bAbortUpdate = false
-
-	if (StorageUtil.GetIntValue(kPlayer, "_SLH_iBimbo")==0)
-		; Debug.Notification( "[SLH] Bimbo status update: " + StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") as Int )
-		Debug.Trace( "[SLH] Bimbo alias is None: " )
-		; try again later
-    	RegisterForSingleUpdate( 10 )
-		Return
-	Endif
-
-	isUpdating = True
-	Utility.Wait(0.1) ;To prevent Update on Menu Mode
-	; debug.Notification(".")
-
-	BimboActor= BimboAliasRef.GetReference() as Actor
-
-	; Safeguard - Evaluate the rest only when transformation happened
-	if (StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") == -1)
-		; debugTrace(" bimbo OnUpdate, No TF Date")
-    	RegisterForSingleUpdate( 10 )
-		Return
-	Endif
-
-	if (isBimboClumsyLegs)
-		clumsyBimboLegs(BimboActor)
-	endif
-
-	; if ((GV_hornyBegArousal.GetValue() as Int) > 80)
-	;	GV_hornyBegArousal.SetValue(80)
-	; endif
-
-    iDaysPassed = Game.QueryStat("Days Passed")
+	
+	iDaysPassed = Game.QueryStat("Days Passed")
 
     StorageUtil.SetIntValue(BimboActor, "_SLH_bimboTransformGameDays", iDaysPassed - (StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") as Int ))    
     StorageUtil.SetIntValue(kPlayer, "_SLH_iAllowBimboThoughts", 1)
@@ -419,6 +362,63 @@ Event OnUpdate()
     else
 		; fctUtil.tryRandomBimboThoughts()
     Endif
+
+	RegisterForSingleUpdateGameTime(1)
+
+	updateClumsyBimbo() ;[mod] clumsy bimbo
+EndEvent
+
+Event OnActorAction(int actionType, Actor akActor, Form source, int slot)
+	; Safeguard - Exit if alias not set
+	if (StorageUtil.GetIntValue(Game.GetPlayer(), "_SLH_iBimbo")==0)
+		;debugTrace(" bimbo OnActorAction, None")
+		Return
+	Endif
+
+	BimboActor= BimboAliasRef.GetReference() as Actor
+
+	; Safeguard - Evaluate the rest only when transformation happened
+	if (StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") == -1)
+		Return
+	Endif
+
+	if (akActor == BimboActor)
+		clumsyBimboHands(actionType, akActor, source, slot)
+	EndIf
+EndEvent
+
+Event OnUpdate()
+	; Safeguard - Exit if alias not set
+	Actor kPlayer = Game.GetPlayer()
+
+	if (StorageUtil.GetIntValue(kPlayer, "_SLH_iBimbo")==0)
+		; Debug.Notification( "[SLH] Bimbo status update: " + StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") as Int )
+		Debug.Trace( "[SLH] Bimbo alias is None: " )
+		; try again later
+    	RegisterForSingleUpdate( 10 )
+		Return
+	Endif
+
+	isUpdating = True
+	Utility.Wait(0.1) ;To prevent Update on Menu Mode
+	; debug.Notification(".")
+
+	BimboActor= BimboAliasRef.GetReference() as Actor
+
+	; Safeguard - Evaluate the rest only when transformation happened
+	if (StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") == -1)
+		; debugTrace(" bimbo OnUpdate, No TF Date")
+    	RegisterForSingleUpdate( 10 )
+		Return
+	Endif
+
+	if (isBimboClumsyLegs)
+		clumsyBimboLegs(BimboActor)
+	endif
+
+	; if ((GV_hornyBegArousal.GetValue() as Int) > 80)
+	;	GV_hornyBegArousal.SetValue(80)
+	; endif
 
     If (StorageUtil.GetIntValue(BimboActor, "_SD_iSlaveryExposure") <= 150)
         StorageUtil.SetIntValue(BimboActor, "_SD_iSlaveryExposure", 150)
