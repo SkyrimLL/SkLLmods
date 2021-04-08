@@ -389,54 +389,43 @@ EndEvent
 
 Event OnUpdate()
 	; Safeguard - Exit if alias not set
-	Actor kPlayer = Game.GetPlayer()
-
-	if (StorageUtil.GetIntValue(kPlayer, "_SLH_iBimbo")==0)
+	if (StorageUtil.GetIntValue(Game.GetPlayer(), "_SLH_iBimbo")==0)
 		; Debug.Notification( "[SLH] Bimbo status update: " + StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") as Int )
 		Debug.Trace( "[SLH] Bimbo alias is None: " )
 		; try again later
-    	RegisterForSingleUpdate( 10 )
+		RegisterForSingleUpdate( 10 )
 		Return
 	Endif
 
-	isUpdating = True
 	Utility.Wait(0.1) ;To prevent Update on Menu Mode
-	; debug.Notification(".")
 
 	BimboActor= BimboAliasRef.GetReference() as Actor
 
 	; Safeguard - Evaluate the rest only when transformation happened
 	if (StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") == -1)
 		; debugTrace(" bimbo OnUpdate, No TF Date")
-    	RegisterForSingleUpdate( 10 )
+		RegisterForSingleUpdate( 10 )
 		Return
 	Endif
+
+	If (StorageUtil.GetIntValue(BimboActor, "_SD_iSlaveryExposure") <= 150)
+		StorageUtil.SetIntValue(BimboActor, "_SD_iSlaveryExposure", 150)
+	EndIf
+
+	StorageUtil.SetIntValue(BimboActor, "_SD_iSlaveryLevel", 6)
+	If (StorageUtil.GetIntValue(BimboActor, "_SD_iDom") > 0)
+		Debug.Messagebox("A wave of submissiveness washes over you. A bimbo doesn't need to think, she needs only to server her master as a perfect slave. Remember your place little slut.")
+		StorageUtil.SetIntValue(BimboActor, "_SD_iDom", 0)
+	EndIf
+	If (StorageUtil.GetIntValue(BimboActor, "_SD_iSub") < 0)
+		StorageUtil.SetIntValue(BimboActor, "_SD_iSub", 0)
+	EndIf
 
 	if (isBimboClumsyLegs)
 		clumsyBimboLegs(BimboActor)
 	endif
 
-	; if ((GV_hornyBegArousal.GetValue() as Int) > 80)
-	;	GV_hornyBegArousal.SetValue(80)
-	; endif
-
-    If (StorageUtil.GetIntValue(BimboActor, "_SD_iSlaveryExposure") <= 150)
-        StorageUtil.SetIntValue(BimboActor, "_SD_iSlaveryExposure", 150)
-    EndIf
-        
-    StorageUtil.SetIntValue(BimboActor, "_SD_iSlaveryLevel", 6)
-    If (StorageUtil.GetIntValue(BimboActor, "_SD_iDom") > 0)
-    	Debug.Messagebox("A wave of submissiveness washes over you. A bimbo doesn't need to think, she needs only to server her master as a perfect slave. Remember your place little slut.")
-        StorageUtil.SetIntValue(BimboActor, "_SD_iDom", 0)
-    EndIf
-    If (StorageUtil.GetIntValue(BimboActor, "_SD_iSub") < 0)
-        StorageUtil.SetIntValue(BimboActor, "_SD_iSub", 0)
-    EndIf
-
-    isUpdating = false
-    ;RegisterForSingleUpdate( fRFSU )
-    RegisterForSingleUpdate( fRFSU * 2 ) ;performance
-	;debugTrace(" bimbo OnUpdate, Done")
+	RegisterForSingleUpdate(5.4)
 EndEvent
 
 Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile, bool abPowerAttack, bool abSneakAttack, bool abBashAttack, bool abHitBlocked)
