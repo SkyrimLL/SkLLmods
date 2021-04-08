@@ -128,10 +128,9 @@ Event OnUpdateGameTime()
 		Return
 	Endif
 
-	if (isBimboClumsyLegs)
-    	clumsyBimboLegs(BimboActor)
-    	RegisterForSingleUpdateGameTime(0.03)
-    endif
+	RegisterForSingleUpdateGameTime(1)
+
+	updateClumsyBimbo() ;[mod] clumsy bimbo
 EndEvent
 
 Event OnActorAction(int actionType, Actor akActor, Form source, int slot)
@@ -160,7 +159,6 @@ Event OnUpdate()
 	Int rollFirstPerson 
 	Bool bAbortUpdate = false
 
-
 	if (StorageUtil.GetIntValue(kPlayer, "_SLH_iBimbo")==0)
 		; Debug.Notification( "[SLH] Bimbo status update: " + StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") as Int )
 		Debug.Trace( "[SLH] Bimbo alias is None: " )
@@ -182,18 +180,20 @@ Event OnUpdate()
 		Return
 	Endif
 
+	if (isBimboClumsyLegs)
+		clumsyBimboLegs(BimboActor)
+	endif
+
 	; if ((GV_hornyBegArousal.GetValue() as Int) > 80)
 	;	GV_hornyBegArousal.SetValue(80)
 	; endif
 
     iDaysPassed = Game.QueryStat("Days Passed")
 
-    
     StorageUtil.SetIntValue(BimboActor, "_SLH_bimboTransformGameDays", iDaysPassed - (StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") as Int ))    
     StorageUtil.SetIntValue(kPlayer, "_SLH_iAllowBimboThoughts", 1)
 
     daysSinceEnslavement = StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformGameDays")
-
 
     if (iGameDateLastCheck == -1)
         iGameDateLastCheck = iDaysPassed
@@ -433,7 +433,6 @@ Event OnUpdate()
         StorageUtil.SetIntValue(BimboActor, "_SD_iSub", 0)
     EndIf
 
-    updateClumsyBimbo() ;[mod] clumsy bimbo
     isUpdating = false
     ;RegisterForSingleUpdate( fRFSU )
     RegisterForSingleUpdate( fRFSU * 2 ) ;performance
@@ -703,7 +702,7 @@ function updateClumsyBimbo()
 
 		if (isBimboClumsyLegs && !isClumsyLegsRegistered)
 	    	isClumsyLegsRegistered = True
-	    	RegisterForSingleUpdateGameTime(0.015) ;walking
+	    	RegisterForSingleUpdate(2.7) ;walking
 			SLH_Control.playRandomSound(BimboActor)
 			Debug.Notification("I need to fuck. Now!")
 	    endif
@@ -718,7 +717,7 @@ function updateClumsyBimbo()
 
 		if (isBimboClumsyLegs && !isClumsyLegsRegistered)
 	    	isClumsyLegsRegistered = True
-	    	RegisterForSingleUpdateGameTime(0.015) ;walking
+	    	RegisterForSingleUpdate(2.7) ;walking
 			Debug.Notification("You feel clumsy, your hips swaying without control.")
 	    endif
 	endIf
