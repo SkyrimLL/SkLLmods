@@ -1070,11 +1070,12 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 		SendModEvent("yps-LockMakeupEvent")
 		SendModEvent("yps-PermanentMakeupEvent")
 		SendModEvent("yps-HairColorBaseEvent", "Platinum Blonde", 0xCABFB1)
-		SendModEvent("yps-FingerNailsEvent", "", 29) 
-		SendModEvent("yps-ToeNailsEvent",  "", 29)
+		SendModEvent("yps-FingerNailsEvent", "", 29)
+		SendModEvent("yps-ToeNailsEvent", "", 29)
 		SendModEvent("yps-DisableHairgrowthEvent")
 		SendModEvent("yps-DisableHairmakeoverEvent")
-		SendModEvent("yps-SetHaircutEvent", "", 13)
+
+		SetHairLength(13)
 
 		if (StorageUtil.GetIntValue(none, "ypsPubicHairEnabled") == 1)
 			SendModEvent("yps-SetPubicHairLengthEvent", "", 0)
@@ -1097,9 +1098,7 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 			If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
 				SendModEvent("yps-LipstickEvent", "Bimbo", -1)  ; SendModEvent("yps-LipstickEvent", "Red", 0xFF0000)  
 
-				if (hairLength<5)
-					SendModEvent("yps-SetHaircutEvent", "", 5)
-				endif
+				SetHairLength(5)
 			else
 				; SlaveTats.simple_add_tattoo(bimbo, "Bimbo", "Lipstick", color = 0x66FF0984, last = false, silent = true)
 				fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Lipstick", iColor = 0x66FF0984)
@@ -1116,9 +1115,7 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 				SendModEvent("yps-LipstickEvent", "Bimbo", -1)  ; SendModEvent("yps-LipstickEvent", "Red", 0xFF0000)  
 				SendModEvent("yps-EyeshadowEvent", "Bimbo", -1) ; SendModEvent("yps-EyeshadowEvent", "Black", 0x000000)   
 
-				if (hairLength<5)
-					SendModEvent("yps-SetHaircutEvent", "", 5)
-				endif
+				SetHairLength(5)
 			else
 				; SlaveTats.simple_add_tattoo(bimbo, "Bimbo", "Lipstick", color = 0x66FF0984, last = false, silent = true)
 				fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Lipstick", iColor = 0x66FF0984)
@@ -1136,9 +1133,7 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 				SendModEvent("yps-EyeshadowEvent", "Bimbo", -1) ; SendModEvent("yps-EyeshadowEvent", "Black", 0x000000)   
 				SendModEvent("yps-HairColorBaseEvent", "Platinum Blonde", 0xCABFB1)
 
-				if (hairLength<6)
-					SendModEvent("yps-SetHaircutEvent", "", 6)
-				endif
+				SetHairLength(6)
 			else
 				; SlaveTats.simple_add_tattoo(bimbo, "Bimbo", "Lipstick", color = 0x66FF0984, last = false, silent = true)
 				fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Lipstick", iColor = 0x66FF0984)
@@ -1158,9 +1153,7 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 				SendModEvent("yps-FingerNailsEvent", "", 29)
 				SendModEvent("yps-ToeNailsEvent",  "", 29)
 
-				if (hairLength<6)
-					SendModEvent("yps-SetHaircutEvent", "", 6)
-				endif
+				SetHairLength(6)
 			else
 				fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Feet Nails", iColor = 0x00FF0984 )
 				fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Hand Nails", iColor = 0x00FF0984, bRefresh = True )
@@ -1179,9 +1172,7 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 				SendModEvent("yps-ToeNailsEvent",  "", 29)
 				SendModEvent("yps-HairColorBaseEvent", "Platinum Blonde", 0xCABFB1)
 
-				if (hairLength<7)
-					SendModEvent("yps-SetHaircutEvent", "", 7)
-				endif
+				SetHairLength(7)
 			else
 				fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Feet Nails", iColor = 0x00FF0984 )
 				fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Hand Nails", iColor = 0x00FF0984, bRefresh = True )
@@ -1200,9 +1191,7 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 				SendModEvent("yps-FingerNailsEvent", "", 29)
 				SendModEvent("yps-ToeNailsEvent",  "", 29)
 
-				if (hairLength<7)
-					SendModEvent("yps-SetHaircutEvent", "", 7)
-				endif
+				SetHairLength(7)
 			else
 				fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Feet Nails", iColor = 0x00FF0984 )
 				fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Hand Nails", iColor = 0x00FF0984, bRefresh = True )
@@ -1223,9 +1212,7 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 				SendModEvent("yps-FingerNailsEvent", "", 29)
 				SendModEvent("yps-ToeNailsEvent",  "", 29)
 
-				if (hairLength<8)
-					SendModEvent("yps-SetHaircutEvent", "", 8)
-				endif
+				SetHairLength(8)
 			Endif
 
 			fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
@@ -1242,9 +1229,7 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 				SendModEvent("yps-FingerNailsEvent", "", 29)
 				SendModEvent("yps-ToeNailsEvent",  "", 29)
 
-				if (hairLength<8)
-					SendModEvent("yps-SetHaircutEvent", "", 8)
-				endif
+				SetHairLength(8)
 			Endif
 
 			fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
@@ -1261,9 +1246,7 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 				SendModEvent("yps-FingerNailsEvent", "", 29)
 				SendModEvent("yps-ToeNailsEvent",  "", 29)
 
-				if (hairLength<9)
-					SendModEvent("yps-SetHaircutEvent", "", 9)
-				endif
+				SetHairLength(9)
 			Endif
 
 			fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
@@ -1280,9 +1263,7 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 				SendModEvent("yps-FingerNailsEvent", "", 29)
 				SendModEvent("yps-ToeNailsEvent",  "", 29)
 
-				if (hairLength<9)
-					SendModEvent("yps-SetHaircutEvent", "", 9)
-				endif
+				SetHairLength(9)
 			Endif
 
 			fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
@@ -1299,29 +1280,10 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 				SendModEvent("yps-FingerNailsEvent", "", 29)
 				SendModEvent("yps-ToeNailsEvent",  "", 29)
 
-				if (hairLength<10)
-					SendModEvent("yps-SetHaircutEvent", "", 10)
-				endif
+				SetHairLength(10)
 			EndIf
 
-			;butt
-			fButtMin = StorageUtil.GetFloatValue(bimbo, "_SLH_fButtMin")
-			fButtMax = StorageUtil.GetFloatValue(bimbo, "_SLH_fButtMax")
-			fButtActual = StorageUtil.GetFloatValue(bimbo, "_SLH_fButt")
-			if (fButtActual < fButtMax )
-				Debug.SendAnimationEvent(bimbo, "BleedOutStart")
-				SLH_Control.playRandomSound(bimbo)
-
-				fButtActual = 0.1 + fButtActual * 1.15 ;now with 15% more butt!
-				if fButtActual > fButtMax
-					fButtActual = fButtMax
-				endif
-				StorageUtil.SetFloatValue(bimbo, "_SLH_fButt", fButtActual ) 
-				Bimbo.SendModEvent("SLHRefresh")
-
-				Utility.Wait(1.0)
-				Debug.SendAnimationEvent(bimbo, "BleedOutStop")
-			endif
+			IncreaseButtSize()
 
 			fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
 		;level 12: bigger butt, heel hubbled
@@ -1337,29 +1299,10 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 				SendModEvent("yps-FingerNailsEvent", "", 29)
 				SendModEvent("yps-ToeNailsEvent",  "", 29)
 
-				if (hairLength<11)
-					SendModEvent("yps-SetHaircutEvent", "", 11)
-				endif
+				SetHairLength(11)
 			EndIf
 
-			;butt
-			fButtMin = StorageUtil.GetFloatValue(bimbo, "_SLH_fButtMin")
-			fButtMax = StorageUtil.GetFloatValue(bimbo, "_SLH_fButtMax")
-			fButtActual = StorageUtil.GetFloatValue(bimbo, "_SLH_fButt")
-			if (fButtActual < fButtMax )
-				Debug.SendAnimationEvent(bimbo, "BleedOutStart")
-				SLH_Control.playRandomSound(bimbo)
-
-				fButtActual = 0.1 + fButtActual * 1.15 ;now with 15% more butt!
-				if fButtActual > fButtMax
-					fButtActual = fButtMax
-				endif
-				StorageUtil.SetFloatValue(bimbo, "_SLH_fButt", fButtActual ) 
-				Bimbo.SendModEvent("SLHRefresh")
-
-				Utility.Wait(1.0)
-				Debug.SendAnimationEvent(bimbo, "BleedOutStop")
-			endif
+			IncreaseButtSize()
 
 			fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
 			isBimboClumsyLegs = true
@@ -1378,30 +1321,11 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 				SendModEvent("yps-FingerNailsEvent", "", 29)
 				SendModEvent("yps-ToeNailsEvent",  "", 29)
 
-				if (hairLength<12)
-					SendModEvent("yps-SetHaircutEvent", "", 12)
-				endif
+				SetHairLength(12)
 			EndIf
 
-			;butt
-			fButtMin = StorageUtil.GetFloatValue(bimbo, "_SLH_fButtMin")
-			fButtMax = StorageUtil.GetFloatValue(bimbo, "_SLH_fButtMax")
-			fButtActual = StorageUtil.GetFloatValue(bimbo, "_SLH_fButt")
-			if (fButtActual < fButtMax )
-				Debug.SendAnimationEvent(bimbo, "BleedOutStart")
-				SLH_Control.playRandomSound(bimbo)
+			IncreaseButtSize()
 
-				fButtActual = 0.1 + fButtActual * 1.15 ;now with 15% more butt!
-				if fButtActual > fButtMax
-					fButtActual = fButtMax
-				endif
-				StorageUtil.SetFloatValue(bimbo, "_SLH_fButt", fButtActual ) 
-				Bimbo.SendModEvent("SLHRefresh")
-
-				Utility.Wait(1.0)
-				Debug.SendAnimationEvent(bimbo, "BleedOutStop")
-			endif
-				
 			fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
 		;level 14: nipple piercings
 		Elseif (transformationLevel == 14)
@@ -1416,11 +1340,9 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 				SendModEvent("yps-FingerNailsEvent", "", 29)
 				SendModEvent("yps-ToeNailsEvent",  "", 29)
 
-				if (hairLength<13)
-					SendModEvent("yps-SetHaircutEvent", "", 13)
-				endif
+				SetHairLength(13)
 			EndIf
-				
+
 			fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
 		;level 15: clit piercing
 		Elseif (transformationLevel == 15)
@@ -1434,7 +1356,8 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 				SendModEvent("yps-HairColorBaseEvent", "Platinum Blonde", 0xCABFB1)
 				SendModEvent("yps-FingerNailsEvent", "", 29)
 				SendModEvent("yps-ToeNailsEvent",  "", 29)
-				SendModEvent("yps-SetHaircutEvent", "", 13)
+
+				SetHairLength(13)
 			EndIf
 
 			fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.5)
@@ -1468,6 +1391,36 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 	;check why, WHY, WHYYYY the honey hello dialog disappears when i save the esp!!
 	;check what happens after the player is cured
 endfunction
+
+;Separated for convenience
+Function SetHairLength(Int hairLength)
+	If StorageUtil.GetIntValue(BimboActor, "_SLH_iUseHair") == 1
+		if StorageUtil.GetIntValue(none, "YpsCurrentHairLengthStage") < hairLength
+			SendModEvent("yps-SetHaircutEvent", "", hairLength)
+		endif
+	EndIf
+EndFunction
+
+;Separated for convenience
+Function IncreaseButtSize()
+	Float fButtMin = StorageUtil.GetFloatValue(BimboActor, "_SLH_fButtMin")
+	Float fButtMax = StorageUtil.GetFloatValue(BimboActor, "_SLH_fButtMax")
+	Float fButtActual = StorageUtil.GetFloatValue(BimboActor, "_SLH_fButt")
+	if (fButtActual < fButtMax)
+		Debug.SendAnimationEvent(BimboActor, "BleedOutStart")
+		SLH_Control.playRandomSound(BimboActor)
+
+		fButtActual = 0.1 + fButtActual * 1.15 ;now with 15% more butt!
+		if fButtActual > fButtMax
+			fButtActual = fButtMax
+		endif
+		StorageUtil.SetFloatValue(BimboActor, "_SLH_fButt", fButtActual)
+		BimboActor.SendModEvent("SLHRefresh")
+
+		Utility.Wait(1.0)
+		Debug.SendAnimationEvent(BimboActor, "BleedOutStop")
+	endif
+EndFunction
 
 Function debugTrace(string traceMsg)
 	if (StorageUtil.GetIntValue(none, "_SLH_debugTraceON")==1)
