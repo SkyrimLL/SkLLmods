@@ -40,16 +40,10 @@ Actor BimboActor
 
 Int ibimboTransformDate = -1
 int iGameDateLastCheck
-int daysSinceEnslavement
-int iDaysSinceLastCheck
-int iDaysPassed
 
-Bool isUpdating = False
 Int iCommentThrottle = 0
 
 Bool isMaleToBimbo
-Float fSchlongMin
-Float fSchlongMax
 
 ;===========================================================================
 ;mod variables
@@ -141,9 +135,10 @@ Event OnUpdateGameTime()
 		Return
 	EndIf
 
-	iDaysPassed = Game.QueryStat("Days Passed")
-	daysSinceEnslavement = iDaysPassed - ibimboTransformDate
-	iDaysSinceLastCheck = iDaysPassed - iGameDateLastCheck
+	Int transformationLevel = StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformLevel", 1)
+	Int iDaysPassed = Game.QueryStat("Days Passed")
+	Int daysSinceEnslavement = iDaysPassed - ibimboTransformDate
+	Int iDaysSinceLastCheck = iDaysPassed - iGameDateLastCheck
 
 	StorageUtil.SetIntValue(BimboActor, "_SLH_bimboTransformGameDays", daysSinceEnslavement)
 	StorageUtil.SetIntValue(BimboActor, "_SLH_iAllowBimboThoughts", 1)
@@ -151,7 +146,7 @@ Event OnUpdateGameTime()
 	If iDaysSinceLastCheck >= 1
 		Debug.Trace( "[SLH] Bimbo status update - Days transformed: " + daysSinceEnslavement )
 
-		bimboDailyProgressiveTransformation(BimboActor, GV_isTG.GetValue() == 1)
+		bimboDailyProgressiveTransformation(daysSinceEnslavement, transformationLevel)
 
 		If daysSinceEnslavement < 16
 			if (StorageUtil.GetIntValue(BimboActor, "_SLH_allowBimboRace")==0)
@@ -1004,61 +999,49 @@ EndFunction
 ;
 ;
 ;===========================================================================
-function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
-	int transformationDays = StorageUtil.GetIntValue(bimbo, "_SLH_bimboTransformGameDays")
-	int transformationCycle = transformationDays/16
-	int transformationLevel
+function bimboDailyProgressiveTransformation(int transformationDays, Int transformationLevel)
+	Int transformationCycle = transformationDays/16; 1 cycle every 16 days
 
-	if (StorageUtil.GetIntValue(bimbo, "_SLH_bimboTransformLevel")<16)
-		transformationLevel= transformationDays - (transformationCycle * 16)
-		StorageUtil.SetIntValue(bimbo, "_SLH_bimboTransformLevel",transformationLevel)
+	Int iBimboHairColor = StorageUtil.GetIntValue(BimboActor, "_SLH_iBimboHairColor"); 0xCABFB1
+	isBimboPermanent = StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformLocked") as Bool
+
+	if (StorageUtil.GetIntValue(BimboActor, "_SD_iAliciaHair") == 1)
+		iBimboHairColor = StorageUtil.GetIntValue(BimboActor, "_SLH_iSuccubusHairColor")
+		StorageUtil.SetStringValue(BimboActor, "_SLH_sHairColorName", "Pink")
 	else
-		transformationLevel= StorageUtil.GetIntValue(bimbo, "_SLH_bimboTransformLevel")
-	endif
+		StorageUtil.SetStringValue(BimboActor, "_SLH_sHairColorName", "Platinum Blonde")
+	EndIf
 
-	StorageUtil.SetIntValue(bimbo, "_SLH_bimboTransformCycle",transformationCycle)
+	StorageUtil.SetIntValue(BimboActor, "_SLH_bimboTransformCycle", transformationCycle)
+	StorageUtil.SetIntValue(BimboActor, "_SLH_iHairColor", iBimboHairColor)
 
-	int hairLength = StorageUtil.GetIntValue(none, "YpsCurrentHairLengthStage")
-	isBimboPermanent = StorageUtil.GetIntValue(bimbo, "_SLH_bimboTransformLocked") as Bool
+	fctHormones.modHormoneLevel(BimboActor, "Growth", 5.0 ) ; make breasts and butt larger
+	fctHormones.modHormoneLevel(BimboActor, "Bimbo", 5.0 ) ; make breasts and butt larger
+	fctHormones.modHormoneLevel(BimboActor, "Metabolism", -5.0 ) ; make breasts and butt larger
 
-	debugTrace(" bimbo transformation days: " + transformationDays)
-	debugTrace(" bimbo transformation level: " + transformationLevel)
-	debugTrace(" bimbo transformation cycle: " + transformationCycle)
-	debugTrace(" bimbo hair length: " + hairLength)
+	If StorageUtil.GetIntValue(none, "_SLH_debugTraceON") == 1
+		Debug.Trace("[SLH_QST_BimboAlias] bimbo transformation days: " + transformationDays)
+		Debug.Trace("[SLH_QST_BimboAlias] bimbo transformation level: " + transformationLevel)
+		Debug.Trace("[SLH_QST_BimboAlias] bimbo transformation cycle: " + transformationCycle)
+		Debug.Trace("[SLH_QST_BimboAlias] bimbo hair color: " + iBimboHairColor)
+	EndIf
 
 	;no tg = always female, never has a schlong
 	;tg:
 	; - female + tg = schlong enlarges every day, permanent on day 5
 	; - male + tg = schlong shrinks every day, lost on day 5
 
-	; Int iBimboHairColor = Math.LeftShift(255, 24) + Math.LeftShift(92, 16) + Math.LeftShift(80, 8) + 80
-	Int iBimboHairColor = StorageUtil.GetIntValue(BimboActor, "_SLH_iBimboHairColor") ; Math.LeftShift(92, 16) + Math.LeftShift(80, 8) + 80
-
-	if (StorageUtil.GetIntValue(BimboActor, "_SD_iAliciaHair")== 1 )  
-		iBimboHairColor = StorageUtil.GetIntValue(BimboActor, "_SLH_iSuccubusHairColor") ; Math.LeftShift(247, 16) + Math.LeftShift(163, 8) + 240  ; Pink
-		StorageUtil.SetStringValue(BimboActor, "_SLH_sHairColorName", "Pink" ) 
-	else
-		StorageUtil.SetStringValue(BimboActor, "_SLH_sHairColorName", "Platinum Blonde" ) 
-	EndIf
-
-	StorageUtil.SetIntValue(BimboActor, "_SLH_iHairColor", iBimboHairColor )
-	debugTrace(" 	bimbo hair color: " + iBimboHairColor)
-
-	fctHormones.modHormoneLevel(BimboActor, "Growth", 5.0 ) ; make breasts and butt larger
-	fctHormones.modHormoneLevel(BimboActor, "Bimbo", 5.0 ) ; make breasts and butt larger
-	fctHormones.modHormoneLevel(BimboActor, "Metabolism", -5.0 ) ; make breasts and butt larger
-
 	If isBimboPermanent
 		Debug.Notification("I need more cocks! *giggle*")
-		SLH_Control.playMoan(bimbo)
+		SLH_Control.playMoan(BimboActor)
 		SendModEvent("yps-HairColorBaseEvent", "Platinum Blonde", 0xCABFB1)
 	ElseIf StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformFinal") == 1
-		RemoveBimboTattoo(bimbo, "Bimbo", true, true)
-		BimboTattoo(bimbo,"Bimbo","Tramp Stamp",false,true,true)
-		BimboTattoo(bimbo,"Bimbo","Belly",false,true,true)
-		BimboTattoo(bimbo,"Bimbo","Tramp Stamp Upper",false,true,true)
-		BimboTattoo(bimbo,"Bimbo","Pubic Tattoo",false,true,true)
-		BimboTattoo(bimbo,"Bimbo","Permanent Bimbo",true,true,true)
+		RemoveBimboTattoo(BimboActor, "Bimbo", true, true)
+		BimboTattoo(BimboActor,"Bimbo","Tramp Stamp",false,true,true)
+		BimboTattoo(BimboActor,"Bimbo","Belly",false,true,true)
+		BimboTattoo(BimboActor,"Bimbo","Tramp Stamp Upper",false,true,true)
+		BimboTattoo(BimboActor,"Bimbo","Pubic Tattoo",false,true,true)
+		BimboTattoo(BimboActor,"Bimbo","Permanent Bimbo",true,true,true)
 
 		SendModEvent("yps-LipstickEvent", "Bimbo", -1)  ; SendModEvent("yps-LipstickEvent", "Red", 0xFF0000)  
 		SendModEvent("yps-EyeshadowEvent", "Bimbo", -1) ; SendModEvent("yps-EyeshadowEvent", "Black", 0x000000)   
@@ -1080,133 +1063,136 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 		endif
 
 		isBimboPermanent = true
-		fctPolymorph.bimboLockedON(bimbo)
+		fctPolymorph.bimboLockedON(BimboActor)
 
 		Debug.Messagebox("Somewhere in the back of your foggy, lust-addled mind you register the finality of your unfortunate predicament. What little remains of your lucid psyche screams in horror as the curse weaves into every fibre of your perversely modified body, its silhouette bearing little resemblance to your former self. The new you is completely tailor made for the singular purpose of pleasuring men. You moan in ecstacy as your bright gaudy makeup, your slutty erotic tattoos, and your lewd glittering piercings all tingle, then bind to your flesh, becoming permanent fixtures to your bimbo form, irrevocably marking your body as that of a modified, carnal, and peversely erotic masturbatory aid.")
 		Debug.Messagebox("The magical tattoo needles, which you've become so familiar with during your metamorphosis, return one final time to commemorate the permanence of your transformation. You writhe and moan in pleasure as the needles buzz over your smooth, hairless mound and permanently deposit pigments that form your final, obscene modification. Then, just as swiftly, the needles disappear, leaving behind a bright, pink tattoo that seems to shimmer above your soft, slick folds, irrevocably marking you as a PERMANENT BIMBO FUCKTOY, and advertising both your availability and eagerness to service your next sexual partner.")
 	ElseIf transformationLevel < 16
+		; Increment level for next update
+		StorageUtil.SetIntValue(BimboActor, "_SLH_bimboTransformLevel", transformationLevel+1)
+
 		;level 1: lipstick
 		if (transformationLevel == 1)
 			Debug.Notification("You feel a little tingle on your lips.")
-			SLH_Control.playChuckle(bimbo)
+			SLH_Control.playChuckle(BimboActor)
 
 			If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
 				SendModEvent("yps-LipstickEvent", "Bimbo", -1)  ; SendModEvent("yps-LipstickEvent", "Red", 0xFF0000)  
 				SetHairLength(5)
 			else
-				fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Lipstick", iColor = 0x66FF0984)
+				fctColor.sendSlaveTatModEvent(BimboActor, "Bimbo","Lipstick", iColor = 0x66FF0984)
 			Endif
 
-			fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
+			fctBodyshape.alterBodyByPercent(BimboActor, "Breast", 0.3)
 		;level 2: eyeshadow
 		Elseif (transformationLevel == 2)
 			Debug.Notification("You feel a little tingle on your eyelids.")
-			SLH_Control.playChuckle(bimbo)
+			SLH_Control.playChuckle(BimboActor)
 
 			If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
 				SendModEvent("yps-EyeshadowEvent", "Bimbo", -1) ; SendModEvent("yps-EyeshadowEvent", "Black", 0x000000)   
 				SetHairLength(5)
 			else
-				fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Eye Shadow", iColor = 0x99000000, bRefresh = True)
+				fctColor.sendSlaveTatModEvent(BimboActor, "Bimbo","Eye Shadow", iColor = 0x99000000, bRefresh = True)
 			Endif
 
-			fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
+			fctBodyshape.alterBodyByPercent(BimboActor, "Breast", 0.3)
 		;level 3: hair
 		Elseif (transformationLevel == 3)
 			Debug.Notification("You feel a little tingle on your scalp.")
-			SLH_Control.playChuckle(bimbo)
+			SLH_Control.playChuckle(BimboActor)
 
 			If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
 				SendModEvent("yps-HairColorBaseEvent", "Platinum Blonde", 0xCABFB1)
 				SetHairLength(6)
 			Endif
 
-			fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
+			fctBodyshape.alterBodyByPercent(BimboActor, "Breast", 0.3)
 		;level 4, fingernails
 		Elseif (transformationLevel == 4)
 			Debug.Notification("Your nails are turning into a slutty shade of pink")
-			SLH_Control.playGiggle(bimbo)
+			SLH_Control.playGiggle(BimboActor)
 
 			If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
 				SendModEvent("yps-FingerNailsEvent", "", 29)
 				SetHairLength(6)
 			else
-				fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Hand Nails", iColor = 0x00FF0984, bRefresh = True )
+				fctColor.sendSlaveTatModEvent(BimboActor, "Bimbo","Hand Nails", iColor = 0x00FF0984, bRefresh = True )
 			Endif
 
-			fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
+			fctBodyshape.alterBodyByPercent(BimboActor, "Breast", 0.3)
 		;level 5, toenails
 		Elseif (transformationLevel == 5)
 			Debug.Notification("Your toenails are turning into glimmery shade of pink")
-			SLH_Control.playGiggle(bimbo)
+			SLH_Control.playGiggle(BimboActor)
 
 			If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
 				SendModEvent("yps-ToeNailsEvent",  "", 29)
 				SetHairLength(7)
 			else
-				fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Feet Nails", iColor = 0x00FF0984 )
+				fctColor.sendSlaveTatModEvent(BimboActor, "Bimbo","Feet Nails", iColor = 0x00FF0984 )
 			Endif
 
-			fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
+			fctBodyshape.alterBodyByPercent(BimboActor, "Breast", 0.3)
 		;level 6, weak body (can drop weapons when hit)
 		Elseif (transformationLevel == 6)
 			Debug.Notification("Your body feels weak and your chest feels tight.")
-			SLH_Control.playGiggle(bimbo)
+			SLH_Control.playGiggle(BimboActor)
 
 			If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
 				SetHairLength(7)
 			Endif
 
-			fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
+			fctBodyshape.alterBodyByPercent(BimboActor, "Breast", 0.3)
 			isBimboClumsyHands = true
 		;level 7: earrings
 		Elseif (transformationLevel == 7)
 			Debug.Notification("You yelp in pain as your ears are suddenly pierced")
-			SLH_Control.playMoan(bimbo)
+			SLH_Control.playMoan(BimboActor)
 
 			If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
 				SendModEvent("yps-PiercingEvent", "Mr Needle", 1)
 				SetHairLength(8)
 			Endif
 
-			fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
+			fctBodyshape.alterBodyByPercent(BimboActor, "Breast", 0.3)
 		;level 8: back tattoo
 		Elseif (transformationLevel == 8)
 			Debug.Notification("You writhe in discomfort as invisible tattoo needles ink your back.")
-			BimboTattoo(bimbo,"Bimbo","Tramp Stamp",true,true,false)
-			SLH_Control.playMoan(bimbo)
+			BimboTattoo(BimboActor,"Bimbo","Tramp Stamp",true,true,false)
+			SLH_Control.playMoan(BimboActor)
 
 			If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
 				SetHairLength(8)
 			Endif
 
-			fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
+			fctBodyshape.alterBodyByPercent(BimboActor, "Breast", 0.3)
 		;level 9: upper back tattoo
 		Elseif (transformationLevel == 9)
 			Debug.Notification("You writhe in discomfort as invisible tattoo needles continue inking your back.")
-			BimboTattoo(bimbo,"Bimbo","Tramp Stamp Upper",true,true,false)
-			SLH_Control.playMoan(bimbo)
+			BimboTattoo(BimboActor,"Bimbo","Tramp Stamp Upper",true,true,false)
+			SLH_Control.playMoan(BimboActor)
 
 			If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
 				SetHairLength(9)
 			Endif
 
-			fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
+			fctBodyshape.alterBodyByPercent(BimboActor, "Breast", 0.3)
 		;level 10: belly tattoo
 		Elseif (transformationLevel == 10)
 			Debug.Notification("You shudder in pained pleasure as the invisible tattoo needles mark your belly.")
-			BimboTattoo(bimbo,"Bimbo","Belly",true,true,false)
-			SLH_Control.playMoan(bimbo)
+			BimboTattoo(BimboActor,"Bimbo","Belly",true,true,false)
+			SLH_Control.playMoan(BimboActor)
 
 			If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
 				SetHairLength(9)
 			Endif
 
-			fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
+			fctBodyshape.alterBodyByPercent(BimboActor, "Breast", 0.3)
 		;level 11: navel ring, bigger butt
 		Elseif (transformationLevel == 11)
 			Debug.Notification("You yelp in pain as an invisible needle pierces your navel.")
-			SLH_Control.playMoan(bimbo)
+			SLH_Control.playMoan(BimboActor)
 
 			If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
 				SendModEvent("yps-PiercingEvent", "Mr Needle", 9)
@@ -1215,11 +1201,11 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 
 			IncreaseButtSize()
 
-			fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
+			fctBodyshape.alterBodyByPercent(BimboActor, "Breast", 0.3)
 		;level 12: bigger butt, heel hubbled
 		Elseif (transformationLevel == 12)
 			Debug.Notification("Your feet tingle and deform into a slutty high-heeled arch")
-			SLH_Control.playMoan(bimbo)
+			SLH_Control.playMoan(BimboActor)
 
 			If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
 				SendModEvent("yps-ArchedFeetEvent")
@@ -1228,14 +1214,14 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 
 			IncreaseButtSize()
 
-			fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
+			fctBodyshape.alterBodyByPercent(BimboActor, "Breast", 0.3)
 			isBimboClumsyLegs = true
 		;level 13: pubic tattoo, bigger butt
 		Elseif (transformationLevel == 13)
 			if !fctUtil.isMale(BimboActor) ;no schlong on the way
 				Debug.Notification("You moan in surprise as the invisible tattoo needles work their way down your smooth mound.")
-				BimboTattoo(bimbo,"Bimbo","Pubic Tattoo",true,true,false)
-				SLH_Control.playMoan(bimbo)
+				BimboTattoo(BimboActor,"Bimbo","Pubic Tattoo",true,true,false)
+				SLH_Control.playMoan(BimboActor)
 			endif
 
 			If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
@@ -1244,31 +1230,31 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 
 			IncreaseButtSize()
 
-			fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
+			fctBodyshape.alterBodyByPercent(BimboActor, "Breast", 0.3)
 		;level 14: nipple piercings
 		Elseif (transformationLevel == 14)
 			Debug.Notification("You moan in pained pleasure as thick, invisible needles pierce your swollen nipples.")
-			SLH_Control.playMoan(bimbo)
+			SLH_Control.playMoan(BimboActor)
 
 			If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
 				SendModEvent("yps-PiercingEvent", "Mr Needle", 10)
 				SetHairLength(13)
 			EndIf
 
-			fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
+			fctBodyshape.alterBodyByPercent(BimboActor, "Breast", 0.3)
 		;level 15: clit piercing
 		Elseif (transformationLevel == 15)
 			Debug.Notification("You writhe and spasm uncontrollably as a thick, invisible needle slowly pierces your vulnerable clit.")
-			SLH_Control.playMoan(bimbo)
+			SLH_Control.playMoan(BimboActor)
 
 			If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
 				SendModEvent("yps-PiercingEvent", "Mr Needle", 11)
 				SetHairLength(13)
 			EndIf
 
-			fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.5)
+			fctBodyshape.alterBodyByPercent(BimboActor, "Breast", 0.5)
 			isBimboFrailBody = true
-			fctPolymorph.bimboFinalON(bimbo)
+			fctPolymorph.bimboFinalON(BimboActor)
 		endif
 	EndIf
 	;IDEAS
