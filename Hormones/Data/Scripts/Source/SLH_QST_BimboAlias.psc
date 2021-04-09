@@ -114,6 +114,7 @@ Event OnUpdateGameTime()
 	if (StorageUtil.GetIntValue(BimboActor, "_SLH_iBimbo")==0) || (StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") == -1)
 		Return
 	Endif
+
 	updateClumsyBimbo() ;[mod] clumsy bimbo
 
 	; Compatiblity with Parasites - prevent update when full body armor is worn
@@ -1004,16 +1005,9 @@ EndFunction
 ;
 ;===========================================================================
 function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
- 	Actor PlayerActor = Game.GetPlayer()
-	; debugTrace(" bimbo progressive transformation: " + iDaysPassed)
-	if (bimbo == None)
-		return
-	endIf
-
-	;bimbo = Game.GetPlayer() 
 	int transformationDays = StorageUtil.GetIntValue(bimbo, "_SLH_bimboTransformGameDays")
 	int transformationCycle = transformationDays/16
-	int transformationLevel 
+	int transformationLevel
 
 	if (StorageUtil.GetIntValue(bimbo, "_SLH_bimboTransformLevel")<16)
 		transformationLevel= transformationDays - (transformationCycle * 16)
@@ -1027,7 +1021,6 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 	int hairLength = StorageUtil.GetIntValue(none, "YpsCurrentHairLengthStage")
 	isBimboPermanent = StorageUtil.GetIntValue(bimbo, "_SLH_bimboTransformLocked") as Bool
 
-	bool showSchlongMessage = true
 	float fButtMax
 	float fButtActual
 	float fButtMin
@@ -1042,546 +1035,413 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 	; - female + tg = schlong enlarges every day, permanent on day 5
 	; - male + tg = schlong shrinks every day, lost on day 5
 
-	if !isTG
-		showSchlongMessage = false
-	endif
-
 	; Int iBimboHairColor = Math.LeftShift(255, 24) + Math.LeftShift(92, 16) + Math.LeftShift(80, 8) + 80
-	Int iBimboHairColor = StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimboHairColor") ; Math.LeftShift(92, 16) + Math.LeftShift(80, 8) + 80
+	Int iBimboHairColor = StorageUtil.GetIntValue(BimboActor, "_SLH_iBimboHairColor") ; Math.LeftShift(92, 16) + Math.LeftShift(80, 8) + 80
 
 	if (StorageUtil.GetIntValue(BimboActor, "_SD_iAliciaHair")== 1 )  
-		iBimboHairColor = StorageUtil.GetIntValue(PlayerActor, "_SLH_iSuccubusHairColor") ; Math.LeftShift(247, 16) + Math.LeftShift(163, 8) + 240  ; Pink
+		iBimboHairColor = StorageUtil.GetIntValue(BimboActor, "_SLH_iSuccubusHairColor") ; Math.LeftShift(247, 16) + Math.LeftShift(163, 8) + 240  ; Pink
 		StorageUtil.SetStringValue(BimboActor, "_SLH_sHairColorName", "Pink" ) 
-
 	else
 		StorageUtil.SetStringValue(BimboActor, "_SLH_sHairColorName", "Platinum Blonde" ) 
 	EndIf
 
 	StorageUtil.SetIntValue(BimboActor, "_SLH_iHairColor", iBimboHairColor )  
 	debugTrace(" 	bimbo hair color: " + iBimboHairColor)
-	if (transformationDays>15) 
-		SendModEvent("yps-HairColorBaseEvent", "Platinum Blonde", 0xCABFB1)
-	endif
-	; BimboActor.SendModEvent("SLHRefreshColors")
 
 	fctHormones.modHormoneLevel(BimboActor, "Growth", 5.0 ) ; make breasts and butt larger
 	fctHormones.modHormoneLevel(BimboActor, "Bimbo", 5.0 ) ; make breasts and butt larger
 	fctHormones.modHormoneLevel(BimboActor, "Metabolism", -5.0 ) ; make breasts and butt larger
 
-	;level 1: lipstick
-	if (transformationLevel == 1)  
-		Debug.Notification("You feel a little tingle on your lips.")
-		SLH_Control.playChuckle(bimbo)
-			
-		If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
-			;If (!isBimboPermanent)
-				SendModEvent("yps-LipstickEvent", "Bimbo", -1)  ; SendModEvent("yps-LipstickEvent", "Red", 0xFF0000)  
-			
-					
-				if (hairLength<5)
-					SendModEvent("yps-SetHaircutEvent", "", 5)
-				endif
-			;Endif
-		else
-			; SlaveTats.simple_add_tattoo(bimbo, "Bimbo", "Lipstick", color = 0x66FF0984, last = false, silent = true)
-			fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Lipstick", iColor = 0x66FF0984)
-			fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Eye Shadow", iColor = 0x99000000, bRefresh = True)
-		Endif
-
-		fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
-	endif
-		
-	;level 2: eyeshadow
-	if (transformationLevel == 2)  
-		Debug.Notification("You feel a little tingle on your eyelids.")
-		SLH_Control.playChuckle(bimbo)
-			
-			
-		If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
-			;If (!isBimboPermanent) 
-				SendModEvent("yps-LipstickEvent", "Bimbo", -1)  ; SendModEvent("yps-LipstickEvent", "Red", 0xFF0000)  
-				SendModEvent("yps-EyeshadowEvent", "Bimbo", -1) ; SendModEvent("yps-EyeshadowEvent", "Black", 0x000000)   
-
-				
-				if (hairLength<5)
-					SendModEvent("yps-SetHaircutEvent", "", 5)
-				endif
-			;Endif
-		else
-			; SlaveTats.simple_add_tattoo(bimbo, "Bimbo", "Lipstick", color = 0x66FF0984, last = false, silent = true)
-			fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Lipstick", iColor = 0x66FF0984)
-			fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Eye Shadow", iColor = 0x99000000, bRefresh = True)
-		Endif
-
-		fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
-	endif
-		
-	;level 3: hair
-	if (transformationLevel == 3)  
-		Debug.Notification("You feel a little tingle on your scalp.")
-		SLH_Control.playChuckle(bimbo)
-
-		If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
-			;If (!isBimboPermanent) 
-				SendModEvent("yps-LipstickEvent", "Bimbo", -1)  ; SendModEvent("yps-LipstickEvent", "Red", 0xFF0000)  
-				SendModEvent("yps-EyeshadowEvent", "Bimbo", -1) ; SendModEvent("yps-EyeshadowEvent", "Black", 0x000000)   
-				SendModEvent("yps-HairColorBaseEvent", "Platinum Blonde", 0xCABFB1)
-					
-				if (hairLength<6)
-					SendModEvent("yps-SetHaircutEvent", "", 6)
-				endif
-			;Endif
-		else
-			; SlaveTats.simple_add_tattoo(bimbo, "Bimbo", "Lipstick", color = 0x66FF0984, last = false, silent = true)
-			fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Lipstick", iColor = 0x66FF0984)
-			fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Eye Shadow", iColor = 0x99000000, bRefresh = True)
-		Endif
-
-		fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
-	endif
-
-	;level 4, fingernails
-	if (transformationLevel == 4)
-		Debug.Notification("Your nails are turning into a slutty shade of pink")
-		SLH_Control.playGiggle(bimbo)
-
-		If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
-			;If (!isBimboPermanent) 
-				SendModEvent("yps-LipstickEvent", "Bimbo", -1)  ; SendModEvent("yps-LipstickEvent", "Red", 0xFF0000)  
-				SendModEvent("yps-EyeshadowEvent", "Bimbo", -1) ; SendModEvent("yps-EyeshadowEvent", "Black", 0x000000)   
-
-				SendModEvent("yps-HairColorBaseEvent", "Platinum Blonde", 0xCABFB1)
-				
-				if (!isBimboPermanent)
-					SendModEvent("yps-FingerNailsEvent", "", 29) 
-					SendModEvent("yps-ToeNailsEvent",  "", 29)		
-				endif				
-
-				if (hairLength<6)
-					SendModEvent("yps-SetHaircutEvent", "", 6)
-				endif
-			;Endif
-		else
-			fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Feet Nails", iColor = 0x00FF0984 )
-			fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Hand Nails", iColor = 0x00FF0984, bRefresh = True )
-		Endif
-
-		fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
-	endif
-		
-	;level 5, toenails
-	if (transformationLevel == 5)
-		Debug.Notification("Your toenails are turning into glimmery shade of pink")
-		SLH_Control.playGiggle(bimbo)
-
-		If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
-			;If (!isBimboPermanent) 
-				SendModEvent("yps-LipstickEvent", "Bimbo", -1)  ; SendModEvent("yps-LipstickEvent", "Red", 0xFF0000)  
-				SendModEvent("yps-EyeshadowEvent", "Bimbo", -1) ; SendModEvent("yps-EyeshadowEvent", "Black", 0x000000)   
-				
-				if (!isBimboPermanent)
-					SendModEvent("yps-FingerNailsEvent", "", 29) 
-					SendModEvent("yps-ToeNailsEvent",  "", 29)		
-				endif				
-
- 
-				SendModEvent("yps-HairColorBaseEvent", "Platinum Blonde", 0xCABFB1)
-
-				if (hairLength<7)
-					SendModEvent("yps-SetHaircutEvent", "", 7)
-				endif
-			;Endif
-		else
-			fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Feet Nails", iColor = 0x00FF0984 )
-			fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Hand Nails", iColor = 0x00FF0984, bRefresh = True )
-		Endif
-
-		fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
-	endif
-		
-	;level 6, weak body (can drop weapons when hit)
-	if (transformationLevel == 6)
-		Debug.Notification("Your body feels weak and your chest feels tight.")
-		SLH_Control.playGiggle(bimbo)
-
-		If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
-			;If (!isBimboPermanent) 
-				SendModEvent("yps-LipstickEvent", "Bimbo", -1)  ; SendModEvent("yps-LipstickEvent", "Red", 0xFF0000)  
-				SendModEvent("yps-EyeshadowEvent", "Bimbo", -1) ; SendModEvent("yps-EyeshadowEvent", "Black", 0x000000)   
-
-				SendModEvent("yps-HairColorBaseEvent", "Platinum Blonde", 0xCABFB1)
-				
-				if (!isBimboPermanent)
-					SendModEvent("yps-FingerNailsEvent", "", 29) 
-					SendModEvent("yps-ToeNailsEvent",  "", 29)		
-				endif				
-			
-
-				if (hairLength<7)
-					SendModEvent("yps-SetHaircutEvent", "", 7)
-				endif
-			;Endif
-		else
-			fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Feet Nails", iColor = 0x00FF0984 )
-			fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Hand Nails", iColor = 0x00FF0984, bRefresh = True )
-		Endif
-
-		fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
-		isBimboClumsyHands = true
-	endif
-		
-	;level 7: earrings
-	if (transformationLevel == 7)
-		Debug.Notification("You yelp in pain as your ears are suddenly pierced")
+	If isBimboPermanent
+		Debug.Notification("I need more cocks! *giggle*")
 		SLH_Control.playMoan(bimbo)
+		SendModEvent("yps-HairColorBaseEvent", "Platinum Blonde", 0xCABFB1)
+	ElseIf StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformFinal") == 1
+		RemoveBimboTattoo(bimbo, "Bimbo", true, true)
+		BimboTattoo(bimbo,"Bimbo","Tramp Stamp",false,true,true)
+		BimboTattoo(bimbo,"Bimbo","Belly",false,true,true)
+		BimboTattoo(bimbo,"Bimbo","Tramp Stamp Upper",false,true,true)
+		BimboTattoo(bimbo,"Bimbo","Pubic Tattoo",false,true,true)
+		BimboTattoo(bimbo,"Bimbo","Permanent Bimbo",true,true,true)
 
-		If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
-			;If (!isBimboPermanent) 
+		SendModEvent("yps-LipstickEvent", "Bimbo", -1)  ; SendModEvent("yps-LipstickEvent", "Red", 0xFF0000)  
+		SendModEvent("yps-EyeshadowEvent", "Bimbo", -1) ; SendModEvent("yps-EyeshadowEvent", "Black", 0x000000)   
+		SendModEvent("yps-DisableSmudgingEvent")
+		SendModEvent("yps-LockMakeupEvent")
+		SendModEvent("yps-PermanentMakeupEvent")
+		SendModEvent("yps-HairColorBaseEvent", "Platinum Blonde", 0xCABFB1)
+		SendModEvent("yps-FingerNailsEvent", "", 29) 
+		SendModEvent("yps-ToeNailsEvent",  "", 29)
+		SendModEvent("yps-DisableHairgrowthEvent")
+		SendModEvent("yps-DisableHairmakeoverEvent")
+		SendModEvent("yps-SetHaircutEvent", "", 13)
+
+		if (StorageUtil.GetIntValue(none, "ypsPubicHairEnabled") == 1)
+			SendModEvent("yps-SetPubicHairLengthEvent", "", 0)
+		Endif
+		if (StorageUtil.GetIntValue(none, "ypsArmpitHairEnabled")==1)
+			SendModEvent("yps-SetArmpitsHairLengthEvent", "", 0)
+		endif
+
+		isBimboPermanent = true
+
+		fctPolymorph.bimboLockedON(bimbo)
+		Debug.Messagebox("Somewhere in the back of your foggy, lust-addled mind you register the finality of your unfortunate predicament. What little remains of your lucid psyche screams in horror as the curse weaves into every fibre of your perversely modified body, its silhouette bearing little resemblance to your former self. The new you is completely tailor made for the singular purpose of pleasuring men. You moan in ecstacy as your bright gaudy makeup, your slutty erotic tattoos, and your lewd glittering piercings all tingle, then bind to your flesh, becoming permanent fixtures to your bimbo form, irrevocably marking your body as that of a modified, carnal, and peversely erotic masturbatory aid.")
+		Debug.Messagebox("The magical tattoo needles, which you've become so familiar with during your metamorphosis, return one final time to commemorate the permanence of your transformation. You writhe and moan in pleasure as the needles buzz over your smooth, hairless mound and permanently deposit pigments that form your final, obscene modification. Then, just as swiftly, the needles disappear, leaving behind a bright, pink tattoo that seems to shimmer above your soft, slick folds, irrevocably marking you as a PERMANENT BIMBO FUCKTOY, and advertising both your availability and eagerness to service your next sexual partner.")
+	ElseIf transformationLevel < 16
+		;level 1: lipstick
+		if (transformationLevel == 1)
+			Debug.Notification("You feel a little tingle on your lips.")
+			SLH_Control.playChuckle(bimbo)
+
+			If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
+				SendModEvent("yps-LipstickEvent", "Bimbo", -1)  ; SendModEvent("yps-LipstickEvent", "Red", 0xFF0000)  
+
+				if (hairLength<5)
+					SendModEvent("yps-SetHaircutEvent", "", 5)
+				endif
+			else
+				; SlaveTats.simple_add_tattoo(bimbo, "Bimbo", "Lipstick", color = 0x66FF0984, last = false, silent = true)
+				fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Lipstick", iColor = 0x66FF0984)
+				fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Eye Shadow", iColor = 0x99000000, bRefresh = True)
+			Endif
+
+			fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
+		;level 2: eyeshadow
+		Elseif (transformationLevel == 2)
+			Debug.Notification("You feel a little tingle on your eyelids.")
+			SLH_Control.playChuckle(bimbo)
+
+			If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
+				SendModEvent("yps-LipstickEvent", "Bimbo", -1)  ; SendModEvent("yps-LipstickEvent", "Red", 0xFF0000)  
+				SendModEvent("yps-EyeshadowEvent", "Bimbo", -1) ; SendModEvent("yps-EyeshadowEvent", "Black", 0x000000)   
+
+				if (hairLength<5)
+					SendModEvent("yps-SetHaircutEvent", "", 5)
+				endif
+			else
+				; SlaveTats.simple_add_tattoo(bimbo, "Bimbo", "Lipstick", color = 0x66FF0984, last = false, silent = true)
+				fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Lipstick", iColor = 0x66FF0984)
+				fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Eye Shadow", iColor = 0x99000000, bRefresh = True)
+			Endif
+
+			fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
+		;level 3: hair
+		Elseif (transformationLevel == 3)
+			Debug.Notification("You feel a little tingle on your scalp.")
+			SLH_Control.playChuckle(bimbo)
+
+			If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
+				SendModEvent("yps-LipstickEvent", "Bimbo", -1)  ; SendModEvent("yps-LipstickEvent", "Red", 0xFF0000)  
+				SendModEvent("yps-EyeshadowEvent", "Bimbo", -1) ; SendModEvent("yps-EyeshadowEvent", "Black", 0x000000)   
+				SendModEvent("yps-HairColorBaseEvent", "Platinum Blonde", 0xCABFB1)
+
+				if (hairLength<6)
+					SendModEvent("yps-SetHaircutEvent", "", 6)
+				endif
+			else
+				; SlaveTats.simple_add_tattoo(bimbo, "Bimbo", "Lipstick", color = 0x66FF0984, last = false, silent = true)
+				fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Lipstick", iColor = 0x66FF0984)
+				fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Eye Shadow", iColor = 0x99000000, bRefresh = True)
+			Endif
+
+			fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
+		;level 4, fingernails
+		Elseif (transformationLevel == 4)
+			Debug.Notification("Your nails are turning into a slutty shade of pink")
+			SLH_Control.playGiggle(bimbo)
+
+			If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
+				SendModEvent("yps-LipstickEvent", "Bimbo", -1)  ; SendModEvent("yps-LipstickEvent", "Red", 0xFF0000)  
+				SendModEvent("yps-EyeshadowEvent", "Bimbo", -1) ; SendModEvent("yps-EyeshadowEvent", "Black", 0x000000)   
+				SendModEvent("yps-HairColorBaseEvent", "Platinum Blonde", 0xCABFB1)
+				SendModEvent("yps-FingerNailsEvent", "", 29)
+				SendModEvent("yps-ToeNailsEvent",  "", 29)
+
+				if (hairLength<6)
+					SendModEvent("yps-SetHaircutEvent", "", 6)
+				endif
+			else
+				fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Feet Nails", iColor = 0x00FF0984 )
+				fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Hand Nails", iColor = 0x00FF0984, bRefresh = True )
+			Endif
+
+			fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
+		;level 5, toenails
+		Elseif (transformationLevel == 5)
+			Debug.Notification("Your toenails are turning into glimmery shade of pink")
+			SLH_Control.playGiggle(bimbo)
+
+			If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
+				SendModEvent("yps-LipstickEvent", "Bimbo", -1)  ; SendModEvent("yps-LipstickEvent", "Red", 0xFF0000)  
+				SendModEvent("yps-EyeshadowEvent", "Bimbo", -1) ; SendModEvent("yps-EyeshadowEvent", "Black", 0x000000)   
+				SendModEvent("yps-FingerNailsEvent", "", 29)
+				SendModEvent("yps-ToeNailsEvent",  "", 29)
+				SendModEvent("yps-HairColorBaseEvent", "Platinum Blonde", 0xCABFB1)
+
+				if (hairLength<7)
+					SendModEvent("yps-SetHaircutEvent", "", 7)
+				endif
+			else
+				fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Feet Nails", iColor = 0x00FF0984 )
+				fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Hand Nails", iColor = 0x00FF0984, bRefresh = True )
+			Endif
+
+			fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
+		;level 6, weak body (can drop weapons when hit)
+		Elseif (transformationLevel == 6)
+			Debug.Notification("Your body feels weak and your chest feels tight.")
+			SLH_Control.playGiggle(bimbo)
+
+			If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
+				SendModEvent("yps-LipstickEvent", "Bimbo", -1)  ; SendModEvent("yps-LipstickEvent", "Red", 0xFF0000)  
+				SendModEvent("yps-EyeshadowEvent", "Bimbo", -1) ; SendModEvent("yps-EyeshadowEvent", "Black", 0x000000)   
+				SendModEvent("yps-HairColorBaseEvent", "Platinum Blonde", 0xCABFB1)
+				SendModEvent("yps-FingerNailsEvent", "", 29)
+				SendModEvent("yps-ToeNailsEvent",  "", 29)
+
+				if (hairLength<7)
+					SendModEvent("yps-SetHaircutEvent", "", 7)
+				endif
+			else
+				fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Feet Nails", iColor = 0x00FF0984 )
+				fctColor.sendSlaveTatModEvent(bimbo, "Bimbo","Hand Nails", iColor = 0x00FF0984, bRefresh = True )
+			Endif
+
+			fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
+			isBimboClumsyHands = true
+		;level 7: earrings
+		Elseif (transformationLevel == 7)
+			Debug.Notification("You yelp in pain as your ears are suddenly pierced")
+			SLH_Control.playMoan(bimbo)
+
+			If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
 				SendModEvent("yps-PiercingEvent", "Mr Needle", 1)
 				SendModEvent("yps-LipstickEvent", "Bimbo", -1)  ; SendModEvent("yps-LipstickEvent", "Red", 0xFF0000)  
 				SendModEvent("yps-EyeshadowEvent", "Bimbo", -1) ; SendModEvent("yps-EyeshadowEvent", "Black", 0x000000)   
- 
 				SendModEvent("yps-HairColorBaseEvent", "Platinum Blonde", 0xCABFB1)
-				
-				if (!isBimboPermanent)
-					SendModEvent("yps-FingerNailsEvent", "", 29) 
-					SendModEvent("yps-ToeNailsEvent",  "", 29)		
-				endif				
+				SendModEvent("yps-FingerNailsEvent", "", 29)
+				SendModEvent("yps-ToeNailsEvent",  "", 29)
 
 				if (hairLength<8)
 					SendModEvent("yps-SetHaircutEvent", "", 8)
 				endif
-			;endif
-		Endif
+			Endif
 
-		fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
-	endif	
+			fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
+		;level 8: back tattoo
+		Elseif (transformationLevel == 8)
+			Debug.Notification("You writhe in discomfort as invisible tattoo needles ink your back.")
+			BimboTattoo(bimbo,"Bimbo","Tramp Stamp",true,true,false)
+			SLH_Control.playMoan(bimbo)
 
-	;level 8: back tattoo
-	if (transformationLevel == 8)
-		Debug.Notification("You writhe in discomfort as invisible tattoo needles ink your back.")
-		BimboTattoo(bimbo,"Bimbo","Tramp Stamp",true,true,false)
-		SLH_Control.playMoan(bimbo)
-
-		If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
-			;If (!isBimboPermanent) 
+			If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
 				SendModEvent("yps-LipstickEvent", "Bimbo", -1)  ; SendModEvent("yps-LipstickEvent", "Red", 0xFF0000)  
 				SendModEvent("yps-EyeshadowEvent", "Bimbo", -1) ; SendModEvent("yps-EyeshadowEvent", "Black", 0x000000)   
- 
 				SendModEvent("yps-HairColorBaseEvent", "Platinum Blonde", 0xCABFB1)
-				
-				if (!isBimboPermanent)
-					SendModEvent("yps-FingerNailsEvent", "", 29) 
-					SendModEvent("yps-ToeNailsEvent",  "", 29)		
-				endif				
-			
+				SendModEvent("yps-FingerNailsEvent", "", 29)
+				SendModEvent("yps-ToeNailsEvent",  "", 29)
 
 				if (hairLength<8)
 					SendModEvent("yps-SetHaircutEvent", "", 8)
 				endif
-			;endif
-		Endif
+			Endif
 
-		fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
-	endif
-		
-	;level 9: upper back tattoo
-	if (transformationLevel == 9)
-		Debug.Notification("You writhe in discomfort as invisible tattoo needles continue inking your back.")
-		BimboTattoo(bimbo,"Bimbo","Tramp Stamp Upper",true,true,false)
-		SLH_Control.playMoan(bimbo)
+			fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
+		;level 9: upper back tattoo
+		Elseif (transformationLevel == 9)
+			Debug.Notification("You writhe in discomfort as invisible tattoo needles continue inking your back.")
+			BimboTattoo(bimbo,"Bimbo","Tramp Stamp Upper",true,true,false)
+			SLH_Control.playMoan(bimbo)
 
-		If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
-			;If (!isBimboPermanent) 
+			If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
 				SendModEvent("yps-LipstickEvent", "Bimbo", -1)  ; SendModEvent("yps-LipstickEvent", "Red", 0xFF0000)  
 				SendModEvent("yps-EyeshadowEvent", "Bimbo", -1) ; SendModEvent("yps-EyeshadowEvent", "Black", 0x000000)   
-
 				SendModEvent("yps-HairColorBaseEvent", "Platinum Blonde", 0xCABFB1)
-				
-				if (!isBimboPermanent)
-					SendModEvent("yps-FingerNailsEvent", "", 29) 
-					SendModEvent("yps-ToeNailsEvent",  "", 29)		
-				endif				
-			
+				SendModEvent("yps-FingerNailsEvent", "", 29)
+				SendModEvent("yps-ToeNailsEvent",  "", 29)
 
 				if (hairLength<9)
 					SendModEvent("yps-SetHaircutEvent", "", 9)
 				endif
-			;endif
-		Endif
+			Endif
 
-		fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
-	endif
-		
-	;level 10: belly tattoo
-	if (transformationLevel == 10)
-		Debug.Notification("You shudder in pained pleasure as the invisible tattoo needles mark your belly.")
-		BimboTattoo(bimbo,"Bimbo","Belly",true,true,false)
-		SLH_Control.playMoan(bimbo)
+			fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
+		;level 10: belly tattoo
+		Elseif (transformationLevel == 10)
+			Debug.Notification("You shudder in pained pleasure as the invisible tattoo needles mark your belly.")
+			BimboTattoo(bimbo,"Bimbo","Belly",true,true,false)
+			SLH_Control.playMoan(bimbo)
 
-		If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
-			;If (!isBimboPermanent) 
+			If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
 				SendModEvent("yps-LipstickEvent", "Bimbo", -1)  ; SendModEvent("yps-LipstickEvent", "Red", 0xFF0000)  
 				SendModEvent("yps-EyeshadowEvent", "Bimbo", -1) ; SendModEvent("yps-EyeshadowEvent", "Black", 0x000000)   
-  
 				SendModEvent("yps-HairColorBaseEvent", "Platinum Blonde", 0xCABFB1)
-				
-				if (!isBimboPermanent)
-					SendModEvent("yps-FingerNailsEvent", "", 29) 
-					SendModEvent("yps-ToeNailsEvent",  "", 29)		
-				endif				
-			
+				SendModEvent("yps-FingerNailsEvent", "", 29)
+				SendModEvent("yps-ToeNailsEvent",  "", 29)
 
 				if (hairLength<9)
 					SendModEvent("yps-SetHaircutEvent", "", 9)
 				endif
-			;endif
-		Endif
+			Endif
 
-		fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
-	endif
+			fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
+		;level 11: navel ring, bigger butt
+		Elseif (transformationLevel == 11)
+			Debug.Notification("You yelp in pain as an invisible needle pierces your navel.")
+			SLH_Control.playMoan(bimbo)
 
-	;level 11: navel ring, bigger butt
-	if (transformationLevel == 11)
-		Debug.Notification("You yelp in pain as an invisible needle pierces your navel.")
-		SLH_Control.playMoan(bimbo)
-	 
-		If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
-			;If (!isBimboPermanent) 
+			If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
 				SendModEvent("yps-PiercingEvent", "Mr Needle", 9)
 				SendModEvent("yps-LipstickEvent", "Bimbo", -1)  ; SendModEvent("yps-LipstickEvent", "Red", 0xFF0000)  
 				SendModEvent("yps-EyeshadowEvent", "Bimbo", -1) ; SendModEvent("yps-EyeshadowEvent", "Black", 0x000000)   
-
 				SendModEvent("yps-HairColorBaseEvent", "Platinum Blonde", 0xCABFB1)
-				
-				if (!isBimboPermanent)
-					SendModEvent("yps-FingerNailsEvent", "", 29) 
-					SendModEvent("yps-ToeNailsEvent",  "", 29)		
-				endif				
-		
-					
+				SendModEvent("yps-FingerNailsEvent", "", 29)
+				SendModEvent("yps-ToeNailsEvent",  "", 29)
+
 				if (hairLength<10)
 					SendModEvent("yps-SetHaircutEvent", "", 10)
 				endif
-			;endif
-		EndIf
+			EndIf
 
-		;butt
-		fButtMin = StorageUtil.GetFloatValue(bimbo, "_SLH_fButtMin")
-		fButtMax = StorageUtil.GetFloatValue(bimbo, "_SLH_fButtMax")
-		fButtActual = StorageUtil.GetFloatValue(bimbo, "_SLH_fButt")
-		if (fButtActual < fButtMax )
-			Debug.SendAnimationEvent(bimbo, "BleedOutStart")
-			SLH_Control.playRandomSound(bimbo)
+			;butt
+			fButtMin = StorageUtil.GetFloatValue(bimbo, "_SLH_fButtMin")
+			fButtMax = StorageUtil.GetFloatValue(bimbo, "_SLH_fButtMax")
+			fButtActual = StorageUtil.GetFloatValue(bimbo, "_SLH_fButt")
+			if (fButtActual < fButtMax )
+				Debug.SendAnimationEvent(bimbo, "BleedOutStart")
+				SLH_Control.playRandomSound(bimbo)
 
-			fButtActual = 0.1 + fButtActual * 1.15 ;now with 15% more butt!
-			if fButtActual > fButtMax
-				fButtActual = fButtMax
+				fButtActual = 0.1 + fButtActual * 1.15 ;now with 15% more butt!
+				if fButtActual > fButtMax
+					fButtActual = fButtMax
+				endif
+				StorageUtil.SetFloatValue(bimbo, "_SLH_fButt", fButtActual ) 
+				Bimbo.SendModEvent("SLHRefresh")
+
+				Utility.Wait(1.0)
+				Debug.SendAnimationEvent(bimbo, "BleedOutStop")
 			endif
-			StorageUtil.SetFloatValue(bimbo, "_SLH_fButt", fButtActual ) 
-			Bimbo.SendModEvent("SLHRefresh")
 
-			Utility.Wait(1.0)
-			Debug.SendAnimationEvent(bimbo, "BleedOutStop")
-		endif
+			fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
+		;level 12: bigger butt, heel hubbled
+		Elseif (transformationLevel == 12)
+			Debug.Notification("Your feet tingle and deform into a slutty high-heeled arch")
+			SLH_Control.playMoan(bimbo)
 
-		fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
-	endif
-		
-	;level 12: bigger butt, heel hubbled
-	if (transformationLevel == 12)
-		Debug.Notification("Your feet tingle and deform into a slutty high-heeled arch")
-		SLH_Control.playMoan(bimbo)
-	 
-		If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
-			;If (!isBimboPermanent) 
+			If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
 				SendModEvent("yps-ArchedFeetEvent")
 				SendModEvent("yps-LipstickEvent", "Bimbo", -1)  ; SendModEvent("yps-LipstickEvent", "Red", 0xFF0000)  
 				SendModEvent("yps-EyeshadowEvent", "Bimbo", -1) ; SendModEvent("yps-EyeshadowEvent", "Black", 0x000000)   
-
 				SendModEvent("yps-HairColorBaseEvent", "Platinum Blonde", 0xCABFB1)
-				
-				if (!isBimboPermanent)
-					SendModEvent("yps-FingerNailsEvent", "", 29) 
-					SendModEvent("yps-ToeNailsEvent",  "", 29)		
-				endif				
-			
-					
+				SendModEvent("yps-FingerNailsEvent", "", 29)
+				SendModEvent("yps-ToeNailsEvent",  "", 29)
+
 				if (hairLength<11)
 					SendModEvent("yps-SetHaircutEvent", "", 11)
 				endif
-			;endif
-		EndIf
+			EndIf
 
-		;butt
-		fButtMin = StorageUtil.GetFloatValue(bimbo, "_SLH_fButtMin")
-		fButtMax = StorageUtil.GetFloatValue(bimbo, "_SLH_fButtMax")
-		fButtActual = StorageUtil.GetFloatValue(bimbo, "_SLH_fButt")
-		if (fButtActual < fButtMax )
-			Debug.SendAnimationEvent(bimbo, "BleedOutStart")
-			SLH_Control.playRandomSound(bimbo)
+			;butt
+			fButtMin = StorageUtil.GetFloatValue(bimbo, "_SLH_fButtMin")
+			fButtMax = StorageUtil.GetFloatValue(bimbo, "_SLH_fButtMax")
+			fButtActual = StorageUtil.GetFloatValue(bimbo, "_SLH_fButt")
+			if (fButtActual < fButtMax )
+				Debug.SendAnimationEvent(bimbo, "BleedOutStart")
+				SLH_Control.playRandomSound(bimbo)
 
-			fButtActual = 0.1 + fButtActual * 1.15 ;now with 15% more butt!
-			if fButtActual > fButtMax
-				fButtActual = fButtMax
+				fButtActual = 0.1 + fButtActual * 1.15 ;now with 15% more butt!
+				if fButtActual > fButtMax
+					fButtActual = fButtMax
+				endif
+				StorageUtil.SetFloatValue(bimbo, "_SLH_fButt", fButtActual ) 
+				Bimbo.SendModEvent("SLHRefresh")
+
+				Utility.Wait(1.0)
+				Debug.SendAnimationEvent(bimbo, "BleedOutStop")
 			endif
-			StorageUtil.SetFloatValue(bimbo, "_SLH_fButt", fButtActual ) 
-			Bimbo.SendModEvent("SLHRefresh")
 
-			Utility.Wait(1.0)
-			Debug.SendAnimationEvent(bimbo, "BleedOutStop")
-		endif
+			fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
+			isBimboClumsyLegs = true
+		;level 13: pubic tattoo, bigger butt
+		Elseif (transformationLevel == 13)
+			if !fctUtil.isMale(BimboActor) ;no schlong on the way
+				Debug.Notification("You moan in surprise as the invisible tattoo needles work their way down your smooth mound.")
+				BimboTattoo(bimbo,"Bimbo","Pubic Tattoo",true,true,false)
+				SLH_Control.playMoan(bimbo)
+			endif
 
-		fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
-		isBimboClumsyLegs = true
-	endif
-
-	;level 13: pubic tattoo, bigger butt
-	if (transformationLevel == 13)
-		if !fctUtil.isMale(BimboActor) ;no schlong on the way
-			Debug.Notification("You moan in surprise as the invisible tattoo needles work their way down your smooth mound.")
-			BimboTattoo(bimbo,"Bimbo","Pubic Tattoo",true,true,false)
-			SLH_Control.playMoan(bimbo)
-		endif
-	 
-		If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
-			;If (!isBimboPermanent) 
+			If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
 				SendModEvent("yps-LipstickEvent", "Bimbo", -1)  ; SendModEvent("yps-LipstickEvent", "Red", 0xFF0000)  
 				SendModEvent("yps-EyeshadowEvent", "Bimbo", -1) ; SendModEvent("yps-EyeshadowEvent", "Black", 0x000000)   
 				SendModEvent("yps-HairColorBaseEvent", "Platinum Blonde", 0xCABFB1)
-				
-				if (!isBimboPermanent)
-					SendModEvent("yps-FingerNailsEvent", "", 29) 
-					SendModEvent("yps-ToeNailsEvent",  "", 29)		
-				endif				
-		
-					
+				SendModEvent("yps-FingerNailsEvent", "", 29)
+				SendModEvent("yps-ToeNailsEvent",  "", 29)
+
 				if (hairLength<12)
 					SendModEvent("yps-SetHaircutEvent", "", 12)
 				endif
-			;endif
-		EndIf
+			EndIf
 
-		;butt
-		fButtMin = StorageUtil.GetFloatValue(bimbo, "_SLH_fButtMin")
-		fButtMax = StorageUtil.GetFloatValue(bimbo, "_SLH_fButtMax")
-		fButtActual = StorageUtil.GetFloatValue(bimbo, "_SLH_fButt")
-		if (fButtActual < fButtMax )
-			Debug.SendAnimationEvent(bimbo, "BleedOutStart")
-			SLH_Control.playRandomSound(bimbo)
+			;butt
+			fButtMin = StorageUtil.GetFloatValue(bimbo, "_SLH_fButtMin")
+			fButtMax = StorageUtil.GetFloatValue(bimbo, "_SLH_fButtMax")
+			fButtActual = StorageUtil.GetFloatValue(bimbo, "_SLH_fButt")
+			if (fButtActual < fButtMax )
+				Debug.SendAnimationEvent(bimbo, "BleedOutStart")
+				SLH_Control.playRandomSound(bimbo)
 
-			fButtActual = 0.1 + fButtActual * 1.15 ;now with 15% more butt!
-			if fButtActual > fButtMax
-				fButtActual = fButtMax
+				fButtActual = 0.1 + fButtActual * 1.15 ;now with 15% more butt!
+				if fButtActual > fButtMax
+					fButtActual = fButtMax
+				endif
+				StorageUtil.SetFloatValue(bimbo, "_SLH_fButt", fButtActual ) 
+				Bimbo.SendModEvent("SLHRefresh")
+
+				Utility.Wait(1.0)
+				Debug.SendAnimationEvent(bimbo, "BleedOutStop")
 			endif
-			StorageUtil.SetFloatValue(bimbo, "_SLH_fButt", fButtActual ) 
-			Bimbo.SendModEvent("SLHRefresh")
+				
+			fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
+		;level 14: nipple piercings
+		Elseif (transformationLevel == 14)
+			Debug.Notification("You moan in pained pleasure as thick, invisible needles pierce your swollen nipples.")
+			SLH_Control.playMoan(bimbo)
 
-			Utility.Wait(1.0)
-			Debug.SendAnimationEvent(bimbo, "BleedOutStop")
-		endif
-			
-		fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
-	endif
-		
-	;level 14: nipple piercings
-	if (transformationLevel == 14)
-		Debug.Notification("You moan in pained pleasure as thick, invisible needles pierce your swollen nipples.")
-		SLH_Control.playMoan(bimbo)
-			 
-		If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
-			;If (!isBimboPermanent) 
+			If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
 				SendModEvent("yps-PiercingEvent", "Mr Needle", 10)
 				SendModEvent("yps-LipstickEvent", "Bimbo", -1)  ; SendModEvent("yps-LipstickEvent", "Red", 0xFF0000)  
 				SendModEvent("yps-EyeshadowEvent", "Bimbo", -1) ; SendModEvent("yps-EyeshadowEvent", "Black", 0x000000)    
 				SendModEvent("yps-HairColorBaseEvent", "Platinum Blonde", 0xCABFB1)
+				SendModEvent("yps-FingerNailsEvent", "", 29)
+				SendModEvent("yps-ToeNailsEvent",  "", 29)
 
-				if (!isBimboPermanent)
-					SendModEvent("yps-FingerNailsEvent", "", 29) 
-					SendModEvent("yps-ToeNailsEvent",  "", 29)		
-				endif				
-					
 				if (hairLength<13)
 					SendModEvent("yps-SetHaircutEvent", "", 13)
 				endif
-			;endif
-		EndIf
-			
-		fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
-	endif
-		
-	;level 15: clit piercing
-	if (transformationDays == 15)
-		Debug.Notification("You writhe and spasm uncontrollably as a thick, invisible needle slowly pierces your vulnerable clit.")
-		SLH_Control.playMoan(bimbo)
-			 
-		If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
-			;If (!isBimboPermanent) 
+			EndIf
+				
+			fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.3)
+		;level 15: clit piercing
+		Elseif (transformationLevel == 15)
+			Debug.Notification("You writhe and spasm uncontrollably as a thick, invisible needle slowly pierces your vulnerable clit.")
+			SLH_Control.playMoan(bimbo)
+
+			If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
 				SendModEvent("yps-PiercingEvent", "Mr Needle", 11)
 				SendModEvent("yps-LipstickEvent", "Bimbo", -1)  ; SendModEvent("yps-LipstickEvent", "Red", 0xFF0000)  
 				SendModEvent("yps-EyeshadowEvent", "Bimbo", -1) ; SendModEvent("yps-EyeshadowEvent", "Black", 0x000000)   
 				SendModEvent("yps-HairColorBaseEvent", "Platinum Blonde", 0xCABFB1)
-
-				if (!isBimboPermanent)
-					SendModEvent("yps-FingerNailsEvent", "", 29) 
-					SendModEvent("yps-ToeNailsEvent",  "", 29)		
-				endif		
-					
+				SendModEvent("yps-FingerNailsEvent", "", 29)
+				SendModEvent("yps-ToeNailsEvent",  "", 29)
 				SendModEvent("yps-SetHaircutEvent", "", 13)
+			EndIf
 
-			;endif
-		EndIf
-
-		fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.5)
-		isBimboFrailBody = true
-		fctPolymorph.bimboFinalON(bimbo)
-			
-	endif
-
-	if (transformationDays>15) 
-		Debug.Notification("I need more cocks! *giggle*")
-		SLH_Control.playMoan(bimbo)
-		; Float fBimboHormoneLevel = StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneBimbo") 
-
-		if (!isBimboPermanent) ; && (Utility.RandomInt(0,100)< (fBimboHormoneLevel as Int))
-			RemoveBimboTattoo(bimbo, "Bimbo", true, true)
-			BimboTattoo(bimbo,"Bimbo","Tramp Stamp",false,true,true)
-			BimboTattoo(bimbo,"Bimbo","Belly",false,true,true)
-			BimboTattoo(bimbo,"Bimbo","Tramp Stamp Upper",false,true,true)
-			BimboTattoo(bimbo,"Bimbo","Pubic Tattoo",false,true,true)
-			BimboTattoo(bimbo,"Bimbo","Permanent Bimbo",true,true,true)
-			SendModEvent("yps-LipstickEvent", "Bimbo", -1)  ; SendModEvent("yps-LipstickEvent", "Red", 0xFF0000)  
-			SendModEvent("yps-EyeshadowEvent", "Bimbo", -1) ; SendModEvent("yps-EyeshadowEvent", "Black", 0x000000)   
-			SendModEvent("yps-DisableSmudgingEvent")
-			SendModEvent("yps-LockMakeupEvent")
-			SendModEvent("yps-PermanentMakeupEvent")
-			SendModEvent("yps-HairColorBaseEvent", "Platinum Blonde", 0xCABFB1)
-			SendModEvent("yps-FingerNailsEvent", "", 29) 
-			SendModEvent("yps-ToeNailsEvent",  "", 29)
-			SendModEvent("yps-DisableHairgrowthEvent")
-			SendModEvent("yps-DisableHairmakeoverEvent")
-			
-			SendModEvent("yps-SetHaircutEvent", "", 13)
-
-				
-					if (StorageUtil.GetIntValue(none, "ypsPubicHairEnabled") == 1)
-						SendModEvent("yps-SetPubicHairLengthEvent", "", 0)
-					Endif
-					
-					if (StorageUtil.GetIntValue(none, "ypsArmpitHairEnabled")==1)
-						SendModEvent("yps-SetArmpitsHairLengthEvent", "", 0)
-					endif
-
-			isBimboPermanent = true
- 
-			fctPolymorph.bimboLockedON(bimbo)
-			Debug.Messagebox("Somewhere in the back of your foggy, lust-addled mind you register the finality of your unfortunate predicament. What little remains of your lucid psyche screams in horror as the curse weaves into every fibre of your perversely modified body, its silhouette bearing little resemblance to your former self. The new you is completely tailor made for the singular purpose of pleasuring men. You moan in ecstacy as your bright gaudy makeup, your slutty erotic tattoos, and your lewd glittering piercings all tingle, then bind to your flesh, becoming permanent fixtures to your bimbo form, irrevocably marking your body as that of a modified, carnal, and peversely erotic masturbatory aid.")
-			Debug.Messagebox("The magical tattoo needles, which you've become so familiar with during your metamorphosis, return one final time to commemorate the permanence of your transformation. You writhe and moan in pleasure as the needles buzz over your smooth, hairless mound and permanently deposit pigments that form your final, obscene modification. Then, just as swiftly, the needles disappear, leaving behind a bright, pink tattoo that seems to shimmer above your soft, slick folds, irrevocably marking you as a PERMANENT BIMBO FUCKTOY, and advertising both your availability and eagerness to service your next sexual partner.")
+			fctBodyshape.alterBodyByPercent(bimbo, "Breast", 0.5)
+			isBimboFrailBody = true
+			fctPolymorph.bimboFinalON(bimbo)
 		endif
-	; else
-		; Debug.Notification("Every day as a Bimbo drains your mind away.")
-	endif
-	;--------------------------------------------
+	EndIf
 	;IDEAS
 	;- some kind of sex need? or leave it for other mods?
 	;- the bad end should be better: an fx should play, trigger as masturbation too
@@ -1603,14 +1463,11 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 	;  - as a parting gift some kind of outfit (heels, skirt and a tube top, or something like that), all enchanted. These can be removed, but causes the player to be conditioned to use heels (stumble a lot more if not)
 	;  - this quest will not have a good end, only makes the curse worse
 	;
-	;
 	;BUG CHECK
 	;check if the cure is still possible
 	;check why, WHY, WHYYYY the honey hello dialog disappears when i save the esp!!
 	;check what happens after the player is cured
-	;--------------------------------------------
 endfunction
-
 
 Function debugTrace(string traceMsg)
 	if (StorageUtil.GetIntValue(none, "_SLH_debugTraceON")==1)
