@@ -38,17 +38,15 @@ Weapon Property ReturnItem Auto
 ReferenceAlias Property BimboAliasRef  Auto  
 Actor BimboActor 
 
+Int ibimboTransformDate = -1
 int iGameDateLastCheck
 int daysSinceEnslavement
 int iDaysSinceLastCheck
 int iDaysPassed
 
-
-Float fRFSU = 0.1
 Bool isUpdating = False
 Int iCommentThrottle = 0
 
-Bool isMale 
 Bool isMaleToBimbo
 Float fSchlongMin
 Float fSchlongMax
@@ -111,261 +109,213 @@ EndFunction
 ;[mod] stumbling happens here
 ;===========================================================================
 Event OnUpdateGameTime()
-	float bimboArousal = slaUtil.GetActorArousal(BimboActor) as float
-	Actor kPlayer = Game.GetPlayer()
-	Int rollFirstPerson 
-	Bool bAbortUpdate = false
 	; Safeguard - Exit if alias not set
-	if (StorageUtil.GetIntValue(kPlayer, "_SLH_iBimbo")==0)
-		; try again later
-    	RegisterForSingleUpdate( 10 )
-		Return
-	Endif
-	; debug.Notification("[SLH] Bimbo update game time")
-
-	BimboActor= BimboAliasRef.GetReference() as Actor
-
 	; Safeguard - Evaluate the rest only when transformation happened
-	if (StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") == -1)
-    	RegisterForSingleUpdate( 10 )
+	if (StorageUtil.GetIntValue(BimboActor, "_SLH_iBimbo")==0) || (StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") == -1)
 		Return
 	Endif
-	
-	iDaysPassed = Game.QueryStat("Days Passed")
-
-    StorageUtil.SetIntValue(BimboActor, "_SLH_bimboTransformGameDays", iDaysPassed - (StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") as Int ))    
-    StorageUtil.SetIntValue(kPlayer, "_SLH_iAllowBimboThoughts", 1)
-
-    daysSinceEnslavement = StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformGameDays")
-
-    if (iGameDateLastCheck == -1)
-        iGameDateLastCheck = iDaysPassed
-    EndIf
-
-    iDaysSinceLastCheck = (iDaysPassed - iGameDateLastCheck ) as Int
-       
-    ; Debug.Notification( "[SLH] Bimbo status update - Days: " + daysSinceEnslavement )
-    ; Debug.Notification( "[SLH] iDaysSinceLastCheck: " + iDaysSinceLastCheck )
-	rollFirstPerson = Utility.RandomInt(0,100)
+	updateClumsyBimbo() ;[mod] clumsy bimbo
 
 	; Compatiblity with Parasites - prevent update when full body armor is worn
-	if (StorageUtil.GetIntValue(kPlayer, "_SLP_toggleChaurusQueenSkin" )==1) || (StorageUtil.GetIntValue(kPlayer, "_SLP_toggleChaurusQueenArmor" )==1) || (StorageUtil.GetIntValue(kPlayer, "_SLP_toggleChaurusQueenBody" )==1) || (StorageUtil.GetIntValue(kPlayer, "_SLP_toggleLivingArmor" )==1) || (StorageUtil.GetIntValue(kPlayer, "_SLP_toggleTentacleMonster" )==1)
-		bAbortUpdate = true
+	if (StorageUtil.GetIntValue(BimboActor, "_SLP_toggleChaurusQueenSkin") == 1)\
+	|| (StorageUtil.GetIntValue(BimboActor, "_SLP_toggleChaurusQueenArmor") == 1)\
+	|| (StorageUtil.GetIntValue(BimboActor, "_SLP_toggleChaurusQueenBody") == 1)\
+	|| (StorageUtil.GetIntValue(BimboActor, "_SLP_toggleLivingArmor") == 1)\
+	|| (StorageUtil.GetIntValue(BimboActor, "_SLP_toggleTentacleMonster") == 1)
+		RegisterForSingleUpdateGameTime(6)
+		Return
 	endif
+	If BimboActor.IsDead()\
+	|| BimboActor.IsOnMount()\
+	|| BimboActor.IsBleedingOut()\
+	|| BimboActor.IsInCombat()\
+	|| BimboActor.IsTrespassing()\
+	|| BimboActor.IsFlying()\
+	|| BimboActor.IsUnconscious()\
+	|| SexLab.IsActorActive(BimboActor)\
+	|| !Game.IsMovementControlsEnabled()\
+	|| !Game.IsActivateControlsEnabled()
+		; try again in 15 minutes
+		RegisterForSingleUpdateGameTime(0.25)
+		Return
+	EndIf
 
-    ; Exit conditions
-    If (iDaysSinceLastCheck >= 1) && !(BimboActor.IsBleedingOut() || BimboActor.IsInCombat() || BimboActor.IsDead() || BimboActor.IsOnMount() || BimboActor.IsFlying() || BimboActor.IsTrespassing() || BimboActor.IsUnconscious() || bAbortUpdate)
-        bool IsPlayer = (kPlayer == BimboActor) ; Shuld be but just to be sure.
-		if (IsPlayer && !Game.IsMovementControlsEnabled()) || SexLab.IsActorActive(BimboActor)
-			RegisterForSingleUpdate(10)
-			Return ; Is too Busy 
-		endIf
+	iDaysPassed = Game.QueryStat("Days Passed")
+	daysSinceEnslavement = iDaysPassed - ibimboTransformDate
+	iDaysSinceLastCheck = iDaysPassed - iGameDateLastCheck
+
+	StorageUtil.SetIntValue(BimboActor, "_SLH_bimboTransformGameDays", daysSinceEnslavement)
+	StorageUtil.SetIntValue(BimboActor, "_SLH_iAllowBimboThoughts", 1)
+
+	If iDaysSinceLastCheck >= 1
 		Debug.Trace( "[SLH] Bimbo status update - Days transformed: " + daysSinceEnslavement )
-        isMale = fctUtil.isMale(BimboActor)
-        fSchlongMin = StorageUtil.GetFloatValue(BimboActor, "_SLH_fSchlongMin")
-        fSchlongMax = StorageUtil.GetFloatValue(BimboActor, "_SLH_fSchlongMax")
 
-    ;     BimboActor.AddItem(ReturnItem, 1 , True)
+		bimboDailyProgressiveTransformation(BimboActor, GV_isTG.GetValue() == 1)
 
-        ; StorageUtil.SetFloatValue(BimboActor, "_SLH_fBreast", 0.8 ) 
-        ; StorageUtil.SetFloatValue(BimboActor, "_SLH_fBelly", 0.8 ) 
-        ; StorageUtil.SetFloatValue(BimboActor, "_SLH_fWeight", 0 ) 
-        ; If (GV_isTG.GetValue() == 1) && (!isMale) && (daysSinceEnslavement==1)
-        ;    _SLH_QST_Bimbo.SetStage(14)
-        ; ElseIf (GV_isTG.GetValue() == 1) && (isMale) && (daysSinceEnslavement==1)
-        ;    _SLH_QST_Bimbo.SetStage(12)
-        ; Endif
+		If daysSinceEnslavement < 16
+			if (StorageUtil.GetIntValue(BimboActor, "_SLH_allowBimboRace")==0)
+				fctBodyshape.alterBodyByPercent(BimboActor, "Weight", 6.0)
+				fctBodyshape.alterBodyByPercent(BimboActor, "Breast", 6.0)
+			else
+				fctBodyshape.alterBodyByPercent(BimboActor, "Weight", 3.0)
+				fctBodyshape.alterBodyByPercent(BimboActor, "Breast", 3.0)
+			endif
 
-        ;[mod] progressive tf - start
-        ; if (daysSinceEnslavement<=15) ; !(_SLH_QST_Bimbo.IsStageDone(18) || _SLH_QST_Bimbo.IsStageDone(16) )
-		if !IsPlayer || Game.IsActivateControlsEnabled() ; Check if have the hands too tied for compatibility reasons
-        	bimboDailyProgressiveTransformation(BimboActor, GV_isTG.GetValue() == 1)
-		endIf
-        ; endif
-        ;[mod] progressive tf - end
-
-        If (isMaleToBimbo) && (daysSinceEnslavement<=15) ; !_SLH_QST_Bimbo.IsStageDone(18) 
- 			if (StorageUtil.GetIntValue(BimboActor, "_SLH_allowBimboRace")==0)
-	            fctBodyshape.alterBodyByPercent(BimboActor, "Weight", 6.0)
-	            fctBodyshape.alterBodyByPercent(BimboActor, "Breast", 6.0)
-	        else
-	            fctBodyshape.alterBodyByPercent(BimboActor, "Weight", 3.0)
-	            fctBodyshape.alterBodyByPercent(BimboActor, "Breast", 3.0)
-	        endif
-
-			If (rollFirstPerson <= (StorageUtil.GetFloatValue(BimboActor, "_SLH_fHormoneBimbo") as Int)) || (StorageUtil.GetIntValue(none, "_SLH_iBimboPlusON") == 1)
-				; First person thought
-	            ; Male to female bimbo
-	            if (daysSinceEnslavement==1)
-					SLH_Control.playChuckle(BimboActor)
-	            	debug.messagebox("My lips feel swollen, and are somehow a bit redder than before. They also feel quite tingly and pleasant when I brush my fingers against them - accidentally of course! Maybe they're bruised somehow? I wonder if I should be worried...  ")
-	            elseif (daysSinceEnslavement==2)
-					SLH_Control.playChuckle(BimboActor)
-	            	debug.messagebox("This is definitely getting weirder! My eyelids felt a bit numb and tingly, and I can feel them coverd with a dark eye shadow that has so far managed to thwart all my removal attempts. Oh Gods... what is happening to me? How am I supposed command respect when I look like this?!")
-	            elseif (daysSinceEnslavement==3)
-	            	SLH_Control.playChuckle(BimboActor)
-	            	debug.messagebox("This is ridiculous! My hair has lightened overnight into a shade of tacky, platinum blonde that, of course, couldn't be washed off, and seems to remain bright and shiny regardless of how dirty it gets. Worse still, I think my cock is shrinking, and getting more sensitive every day. Squeezing my legs and rubbing it frequently only provides temporary relief. I got to find a way to stop this!")
-	            elseif (daysSinceEnslavement==4)
-	            	SLH_Control.playGiggle(BimboActor)
-	            	debug.messagebox("Nonononono... Why is this happening to me?! It's not enough that I wake up to find my slutty makeup perfectly re-applied without a smudge, I now find myself with gaudy, pink fingernails that feel tougher than any armor - not that I've had much use for armors lately, what with my slutty looks and all. Everything now looks so confusing and difficult, maybe I should find a smart, tough m..ma..companion to fight for me...")
-	            elseif (daysSinceEnslavement==5)
+			If isMaleToBimbo
+				If (Utility.RandomInt(0,100) <= (StorageUtil.GetFloatValue(BimboActor, "_SLH_fHormoneBimbo") as Int)) || (StorageUtil.GetIntValue(none, "_SLH_iBimboPlusON") == 1)
+					; First person thought
+					; Male to female bimbo
+					if (daysSinceEnslavement==1)
+						SLH_Control.playChuckle(BimboActor)
+						debug.messagebox("My lips feel swollen, and are somehow a bit redder than before. They also feel quite tingly and pleasant when I brush my fingers against them - accidentally of course! Maybe they're bruised somehow? I wonder if I should be worried...  ")
+					elseif (daysSinceEnslavement==2)
+						SLH_Control.playChuckle(BimboActor)
+						debug.messagebox("This is definitely getting weirder! My eyelids felt a bit numb and tingly, and I can feel them coverd with a dark eye shadow that has so far managed to thwart all my removal attempts. Oh Gods... what is happening to me? How am I supposed command respect when I look like this?!")
+					elseif (daysSinceEnslavement==3)
+						SLH_Control.playChuckle(BimboActor)
+						debug.messagebox("This is ridiculous! My hair has lightened overnight into a shade of tacky, platinum blonde that, of course, couldn't be washed off, and seems to remain bright and shiny regardless of how dirty it gets. Worse still, I think my cock is shrinking, and getting more sensitive every day. Squeezing my legs and rubbing it frequently only provides temporary relief. I got to find a way to stop this!")
+					elseif (daysSinceEnslavement==4)
+						SLH_Control.playGiggle(BimboActor)
+						debug.messagebox("Nonononono... Why is this happening to me?! It's not enough that I wake up to find my slutty makeup perfectly re-applied without a smudge, I now find myself with gaudy, pink fingernails that feel tougher than any armor - not that I've had much use for armors lately, what with my slutty looks and all. Everything now looks so confusing and difficult, maybe I should find a smart, tough m..ma..companion to fight for me...")
+					elseif (daysSinceEnslavement==5)
+						SLH_Control.playGiggle(BimboActor)
+						debug.messagebox("I wake up to find my toenails the same shade of glittery, girly pink that just HAPPEN to perfectly match my fingers. *sigh*... what's another thing on top of everything else... I still haven't been able to figure out what's happening to my body, and my cock is definitely shrinking, though I guess it's not such a bad thing, since it's becoming so much more pleasurable to play with, I can almost cum instantly when I pinch and squeeze my little cli..cock with those slutty nails - not that I've ever tried, Gods no!")
+					elseif (daysSinceEnslavement==6)
+						SLH_Control.playGiggle(BimboActor)
+						debug.messagebox("This curse is definitely doing something to my strength. The weapons I used to wield with ease now seem so big and cumbersome. *pout* Why can't blacksmiths make smaller, daintier weapons? It's not like everyone can swing a giant claymore like those Companions... Melee combat is sooo icky anyways, all that blood and gore are going to ruin my clothes!")
+					elseif (daysSinceEnslavement==7)
+						SLH_Control.playMoan(BimboActor)
+						debug.messagebox("I woke up to a sharp, stabbing pain in my ears. In my groggy state, I discovered two shiny, golden studs piercing my earlobes. I mean, earrings aren't so bad, right? Lots of strong, burly men have pierced ears, though admittedly nothing so feminine and dainty as mine. B-but I think these earrings are made of solid gold, that's something, right? Like, I can totally pull off the look if I wanted to.")
+					elseif (daysSinceEnslavement==8)
+						SLH_Control.playMoan(BimboActor)
+						debug.messagebox("Ouchie! I just felt a series of unpleasant, rapid pinpricks on my lower back, like I'm being stabbed by a bunch of MEAN needles. Since I can't see my behind *giggle*, I guess this minor inconvenience is the price I pay to look pretty. Speaking of pretty, my cock looks so soft and adorable now that those UGLY balls have melted into my crotch. Gods, I'm getting horny thinking about the naughty things I want to do to my cute little cock. Maybe I should tease it again tonight *giggle*")
+					elseif (daysSinceEnslavement==9)
+						SLH_Control.playMoan(BimboActor)
+						debug.messagebox("Owww... I just felt more pinpricks on my lower back, I guess my old tattoo isn't slutty enough? Boooo... I wish getting a tattoo isn't so uncomfortable! Until my new tattoos heal, I'll have to lie on my side when I sleep, and my breasts keep getting in the way. Maybe I should ask a girl for advice? ")
+					elseif (daysSinceEnslavement==10)
+						SLH_Control.playMoan(BimboActor)
+						debug.messagebox("I happen to be on my back *giggle* when I felt the familiar pinpricks on my tummy, so I moved my boobies to the side to see how the slutty tattoo is applied. So, umm... the ink like, just appeared on my skin like magic! Maybe it's con...conju-something magic? *sigh* If only I was smart enough to join the College.  Gosh, thinking is making my head hurt. I guess the men are right, I should think less, and suck more (good girls always swallow! <3). To that end, I now have a suuuper slutty BIMBO FUCKTOY tattoo right above my boy clit! Yay!")
+					elseif (daysSinceEnslavement==11)
+						SLH_Control.playRandomSound(BimboActor)
+						debug.messagebox("Ooouchie! Another stab, this time right above my navel! Why can't getting a piercing be more pleasant? I mean, I'm not complaining, since my new navel stud looks suuuper hawt, oh wait, I think I just did, I'm such a silly girl sometimes *giggle*. Ohhh, I think my boy clit likes it too. Mhmmm, clit. I can't believe I used to like having a big, dangly thing between my legs, this soft and cute clit is so much better - it throbs like crazy too, especially when big, strong men pinch and squeeze it. *giggle* I think I'm getting turned on again. I love how my boy clit stays nice and soft no matter what...")
+					elseif (daysSinceEnslavement==12)
+						SLH_Control.playRandomSound(BimboActor)
+						debug.messagebox("Yay! My boy clit has shrunk so much that a warm, inviting slit has appeared underneath it. Ohhh, I know! I man once told me that sluts have clitties and titties, so I'm going to call her clitty *giggle*. Now I just need to find a real man to help me pop my cherry *giggle*. As I tried to stand, my silly, clumsy feet refuse to cooperate and I fell onto my butt like the ditzy bimbo that I am. As I look down, I realize my feet are actually stuck in a high-heeled position, and they refuse to flex, like, at all. *giggle* I guess it's only slutty heels for me from now on, not that I mind, since men seem to love it when I strut around in heels, and stilettos make my bubble butt look AMAZING.")
+					elseif (daysSinceEnslavement==13)
+						SLH_Control.playRandomSound(BimboActor)
+						debug.messagebox("Ouchie! Those meanie tattoo needles are back again, this time right above my smooth, slutty slit. *pout* I guess I still don't look slutty enough? The new tattoo looks like a...a...mountain? Oh, *giggle* I'm so dumb, I'm like, reading it upside down. I think it says umm...IN-INS...INS-E.R..T COCK, with umm, an arrow? Whatever that means. Ohhh!! I think it's, like, umm, a secret message for the, um, super smart men who use my pussy? *giggle* I'll let the men figure it out, my job is to spread my legs and look pretty. Actually, I should probably, like, let everyone cum in my pussy anyways since, umm...umm...a good bimbo always begs men to cum inside her. That's like, a rule!")
+					elseif (daysSinceEnslavement==14)
+						SLH_Control.playRandomSound(BimboActor)
+						debug.messagebox("Ouuuchie! The evil piercing needle is back! I think I totally caught a glimpse of it when it pierced my swollen nipples. Ohhh, those golden barbells are sooo slutty, they are, like, totally the perfect accessory for my bimbo nips. Not that I've had any trouble keeping them hard, but these would definitely make sure my slutty nips stay hard *giggle* all the time. Besides, I should't complain since it's helping me make my body more fuckable. Men are so strong and dominant when they fuck me, like I'm some fucktoy to be used for THEIR pleasure. I can't believe I used to fantasize about fucking women, being fucked is so much better! *giggle*")
+					elseif (daysSinceEnslavement==15)
+						SLH_Control.playRandomSound(BimboActor)
+						debug.messagebox("Yay! Mr. Needle is back! I came this time when the thick *giggle* needle slowly pierced my clitty. It was, like, sooooo sensitive, I think I umm, lost count of my orgasms and passed out? When I woke up, I found a SUUUPER shiny and slutty barbell in my clitty. It's solid gold too! Nothing but the best for my slutty nub! The weight of the barbell also pulls my little clitty out of its hood, so men can see the extent of my modified body! This piercing is like, perfect for showing off my new clitty, and the golden barbell is so slutty and umm, fu-func...functions good! It, like, totally matches my other lewd piercings. Thank you Mr. Needle, for making my body more slutty and fuckable! <3")				
+					endif
+				else
+					; Third person thought
+					; Male to female bimbo
+					if (daysSinceEnslavement==1)
+						debug.messagebox("Your boobs are growing larger every day. You find it more and more difficult to resist cupping them and feeling their weight in your hand. If they grow any larger, they will make using bows and armors a lot more difficult. That's alright though.. bimbos don't need to fight. They get others to fight for the right to use them.")
+					elseif (daysSinceEnslavement==2)
+						debug.messagebox("Your lips are full and feel parched if they are not frequently coated with semen. Who knew semen tasted so good. A good bimbo doesn't let a drop go to waste. It has to land on her or better, deep inside.")
+					elseif (daysSinceEnslavement==3)
+						debug.messagebox("Your cock is shrinking and getting more sensitive every day. Squeezing your legs and rubbing it frequently only provide temporary relief and wets your expanding vagina. Don't worry about your cock little bimbo... you will get plenty of cocks to squeeze.")
+					elseif (daysSinceEnslavement==4)
+						debug.messagebox("Everything around you looks so confusing and difficult. Except for sex. Sex is easy and fun. Being horny makes your hand shake and your legs weak with anticipation. Being a slut is one of the many perks of being a bimbo.")
+					endif
+				endIf
+			Else
+				If (Utility.RandomInt(0,100) <= (StorageUtil.GetFloatValue(BimboActor, "_SLH_fHormoneBimbo") as Int)) || (StorageUtil.GetIntValue(none, "_SLH_iBimboPlusON") == 1)
+					; First person thought
 					SLH_Control.playGiggle(BimboActor)
-	            	debug.messagebox("I wake up to find my toenails the same shade of glittery, girly pink that just HAPPEN to perfectly match my fingers. *sigh*... what's another thing on top of everything else... I still haven't been able to figure out what's happening to my body, and my cock is definitely shrinking, though I guess it's not such a bad thing, since it's becoming so much more pleasurable to play with, I can almost cum instantly when I pinch and squeeze my little cli..cock with those slutty nails - not that I've ever tried, Gods no!")
-	            elseif (daysSinceEnslavement==6)
-	            	SLH_Control.playGiggle(BimboActor)
-	            	debug.messagebox("This curse is definitely doing something to my strength. The weapons I used to wield with ease now seem so big and cumbersome. *pout* Why can't blacksmiths make smaller, daintier weapons? It's not like everyone can swing a giant claymore like those Companions... Melee combat is sooo icky anyways, all that blood and gore are going to ruin my clothes!")
-	            elseif (daysSinceEnslavement==7)
-	            	SLH_Control.playMoan(BimboActor)
-	            	debug.messagebox("I woke up to a sharp, stabbing pain in my ears. In my groggy state, I discovered two shiny, golden studs piercing my earlobes. I mean, earrings aren't so bad, right? Lots of strong, burly men have pierced ears, though admittedly nothing so feminine and dainty as mine. B-but I think these earrings are made of solid gold, that's something, right? Like, I can totally pull off the look if I wanted to.")
-	            elseif (daysSinceEnslavement==8)
-					SLH_Control.playMoan(BimboActor)
-	            	debug.messagebox("Ouchie! I just felt a series of unpleasant, rapid pinpricks on my lower back, like I'm being stabbed by a bunch of MEAN needles. Since I can't see my behind *giggle*, I guess this minor inconvenience is the price I pay to look pretty. Speaking of pretty, my cock looks so soft and adorable now that those UGLY balls have melted into my crotch. Gods, I'm getting horny thinking about the naughty things I want to do to my cute little cock. Maybe I should tease it again tonight *giggle*")
-	            elseif (daysSinceEnslavement==9)
-	            	SLH_Control.playMoan(BimboActor)
-	            	debug.messagebox("Owww... I just felt more pinpricks on my lower back, I guess my old tattoo isn't slutty enough? Boooo... I wish getting a tattoo isn't so uncomfortable! Until my new tattoos heal, I'll have to lie on my side when I sleep, and my breasts keep getting in the way. Maybe I should ask a girl for advice? ")
-	            elseif (daysSinceEnslavement==10)
-	            	SLH_Control.playMoan(BimboActor)
-	            	debug.messagebox("I happen to be on my back *giggle* when I felt the familiar pinpricks on my tummy, so I moved my boobies to the side to see how the slutty tattoo is applied. So, umm... the ink like, just appeared on my skin like magic! Maybe it's con...conju-something magic? *sigh* If only I was smart enough to join the College.  Gosh, thinking is making my head hurt. I guess the men are right, I should think less, and suck more (good girls always swallow! <3). To that end, I now have a suuuper slutty BIMBO FUCKTOY tattoo right above my boy clit! Yay!")
-	            elseif (daysSinceEnslavement==11)
-					SLH_Control.playRandomSound(BimboActor)
-	            	debug.messagebox("Ooouchie! Another stab, this time right above my navel! Why can't getting a piercing be more pleasant? I mean, I'm not complaining, since my new navel stud looks suuuper hawt, oh wait, I think I just did, I'm such a silly girl sometimes *giggle*. Ohhh, I think my boy clit likes it too. Mhmmm, clit. I can't believe I used to like having a big, dangly thing between my legs, this soft and cute clit is so much better - it throbs like crazy too, especially when big, strong men pinch and squeeze it. *giggle* I think I'm getting turned on again. I love how my boy clit stays nice and soft no matter what...")
-	            elseif (daysSinceEnslavement==12)
-	            	SLH_Control.playRandomSound(BimboActor)
-	            	debug.messagebox("Yay! My boy clit has shrunk so much that a warm, inviting slit has appeared underneath it. Ohhh, I know! I man once told me that sluts have clitties and titties, so I'm going to call her clitty *giggle*. Now I just need to find a real man to help me pop my cherry *giggle*. As I tried to stand, my silly, clumsy feet refuse to cooperate and I fell onto my butt like the ditzy bimbo that I am. As I look down, I realize my feet are actually stuck in a high-heeled position, and they refuse to flex, like, at all. *giggle* I guess it's only slutty heels for me from now on, not that I mind, since men seem to love it when I strut around in heels, and stilettos make my bubble butt look AMAZING.")
-	            elseif (daysSinceEnslavement==13)
-	            	SLH_Control.playRandomSound(BimboActor)
-	            	debug.messagebox("Ouchie! Those meanie tattoo needles are back again, this time right above my smooth, slutty slit. *pout* I guess I still don't look slutty enough? The new tattoo looks like a...a...mountain? Oh, *giggle* I'm so dumb, I'm like, reading it upside down. I think it says umm...IN-INS...INS-E.R..T COCK, with umm, an arrow? Whatever that means. Ohhh!! I think it's, like, umm, a secret message for the, um, super smart men who use my pussy? *giggle* I'll let the men figure it out, my job is to spread my legs and look pretty. Actually, I should probably, like, let everyone cum in my pussy anyways since, umm...umm...a good bimbo always begs men to cum inside her. That's like, a rule!")
-	            elseif (daysSinceEnslavement==14)
-					SLH_Control.playRandomSound(BimboActor)
-	            	debug.messagebox("Ouuuchie! The evil piercing needle is back! I think I totally caught a glimpse of it when it pierced my swollen nipples. Ohhh, those golden barbells are sooo slutty, they are, like, totally the perfect accessory for my bimbo nips. Not that I've had any trouble keeping them hard, but these would definitely make sure my slutty nips stay hard *giggle* all the time. Besides, I should't complain since it's helping me make my body more fuckable. Men are so strong and dominant when they fuck me, like I'm some fucktoy to be used for THEIR pleasure. I can't believe I used to fantasize about fucking women, being fucked is so much better! *giggle*")
-	            elseif (daysSinceEnslavement==15)
-	            	SLH_Control.playRandomSound(BimboActor)
-	            	debug.messagebox("Yay! Mr. Needle is back! I came this time when the thick *giggle* needle slowly pierced my clitty. It was, like, sooooo sensitive, I think I umm, lost count of my orgasms and passed out? When I woke up, I found a SUUUPER shiny and slutty barbell in my clitty. It's solid gold too! Nothing but the best for my slutty nub! The weight of the barbell also pulls my little clitty out of its hood, so men can see the extent of my modified body! This piercing is like, perfect for showing off my new clitty, and the golden barbell is so slutty and umm, fu-func...functions good! It, like, totally matches my other lewd piercings. Thank you Mr. Needle, for making my body more slutty and fuckable! <3")				
-	            endif
-	        else
-				; Third person thought
+					; Female to female bimbo
+					if (daysSinceEnslavement==1)
+						SLH_Control.playChuckle(BimboActor)
+						debug.messagebox("My lips feel swollen, and are somehow a bit redder than before. They also feel quite tingly and pleasant when I brush my fingers against them - accidentally of course! Maybe they're bruised somehow? I wonder if I should be worried...  ")
+					elseif (daysSinceEnslavement==2)
+						SLH_Control.playChuckle(BimboActor)
+						debug.messagebox("This is definitely getting weirder! My eyelids felt a bit numb and tingly.. and sticky too, like I'm sporting dark, slutty eyeshadow that has so far managed to thwart all my removal attempts. Oh Gods... what are the others going to think? How am I supposed command respect when I look like this?!")
+					elseif (daysSinceEnslavement==3)
+						SLH_Control.playChuckle(BimboActor)
+						debug.messagebox("This is ridiculous! My hair has lightened overnight into a shade of tacky, shimmering, platinum blonde that, of course, couldn't be washed off, and seems to remain bright and shiny regardless of how dirty it gets. Worse, I think my vagina is becoming really sensitive, especially my clitoris, which seems to become more sensitive with each passing day. My breeches feel too rough and restrictive, and squeezing my thighs only provides temporary reprieve to this maddening sensation. I got to find a way to stop this!")
+					elseif (daysSinceEnslavement==4)
+						SLH_Control.playGiggle(BimboActor)
+						debug.messagebox("Nonononono... Why is this happening to me?! It's not enough that I wake up every morning to find my slutty makeup perfectly re-applied without a smudge, I now find myself with gaudy, pink fingernails that seem tougher than any armor - not that I've had much use for armors lately, what with my slutty looks and all. Everything now looks so confusing and difficult, maybe I should find a smart, tough m..ma..companion to fight for me...")
+					elseif (daysSinceEnslavement==5)
+						SLH_Control.playGiggle(BimboActor)
+						debug.messagebox("I wake up to find my toenails the same shade of glittery pink that just HAPPEN to perfectly match my fingers. *sigh*... what's another change on top of everything else... I still haven't been able to figure out what's happening to my body, and my clit is definitely far more sensitive than before, though I guess it's not such a bad thing, since my clit's becoming so much more pleasurable to play with; I can almost cum instantly when I pinch and squeeze the little nub - not that I've tried! ")
+					elseif (daysSinceEnslavement==6)
+						SLH_Control.playGiggle(BimboActor)
+						debug.messagebox("This curse is definitely doing something to my strength. The weapons I used to wield with ease now seem so big and cumbersome. *pout* Why can't blacksmiths make smaller, daintier weapons? It's not like everyone has the strength to wield a giant sword... While I'm on the subject, why are armors so heavy and bulky? I can barely lift my weapons as-is. I have, however, found a solution to all the distracting rubbings against my ever sensitive clit: I made a small, round cutout on my breeches to completely expose my swollen clit, and that seems to remove most pressures on the poor nub. ")
+					elseif (daysSinceEnslavement==7)
+						SLH_Control.playMoan(BimboActor)
+						debug.messagebox("I woke up to sharp, stabbing pain in my ears. In my groggy state, I was a bandit I could suck, but when I felt around my ears, I discovered two shiny, golden studs piercing my earlobes. I mean, earrings aren't so bad, right? Lots of people have pierced ears, even some men these days wear earrings, though admittedly nothing as dainty or glittery as mine. B-but I think these earrings are made of solid gold, that's something, right? Like, I can totally pull off the look if I wanted to. ")
+					elseif (daysSinceEnslavement==8)
+						SLH_Control.playMoan(BimboActor)
+						debug.messagebox("Ouchie! I just felt a series of unpleasant, rapid pinpricks on my lower back, like I'm being stabbed by a bunch of MEAN needles. Hmm, so I guess that's what getting a tattoo felt like, and above my plump butt too. So, the ink umm, just, kind of appeared on my skin like magic! Maybe it's con..comju...cumju-something magic? I'm probably too dumb to understand how it works.")
+					elseif (daysSinceEnslavement==9)
+						SLH_Control.playMoan(BimboActor)
+						debug.messagebox("Owww, I just felt more pinpricks on my lower back, I guess my old tattoo isn't slutty enough? *pout* I wish getting a tattoo isn't so uncomfortable! Sleeping on my back is completely out of the question until my new tattoos heal, so now I have to lie on my side when I rest, and my boobies keep getting in the way. Who knew having big boobies would be such a hassle, but I guess that's the price I pay to look pretty. Speaking of pretty, my clit looks so adorable all swollen and exposed like this, I wonder why I ever bothered with breeches, since they only hinder a man's access to my clit. For some reason, men seem to HATE it when I hinder their access to my clit in any way. Maybe I should let them tease it again tonight *giggle*")
+					elseif (daysSinceEnslavement==10)
+						SLH_Control.playMoan(BimboActor)
+						debug.messagebox("I happened to be on my back *giggle* when I felt the familiar pinpricks on my tummyI had to pull my boobies to the side so I can see how the slutty tattoo is applied. I should think less, and suck more (good girls always swallow! <3). Men are so nice to me when I smile and let them play with my big boobies. Oh and I now have a suuuper slutty BIMBO FUCKTOY tattoo on my tummy to show off to all the cute boys! Yay!")
+					elseif (daysSinceEnslavement==11)
+						SLH_Control.playRandomSound(BimboActor)
+						debug.messagebox("Ooouchie! Another stab, this time right above my navel! Why can't getting a piercing be more pleasant? I mean, I'm not complaining, since my new navel stud looks suuuper hawt, oh wait, I think I just did, I'm such a silly bimbo sometimes *giggle*. Yay! The piercing even glitters, this will definitely help me attract more boys. Ohhh, I think my clit likes it too. Mhmmm, clit. I think a nice man once told me that sluts don't have clits, they have clitties, which rhymes with boobies, wait... no, not boobies, titties. I have a clitty and two titties. I'm like, super smart!")
+					elseif (daysSinceEnslavement==12)
+						SLH_Control.playRandomSound(BimboActor)
+						debug.messagebox("I can't believe I used to hate having random men touch my clitty, they are so kind and gentle when they pinch and squeeze my exposed nub, and I always get the BEST orgasms when someone else plays with my body! My cute, pea sized clitty is sooo sensitive, I can't even breathe on it without shuddering all over! As I tried to stand, my silly, clumsy feet refuse to cooperate and I fell onto my butt like the ditzy bimbo that I am. *giggle* As I look down, I realize my feet are actually stuck in a slutty high-heeled position! They seem to refuse to flex, like, at all. *giggle* I guess it's only super slutty heels for me from now on. Not that I mind, since I get so many compliments when I wear stilettos, and they make my bubble butt look AMAZING and super fuckable.")
+					elseif (daysSinceEnslavement==13)
+						SLH_Control.playRandomSound(BimboActor)
+						debug.messagebox("Ouchie! Those mean tattoo needles are back again, this time right above my smooth, slutty slit. *pout* I guess I still don't look slutty enough? The new tattoo looks like a...mountain? Oh, *giggle* I'm so dumb, I'm like, reading it upside down. I think it says umm...IN-INS...INS-E.R..T COCK, with umm, an arrow? Whatever that means. Ohhh!! I think it's, like, umm, a secret message for the, um, super smart men who use my pussy? I'll let the men figure it out, my job is to spread my legs and look pretty. Like, the first one to figure it out gets to cum in my pussy! Actually, I should probably, like, let everyone cum in my pussy anyways since, umm...umm...a good bimbo always begs men to cum inside her. That's like, a rule!")
+					elseif (daysSinceEnslavement==14)
+						SLH_Control.playRandomSound(BimboActor)
+						debug.messagebox("Ouuuchie! The evil piercing needle is back! I think I totally caught a glimpse of it when it pierced my swollen nipples. Ohhh, those golden barbells are sooo slutty, they are, like, totally the perfect accessory for my bimbo titties. Not that I've been having trouble keeping my nipples hard, *giggle* but these would definitely make sure my slutty nips stay hard *giggle* all the time. Besides, I should't complain since it's helping me make my body more fuckable. Like what my men kept telling me, I should always accept modifications that make my body more enjoyable to fuck. *giggle* Men are so nice when they are fucking me. <3")
+					elseif (daysSinceEnslavement==15)
+						SLH_Control.playRandomSound(BimboActor)
+						debug.messagebox("Yay! Mr. Needle is back! I totally felt it this time when the thick *giggle* needle slowly pierced my red, swollen clitty. My clitty was, like, sooooo sensitive, I totally came over and over on the needle like a dirty slut in heat, and I think I umm, lost count and passed out? When I woke up, I found a SUUUPER shiny and slutty barbell in my clitty. It's solid gold too! The weight of the barbell also pulls my little clitty out of its hood, so men don't have to make me to peel back my hood when they abuse my clitty! I'm no good at it anyways since my bimbo nails always get in the way. This piercing is like, so slutty and umm, fu-func...functions good!")				
+					endif
+				Else
+					; Third person thought
+					if (daysSinceEnslavement==1)
+						debug.messagebox("Your boobs are growing larger every day and your hair is definitely blonde now. Forget about wearing armor and using bows, you will soon have to rely on your charms to get a strong warrior to fight for you... maybe he will give you a good fuck too.")
+					elseif (daysSinceEnslavement==2)
+						debug.messagebox("The constant tingle in your tits is only relieved after they have been sucked on for a long time, or tweaked.. or pinched with your long pink nails. Damn.. just thinking about it made them tingle again.")
+					elseif (daysSinceEnslavement==3)
+						debug.messagebox("Forget about using swords as well. You constantly crave only one kind of sword now... the hard and throbbing kind. There is nothing a good bimbo wouldn't do for a good cock in her hand.. or lips.. or lodged deep inside her.")
+					elseif (daysSinceEnslavement==4)
+						debug.messagebox("Sex is all you can think about now.. you crave it.. your tits crave it.. you lips crave it. Being horny makes your hand shake and your legs weak with anticipation. Being a slut is one of the many perks of being a bimbo.")
+					endif
+				Endif
+			EndIf
+		endif
 
-	            ; Male to female bimbo
-	            if (daysSinceEnslavement==1)
-	            	debug.messagebox("Your boobs are growing larger every day. You find it more and more difficult to resist cupping them and feeling their weight in your hand. If they grow any larger, they will make using bows and armors a lot more difficult. That's alright though.. bimbos don't need to fight. They get others to fight for the right to use them.")
-	            elseif (daysSinceEnslavement==2)
-	            	debug.messagebox("Your lips are full and feel parched if they are not frequently coated with semen. Who knew semen tasted so good. A good bimbo doesn't let a drop go to waste. It has to land on her or better, deep inside.")
-	            elseif (daysSinceEnslavement==3)
-	            	debug.messagebox("Your cock is shrinking and getting more sensitive every day. Squeezing your legs and rubbing it frequently only provide temporary relief and wets your expanding vagina. Don't worry about your cock little bimbo... you will get plenty of cocks to squeeze.")
-	            elseif (daysSinceEnslavement==4)
-	            	debug.messagebox("Everything around you looks so confusing and difficult. Except for sex. Sex is easy and fun. Being horny makes your hand shake and your legs weak with anticipation. Being a slut is one of the many perks of being a bimbo.")
-	            endif	        
-	        endIf
-        	
-            if (GV_isTG.GetValue() == 1) && (StorageUtil.GetFloatValue(BimboActor, "_SLH_fSchlong") >= fSchlongMin ) && ( daysSinceEnslavement < 11 )
-                ; StorageUtil.SetFloatValue(BimboActor, "_SLH_fSchlong", StorageUtil.GetFloatValue(BimboActor, "_SLH_fSchlong") * 0.65 - 0.1) 
-                fctBodyshape.alterBodyByPercent(BimboActor, "Schlong", -10.0)
-                BimboActor.SendModEvent("SLHRefresh")
+		if GV_isTG.GetValue() == 1
+			If isMaleToBimbo
+				If (StorageUtil.GetFloatValue(BimboActor, "_SLH_fSchlong") >= StorageUtil.GetFloatValue(BimboActor, "_SLH_fSchlongMin") ) && ( daysSinceEnslavement < 11 )
+					fctBodyshape.alterBodyByPercent(BimboActor, "Schlong", -10.0)
+					BimboActor.SendModEvent("SLHRefresh")
+				elseIf (daysSinceEnslavement >= 12)
+					BimboActor.SendModEvent("SLHRemoveSchlong")
+					Sexlab.TreatAsFemale(BimboActor)
+					_SLH_QST_Bimbo.SetStage(18)
+					SLH_Control.setTGState(BimboActor, FALSE)
+				endif
+			Else
+				If (StorageUtil.GetFloatValue(BimboActor, "_SLH_fSchlong") <= StorageUtil.GetFloatValue(BimboActor, "_SLH_fSchlongMax") ) && ( daysSinceEnslavement < 15 )
+					fctBodyshape.alterBodyByPercent(BimboActor, "Schlong", 10.0)
+					BimboActor.SendModEvent("SLHRefresh")
+				elseif (daysSinceEnslavement >= 16)
+					_SLH_QST_Bimbo.SetStage(16)
+					SLH_Control.setTGState(BimboActor, FALSE)
+				endif
+			EndIf
+		endif
 
-            elseIf (GV_isTG.GetValue() == 1) && (daysSinceEnslavement >= 12 )
-                BimboActor.SendModEvent("SLHRemoveSchlong")
-                Sexlab.TreatAsFemale(BimboActor)
-                _SLH_QST_Bimbo.SetStage(18)
+		iGameDateLastCheck = iDaysPassed
 
-                SLH_Control.setTGState(BimboActor, FALSE)
-            endif
-
-        ElseIf (!isMaleToBimbo) && (daysSinceEnslavement<=15) ; !_SLH_QST_Bimbo.IsStageDone(16) 
- 
- 			if (StorageUtil.GetIntValue(BimboActor, "_SLH_allowBimboRace")==0)
-	            fctBodyshape.alterBodyByPercent(BimboActor, "Weight", 6.0)
-	            fctBodyshape.alterBodyByPercent(BimboActor, "Breast", 6.0)
-	        else
-	            fctBodyshape.alterBodyByPercent(BimboActor, "Weight", 3.0)
-	            fctBodyshape.alterBodyByPercent(BimboActor, "Breast", 3.0)
-	        endif
-
-			If (rollFirstPerson <= (StorageUtil.GetFloatValue(BimboActor, "_SLH_fHormoneBimbo") as Int))  || (StorageUtil.GetIntValue(none, "_SLH_iBimboPlusON") == 1)
-				; First person thought
-				SLH_Control.playGiggle(BimboActor)
-	            ; Female to female bimbo
-	            if (daysSinceEnslavement==1)
-					SLH_Control.playChuckle(BimboActor)
-	            	debug.messagebox("My lips feel swollen, and are somehow a bit redder than before. They also feel quite tingly and pleasant when I brush my fingers against them - accidentally of course! Maybe they're bruised somehow? I wonder if I should be worried...  ")
-	            elseif (daysSinceEnslavement==2)
-					SLH_Control.playChuckle(BimboActor)
-	            	debug.messagebox("This is definitely getting weirder! My eyelids felt a bit numb and tingly.. and sticky too, like I'm sporting dark, slutty eyeshadow that has so far managed to thwart all my removal attempts. Oh Gods... what are the others going to think? How am I supposed command respect when I look like this?!")
-	            elseif (daysSinceEnslavement==3)
-	            	SLH_Control.playChuckle(BimboActor)
-	            	debug.messagebox("This is ridiculous! My hair has lightened overnight into a shade of tacky, shimmering, platinum blonde that, of course, couldn't be washed off, and seems to remain bright and shiny regardless of how dirty it gets. Worse, I think my vagina is becoming really sensitive, especially my clitoris, which seems to become more sensitive with each passing day. My breeches feel too rough and restrictive, and squeezing my thighs only provides temporary reprieve to this maddening sensation. I got to find a way to stop this!")
-	            elseif (daysSinceEnslavement==4)
-	            	SLH_Control.playGiggle(BimboActor)
-	            	debug.messagebox("Nonononono... Why is this happening to me?! It's not enough that I wake up every morning to find my slutty makeup perfectly re-applied without a smudge, I now find myself with gaudy, pink fingernails that seem tougher than any armor - not that I've had much use for armors lately, what with my slutty looks and all. Everything now looks so confusing and difficult, maybe I should find a smart, tough m..ma..companion to fight for me...")
-	            elseif (daysSinceEnslavement==5)
-					SLH_Control.playGiggle(BimboActor)
-	            	debug.messagebox("I wake up to find my toenails the same shade of glittery pink that just HAPPEN to perfectly match my fingers. *sigh*... what's another change on top of everything else... I still haven't been able to figure out what's happening to my body, and my clit is definitely far more sensitive than before, though I guess it's not such a bad thing, since my clit's becoming so much more pleasurable to play with; I can almost cum instantly when I pinch and squeeze the little nub - not that I've tried! ")
-	            elseif (daysSinceEnslavement==6)
-	            	SLH_Control.playGiggle(BimboActor)
-	            	debug.messagebox("This curse is definitely doing something to my strength. The weapons I used to wield with ease now seem so big and cumbersome. *pout* Why can't blacksmiths make smaller, daintier weapons? It's not like everyone has the strength to wield a giant sword... While I'm on the subject, why are armors so heavy and bulky? I can barely lift my weapons as-is. I have, however, found a solution to all the distracting rubbings against my ever sensitive clit: I made a small, round cutout on my breeches to completely expose my swollen clit, and that seems to remove most pressures on the poor nub. ")
-	            elseif (daysSinceEnslavement==7)
-	            	SLH_Control.playMoan(BimboActor)
-	            	debug.messagebox("I woke up to sharp, stabbing pain in my ears. In my groggy state, I was a bandit I could suck, but when I felt around my ears, I discovered two shiny, golden studs piercing my earlobes. I mean, earrings aren't so bad, right? Lots of people have pierced ears, even some men these days wear earrings, though admittedly nothing as dainty or glittery as mine. B-but I think these earrings are made of solid gold, that's something, right? Like, I can totally pull off the look if I wanted to. ")
-	            elseif (daysSinceEnslavement==8)
-					SLH_Control.playMoan(BimboActor)
-	            	debug.messagebox("Ouchie! I just felt a series of unpleasant, rapid pinpricks on my lower back, like I'm being stabbed by a bunch of MEAN needles. Hmm, so I guess that's what getting a tattoo felt like, and above my plump butt too. So, the ink umm, just, kind of appeared on my skin like magic! Maybe it's con..comju...cumju-something magic? I'm probably too dumb to understand how it works.")
-	            elseif (daysSinceEnslavement==9)
-	            	SLH_Control.playMoan(BimboActor)
-	            	debug.messagebox("Owww, I just felt more pinpricks on my lower back, I guess my old tattoo isn't slutty enough? *pout* I wish getting a tattoo isn't so uncomfortable! Sleeping on my back is completely out of the question until my new tattoos heal, so now I have to lie on my side when I rest, and my boobies keep getting in the way. Who knew having big boobies would be such a hassle, but I guess that's the price I pay to look pretty. Speaking of pretty, my clit looks so adorable all swollen and exposed like this, I wonder why I ever bothered with breeches, since they only hinder a man's access to my clit. For some reason, men seem to HATE it when I hinder their access to my clit in any way. Maybe I should let them tease it again tonight *giggle*")
-	            elseif (daysSinceEnslavement==10)
-	            	SLH_Control.playMoan(BimboActor)
-	            	debug.messagebox("I happened to be on my back *giggle* when I felt the familiar pinpricks on my tummyI had to pull my boobies to the side so I can see how the slutty tattoo is applied. I should think less, and suck more (good girls always swallow! <3). Men are so nice to me when I smile and let them play with my big boobies. Oh and I now have a suuuper slutty BIMBO FUCKTOY tattoo on my tummy to show off to all the cute boys! Yay!")
-	            elseif (daysSinceEnslavement==11)
-					SLH_Control.playRandomSound(BimboActor)
-	            	debug.messagebox("Ooouchie! Another stab, this time right above my navel! Why can't getting a piercing be more pleasant? I mean, I'm not complaining, since my new navel stud looks suuuper hawt, oh wait, I think I just did, I'm such a silly bimbo sometimes *giggle*. Yay! The piercing even glitters, this will definitely help me attract more boys. Ohhh, I think my clit likes it too. Mhmmm, clit. I think a nice man once told me that sluts don't have clits, they have clitties, which rhymes with boobies, wait... no, not boobies, titties. I have a clitty and two titties. I'm like, super smart!")
-	            elseif (daysSinceEnslavement==12)
-	            	SLH_Control.playRandomSound(BimboActor)
-	            	debug.messagebox("I can't believe I used to hate having random men touch my clitty, they are so kind and gentle when they pinch and squeeze my exposed nub, and I always get the BEST orgasms when someone else plays with my body! My cute, pea sized clitty is sooo sensitive, I can't even breathe on it without shuddering all over! As I tried to stand, my silly, clumsy feet refuse to cooperate and I fell onto my butt like the ditzy bimbo that I am. *giggle* As I look down, I realize my feet are actually stuck in a slutty high-heeled position! They seem to refuse to flex, like, at all. *giggle* I guess it's only super slutty heels for me from now on. Not that I mind, since I get so many compliments when I wear stilettos, and they make my bubble butt look AMAZING and super fuckable.")
-	            elseif (daysSinceEnslavement==13)
-	            	SLH_Control.playRandomSound(BimboActor)
-	            	debug.messagebox("Ouchie! Those mean tattoo needles are back again, this time right above my smooth, slutty slit. *pout* I guess I still don't look slutty enough? The new tattoo looks like a...mountain? Oh, *giggle* I'm so dumb, I'm like, reading it upside down. I think it says umm...IN-INS...INS-E.R..T COCK, with umm, an arrow? Whatever that means. Ohhh!! I think it's, like, umm, a secret message for the, um, super smart men who use my pussy? I'll let the men figure it out, my job is to spread my legs and look pretty. Like, the first one to figure it out gets to cum in my pussy! Actually, I should probably, like, let everyone cum in my pussy anyways since, umm...umm...a good bimbo always begs men to cum inside her. That's like, a rule!")
-	            elseif (daysSinceEnslavement==14)
-					SLH_Control.playRandomSound(BimboActor)
-	            	debug.messagebox("Ouuuchie! The evil piercing needle is back! I think I totally caught a glimpse of it when it pierced my swollen nipples. Ohhh, those golden barbells are sooo slutty, they are, like, totally the perfect accessory for my bimbo titties. Not that I've been having trouble keeping my nipples hard, *giggle* but these would definitely make sure my slutty nips stay hard *giggle* all the time. Besides, I should't complain since it's helping me make my body more fuckable. Like what my men kept telling me, I should always accept modifications that make my body more enjoyable to fuck. *giggle* Men are so nice when they are fucking me. <3")
-	            elseif (daysSinceEnslavement==15)
-	            	SLH_Control.playRandomSound(BimboActor)
-	            	debug.messagebox("Yay! Mr. Needle is back! I totally felt it this time when the thick *giggle* needle slowly pierced my red, swollen clitty. My clitty was, like, sooooo sensitive, I totally came over and over on the needle like a dirty slut in heat, and I think I umm, lost count and passed out? When I woke up, I found a SUUUPER shiny and slutty barbell in my clitty. It's solid gold too! The weight of the barbell also pulls my little clitty out of its hood, so men don't have to make me to peel back my hood when they abuse my clitty! I'm no good at it anyways since my bimbo nails always get in the way. This piercing is like, so slutty and umm, fu-func...functions good!")				
-	            endif
-	        Else
-                ; Third person thought
-	            if (daysSinceEnslavement==1)
-	            	debug.messagebox("Your boobs are growing larger every day and your hair is definitely blonde now. Forget about wearing armor and using bows, you will soon have to rely on your charms to get a strong warrior to fight for you... maybe he will give you a good fuck too.")
-	            elseif (daysSinceEnslavement==2)
-	            	debug.messagebox("The constant tingle in your tits is only relieved after they have been sucked on for a long time, or tweaked.. or pinched with your long pink nails. Damn.. just thinking about it made them tingle again.")
-	            elseif (daysSinceEnslavement==3)
-	            	debug.messagebox("Forget about using swords as well. You constantly crave only one kind of sword now... the hard and throbbing kind. There is nothing a good bimbo wouldn't do for a good cock in her hand.. or lips.. or lodged deep inside her.")
-	            elseif (daysSinceEnslavement==4)
-	            	debug.messagebox("Sex is all you can think about now.. you crave it.. your tits crave it.. you lips crave it. Being horny makes your hand shake and your legs weak with anticipation. Being a slut is one of the many perks of being a bimbo.")
-	            endif
-	        Endif
-  
-            ; bimboDailyProgressiveTransformation(BimboActor, true) ;[mod]
-            if (GV_isTG.GetValue() == 1) && (StorageUtil.GetFloatValue(BimboActor, "_SLH_fSchlong") <= fSchlongMax )  && ( daysSinceEnslavement < 15 )
-                ; StorageUtil.SetFloatValue(BimboActor, "_SLH_fSchlong", 0.1 + StorageUtil.GetFloatValue(BimboActor, "_SLH_fSchlong") * 1.2 ) 
-                fctBodyshape.alterBodyByPercent(BimboActor, "Schlong", 10.0)
-                BimboActor.SendModEvent("SLHRefresh")
-
-            elseif (GV_isTG.GetValue() == 1) && (daysSinceEnslavement >= 16 )
-                _SLH_QST_Bimbo.SetStage(16)
-
-                SLH_Control.setTGState(BimboActor, FALSE)
-            endif
-
-        endif
-
-        iGameDateLastCheck = iDaysPassed
-
-    else
-		; fctUtil.tryRandomBimboThoughts()
-    Endif
-
-	RegisterForSingleUpdateGameTime(1)
-
-	updateClumsyBimbo() ;[mod] clumsy bimbo
+		RegisterForSingleUpdateGameTime(24)
+	Endif
 EndEvent
 
 Event OnActorAction(int actionType, Actor akActor, Form source, int slot)
@@ -398,8 +348,6 @@ Event OnUpdate()
 	Endif
 
 	Utility.Wait(0.1) ;To prevent Update on Menu Mode
-
-	BimboActor= BimboAliasRef.GetReference() as Actor
 
 	; Safeguard - Evaluate the rest only when transformation happened
 	if (StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") == -1)
@@ -1490,7 +1438,7 @@ function bimboDailyProgressiveTransformation(actor bimbo, bool isTG)
 
 	;level 13: pubic tattoo, bigger butt
 	if (transformationLevel == 13)
-		if !isMale ;no schlong on the way
+		if !fctUtil.isMale(BimboActor) ;no schlong on the way
 			Debug.Notification("You moan in surprise as the invisible tattoo needles work their way down your smooth mound.")
 			BimboTattoo(bimbo,"Bimbo","Pubic Tattoo",true,true,false)
 			SLH_Control.playMoan(bimbo)
