@@ -2565,6 +2565,7 @@ Function triggerEstrusChaurusBirth( Actor kActor, String  sParasite, Int iBirthI
 	Debug.Trace("[SLP] triggerEstrusChaurusBirth - Actor: " + kActor)
 	Debug.Trace("[SLP] 		sParasite: " + sParasite)
 	Debug.Trace("[SLP] 		fBirthItem: " + fBirthItem)
+	Debug.Trace("[SLP] 		iBirthItemCount: " + iBirthItemCount)
 
 	If (fBirthItem != None)
 		; Testing EC birth event

@@ -247,25 +247,26 @@ Event OnUpdate()
 		
 		If (fctParasites.isInfectedByString( PlayerActor,  "SpiderPenis" ))
 			iParasiteDuration = daysPassed - StorageUtil.GetIntValue(PlayerActor, "_SLP_iSpiderPenisDate")
-			If (Utility.RandomInt(0,100) > (100 - (iParasiteDuration * 10) ) )
+			; Force at least 5 days with the parasite. Increase chance of expelling parasite each day after 5 days
+			If (Utility.RandomInt(0,95) > (100 - (iParasiteDuration / 2) ) )
 				fctParasites.tryParasiteNextStage(PlayerActor, "SpiderPenis")
 			endif
 
 		ElseIf (fctParasites.isInfectedByString( PlayerActor,  "SpiderEgg" ))
 			iParasiteDuration = daysPassed - StorageUtil.GetIntValue(PlayerActor, "_SLP_iSpiderEggDate")
-			If (Utility.RandomInt(0,100) > (100 - (iParasiteDuration * 10) ) )
+			If (Utility.RandomInt(0,95) > (100 - (iParasiteDuration / 2) ) )
 				fctParasites.tryParasiteNextStage(PlayerActor, "SpiderEgg")
 			endif
 
 		ElseIf (fctParasites.isInfectedByString( PlayerActor,  "ChaurusWorm" ))
 			iParasiteDuration = daysPassed - StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusWormDate")
-			If (Utility.RandomInt(0,100) > (100 - (iParasiteDuration * 10) ) )
+			If (Utility.RandomInt(0,95) > (100 - (iParasiteDuration / 2) ) )
 				fctParasites.tryParasiteNextStage(PlayerActor, "ChaurusWorm")
 			endif
 
 		ElseIf (fctParasites.isInfectedByString( PlayerActor,  "ChaurusWormVag" ))
 			iParasiteDuration = daysPassed - StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusWormVagDate")
-			If (Utility.RandomInt(0,100) > (100 - (iParasiteDuration * 10) ) )
+			If (Utility.RandomInt(0,95) > (100 - (iParasiteDuration / 2) ) )
 				fctParasites.tryParasiteNextStage(PlayerActor, "ChaurusWormVag")
 			endif
 		Endif
