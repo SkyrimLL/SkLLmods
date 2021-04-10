@@ -79,6 +79,7 @@ Event OnPlayerLoadGame()
 		SLH_Control._updatePlayerState()
 		; debug.Notification(" Clumsy mod: " + StorageUtil.GetFloatValue(kPlayer, "_SLH_fBimboClumsyMod" ))
 
+		RegisterForSingleUpdateGameTime(1)
     	RegisterForSingleUpdate( 10 )
     ; else
 	; 	debugTrace(" game loaded, is already updating (is it?)")
@@ -96,12 +97,50 @@ Function initBimbo()
 
 	debug.notification("(Giggle)")
 	
+	RegisterForSingleUpdateGameTime(1)
 	RegisterForSingleUpdate( 10 )
 EndFunction
 
-;===========================================================================
-;[mod] stumbling happens here
-;===========================================================================
+
+Event OnUpdate()
+	; Safeguard - Exit if alias not set
+	if (StorageUtil.GetIntValue(Game.GetPlayer(), "_SLH_iBimbo")==0)
+		; Debug.Notification( "[SLH] Bimbo status update: " + StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") as Int )
+		Debug.Trace( "[SLH] Bimbo alias is None: " )
+		; try again later
+		RegisterForSingleUpdate( 10 )
+		Return
+	Endif
+
+	Utility.Wait(0.1) ;To prevent Update on Menu Mode
+
+	; Safeguard - Evaluate the rest only when transformation happened
+	if (StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") == -1)
+		; debugTrace(" bimbo OnUpdate, No TF Date")
+		RegisterForSingleUpdate( 10 )
+		Return
+	Endif
+
+	If (StorageUtil.GetIntValue(BimboActor, "_SD_iSlaveryExposure") <= 150)
+		StorageUtil.SetIntValue(BimboActor, "_SD_iSlaveryExposure", 150)
+	EndIf
+
+	StorageUtil.SetIntValue(BimboActor, "_SD_iSlaveryLevel", 6)
+	If (StorageUtil.GetIntValue(BimboActor, "_SD_iDom") > 0)
+		Debug.Messagebox("A wave of submissiveness washes over you. A bimbo doesn't need to think, she needs only to server her master as a perfect slave. Remember your place little slut.")
+		StorageUtil.SetIntValue(BimboActor, "_SD_iDom", 0)
+	EndIf
+	If (StorageUtil.GetIntValue(BimboActor, "_SD_iSub") < 0)
+		StorageUtil.SetIntValue(BimboActor, "_SD_iSub", 0)
+	EndIf
+
+	if (isBimboClumsyLegs)
+		clumsyBimboLegs(BimboActor)
+	endif
+
+	RegisterForSingleUpdate(5.4)
+EndEvent
+
 Event OnUpdateGameTime()
 	; Safeguard - Exit if alias not set
 	; Safeguard - Evaluate the rest only when transformation happened
@@ -143,8 +182,11 @@ Event OnUpdateGameTime()
 	StorageUtil.SetIntValue(BimboActor, "_SLH_bimboTransformGameDays", daysSinceEnslavement)
 	StorageUtil.SetIntValue(BimboActor, "_SLH_iAllowBimboThoughts", 1)
 
+	Debug.Trace( "[SLH] Bimbo status update - Days transformed: " + daysSinceEnslavement )
+	Debug.Trace( "[SLH]  				   iDaysSinceLastCheck: " + iDaysSinceLastCheck )
+
 	If iDaysSinceLastCheck >= 1
-		Debug.Trace( "[SLH] Bimbo status update - Days transformed: " + daysSinceEnslavement )
+		; Debug.Trace( "[SLH] Bimbo status update - Days transformed: " + daysSinceEnslavement )
 
 		bimboDailyProgressiveTransformation(daysSinceEnslavement, transformationLevel)
 
@@ -158,7 +200,7 @@ Event OnUpdateGameTime()
 			endif
 
 			If isMaleToBimbo
-				If (Utility.RandomInt(0,100) <= (StorageUtil.GetFloatValue(BimboActor, "_SLH_fHormoneBimbo") as Int)) || (StorageUtil.GetIntValue(none, "_SLH_iBimboPlusON") == 1)
+				If (Utility.RandomInt(0,100) <= (StorageUtil.GetFloatValue(BimboActor, "_SLH_fHormoneBimbo") as Int))  || (daysSinceEnslavement>=5)
 					; First person thought
 					; Male to female bimbo
 					if (daysSinceEnslavement==1)
@@ -221,7 +263,7 @@ Event OnUpdateGameTime()
 					endif
 				endIf
 			Else
-				If (Utility.RandomInt(0,100) <= (StorageUtil.GetFloatValue(BimboActor, "_SLH_fHormoneBimbo") as Int)) || (StorageUtil.GetIntValue(none, "_SLH_iBimboPlusON") == 1)
+				If (Utility.RandomInt(0,100) <= (StorageUtil.GetFloatValue(BimboActor, "_SLH_fHormoneBimbo") as Int)) || (daysSinceEnslavement>=5)
 					; First person thought
 					SLH_Control.playGiggle(BimboActor)
 					; Female to female bimbo
@@ -284,6 +326,13 @@ Event OnUpdateGameTime()
 					endif
 				Endif
 			EndIf
+		else
+			If (Utility.RandomInt(0,100) <= (StorageUtil.GetFloatValue(BimboActor, "_SLH_fHormoneBimbo") as Int))
+				debug.messagebox("I feel so fuzzy and warm when my body tingles like that!")
+			else
+				debug.messagebox("Your body betrays you and rewires itself.")
+			endif
+			SLH_Control.playGiggle(BimboActor)
 		endif
 
 		if GV_isTG.GetValue() == 1
@@ -333,44 +382,6 @@ Event OnActorAction(int actionType, Actor akActor, Form source, int slot)
 	EndIf
 EndEvent
 
-Event OnUpdate()
-	; Safeguard - Exit if alias not set
-	if (StorageUtil.GetIntValue(Game.GetPlayer(), "_SLH_iBimbo")==0)
-		; Debug.Notification( "[SLH] Bimbo status update: " + StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") as Int )
-		Debug.Trace( "[SLH] Bimbo alias is None: " )
-		; try again later
-		RegisterForSingleUpdate( 10 )
-		Return
-	Endif
-
-	Utility.Wait(0.1) ;To prevent Update on Menu Mode
-
-	; Safeguard - Evaluate the rest only when transformation happened
-	if (StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") == -1)
-		; debugTrace(" bimbo OnUpdate, No TF Date")
-		RegisterForSingleUpdate( 10 )
-		Return
-	Endif
-
-	If (StorageUtil.GetIntValue(BimboActor, "_SD_iSlaveryExposure") <= 150)
-		StorageUtil.SetIntValue(BimboActor, "_SD_iSlaveryExposure", 150)
-	EndIf
-
-	StorageUtil.SetIntValue(BimboActor, "_SD_iSlaveryLevel", 6)
-	If (StorageUtil.GetIntValue(BimboActor, "_SD_iDom") > 0)
-		Debug.Messagebox("A wave of submissiveness washes over you. A bimbo doesn't need to think, she needs only to server her master as a perfect slave. Remember your place little slut.")
-		StorageUtil.SetIntValue(BimboActor, "_SD_iDom", 0)
-	EndIf
-	If (StorageUtil.GetIntValue(BimboActor, "_SD_iSub") < 0)
-		StorageUtil.SetIntValue(BimboActor, "_SD_iSub", 0)
-	EndIf
-
-	if (isBimboClumsyLegs)
-		clumsyBimboLegs(BimboActor)
-	endif
-
-	RegisterForSingleUpdate(5.4)
-EndEvent
 
 Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile, bool abPowerAttack, bool abSneakAttack, bool abBashAttack, bool abHitBlocked)
 	; Safeguard - Exit if alias not set
