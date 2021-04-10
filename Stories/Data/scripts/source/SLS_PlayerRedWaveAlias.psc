@@ -298,7 +298,7 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 	Actor PlayerActor= PlayerAlias.GetReference() as Actor
 	Float fBreastScale 
 	Int iGoldAmount
- 	Int randomNum = Utility.RandomInt(1, 10)
+ 	Int randomNum  
 
  
 	if !Self || !SexLab   || (StorageUtil.GetIntValue(none, "_SLS_iStoriesPlayerRedWave")==0)
@@ -325,6 +325,7 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 		int idx = 0
 		while idx < actors.Length
 			if (!(actors[idx] == PlayerActor))
+				randomNum = Utility.RandomInt(1, 10)
 				iGoldAmount += ( ((randomNum) * (actors[idx].GetRelationshipRank(PlayerActor)+1)  + 10)) 
 			endif
 			idx += 1
