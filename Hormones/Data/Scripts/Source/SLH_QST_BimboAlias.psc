@@ -594,9 +594,7 @@ endFunction
 ;called to start the clumsiness
 ;===========================================================================
 function updateClumsyBimbo()
-	int rollFirstPerson  = Utility.RandomInt(0,100)
-	BimboActor= BimboAliasRef.GetReference() as Actor
-	If (rollFirstPerson <= (StorageUtil.GetFloatValue(Game.GetPlayer(), "_SLH_fHormoneBimbo") as Int))
+	If (Utility.RandomInt(0,100) <= (StorageUtil.GetFloatValue(BimboActor, "_SLH_fHormoneBimbo") as Int))
 		; First person thought
 	    if (isBimboClumsyHands && !isClumsyHandsRegistered)
 	    	isClumsyHandsRegistered = True
