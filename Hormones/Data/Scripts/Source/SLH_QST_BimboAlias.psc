@@ -442,11 +442,11 @@ int[] function dropWeapons(Actor pl, int Slot = -1, float chanceMult = 1.0)
 	; By default, drops only stuff on left hand, if both == true, also right hand
 	; returns an array of dropped item counts, weapon & shield at 0, spells at 1
 	; debugTrace(" dropWeapons(both = "+both+", chanceMult = "+chanceMult+")")
-	
+
 	Utility.Wait(0.1) ;To prevent Update on Menu Mode
 
 	; Calculate the drop chance
-	float spellDropChance = ( 101.0 - ( pl.GetAvPercentage("Stamina") * 100.0 ) ) ; inverse of stamina percentage
+	float spellDropChance = ( 101.0 - ( pl.GetActorValuePercentage("Stamina") * 100.0 ) ) ; inverse of stamina percentage
 	;int arousal = 0
 	;if (pl != None)
 	;	arousal = slaUtil.GetActorArousal(pl)
@@ -457,9 +457,9 @@ int[] function dropWeapons(Actor pl, int Slot = -1, float chanceMult = 1.0)
 	;	arousal = ( arousal - 30 ) / 2 ; 0 - 35% extra
 	;	spellDropChance = spellDropChance + arousal
 	;endIf
-	
+
 	spellDropChance *= chanceMult
-	
+
 	if spellDropChance > 100
 		spellDropChance = 100
 	elseif spellDropChance < 0
@@ -467,43 +467,47 @@ int[] function dropWeapons(Actor pl, int Slot = -1, float chanceMult = 1.0)
 	endif
 
 	; debugTrace(" weapon drop chance: " + spellDropChance)
-	
+
 	int[] drops = new int[2]
 	drops[0] = 0
 	drops[1] = 0
-		
+
 	float chance = Utility.RandomInt(0, 99)
-	
-	; int i = 2
+
+	Form Equipped
+	Int Type = 0
+	Float Weight = 0
+
 	bool drop = true
-	if Slot < 0 || Slot > 1
+	if Slot != 0
 		int i = 2
 		While i > 0 && pl.IsWeaponDrawn()
 			i -= 1
 			if Utility.IsInMenuMode() ; Recalculate if open menu to drink stamina potion
 				Utility.Wait(0.1)
-				spellDropChance = ( 101.0 - ( pl.GetAvPercentage("Stamina") * 100.0 ) ) ; inverse of stamina percentage
+				spellDropChance = ( 101.0 - ( pl.GetActorValuePercentage("Stamina") * 100.0 ) ) ; inverse of stamina percentage
 				spellDropChance *= chanceMult
-				
+
 				if spellDropChance > 100
 					spellDropChance = 100
 				elseif spellDropChance < 0
 					spellDropChance = 0
 				endif
-				
+
 				; debugTrace(" weapon drop chance: " + spellDropChance)
 			EndIf
+
 			if i == 0
 				Utility.Wait(1.0) ; Equipping the secondary set takes a while...
 			EndIf
-			Form Equipped = pl.GetEquippedObject(i)
-			int Type = 0
-			Float Weight
+
+			Equipped = pl.GetEquippedObject(i)
+			Type = pl.GetEquippedItemType(i)
+
 			if Equipped
-				Type = pl.GetEquippedItemType(i)
 				Weight = Equipped.GetWeight()
 			EndIf
-			
+
 			If Type == 9 ; Magic spell
 				if chance < spellDropChance
 					if i == 1 && pl.GetEquippedItemType(0) == Type
@@ -536,21 +540,20 @@ int[] function dropWeapons(Actor pl, int Slot = -1, float chanceMult = 1.0)
 					drops[0] = drops[0] + 1
 				endIf
 			endIf
-	
+
 			If drops[0] > 0
-			; Some weapons are dropped already, make sure to unequip any spells on the second iteration as well
+				; Some weapons are dropped already, make sure to unequip any spells on the second iteration as well
 				spellDropChance = 100
 			EndIf
 		EndWhile
 	else
-		Form Equipped = pl.GetEquippedObject(Slot)
-		int Type = 0
-		Float Weight
+		Equipped = pl.GetEquippedObject(Slot)
+		Type = pl.GetEquippedItemType(Slot)
+
 		if Equipped
-			Type = pl.GetEquippedItemType(Slot)
 			Weight = Equipped.GetWeight()
 		EndIf
-		
+
 		If Type == 9 ; Magic spell
 			if chance < spellDropChance
 				pl.UnequipSpell(Equipped as spell, Slot)
@@ -583,6 +586,7 @@ int[] function dropWeapons(Actor pl, int Slot = -1, float chanceMult = 1.0)
 			endIf
 		endIf
 	endIf
+
 	return drops
 endFunction
 
