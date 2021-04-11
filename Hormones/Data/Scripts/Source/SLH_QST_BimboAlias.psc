@@ -363,9 +363,11 @@ Event OnUpdateGameTime()
 	Endif
 EndEvent
 
-; Blocks these events from happening if they're currently being evaluated
+; Blocks these events from happening again while they're still being evaluated
 State BlockedEvents
 	Event OnActorAction(int actionType, Actor akActor, Form source, int slot)
+	EndEvent
+	Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile, bool abPowerAttack, bool abSneakAttack, bool abBashAttack, bool abHitBlocked)
 	EndEvent
 EndState
 
@@ -375,73 +377,36 @@ Event OnActorAction(int actionType, Actor akActor, Form source, int slot)
 	GoToState("")
 EndEvent
 
-
 Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile, bool abPowerAttack, bool abSneakAttack, bool abBashAttack, bool abHitBlocked)
-	; Safeguard - Exit if alias not set
-	if (StorageUtil.GetIntValue(Game.GetPlayer(), "_SLH_iBimbo")==0)
-		Return
-	Endif
-
-	Actor kPlayer = Game.GetPlayer()
-	Float fClumsyMod = StorageUtil.GetFloatValue(kPlayer, "_SLH_fBimboClumsyMod" ) 
-	BimboActor= BimboAliasRef.GetReference() as Actor
-
+	GoToState("BlockedEvents")
 	; Safeguard - Evaluate the rest only when transformation happened
-	if (StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") == -1)
+	if (ibimboTransformDate == -1)
 		Return
 	Endif
-	
-	If (akAggressor == BimboActor)
-		;
-		; If (BimboActor.IsUnconscious())
-		;	BimboActor.SetUnconscious(false)
-		; EndIf	
 
+	If (akAggressor != None && isBimboFrailBody) ;[mod] check if is a weak bimbo
+		float dropchance = 1.0 + (slaUtil.GetActorArousal(BimboActor) as float / 30.0 ) * (GV_bimboClumsinessMod.GetValue()) * StorageUtil.GetFloatValue(BimboActor, "_SLH_fBimboClumsyMod")
 
-	ElseIf (akAggressor != None && isBimboFrailBody) ;[mod] check if is a weak bimbo
-		;  Debug.Trace("We were hit by " + akAggressor)
-		; debug.Notification("[SLH] Bimbo is hit")
-      	;If ((randomNum>90) && (BimboActor.GetActorValuePercentage("health")<0.3)) ; && (!(akAggressor as Actor).IsInFaction(pCreatureFaction)))
+		If (Utility.RandomInt(0,100) <= dropchance) && (GV_bimboClumsinessMod.GetValue()!=0)
+			if BimboActor.IsWeaponDrawn()
+				Int leftHand = BimboActor.GetEquippedItemType(0)
+				Int rightHand = BimboActor.GetEquippedItemType(1)
 
-		float bimboArousal = slaUtil.GetActorArousal(BimboActor) as float
-		float dropchance = 1.0 + (bimboArousal / 30.0 ) * (GV_bimboClumsinessMod.GetValue() as Float) * fClumsyMod
-		; debugTrace(" bimbo beeing hit, drop chance: " + dropchance)
-      	If (Utility.RandomInt(0,100) <= dropchance) &&  (GV_bimboClumsinessMod.GetValue()!=0); && (!(akAggressor as Actor).IsInFaction(pCreatureFaction)))
-			
-			if BimboActor.IsWeaponDrawn() 
-				If BimboActor.GetEquippedItemType(1) > 1 && BimboActor.GetEquippedItemType(1) != 9 && BimboActor.GetEquippedItemType(1) != 7
+				;not magic or bow
+				If rightHand > 1 && rightHand != 9 && rightHand != 7
 					Debug.Notification("The enemy made you lose your grip!")
 					dropWeapons(BimboActor, 1) ;only the weapon
-				elseIf BimboActor.GetEquippedItemType(0) > 1 && BimboActor.GetEquippedItemType(0) != 9
+				;not magic
+				elseIf leftHand > 1 && leftHand != 9
 					Debug.Notification("The enemy made you lose your grip!")
 					dropWeapons(BimboActor, 0) ;only the weapon
 				endIf
 			endIf
-				;
 
-			Debug.Notification("They are so mean hitting you like that!")
-			; dropWeapons(BimboActor, both = false, chanceMult = 1.0) ;only the weapon
-		    ;if(BimboActor.IsWeaponDrawn())
-		    ;    BimboActor.SheatheWeapon()
-		    ;    Utility.Wait(2.0)
-		    ;endif
-
-		    ; unequip weapons
-		    ;Weapon wleft = BimboActor.GetEquippedWeapon(0)
-		    ;Weapon wright = BimboActor.GetEquippedWeapon(1)
-		    ;if (wleft != None)
-		    ;    BimboActor.UnequipItem(wleft, 0)
-		    ;endif
-		    ;if (wright != None)
-		    ;    BimboActor.UnequipItem(wright, 1)
-		    ;endif
-
+			Debug.Notification("They are so mean, hitting you like that!")
 		EndIf
-
-
-
 	EndIf
-
+	GoToState("")
 EndEvent
 
 
