@@ -363,23 +363,16 @@ Event OnUpdateGameTime()
 	Endif
 EndEvent
 
+; Blocks these events from happening if they're currently being evaluated
+State BlockedEvents
+	Event OnActorAction(int actionType, Actor akActor, Form source, int slot)
+	EndEvent
+EndState
+
 Event OnActorAction(int actionType, Actor akActor, Form source, int slot)
-	; Safeguard - Exit if alias not set
-	if (StorageUtil.GetIntValue(Game.GetPlayer(), "_SLH_iBimbo")==0)
-		;debugTrace(" bimbo OnActorAction, None")
-		Return
-	Endif
-
-	BimboActor= BimboAliasRef.GetReference() as Actor
-
-	; Safeguard - Evaluate the rest only when transformation happened
-	if (StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") == -1)
-		Return
-	Endif
-
-	if (akActor == BimboActor)
-		clumsyBimboHands(actionType, akActor, source, slot)
-	EndIf
+	GoToState("BlockedEvents")
+	clumsyBimboHands(actionType, BimboActor, source, slot)
+	GoToState("")
 EndEvent
 
 
