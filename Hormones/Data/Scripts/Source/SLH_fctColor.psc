@@ -336,8 +336,36 @@ endFunction
 
 
 function tryHormonesTats(Actor kActor) 
+	Bool bBlueMilk = false
+
 	if (StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel")> StorageUtil.GetFloatValue( kActor , "_SLH_fLactationThreshold") ) 
-		sendSlaveTatModEvent(kActor, "hormones","Milk Drip", bRefresh = True )
+
+		if (StorageUtil.GetIntValue(kActor, "_SLP_toggleChaurusWorm")==1) || (StorageUtil.GetIntValue(kActor, "_SLP_toggleChaurusWormVag")==1)
+			; Compatibility with Parasites
+	 		debug.trace(" tryHormonesTats - Blue Milk - Compatibility with Parasites" )
+			bBlueMilk = True 
+
+		elseif (fctUtil.isPregnantByEstrusChaurus( kActor))
+			; Compatibility with Estrus Chaurus pregnancy
+	 		debug.trace(" tryHormonesTats - Blue Milk - Compatibility with Estrus Chaurus pregnancy" )
+			bBlueMilk = True 
+
+		elseif (StorageUtil.GetIntValue(kActor, "_SD_iEnslaved") == 1)
+			; Compatibility with SD+ and Falmer enslavement
+			Actor kMaster = StorageUtil.GetFormValue(kActor, "_SD_CurrentOwner") as Actor
+			if (StorageUtil.GetIntValue( kMaster, "_SD_bIsSlaverFalmer") == 1)
+		 		debug.trace(" tryHormonesTats - Blue Milk - Compatibility with SD+ and Falmer enslavement" )
+				bBlueMilk = True 
+			endif
+		endif
+
+		if (bBlueMilk)
+			debug.notification("Your milk is blue!")
+			sendSlaveTatRemoveModEvent(kActor, "hormones","Milk Drip", bRefresh = True )
+			sendSlaveTatModEvent(kActor, "hormones","Milk Drip", iColor = 0xdd36b6f7, bRefresh = True )
+		else
+			sendSlaveTatModEvent(kActor, "hormones","Milk Drip", bRefresh = True )
+		endif
 	else
 		sendSlaveTatRemoveModEvent(kActor, "hormones","Milk Drip", bRefresh = True )
 	endif

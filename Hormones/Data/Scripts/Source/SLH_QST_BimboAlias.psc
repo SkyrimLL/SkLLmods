@@ -135,7 +135,7 @@ Event OnUpdate()
 	EndIf
 
 	if (isBimboClumsyLegs)
-		clumsyBimboLegs(BimboActor)
+		clumsyBimboLegs()
 	endif
 
 	RegisterForSingleUpdate(5.4)
@@ -363,92 +363,50 @@ Event OnUpdateGameTime()
 	Endif
 EndEvent
 
+; Blocks these events from happening again while they're still being evaluated
+State BlockedEvents
+	Event OnActorAction(int actionType, Actor akActor, Form source, int slot)
+	EndEvent
+	Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile, bool abPowerAttack, bool abSneakAttack, bool abBashAttack, bool abHitBlocked)
+	EndEvent
+EndState
+
 Event OnActorAction(int actionType, Actor akActor, Form source, int slot)
-	; Safeguard - Exit if alias not set
-	if (StorageUtil.GetIntValue(Game.GetPlayer(), "_SLH_iBimbo")==0)
-		;debugTrace(" bimbo OnActorAction, None")
-		Return
-	Endif
-
-	BimboActor= BimboAliasRef.GetReference() as Actor
-
-	; Safeguard - Evaluate the rest only when transformation happened
-	if (StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") == -1)
-		Return
-	Endif
-
-	if (akActor == BimboActor)
-		clumsyBimboHands(actionType, akActor, source, slot)
-	EndIf
+	GoToState("BlockedEvents")
+	clumsyBimboHands(actionType, source, slot)
+	GoToState("")
 EndEvent
 
-
 Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile, bool abPowerAttack, bool abSneakAttack, bool abBashAttack, bool abHitBlocked)
-	; Safeguard - Exit if alias not set
-	if (StorageUtil.GetIntValue(Game.GetPlayer(), "_SLH_iBimbo")==0)
-		Return
-	Endif
-
-	Actor kPlayer = Game.GetPlayer()
-	Float fClumsyMod = StorageUtil.GetFloatValue(kPlayer, "_SLH_fBimboClumsyMod" ) 
-	BimboActor= BimboAliasRef.GetReference() as Actor
-
+	GoToState("BlockedEvents")
 	; Safeguard - Evaluate the rest only when transformation happened
-	if (StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") == -1)
+	if (ibimboTransformDate == -1)
 		Return
 	Endif
-	
-	If (akAggressor == BimboActor)
-		;
-		; If (BimboActor.IsUnconscious())
-		;	BimboActor.SetUnconscious(false)
-		; EndIf	
 
+	If (akAggressor != None && isBimboFrailBody) ;[mod] check if is a weak bimbo
+		float dropchance = 1.0 + (slaUtil.GetActorArousal(BimboActor) as float / 30.0 ) * (GV_bimboClumsinessMod.GetValue()) * StorageUtil.GetFloatValue(BimboActor, "_SLH_fBimboClumsyMod")
 
-	ElseIf (akAggressor != None && isBimboFrailBody) ;[mod] check if is a weak bimbo
-		;  Debug.Trace("We were hit by " + akAggressor)
-		; debug.Notification("[SLH] Bimbo is hit")
-      	;If ((randomNum>90) && (BimboActor.GetActorValuePercentage("health")<0.3)) ; && (!(akAggressor as Actor).IsInFaction(pCreatureFaction)))
+		If (Utility.RandomInt(0,100) <= dropchance) && (GV_bimboClumsinessMod.GetValue()!=0)
+			if BimboActor.IsWeaponDrawn()
+				Int leftHand = BimboActor.GetEquippedItemType(0)
+				Int rightHand = BimboActor.GetEquippedItemType(1)
 
-		float bimboArousal = slaUtil.GetActorArousal(BimboActor) as float
-		float dropchance = 1.0 + (bimboArousal / 30.0 ) * (GV_bimboClumsinessMod.GetValue() as Float) * fClumsyMod
-		; debugTrace(" bimbo beeing hit, drop chance: " + dropchance)
-      	If (Utility.RandomInt(0,100) <= dropchance) &&  (GV_bimboClumsinessMod.GetValue()!=0); && (!(akAggressor as Actor).IsInFaction(pCreatureFaction)))
-			
-			if BimboActor.IsWeaponDrawn() 
-				If BimboActor.GetEquippedItemType(1) > 1 && BimboActor.GetEquippedItemType(1) != 9 && BimboActor.GetEquippedItemType(1) != 7
+				;not magic or bow
+				If rightHand > 1 && rightHand != 9 && rightHand != 7
 					Debug.Notification("The enemy made you lose your grip!")
 					dropWeapons(BimboActor, 1) ;only the weapon
-				elseIf BimboActor.GetEquippedItemType(0) > 1 && BimboActor.GetEquippedItemType(0) != 9
+				;not magic
+				elseIf leftHand > 1 && leftHand != 9
 					Debug.Notification("The enemy made you lose your grip!")
 					dropWeapons(BimboActor, 0) ;only the weapon
 				endIf
 			endIf
-				;
 
-			Debug.Notification("They are so mean hitting you like that!")
-			; dropWeapons(BimboActor, both = false, chanceMult = 1.0) ;only the weapon
-		    ;if(BimboActor.IsWeaponDrawn())
-		    ;    BimboActor.SheatheWeapon()
-		    ;    Utility.Wait(2.0)
-		    ;endif
-
-		    ; unequip weapons
-		    ;Weapon wleft = BimboActor.GetEquippedWeapon(0)
-		    ;Weapon wright = BimboActor.GetEquippedWeapon(1)
-		    ;if (wleft != None)
-		    ;    BimboActor.UnequipItem(wleft, 0)
-		    ;endif
-		    ;if (wright != None)
-		    ;    BimboActor.UnequipItem(wright, 1)
-		    ;endif
-
+			Debug.Notification("They are so mean, hitting you like that!")
 		EndIf
-
-
-
 	EndIf
-
+	GoToState("")
 EndEvent
 
 
@@ -484,11 +442,11 @@ int[] function dropWeapons(Actor pl, int Slot = -1, float chanceMult = 1.0)
 	; By default, drops only stuff on left hand, if both == true, also right hand
 	; returns an array of dropped item counts, weapon & shield at 0, spells at 1
 	; debugTrace(" dropWeapons(both = "+both+", chanceMult = "+chanceMult+")")
-	
+
 	Utility.Wait(0.1) ;To prevent Update on Menu Mode
 
 	; Calculate the drop chance
-	float spellDropChance = ( 101.0 - ( pl.GetAvPercentage("Stamina") * 100.0 ) ) ; inverse of stamina percentage
+	float spellDropChance = ( 101.0 - ( pl.GetActorValuePercentage("Stamina") * 100.0 ) ) ; inverse of stamina percentage
 	;int arousal = 0
 	;if (pl != None)
 	;	arousal = slaUtil.GetActorArousal(pl)
@@ -499,9 +457,9 @@ int[] function dropWeapons(Actor pl, int Slot = -1, float chanceMult = 1.0)
 	;	arousal = ( arousal - 30 ) / 2 ; 0 - 35% extra
 	;	spellDropChance = spellDropChance + arousal
 	;endIf
-	
+
 	spellDropChance *= chanceMult
-	
+
 	if spellDropChance > 100
 		spellDropChance = 100
 	elseif spellDropChance < 0
@@ -509,43 +467,47 @@ int[] function dropWeapons(Actor pl, int Slot = -1, float chanceMult = 1.0)
 	endif
 
 	; debugTrace(" weapon drop chance: " + spellDropChance)
-	
+
 	int[] drops = new int[2]
 	drops[0] = 0
 	drops[1] = 0
-		
+
 	float chance = Utility.RandomInt(0, 99)
-	
-	; int i = 2
+
+	Form Equipped
+	Int Type = 0
+	Float Weight = 0
+
 	bool drop = true
-	if Slot < 0 || Slot > 1
+	if Slot != 0
 		int i = 2
 		While i > 0 && pl.IsWeaponDrawn()
 			i -= 1
 			if Utility.IsInMenuMode() ; Recalculate if open menu to drink stamina potion
 				Utility.Wait(0.1)
-				spellDropChance = ( 101.0 - ( pl.GetAvPercentage("Stamina") * 100.0 ) ) ; inverse of stamina percentage
+				spellDropChance = ( 101.0 - ( pl.GetActorValuePercentage("Stamina") * 100.0 ) ) ; inverse of stamina percentage
 				spellDropChance *= chanceMult
-				
+
 				if spellDropChance > 100
 					spellDropChance = 100
 				elseif spellDropChance < 0
 					spellDropChance = 0
 				endif
-				
+
 				; debugTrace(" weapon drop chance: " + spellDropChance)
 			EndIf
+
 			if i == 0
 				Utility.Wait(1.0) ; Equipping the secondary set takes a while...
 			EndIf
-			Form Equipped = pl.GetEquippedObject(i)
-			int Type = 0
-			Float Weight
+
+			Equipped = pl.GetEquippedObject(i)
+			Type = pl.GetEquippedItemType(i)
+
 			if Equipped
-				Type = pl.GetEquippedItemType(i)
 				Weight = Equipped.GetWeight()
 			EndIf
-			
+
 			If Type == 9 ; Magic spell
 				if chance < spellDropChance
 					if i == 1 && pl.GetEquippedItemType(0) == Type
@@ -578,21 +540,20 @@ int[] function dropWeapons(Actor pl, int Slot = -1, float chanceMult = 1.0)
 					drops[0] = drops[0] + 1
 				endIf
 			endIf
-	
+
 			If drops[0] > 0
-			; Some weapons are dropped already, make sure to unequip any spells on the second iteration as well
+				; Some weapons are dropped already, make sure to unequip any spells on the second iteration as well
 				spellDropChance = 100
 			EndIf
 		EndWhile
 	else
-		Form Equipped = pl.GetEquippedObject(Slot)
-		int Type = 0
-		Float Weight
+		Equipped = pl.GetEquippedObject(Slot)
+		Type = pl.GetEquippedItemType(Slot)
+
 		if Equipped
-			Type = pl.GetEquippedItemType(Slot)
 			Weight = Equipped.GetWeight()
 		EndIf
-		
+
 		If Type == 9 ; Magic spell
 			if chance < spellDropChance
 				pl.UnequipSpell(Equipped as spell, Slot)
@@ -625,6 +586,7 @@ int[] function dropWeapons(Actor pl, int Slot = -1, float chanceMult = 1.0)
 			endIf
 		endIf
 	endIf
+
 	return drops
 endFunction
 
@@ -632,9 +594,7 @@ endFunction
 ;called to start the clumsiness
 ;===========================================================================
 function updateClumsyBimbo()
-	int rollFirstPerson  = Utility.RandomInt(0,100)
-	BimboActor= BimboAliasRef.GetReference() as Actor
-	If (rollFirstPerson <= (StorageUtil.GetFloatValue(Game.GetPlayer(), "_SLH_fHormoneBimbo") as Int))
+	If (Utility.RandomInt(0,100) <= (StorageUtil.GetFloatValue(BimboActor, "_SLH_fHormoneBimbo") as Int))
 		; First person thought
 	    if (isBimboClumsyHands && !isClumsyHandsRegistered)
 	    	isClumsyHandsRegistered = True
@@ -673,11 +633,9 @@ endfunction
 ;===========================================================================
 string Function randomBimboHandsMessage(float bimboArousal, int actionType)
 	int chance = Utility.RandomInt(0, 5)
-	int rollFirstPerson  = Utility.RandomInt(0,100)
 	String handMessage
-	BimboActor= BimboAliasRef.GetReference() as Actor
 
-	If (rollFirstPerson <= (StorageUtil.GetFloatValue(Game.GetPlayer(), "_SLH_fHormoneBimbo") as Int))
+	If (Utility.RandomInt(0,100) <= (StorageUtil.GetFloatValue(BimboActor, "_SLH_fHormoneBimbo") as Int))
 		; First person thought
 		SLH_Control.playRandomSound(BimboActor)
 		if bimboArousal > 40
@@ -738,14 +696,7 @@ EndFunction
 ; - the chances should be tweaked
 ; - TODO i've saw this beeing called without the player doing attacks. Why??
 ;===========================================================================
-function clumsyBimboHands(int actionType, Actor bimbo, Form source, int slot)
-	;debug: checking why this is beeing called without doing an attack
-	BimboActor= BimboAliasRef.GetReference() as Actor
-	if (bimbo != BimboActor)
-		; debugTrace(" bimbo clumsy hands, not the bimbo")
-		return
-	endif
-
+function clumsyBimboHands(int actionType, Form source, int slot)
 	;not clumsy anymore? stop it!
 	if !isBimboClumsyHands
 		UnregisterForActorAction(0)
@@ -756,16 +707,15 @@ function clumsyBimboHands(int actionType, Actor bimbo, Form source, int slot)
 
 	Utility.Wait(0.1) ;To prevent Update on Menu Mode
 
-	Actor kPlayer = Game.GetPlayer()
-	float bimboArousal = slaUtil.GetActorArousal(bimbo) as float
+	float bimboArousal = slaUtil.GetActorArousal(BimboActor) as float
 	float dropchance = 1.0 + (bimboArousal / 10 )
-	Float fClumsyMod = StorageUtil.GetFloatValue(kPlayer, "_SLH_fBimboClumsyMod" ) 
+	Float fClumsyMod = StorageUtil.GetFloatValue(BimboActor, "_SLH_fBimboClumsyMod" ) 
 	string handMessage
 	int[] drops
 
 	;...but bow draw chances are bigger (using both hands)
 	if actionType == 5
-		dropchance *= 3.0 * (GV_bimboClumsinessMod.GetValue() as Float)
+		dropchance *= 3.0 * GV_bimboClumsinessMod.GetValue()
 	endif
 
 	dropchance *= fClumsyMod
@@ -783,29 +733,25 @@ function clumsyBimboHands(int actionType, Actor bimbo, Form source, int slot)
 			; bow fumble
 			Input.TapKey(Input.GetMappedKey("Ready Weapon"))
 			roll = Utility.RandomInt()
-			dropchance = dropchance * 0.33
+			dropchance *= 0.33
 			if roll <= (dropchance as int)
-				drops = dropWeapons(bimbo, 0) ;may drop the bow too
+				drops = dropWeapons(BimboActor, 0) ;may drop the bow too
 			endif
 		elseIf actionType < 10 ; If already Sheathed don't drop it
-			drops = dropWeapons(bimbo, slot)
-		endif
-		if drops.length > 0 && drops[0] > 0 ;dropped weapons
-			handMessage = handMessage + "... and lose grip. Oopsy!"
+			drops = dropWeapons(BimboActor, slot)
 		endif
 
-		If (StorageUtil.GetIntValue(bimbo, "_SLH_iShowStatus")!=0)
+		if drops.length > 0 && drops[0] > 0 ;dropped weapons
+			handMessage += "... and lose grip. Oopsy!"
+		endif
+
+		If (StorageUtil.GetIntValue(BimboActor, "_SLH_iShowStatus")!=0)
 			Debug.Notification(handMessage)
 		Endif
-		SLH_Control.playRandomSound(bimbo)
-		bimbo.CreateDetectionEvent(bimbo, 10)
+
+		SLH_Control.playRandomSound(BimboActor)
+		BimboActor.CreateDetectionEvent(BimboActor, 10)
 	endif
-
-
-	;TODO stop it for a while, register again on another update after some time
-	;UnregisterForActorAction(0)
-	;UnregisterForActorAction(5)
-	;RegisterForSingleUpdate( fRFSU )
 endfunction
 
 ;===========================================================================
@@ -813,48 +759,26 @@ endfunction
 ;called with OnUpdate
 ; - the stumbling chances should be tweaked
 ;===========================================================================
-function clumsyBimboLegs(Actor bimbo)
-	Actor kPlayer = Game.GetPlayer()
-	string bimboTripMessage = ""
-	Float fClumsyMod = StorageUtil.GetFloatValue(kPlayer, "_SLH_fBimboClumsyMod" ) 
-
-	;not clumsy anymore?
-	if !isBimboClumsyLegs
-		isClumsyLegsRegistered = false
-		return
-	endif
-	
+function clumsyBimboLegs()
 	Utility.Wait(0.1) ;To prevent Update on Menu Mode
-
-	bArmorOn = kPlayer.WornHasKeyword(ArmorOn)
-	bClothingOn = kPlayer.WornHasKeyword(ClothingOn)
 
 	;is pressing the movement keys?
 	if Input.IsKeyPressed(Input.GetMappedKey("Forward")) || Input.IsKeyPressed(Input.GetMappedKey("Back")) || Input.IsKeyPressed(Input.GetMappedKey("Strafe Left")) || Input.IsKeyPressed(Input.GetMappedKey("Strafe Right"))
 		;isn't on the menu?
 		bool IsMenuOpen = Utility.IsInMenuMode() || UI.IsMenuOpen("Dialogue Menu")
-		if !IsMenuOpen && !bimbo.IsFlying() && !bimbo.IsOnMount() && !bimbo.IsSwimming() && (StorageUtil.GetIntValue(kPlayer,"DCUR_SceneRunning") == 0)
+		if !IsMenuOpen && !BimboActor.IsFlying() && !BimboActor.IsOnMount() && !BimboActor.IsSwimming() && (StorageUtil.GetIntValue(BimboActor,"DCUR_SceneRunning") == 0)
 			SendModEvent("dhlp-Suspend")
-		    float tumbleForce = 0.001
-			float bimboArousal = 0.0
-			if bimbo != None
-				bimboArousal = slaUtil.GetActorArousal(bimbo) as float
-				; debugTrace(" ---- is aroused: " + bimboArousal)
-			else
-				; Debug.Trace("[sla+] null player on clumsyBimboLegs")
-			endif
-		    float tumbleChance = 1.0 + (bimboArousal / 20.0)
+			float tumbleForce = (BimboActor.GetAnimationVariableFloat("Speed") / 100) * 0.05
+			float bimboArousal = slaUtil.GetActorArousal(BimboActor) as float
+			float tumbleChance = 1.0 + (bimboArousal / 20.0)
 
 			;ok, lets check what is the bimbo doing and increase the chances
 			;TODO is using HDT heels and the tf ended, decrease the chances (a good bimbo always use heels)
 
-			; force scaling
-			tumbleForce = (bimbo.GetAnimationVariableFloat("Speed") / 100) * 0.05
-			
-			if bimbo.IsSneaking()
+			if BimboActor.IsSneaking()
 				tumbleChance *= 0.5
 			endif
-			
+
 			if tumbleForce >= 0.25
 				tumbleChance *= 4.00 
 			elseif tumbleForce >= 0.1
@@ -867,45 +791,50 @@ function clumsyBimboLegs(Actor bimbo)
 				tumbleChance = 0
 			endif
 
-			tumbleChance *= fClumsyMod
+			tumbleChance *= StorageUtil.GetFloatValue(BimboActor, "_SLH_fBimboClumsyMod")
 
-			int roll = Utility.RandomInt(0,100)
+			int rollMessage = Utility.RandomInt(0,100)
 			Int rollFirstPerson = Utility.RandomInt(0,100)
 			; debugTrace(" ------- stumble [" + roll + " < " + tumbleChance + "]?")
-			if (roll < (tumbleChance as Int)) && (GV_bimboClumsinessMod.GetValue()!=0)
+			if (rollMessage < (tumbleChance as Int)) && (GV_bimboClumsinessMod.GetValue()!=0)
 				If (bimboClumsyBuffer < ( 7 - (GV_bimboClumsinessMod.GetValue() as Int) * 6) )
 					bimboClumsyBuffer = bimboClumsyBuffer + 1
 				else
+					Bool bTripped = false
+					string bimboTripMessage = ""
 					bimboClumsyBuffer = 0
-					Game.ForceThirdPerson()
-					If bimbo.IsSneaking()
-						bimbo.StartSneaking()
-					EndIf
-
-					int rollMessage = Utility.RandomInt(0,100)
-
-					if ((bArmorOn && (rollMessage >30)) || (bClothingOn && (rollMessage >90)))
-						bimbo.PushActorAway(bimbo, tumbleForce) ;how to push only to the bimbo movement direction?
-						debugTrace(" BimboActor: "+BimboActor+" TumbleForce:"+tumbleForce)
-						Utility.Wait(1.0)
-						Debug.Notification("You tripped! Clumsy bimbo!") ;temp messages
-					endIf
-
-					int[] drop = dropWeapons(bimbo, -1, chanceMult = 0.1)
-					if drop[0] > 0 ;if dropped anything, play a moan sound
-						SLH_Control.playRandomSound(bimbo)
-						bimbo.CreateDetectionEvent(bimbo, 10)
-					endif
-
-					;wait a little to show the messages, because on ragdoll the hud is hidden
-					Utility.Wait(2.0)
+					bArmorOn = BimboActor.WornHasKeyword(ArmorOn)
+					bClothingOn = BimboActor.WornHasKeyword(ClothingOn)
 
 					rollMessage = Utility.RandomInt(0,100)
 
-					If (rollFirstPerson <= (StorageUtil.GetFloatValue(bimbo, "_SLH_fHormoneBimbo") as Int))
+					if ((bArmorOn && (rollMessage >30)) || (bClothingOn && (rollMessage >90)))
+						bTripped = true
+						Game.ForceThirdPerson()
+						If BimboActor.IsSneaking()
+							BimboActor.StartSneaking()
+						EndIf
+						BimboActor.PushActorAway(BimboActor, tumbleForce) ;how to push only to the bimbo movement direction?
+					endIf
+
+					int[] drop = dropWeapons(BimboActor, -1, chanceMult = 0.1)
+					if drop[0] > 0 ;if dropped anything, play a moan sound
+						SLH_Control.playRandomSound(BimboActor)
+						BimboActor.CreateDetectionEvent(BimboActor, 10)
+					endif
+
+					If bTripped
+						;wait a little to show the messages, because on ragdoll the hud is hidden
+						Utility.Wait(4.0)
+						Debug.Notification("You tripped! Clumsy bimbo!") ;temp messages
+					EndIf
+
+					rollMessage = Utility.RandomInt(0,100)
+
+					If (rollFirstPerson <= (StorageUtil.GetFloatValue(BimboActor, "_SLH_fHormoneBimbo") as Int))
 						; First person thought
-						SLH_Control.playMoan(bimbo)
-						bimbo.CreateDetectionEvent(bimbo, 10)
+						SLH_Control.playMoan(BimboActor)
+						BimboActor.CreateDetectionEvent(BimboActor, 10)
 						if (rollMessage >= 80)
 							bimboTripMessage = "Oh My Gods.. is that a chipped nail?!"
 						elseif (rollMessage >= 60)
@@ -933,40 +862,29 @@ function clumsyBimboLegs(Actor bimbo)
 					endif
 
 					if drop[0] > 0
-						If (rollFirstPerson <= (StorageUtil.GetFloatValue(bimbo, "_SLH_fHormoneBimbo") as Int))
+						If (rollFirstPerson <= (StorageUtil.GetFloatValue(BimboActor, "_SLH_fHormoneBimbo") as Int))
 							Debug.Notification("Oopsies... that weapon is so heavy.") ;temp messages
-							SLH_Control.playGiggle(bimbo)
-							bimbo.CreateDetectionEvent(bimbo, 20)
+							SLH_Control.playGiggle(BimboActor)
+							BimboActor.CreateDetectionEvent(BimboActor, 20)
 						Else
 							Debug.Notification("You got distracted and dropped your weapons!") ;temp messages
 						Endif
 					endif
-					
+
 					Debug.Notification(bimboTripMessage) ;temp messages
-
-					;alternative to the ragdoll: trigger the bleedout animation for 2 seconds
-					;Debug.SendAnimationEvent(bimbo, "BleedOutStart")
-					;if util.config.dropWeapons
-					;	util.dropWeapons(chanceMult = 2.0)
-					;endif
-					;Utility.Wait(2.0)
-					;Debug.SendAnimationEvent(bimbo, "BleedOutStop")
 				endIf
-
-			elseif bimboArousal > 90 && roll <= 20 ;warn the player
-				If (rollFirstPerson <= (StorageUtil.GetFloatValue(bimbo, "_SLH_fHormoneBimbo") as Int))
+			elseif bimboArousal > 90 && rollMessage <= 20 ;warn the player
+				If (rollFirstPerson <= (StorageUtil.GetFloatValue(BimboActor, "_SLH_fHormoneBimbo") as Int))
 					; First person thought
-					SLH_Control.playMoan(bimbo)
-					bimbo.CreateDetectionEvent(bimbo, 10)
+					SLH_Control.playMoan(BimboActor)
+					BimboActor.CreateDetectionEvent(BimboActor, 10)
 					Debug.Notification("I'm so horny.")
 				else
 					Debug.Notification("You squeeze your legs with arousal.")
 				endif
-
 			endif
 
 			SendModEvent("dhlp-Resume")
-
 		endif
 	endif
 endfunction
