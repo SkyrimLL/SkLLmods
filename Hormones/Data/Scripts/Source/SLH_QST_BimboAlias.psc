@@ -135,7 +135,7 @@ Event OnUpdate()
 	EndIf
 
 	if (isBimboClumsyLegs)
-		clumsyBimboLegs(BimboActor)
+		clumsyBimboLegs()
 	endif
 
 	RegisterForSingleUpdate(5.4)
@@ -761,48 +761,26 @@ endfunction
 ;called with OnUpdate
 ; - the stumbling chances should be tweaked
 ;===========================================================================
-function clumsyBimboLegs(Actor bimbo)
-	Actor kPlayer = Game.GetPlayer()
-	string bimboTripMessage = ""
-	Float fClumsyMod = StorageUtil.GetFloatValue(kPlayer, "_SLH_fBimboClumsyMod" ) 
-
-	;not clumsy anymore?
-	if !isBimboClumsyLegs
-		isClumsyLegsRegistered = false
-		return
-	endif
-	
+function clumsyBimboLegs()
 	Utility.Wait(0.1) ;To prevent Update on Menu Mode
-
-	bArmorOn = kPlayer.WornHasKeyword(ArmorOn)
-	bClothingOn = kPlayer.WornHasKeyword(ClothingOn)
 
 	;is pressing the movement keys?
 	if Input.IsKeyPressed(Input.GetMappedKey("Forward")) || Input.IsKeyPressed(Input.GetMappedKey("Back")) || Input.IsKeyPressed(Input.GetMappedKey("Strafe Left")) || Input.IsKeyPressed(Input.GetMappedKey("Strafe Right"))
 		;isn't on the menu?
 		bool IsMenuOpen = Utility.IsInMenuMode() || UI.IsMenuOpen("Dialogue Menu")
-		if !IsMenuOpen && !bimbo.IsFlying() && !bimbo.IsOnMount() && !bimbo.IsSwimming() && (StorageUtil.GetIntValue(kPlayer,"DCUR_SceneRunning") == 0)
+		if !IsMenuOpen && !BimboActor.IsFlying() && !BimboActor.IsOnMount() && !BimboActor.IsSwimming() && (StorageUtil.GetIntValue(BimboActor,"DCUR_SceneRunning") == 0)
 			SendModEvent("dhlp-Suspend")
-		    float tumbleForce = 0.001
-			float bimboArousal = 0.0
-			if bimbo != None
-				bimboArousal = slaUtil.GetActorArousal(bimbo) as float
-				; debugTrace(" ---- is aroused: " + bimboArousal)
-			else
-				; Debug.Trace("[sla+] null player on clumsyBimboLegs")
-			endif
-		    float tumbleChance = 1.0 + (bimboArousal / 20.0)
+			float tumbleForce = (BimboActor.GetAnimationVariableFloat("Speed") / 100) * 0.05
+			float bimboArousal = slaUtil.GetActorArousal(BimboActor) as float
+			float tumbleChance = 1.0 + (bimboArousal / 20.0)
 
 			;ok, lets check what is the bimbo doing and increase the chances
 			;TODO is using HDT heels and the tf ended, decrease the chances (a good bimbo always use heels)
 
-			; force scaling
-			tumbleForce = (bimbo.GetAnimationVariableFloat("Speed") / 100) * 0.05
-			
-			if bimbo.IsSneaking()
+			if BimboActor.IsSneaking()
 				tumbleChance *= 0.5
 			endif
-			
+
 			if tumbleForce >= 0.25
 				tumbleChance *= 4.00 
 			elseif tumbleForce >= 0.1
@@ -815,45 +793,50 @@ function clumsyBimboLegs(Actor bimbo)
 				tumbleChance = 0
 			endif
 
-			tumbleChance *= fClumsyMod
+			tumbleChance *= StorageUtil.GetFloatValue(BimboActor, "_SLH_fBimboClumsyMod")
 
-			int roll = Utility.RandomInt(0,100)
+			int rollMessage = Utility.RandomInt(0,100)
 			Int rollFirstPerson = Utility.RandomInt(0,100)
 			; debugTrace(" ------- stumble [" + roll + " < " + tumbleChance + "]?")
-			if (roll < (tumbleChance as Int)) && (GV_bimboClumsinessMod.GetValue()!=0)
+			if (rollMessage < (tumbleChance as Int)) && (GV_bimboClumsinessMod.GetValue()!=0)
 				If (bimboClumsyBuffer < ( 7 - (GV_bimboClumsinessMod.GetValue() as Int) * 6) )
 					bimboClumsyBuffer = bimboClumsyBuffer + 1
 				else
+					Bool bTripped = false
+					string bimboTripMessage = ""
 					bimboClumsyBuffer = 0
-					Game.ForceThirdPerson()
-					If bimbo.IsSneaking()
-						bimbo.StartSneaking()
-					EndIf
-
-					int rollMessage = Utility.RandomInt(0,100)
-
-					if ((bArmorOn && (rollMessage >30)) || (bClothingOn && (rollMessage >90)))
-						bimbo.PushActorAway(bimbo, tumbleForce) ;how to push only to the bimbo movement direction?
-						debugTrace(" BimboActor: "+BimboActor+" TumbleForce:"+tumbleForce)
-						Utility.Wait(1.0)
-						Debug.Notification("You tripped! Clumsy bimbo!") ;temp messages
-					endIf
-
-					int[] drop = dropWeapons(bimbo, -1, chanceMult = 0.1)
-					if drop[0] > 0 ;if dropped anything, play a moan sound
-						SLH_Control.playRandomSound(bimbo)
-						bimbo.CreateDetectionEvent(bimbo, 10)
-					endif
-
-					;wait a little to show the messages, because on ragdoll the hud is hidden
-					Utility.Wait(2.0)
+					bArmorOn = BimboActor.WornHasKeyword(ArmorOn)
+					bClothingOn = BimboActor.WornHasKeyword(ClothingOn)
 
 					rollMessage = Utility.RandomInt(0,100)
 
-					If (rollFirstPerson <= (StorageUtil.GetFloatValue(bimbo, "_SLH_fHormoneBimbo") as Int))
+					if ((bArmorOn && (rollMessage >30)) || (bClothingOn && (rollMessage >90)))
+						bTripped = true
+						Game.ForceThirdPerson()
+						If BimboActor.IsSneaking()
+							BimboActor.StartSneaking()
+						EndIf
+						BimboActor.PushActorAway(BimboActor, tumbleForce) ;how to push only to the bimbo movement direction?
+					endIf
+
+					int[] drop = dropWeapons(BimboActor, -1, chanceMult = 0.1)
+					if drop[0] > 0 ;if dropped anything, play a moan sound
+						SLH_Control.playRandomSound(BimboActor)
+						BimboActor.CreateDetectionEvent(BimboActor, 10)
+					endif
+
+					If bTripped
+						;wait a little to show the messages, because on ragdoll the hud is hidden
+						Utility.Wait(4.0)
+						Debug.Notification("You tripped! Clumsy bimbo!") ;temp messages
+					EndIf
+
+					rollMessage = Utility.RandomInt(0,100)
+
+					If (rollFirstPerson <= (StorageUtil.GetFloatValue(BimboActor, "_SLH_fHormoneBimbo") as Int))
 						; First person thought
-						SLH_Control.playMoan(bimbo)
-						bimbo.CreateDetectionEvent(bimbo, 10)
+						SLH_Control.playMoan(BimboActor)
+						BimboActor.CreateDetectionEvent(BimboActor, 10)
 						if (rollMessage >= 80)
 							bimboTripMessage = "Oh My Gods.. is that a chipped nail?!"
 						elseif (rollMessage >= 60)
@@ -881,40 +864,29 @@ function clumsyBimboLegs(Actor bimbo)
 					endif
 
 					if drop[0] > 0
-						If (rollFirstPerson <= (StorageUtil.GetFloatValue(bimbo, "_SLH_fHormoneBimbo") as Int))
+						If (rollFirstPerson <= (StorageUtil.GetFloatValue(BimboActor, "_SLH_fHormoneBimbo") as Int))
 							Debug.Notification("Oopsies... that weapon is so heavy.") ;temp messages
-							SLH_Control.playGiggle(bimbo)
-							bimbo.CreateDetectionEvent(bimbo, 20)
+							SLH_Control.playGiggle(BimboActor)
+							BimboActor.CreateDetectionEvent(BimboActor, 20)
 						Else
 							Debug.Notification("You got distracted and dropped your weapons!") ;temp messages
 						Endif
 					endif
-					
+
 					Debug.Notification(bimboTripMessage) ;temp messages
-
-					;alternative to the ragdoll: trigger the bleedout animation for 2 seconds
-					;Debug.SendAnimationEvent(bimbo, "BleedOutStart")
-					;if util.config.dropWeapons
-					;	util.dropWeapons(chanceMult = 2.0)
-					;endif
-					;Utility.Wait(2.0)
-					;Debug.SendAnimationEvent(bimbo, "BleedOutStop")
 				endIf
-
-			elseif bimboArousal > 90 && roll <= 20 ;warn the player
-				If (rollFirstPerson <= (StorageUtil.GetFloatValue(bimbo, "_SLH_fHormoneBimbo") as Int))
+			elseif bimboArousal > 90 && rollMessage <= 20 ;warn the player
+				If (rollFirstPerson <= (StorageUtil.GetFloatValue(BimboActor, "_SLH_fHormoneBimbo") as Int))
 					; First person thought
-					SLH_Control.playMoan(bimbo)
-					bimbo.CreateDetectionEvent(bimbo, 10)
+					SLH_Control.playMoan(BimboActor)
+					BimboActor.CreateDetectionEvent(BimboActor, 10)
 					Debug.Notification("I'm so horny.")
 				else
 					Debug.Notification("You squeeze your legs with arousal.")
 				endif
-
 			endif
 
 			SendModEvent("dhlp-Resume")
-
 		endif
 	endif
 endfunction
