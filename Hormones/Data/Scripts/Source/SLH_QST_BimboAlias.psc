@@ -373,7 +373,7 @@ EndState
 
 Event OnActorAction(int actionType, Actor akActor, Form source, int slot)
 	GoToState("BlockedEvents")
-	clumsyBimboHands(actionType, BimboActor, source, slot)
+	clumsyBimboHands(actionType, source, slot)
 	GoToState("")
 EndEvent
 
@@ -635,11 +635,9 @@ endfunction
 ;===========================================================================
 string Function randomBimboHandsMessage(float bimboArousal, int actionType)
 	int chance = Utility.RandomInt(0, 5)
-	int rollFirstPerson  = Utility.RandomInt(0,100)
 	String handMessage
-	BimboActor= BimboAliasRef.GetReference() as Actor
 
-	If (rollFirstPerson <= (StorageUtil.GetFloatValue(Game.GetPlayer(), "_SLH_fHormoneBimbo") as Int))
+	If (Utility.RandomInt(0,100) <= (StorageUtil.GetFloatValue(BimboActor, "_SLH_fHormoneBimbo") as Int))
 		; First person thought
 		SLH_Control.playRandomSound(BimboActor)
 		if bimboArousal > 40
@@ -700,14 +698,7 @@ EndFunction
 ; - the chances should be tweaked
 ; - TODO i've saw this beeing called without the player doing attacks. Why??
 ;===========================================================================
-function clumsyBimboHands(int actionType, Actor bimbo, Form source, int slot)
-	;debug: checking why this is beeing called without doing an attack
-	BimboActor= BimboAliasRef.GetReference() as Actor
-	if (bimbo != BimboActor)
-		; debugTrace(" bimbo clumsy hands, not the bimbo")
-		return
-	endif
-
+function clumsyBimboHands(int actionType, Form source, int slot)
 	;not clumsy anymore? stop it!
 	if !isBimboClumsyHands
 		UnregisterForActorAction(0)
@@ -718,16 +709,15 @@ function clumsyBimboHands(int actionType, Actor bimbo, Form source, int slot)
 
 	Utility.Wait(0.1) ;To prevent Update on Menu Mode
 
-	Actor kPlayer = Game.GetPlayer()
-	float bimboArousal = slaUtil.GetActorArousal(bimbo) as float
+	float bimboArousal = slaUtil.GetActorArousal(BimboActor) as float
 	float dropchance = 1.0 + (bimboArousal / 10 )
-	Float fClumsyMod = StorageUtil.GetFloatValue(kPlayer, "_SLH_fBimboClumsyMod" ) 
+	Float fClumsyMod = StorageUtil.GetFloatValue(BimboActor, "_SLH_fBimboClumsyMod" ) 
 	string handMessage
 	int[] drops
 
 	;...but bow draw chances are bigger (using both hands)
 	if actionType == 5
-		dropchance *= 3.0 * (GV_bimboClumsinessMod.GetValue() as Float)
+		dropchance *= 3.0 * GV_bimboClumsinessMod.GetValue()
 	endif
 
 	dropchance *= fClumsyMod
@@ -745,29 +735,25 @@ function clumsyBimboHands(int actionType, Actor bimbo, Form source, int slot)
 			; bow fumble
 			Input.TapKey(Input.GetMappedKey("Ready Weapon"))
 			roll = Utility.RandomInt()
-			dropchance = dropchance * 0.33
+			dropchance *= 0.33
 			if roll <= (dropchance as int)
-				drops = dropWeapons(bimbo, 0) ;may drop the bow too
+				drops = dropWeapons(BimboActor, 0) ;may drop the bow too
 			endif
 		elseIf actionType < 10 ; If already Sheathed don't drop it
-			drops = dropWeapons(bimbo, slot)
-		endif
-		if drops.length > 0 && drops[0] > 0 ;dropped weapons
-			handMessage = handMessage + "... and lose grip. Oopsy!"
+			drops = dropWeapons(BimboActor, slot)
 		endif
 
-		If (StorageUtil.GetIntValue(bimbo, "_SLH_iShowStatus")!=0)
+		if drops.length > 0 && drops[0] > 0 ;dropped weapons
+			handMessage += "... and lose grip. Oopsy!"
+		endif
+
+		If (StorageUtil.GetIntValue(BimboActor, "_SLH_iShowStatus")!=0)
 			Debug.Notification(handMessage)
 		Endif
-		SLH_Control.playRandomSound(bimbo)
-		bimbo.CreateDetectionEvent(bimbo, 10)
+
+		SLH_Control.playRandomSound(BimboActor)
+		BimboActor.CreateDetectionEvent(BimboActor, 10)
 	endif
-
-
-	;TODO stop it for a while, register again on another update after some time
-	;UnregisterForActorAction(0)
-	;UnregisterForActorAction(5)
-	;RegisterForSingleUpdate( fRFSU )
 endfunction
 
 ;===========================================================================
