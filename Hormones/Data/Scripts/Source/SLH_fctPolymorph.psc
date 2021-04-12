@@ -1,25 +1,35 @@
-Scriptname SLH_fctPolymorph extends Quest  
+Scriptname SLH_fctPolymorph extends Quest
 
 SLH_fctBodyShape Property fctBodyShape Auto
 SLH_fctColor Property fctColor Auto
 SLH_fctUtil Property fctUtil Auto
 
-slaUtilScr Property slaUtil  Auto  
-SexLabFramework Property SexLab  Auto  
+slaUtilScr Property slaUtil Auto
+SexLabFramework Property SexLab Auto
 
 SLH_QST_HormoneGrowth Property SLH_Control Auto
 SLH_QST_BimboAlias Property SLH_BimboControl Auto
 
-Quest Property _SLH_QST_Bimbo  Auto  
-
-ReferenceAlias Property BimboAliasRef  Auto  
+Quest Property _SLH_QST_Bimbo Auto
+Quest Property CompanionsTrackingQuest auto
 
 Actor Property Bimbo Auto
+ReferenceAlias Property BimboAliasRef Auto
+ObjectReference Property BimboDummyRef Auto
 
-GlobalVariable      Property GV_isBimboFinal                 Auto
-GlobalVariable      Property GV_isBimboLocked                 Auto
+GlobalVariable Property GV_isBimboFinal Auto
+GlobalVariable Property GV_isBimboLocked Auto
 
-Race ActorOriginalRace
+GlobalVariable Property GV_isTG Auto
+GlobalVariable Property GV_isHRT Auto
+GlobalVariable Property GV_isBimbo Auto
+GlobalVariable Property GV_isPolymorphON Auto
+GlobalVariable Property GV_allowTG Auto
+GlobalVariable Property GV_allowHRT Auto
+GlobalVariable Property GV_allowBimbo Auto
+GlobalVariable Property GV_allowBimboRace Auto
+GlobalVariable Property GV_allowExhibitionist Auto
+
 Race Property PolymorphRace auto
 
 Race Property ArgonianRace auto
@@ -43,8 +53,6 @@ Race Property RedguardRaceVampire auto
 Race Property WoodElfRace auto
 Race Property WoodElfRaceVampire auto
 
-Quest Property CompanionsTrackingQuest auto
-
 Faction Property actorWerewolfFaction auto
 Faction Property MonsterFaction auto
 
@@ -57,82 +65,70 @@ Spell Property VampireSunDamage03 auto
 Spell Property VampireSunDamage04 auto
 
 VisualEffect Property VFX3 Auto
-VisualEffect Property SprigganFX  Auto  
+VisualEffect Property SprigganFX Auto
 
 Int Property HP = 50 AutoReadOnly Hidden
 Int Property Magicka = 50 AutoReadOnly Hidden
 Int Property Stamina = 200 AutoReadOnly Hidden
 
-ObjectReference Property BimboDummyRef  Auto  
+Bool setSchlong = False
+Bool isActorMale = False
+Bool isActorExhibitionist = False
 
-GlobalVariable      Property GV_isTG                   Auto
-GlobalVariable      Property GV_isHRT                   Auto
-GlobalVariable      Property GV_isBimbo                 Auto
-GlobalVariable      Property GV_allowTG                Auto
-GlobalVariable      Property GV_allowHRT                Auto
-GlobalVariable      Property GV_allowBimbo              Auto
-GlobalVariable      Property GV_allowBimboRace              Auto
-GlobalVariable      Property GV_isPolymorphON           Auto
-
-GlobalVariable      Property GV_allowExhibitionist      Auto 
+Race ActorOriginalRace
 
 float actorArousalRate
 float actorHP
 float actorMG
 float actorST
 
-float actorOneHanded   
-float actorTwoHanded  
-float actorMarksman  
-float actorHeavyArmor  
-float actorLightArmor  
+float actorOneHanded
+float actorTwoHanded
+float actorMarksman
+float actorHeavyArmor
+float actorLightArmor
 float actorPickpocket
 
-int[] _actorPresets 
-float[] _actorMorphs  
-int[] _bimboPresets  
-float[] _bimboMorphs 
-
-Bool setSchlong = False
-Bool isActorMale = False
-
-Bool isActorExhibitionist = False
+int[] _actorPresets
+float[] _actorMorphs
+int[] _bimboPresets
+float[] _bimboMorphs
 
 Bool function bimboTransformEffectON(actor kActor)
 	ActorBase pActorBase = kActor.GetActorBase()
 
 	Int allowHRT = StorageUtil.GetIntValue(kActor, "_SLH_allowHRT")
 	Int allowBimbo = StorageUtil.GetIntValue(kActor, "_SLH_allowBimbo")
-    GV_allowTG.SetValue( StorageUtil.GetIntValue(kActor, "_SLH_allowTG") )
-    GV_allowHRT.SetValue(allowHRT)
-    GV_allowBimbo.SetValue(allowBimbo)
+	GV_allowTG.SetValue(StorageUtil.GetIntValue(kActor, "_SLH_allowTG"))
+	GV_allowHRT.SetValue(allowHRT)
+	GV_allowBimbo.SetValue(allowBimbo)
 
-    isActorMale = fctUtil.isMale(kActor)
+	isActorMale = fctUtil.isMale(kActor)
 
-    ; Abort if no gender/bimbo option checked in MCM
-    If allowBimbo == 0
-        debugTrace(" Bimbo Transform Aborted - Bimbo curse is OFF")
-       Return False
-    Endif
-    If allowHRT == 0 && isActorMale
-        debugTrace(" Bimbo Transform Aborted - Player is male and sex change is OFF")
-        Return False
-    Endif
-    ;; Abort if enslaved - to preserve slave related variables
-    If (StorageUtil.GetIntValue(kActor, "_SD_iEnslaved") == 1)
-        debugTrace(" Bimbo Transform Aborted - Player is enslaved")
-        Return False
-    endif
+	; Abort if no gender/bimbo option checked in MCM
+	If allowBimbo == 0
+		debugTrace(" Bimbo Transform Aborted - Bimbo curse is OFF")
+		Return False
+	Endif
+	If allowHRT == 0 && isActorMale
+		debugTrace(" Bimbo Transform Aborted - Player is male and sex change is OFF")
+		Return False
+	Endif
+	; Abort if enslaved - to preserve slave related variables
+	If StorageUtil.GetIntValue(kActor, "_SD_iEnslaved") == 1
+		debugTrace(" Bimbo Transform Aborted - Player is enslaved")
+		Return False
+	endif
 
-    debugTrace(" Bimbo Transform Init")
+	debugTrace(" Bimbo Transform Init")
 
-    ActorOriginalRace = kActor.GetRace()
+	ActorOriginalRace = kActor.GetRace()
 	StorageUtil.SetIntValue(none, "_SLH_bimboIsOriginalActorMale", isActorMale as Int)
-    StorageUtil.SetFormValue(none, "_SLH_bimboOriginalActor", kActor)           
-    StorageUtil.SetFormValue(none, "_SLH_bimboOriginalRace", ActorOriginalRace)           
+	StorageUtil.SetFormValue(none, "_SLH_bimboOriginalActor", kActor)
+	StorageUtil.SetFormValue(none, "_SLH_bimboOriginalRace", ActorOriginalRace)
 
-    Game.ForceThirdPerson()
-    TransformationEffect.Cast(kActor,kActor)
+	Game.ForceThirdPerson()
+	TransformationEffect.Cast(kActor,kActor)
 
 	; unequip magic
 	Spell sEquipped = kActor.GetEquippedSpell(0)
@@ -157,193 +153,182 @@ Bool function bimboTransformEffectON(actor kActor)
 
 	; unequip weapons
 	Weapon wEquipped = kActor.GetEquippedWeapon(true)
-	if (wEquipped != None); left hand
+	if wEquipped != None; left hand
 		kActor.UnequipItem(wEquipped, false, true)
 	endif
 	wEquipped = kActor.GetEquippedWeapon()
-	if (wEquipped != None); right hand
+	if wEquipped != None; right hand
 		kActor.UnequipItem(wEquipped, false, true)
 	endif
 
-    If (isActorMale) 
-        ; Do not switch sex for female -> bimbo
-        Utility.Wait(1.0)
-        HRTEffectON( kActor)
+	If isActorMale
+		; Do not switch sex for female -> bimbo
+		Utility.Wait(1.0)
+		HRTEffectON(kActor)
 
-        Utility.Wait(1.0)
-        TGEffectON( kActor)
+		Utility.Wait(1.0)
+		TGEffectON(kActor)
 
-        StorageUtil.SetFloatValue(kActor, "_SLH_fWeight",  0.0)
-        StorageUtil.SetFloatValue(kActor, "_SLH_fBreast",  0.9)
-        StorageUtil.SetFloatValue(kActor, "_SLH_fButt",  0.9)
-    Else
+		StorageUtil.SetFloatValue(kActor, "_SLH_fWeight", 0.0)
+		StorageUtil.SetFloatValue(kActor, "_SLH_fBreast", 0.9)
+		StorageUtil.SetFloatValue(kActor, "_SLH_fButt", 0.9)
+	Else
 		If allowBimbo == 0
 			; Allow sex change if bimbo effect is OFF
 			Utility.Wait(1.0)
-			HRTEffectON( kActor)
+			HRTEffectON(kActor)
 		EndIf
 
-        Utility.Wait(1.0)
-        TGEffectON( kActor)
-    EndIf
+		Utility.Wait(1.0)
+		TGEffectON(kActor)
+	EndIf
 
-    If (GV_allowBimboRace.GetValue()==1)
-        _actorPresets = new int[4]
-        _actorMorphs = new float[19]
-        _bimboPresets = new int[4]
-        _bimboMorphs = new float[19]
+	If GV_allowBimboRace.GetValue() == 1
+		_actorPresets = new int[4]
+		_actorMorphs = new float[19]
+		_bimboPresets = new int[4]
+		_bimboMorphs = new float[19]
 
-        fctBodyShape.SaveFaceValues( kActor, _actorPresets,  _actorMorphs )
-        fctBodyShape.SaveFaceValues( Bimbo, _bimboPresets,  _bimboMorphs )
+		fctBodyShape.SaveFaceValues(kActor, _actorPresets, _actorMorphs)
+		fctBodyShape.SaveFaceValues(Bimbo, _bimboPresets, _bimboMorphs)
 
-        ; get actor's race so we have it permanently for werewolf switch back
-        ; ActorOriginalRace = kActor.GetRace()
-        ;   debugTrace("CSQ: Storing actor's race as " + ActorOriginalRace)
+		; get actor's race so we have it permanently to switch back
+		if (ActorOriginalRace == ArgonianRaceVampire)
+			ActorOriginalRace = ArgonianRace
+		elseif (ActorOriginalRace == BretonRaceVampire)
+			ActorOriginalRace = BretonRace
+		elseif (ActorOriginalRace == DarkElfRaceVampire)
+			ActorOriginalRace = DarkElfRace
+		elseif (ActorOriginalRace == HighElfRaceVampire)
+			ActorOriginalRace = HighElfRace
+		elseif (ActorOriginalRace == ImperialRaceVampire)
+			ActorOriginalRace = ImperialRace
+		elseif (ActorOriginalRace == KhajiitRaceVampire)
+			ActorOriginalRace = KhajiitRace
+		elseif (ActorOriginalRace == NordRaceVampire)
+			ActorOriginalRace = NordRace
+		elseif (ActorOriginalRace == OrcRaceVampire)
+			ActorOriginalRace = OrcRace
+		elseif (ActorOriginalRace == RedguardRaceVampire)
+			ActorOriginalRace = RedguardRace
+		elseif (ActorOriginalRace == WoodElfRaceVampire)
+			ActorOriginalRace = WoodElfRace
+		endif
 
-        if     (ActorOriginalRace == ArgonianRaceVampire)
-        ;       debugTrace("CSQ: actor was Argonian Vampire; storing as Argonian.")
-            ActorOriginalRace = ArgonianRace
-        elseif (ActorOriginalRace == BretonRaceVampire)
-        ;       debugTrace("CSQ: actor was Breton Vampire; storing as Breton.")
-            ActorOriginalRace = BretonRace
-        elseif (ActorOriginalRace == DarkElfRaceVampire)
-        ;       debugTrace("CSQ: actor was Dark Elf Vampire; storing as Dark Elf.")
-            ActorOriginalRace = DarkElfRace
-        elseif (ActorOriginalRace == HighElfRaceVampire)
-        ;       debugTrace("CSQ: actor was Hiegh Elf Vampire; storing as High Elf.")
-            ActorOriginalRace = HighElfRace
-        elseif (ActorOriginalRace == ImperialRaceVampire)
-        ;       debugTrace("CSQ: actor was Imperial Vampire; storing as Imperial.")
-            ActorOriginalRace = ImperialRace
-        elseif (ActorOriginalRace == KhajiitRaceVampire)
-        ;       debugTrace("CSQ: actor was Khajiit Vampire; storing as Khajiit.")
-            ActorOriginalRace = KhajiitRace
-        elseif (ActorOriginalRace == NordRaceVampire)
-        ;       debugTrace("CSQ: actor was Nord Vampire; storing as Nord.")
-            ActorOriginalRace = NordRace
-        elseif (ActorOriginalRace == OrcRaceVampire)
-        ;       debugTrace("CSQ: actor was Orc Vampire; storing as Orc.")
-            ActorOriginalRace = OrcRace
-        elseif (ActorOriginalRace == RedguardRaceVampire)
-        ;       debugTrace("CSQ: actor was Redguard Vampire; storing as Redguard.")
-            ActorOriginalRace = RedguardRace
-        elseif (ActorOriginalRace == WoodElfRaceVampire)
-        ;       debugTrace("CSQ: actor was Wood Elf Vampire; storing as Wood Elf.")
-            ActorOriginalRace = WoodElfRace
-        endif
+		;debugTrace("[SLH_fctPolymorph] Storing Race as " + ActorOriginalRace.GetName())
 
-        if (pActorBase.GetRace() != PolymorphRace)
-            Debug.SetGodMode(true)
-            kActor.ResetHealthAndLimbs()
+		if pActorBase.GetRace() != PolymorphRace
+			Debug.SetGodMode(true)
+			kActor.ResetHealthAndLimbs()
 
-            kActor.RestoreActorValue("magicka", 999999999999)
-            kActor.RestoreActorValue("stamina", 999999999999)
-            kActor.RestoreActorValue("health", 999999999999)
+			kActor.RestoreActorValue("magicka", 999999999999)
+			kActor.RestoreActorValue("stamina", 999999999999)
+			kActor.RestoreActorValue("health", 999999999999)
 
-            kActor.DispelSpell (DiseaseSanguinareVampiris)
-            kActor.DispelSpell (VampireSunDamage01)
-            kActor.DispelSpell (VampireSunDamage02)
-            kActor.DispelSpell (VampireSunDamage03)
-            kActor.DispelSpell (VampireSunDamage04)
+			kActor.DispelSpell(DiseaseSanguinareVampiris)
+			kActor.DispelSpell(VampireSunDamage01)
+			kActor.DispelSpell(VampireSunDamage02)
+			kActor.DispelSpell(VampireSunDamage03)
+			kActor.DispelSpell(VampireSunDamage04)
 
-            ;======= CHANGING RACE HERE
-            debugTrace(" Bimbo Transform - Change Race")
-            kActor.SetRace(PolymorphRace)
-            ;=======
+			;======= CHANGING RACE HERE
+			debugTrace(" Bimbo Transform - Change Race")
+			kActor.SetRace(PolymorphRace)
+			;=======
 
-            kActor.SetHeadTracking(false)
-            kActor.AddToFaction(MonsterFaction)
-        EndIf
+			kActor.SetHeadTracking(false)
+			kActor.AddToFaction(MonsterFaction)
+		EndIf
 
-        fctBodyShape.LoadFaceValues( StorageUtil.GetFormValue(none, "_SLH_bimboOriginalActor") as Actor, _bimboPresets,  _bimboMorphs )
+		fctBodyShape.LoadFaceValues(StorageUtil.GetFormValue(none, "_SLH_bimboOriginalActor") as Actor, _bimboPresets, _bimboMorphs)
 	Else
 		; Using Hormones changes to compensate for lack of Bimbo race
 		fctBodyshape.alterBodyByPercent(kActor, "Weight", 5.0)
 		fctBodyshape.alterBodyByPercent(kActor, "Breast", 5.0)
-    Endif
+	Endif
 
-    Int iBimboHairColor = Math.LeftShift(255, 24) + Math.LeftShift(92, 16) + Math.LeftShift(80, 8) + 80
-    StorageUtil.SetIntValue(kActor, "_SLH_iHairColor", iBimboHairColor ) 
+	Int iBimboHairColor = Math.LeftShift(255, 24) + Math.LeftShift(92, 16) + Math.LeftShift(80, 8) + 80
+	StorageUtil.SetIntValue(kActor, "_SLH_iHairColor", iBimboHairColor)
 
-    isActorExhibitionist = slaUtil.IsActorExhibitionist(kActor)
-    actorArousalRate = slaUtil.GetActorExposureRate(kActor)
+	isActorExhibitionist = slaUtil.IsActorExhibitionist(kActor)
+	actorArousalRate = slaUtil.GetActorExposureRate(kActor)
 
-    If (GV_allowExhibitionist.GetValue() == 1) 
-        slaUtil.SetActorExhibitionist(kActor, True)
-    EndIf
+	If GV_allowExhibitionist.GetValue() == 1
+		slaUtil.SetActorExhibitionist(kActor, True)
+	EndIf
 
-    if (actorArousalRate < 8.0 )
-        slaUtil.SetActorExposureRate(kActor, 8.0)
-    Endif
+	if actorArousalRate < 8.0
+		slaUtil.SetActorExposureRate(kActor, 8.0)
+	Endif
 
-    int iTmpAV 
-    iTmpAV = kActor.GetActorValue("health") as int
-    actorHP = iTmpAV
-    StorageUtil.SetFloatValue(none, "_SLH_bimboOriginalHP", actorHP)           
+	int iTmpAV
+	iTmpAV = kActor.GetActorValue("health") as int
+	actorHP = iTmpAV
+	StorageUtil.SetFloatValue(none, "_SLH_bimboOriginalHP", actorHP)
 
-    iTmpAV = kActor.GetActorValue("magicka") as int
-    actorMG = iTmpAV
-    StorageUtil.SetFloatValue(none, "_SLH_bimboOriginalMG", actorMG)           
+	iTmpAV = kActor.GetActorValue("magicka") as int
+	actorMG = iTmpAV
+	StorageUtil.SetFloatValue(none, "_SLH_bimboOriginalMG", actorMG)
 
-    iTmpAV = kActor.GetActorValue("stamina") as int
-    actorST = iTmpAV
-    StorageUtil.SetFloatValue(none, "_SLH_bimboOriginalST", actorST)           
+	iTmpAV = kActor.GetActorValue("stamina") as int
+	actorST = iTmpAV
+	StorageUtil.SetFloatValue(none, "_SLH_bimboOriginalST", actorST)
 
-    iTmpAV = kActor.GetActorValue("OneHanded") as int 
-    actorOneHanded = iTmpAV 
-    StorageUtil.SetFloatValue(none, "_SLH_bimboOriginalOneHanded", actorOneHanded)           
+	iTmpAV = kActor.GetActorValue("OneHanded") as int
+	actorOneHanded = iTmpAV
+	StorageUtil.SetFloatValue(none, "_SLH_bimboOriginalOneHanded", actorOneHanded)
 
-    iTmpAV = kActor.GetActorValue("TwoHanded") as int 
-    actorTwoHanded = iTmpAV  
-    StorageUtil.SetFloatValue(none, "_SLH_bimboOriginalTwoHanded", actorTwoHanded)           
+	iTmpAV = kActor.GetActorValue("TwoHanded") as int
+	actorTwoHanded = iTmpAV
+	StorageUtil.SetFloatValue(none, "_SLH_bimboOriginalTwoHanded", actorTwoHanded)
 
-    iTmpAV = kActor.GetActorValue("Marksman") as int  
-    actorMarksman = iTmpAV  
-    StorageUtil.SetFloatValue(none, "_SLH_bimboOriginalMarksman", actorMarksman)           
+	iTmpAV = kActor.GetActorValue("Marksman") as int
+	actorMarksman = iTmpAV
+	StorageUtil.SetFloatValue(none, "_SLH_bimboOriginalMarksman", actorMarksman)
 
-    iTmpAV = kActor.GetActorValue("HeavyArmor") as int   
-    actorHeavyArmor = iTmpAV  
-    StorageUtil.SetFloatValue(none, "_SLH_bimboOriginalHeavyArmor", actorHeavyArmor)           
+	iTmpAV = kActor.GetActorValue("HeavyArmor") as int
+	actorHeavyArmor = iTmpAV
+	StorageUtil.SetFloatValue(none, "_SLH_bimboOriginalHeavyArmor", actorHeavyArmor)
 
-    iTmpAV = kActor.GetActorValue("LightArmor") as int  
-    actorLightArmor = iTmpAV  
-    StorageUtil.SetFloatValue(none, "_SLH_bimboOriginalLightArmor", actorLightArmor)           
+	iTmpAV = kActor.GetActorValue("LightArmor") as int
+	actorLightArmor = iTmpAV
+	StorageUtil.SetFloatValue(none, "_SLH_bimboOriginalLightArmor", actorLightArmor)
 
-    iTmpAV = kActor.GetActorValue("Pickpocket") as int 
-    actorPickpocket = iTmpAV
-    StorageUtil.SetFloatValue(none, "_SLH_bimboOriginalPickpocket", actorPickpocket)           
+	iTmpAV = kActor.GetActorValue("Pickpocket") as int
+	actorPickpocket = iTmpAV
+	StorageUtil.SetFloatValue(none, "_SLH_bimboOriginalPickpocket", actorPickpocket)
 
-    kActor.SetActorValue("health", (actorHP/4 + HP))
-    kActor.SetActorValue("magicka", (actorMG/4 + Magicka))
-    kActor.SetActorValue("stamina", (actorST/4 + Stamina))
-    kActor.SetActorValue("healrate", 1)
+	kActor.SetActorValue("health", (actorHP/4 + HP))
+	kActor.SetActorValue("magicka", (actorMG/4 + Magicka))
+	kActor.SetActorValue("stamina", (actorST/4 + Stamina))
+	kActor.SetActorValue("healrate", 1)
 
-    kActor.SetActorValue("OneHanded", actorOneHanded / 5)
-    kActor.SetActorValue("TwoHanded", actorTwoHanded / 3)
-    kActor.SetActorValue("Marksman", actorMarksman / 2) 
-    kActor.SetActorValue("HeavyArmor", actorHeavyArmor / 5)  
-    kActor.SetActorValue("LightArmor", actorLightArmor / 2) 
-    kActor.SetActorValue("Pickpocket", actorPickpocket * 3)
+	kActor.SetActorValue("OneHanded", actorOneHanded / 5)
+	kActor.SetActorValue("TwoHanded", actorTwoHanded / 3)
+	kActor.SetActorValue("Marksman", actorMarksman / 2)
+	kActor.SetActorValue("HeavyArmor", actorHeavyArmor / 5)
+	kActor.SetActorValue("LightArmor", actorLightArmor / 2)
+	kActor.SetActorValue("Pickpocket", actorPickpocket * 3)
 
-    kActor.RestoreActorValue("health", 999999999999)
-    Debug.SetGodMode(false)
+	kActor.RestoreActorValue("health", 999999999999)
+	Debug.SetGodMode(false)
 
-    BimboAliasRef.ForceRefTo(kActor as ObjectReference)
+	BimboAliasRef.ForceRefTo(kActor as ObjectReference)
 
-    SLH_Control.setHormonesStateDefault(kActor)
+	SLH_Control.setHormonesStateDefault(kActor)
 
-    Debug.Messagebox("A heatwave of pure lust suddenly rips through your body, molding your features and turning your skin into liquid fire. The shock leaves you breathless... light headed... panting even.")
-    Debug.Messagebox("[Technical note - Once the transformation is complete, you should reset SexLab using the Clean Up option.]")
+	Debug.Messagebox("A heatwave of pure lust suddenly rips through your body, molding your features and turning your skin into liquid fire. The shock leaves you breathless... light headed... panting even.")
+	Debug.Messagebox("[Technical note - Once the transformation is complete, you should reset SexLab using the Clean Up option.]")
 
-    SLH_Control.playMoan(kActor)
+	SLH_Control.playMoan(kActor)
 
-    GV_isPolymorphON.SetValue(1)
-    StorageUtil.SetIntValue(kActor, "_SLH_isPolymorph", 1)   
+	GV_isPolymorphON.SetValue(1)
+	StorageUtil.SetIntValue(kActor, "_SLH_isPolymorph", 1)
 
-    SLH_Control.setBimboState(kActor, TRUE)
-    kActor.SendModEvent("SLHRefresh")
+	SLH_Control.setBimboState(kActor, TRUE)
+	kActor.SendModEvent("SLHRefresh")
 
-    SLH_BimboControl.initBimbo(isActorMale)
+	SLH_BimboControl.initBimbo(isActorMale)
 
 	If StorageUtil.GetIntValue(none, "_SLH_debugTraceON") == 1
 		Debug.Trace("[SLH_fctPolymorph] Bimbo ON")
@@ -352,15 +337,15 @@ Bool function bimboTransformEffectON(actor kActor)
 		Debug.Trace("[SLH_fctPolymorph] Bimbo Curse Start - IsTG: " + GV_isTG.GetValue() as Bool)
 	EndIf
 
-    Return True
+	Return True
 endFunction
 
 function bimboTransformEffectOFF(actor kActor)
 	Bool allowBimbo = StorageUtil.GetIntValue(kActor, "_SLH_allowBimbo")
 	Bool isBimbo = GV_isBimbo.GetValue() as Bool
-    GV_allowTG.SetValue( StorageUtil.GetIntValue(kActor, "_SLH_allowTG") )
-    GV_allowHRT.SetValue( StorageUtil.GetIntValue(kActor, "_SLH_allowHRT") )
-    GV_allowBimbo.SetValue(allowBimbo as Int)
+	GV_allowTG.SetValue(StorageUtil.GetIntValue(kActor, "_SLH_allowTG"))
+	GV_allowHRT.SetValue(StorageUtil.GetIntValue(kActor, "_SLH_allowHRT"))
+	GV_allowBimbo.SetValue(allowBimbo as Int)
 
 	If StorageUtil.GetIntValue(none, "_SLH_debugTraceON") == 1
 		Debug.Trace("[SLH_fctPolymorph] Bimbo Curse Shutdown - IsBimbo: " + isBimbo)
@@ -368,12 +353,12 @@ function bimboTransformEffectOFF(actor kActor)
 		Debug.Trace("[SLH_fctPolymorph] Bimbo Curse Shutdown - IsTG: " + GV_isTG.GetValue() as Bool)
 	EndIf
 
-    If allowBimbo && isBimbo
-        TransformationEffect.Cast(kActor,kActor)
-        debugTrace(" Bimbo Transform OFF")
-  
-        If (GV_allowBimboRace.GetValue()==1)
-            kActor.RemoveFromFaction(MonsterFaction)
+	If allowBimbo && isBimbo
+		TransformationEffect.Cast(kActor,kActor)
+		debugTrace(" Bimbo Transform OFF")
+
+		If GV_allowBimboRace.GetValue() == 1
+			kActor.RemoveFromFaction(MonsterFaction)
 
 			; unequip magic
 			Spell sEquipped = kActor.GetEquippedSpell(0)
@@ -386,67 +371,67 @@ function bimboTransformEffectOFF(actor kActor)
 			EndIf
 			; unequip weapons
 			Weapon wEquipped = kActor.GetEquippedWeapon(true)
-			if (wEquipped != None); left hand
+			if wEquipped != None; left hand
 				kActor.UnequipItem(wEquipped, false, true)
 			endif
 			wEquipped = kActor.GetEquippedWeapon()
-			if (wEquipped != None); right hand
+			if wEquipped != None; right hand
 				kActor.UnequipItem(wEquipped, false, true)
 			endif
 
-            Game.EnablePlayerControls()
-            Game.SetPlayerReportCrime(true)
-            kActor.SetAttackActorOnSight(false)
-            kActor.RemoveFromFaction(ActorWerewolfFaction)
-            debugTrace(" Bimbo - Setting race " + (CompanionsTrackingQuest as CompanionsHousekeepingScript).PlayerOriginalRace + " on " + kActor)
+			Game.EnablePlayerControls()
+			Game.SetPlayerReportCrime(true)
+			kActor.SetAttackActorOnSight(false)
+			kActor.RemoveFromFaction(ActorWerewolfFaction)
+			debugTrace(" Bimbo - Setting race " + (CompanionsTrackingQuest as CompanionsHousekeepingScript).PlayerOriginalRace + " on " + kActor)
 
-            kActor.DispelSpell(TransformationSpell)
+			kActor.DispelSpell(TransformationSpell)
 
-            debugTrace(" Original race - " + ActorOriginalRace)
+			debugTrace(" Original race - " + ActorOriginalRace)
 
-            ActorOriginalRace = StorageUtil.GetFormValue(none, "_SLH_bimboOriginalRace") as Race
-            If (ActorOriginalRace == None)
-                ; In case of upgrade while in Bimbo mode
-                Debug.MessageBox("[Transformation cannot continue. Try going back to an earlier version of Hormones and update after being cured from the Bimbo curse.]")
-                Return
-            Endif
+			ActorOriginalRace = StorageUtil.GetFormValue(none, "_SLH_bimboOriginalRace") as Race
+			If ActorOriginalRace == None
+				; In case of upgrade while in Bimbo mode
+				Debug.MessageBox("[Transformation cannot continue. Try going back to an earlier version of Hormones and update after being cured from the Bimbo curse.]")
+				Return
+			Endif
 
-            kActor.SetRace(ActorOriginalRace)
-            _actorPresets = new int[4]
-            _actorMorphs = new float[19]
-            _bimboPresets = new int[4]
-            _bimboMorphs = new float[19]
+			kActor.SetRace(ActorOriginalRace)
+			_actorPresets = new int[4]
+			_actorMorphs = new float[19]
+			_bimboPresets = new int[4]
+			_bimboMorphs = new float[19]
 
-            fctBodyShape.SaveFaceValues( StorageUtil.GetFormValue(none, "_SLH_bimboOriginalActor") as Actor, _actorPresets,  _actorMorphs )
-            fctBodyShape.SaveFaceValues( Bimbo, _bimboPresets,  _bimboMorphs )
+			fctBodyShape.SaveFaceValues(StorageUtil.GetFormValue(none, "_SLH_bimboOriginalActor") as Actor, _actorPresets, _actorMorphs)
+			fctBodyShape.SaveFaceValues(Bimbo, _bimboPresets, _bimboMorphs)
 
-            fctBodyShape.LoadFaceValues( kActor, _actorPresets,  _actorMorphs ) 
-        EndIf
+			fctBodyShape.LoadFaceValues(kActor, _actorPresets, _actorMorphs)
+		EndIf
 
-        if (!isActorExhibitionist) && (GV_allowExhibitionist.GetValue() == 1) 
-            slaUtil.SetActorExhibitionist(kActor, False)
-        EndIf
+		if !isActorExhibitionist && GV_allowExhibitionist.GetValue() == 1
+			slaUtil.SetActorExhibitionist(kActor, False)
+		EndIf
 
-        slaUtil.SetActorExposureRate(kActor, actorArousalRate)
+		slaUtil.SetActorExposureRate(kActor, actorArousalRate)
 
-        kActor.SetActorValue("health", StorageUtil.GetFloatValue(none, "_SLH_bimboOriginalHP") )
-        kActor.SetActorValue("magicka", StorageUtil.GetFloatValue(none, "_SLH_bimboOriginalMG"))
-        kActor.SetActorValue("stamina", StorageUtil.GetFloatValue(none, "_SLH_bimboOriginalST"))
-        kActor.SetActorValue("healrate", 1)
-        kActor.RestoreActorValue("health", 999999999999999999999999999)
+		kActor.SetActorValue("health", StorageUtil.GetFloatValue(none, "_SLH_bimboOriginalHP"))
+		kActor.SetActorValue("magicka", StorageUtil.GetFloatValue(none, "_SLH_bimboOriginalMG"))
+		kActor.SetActorValue("stamina", StorageUtil.GetFloatValue(none, "_SLH_bimboOriginalST"))
+		kActor.SetActorValue("healrate", 1)
+		kActor.RestoreActorValue("health", 999999999999999999999999999)
 
-        kActor.SetActorValue("OneHanded", StorageUtil.GetFloatValue(none, "_SLH_bimboOriginalOneHanded") )
-        kActor.SetActorValue("TwoHanded", StorageUtil.GetFloatValue(none, "_SLH_bimboOriginalTwoHanded"))
-        kActor.SetActorValue("Marksman", StorageUtil.GetFloatValue(none, "_SLH_bimboOriginalMarksman"))
-        kActor.SetActorValue("HeavyArmor", StorageUtil.GetFloatValue(none, "_SLH_bimboOriginalHeavyArmor"))
-        kActor.SetActorValue("LightArmor", StorageUtil.GetFloatValue(none, "_SLH_bimboOriginalLightArmor"))
-        kActor.SetActorValue("Pickpocket", StorageUtil.GetFloatValue(none, "_SLH_bimboOriginalPickpocket"))
+		kActor.SetActorValue("OneHanded", StorageUtil.GetFloatValue(none, "_SLH_bimboOriginalOneHanded"))
+		kActor.SetActorValue("TwoHanded", StorageUtil.GetFloatValue(none, "_SLH_bimboOriginalTwoHanded"))
+		kActor.SetActorValue("Marksman", StorageUtil.GetFloatValue(none, "_SLH_bimboOriginalMarksman"))
+		kActor.SetActorValue("HeavyArmor", StorageUtil.GetFloatValue(none, "_SLH_bimboOriginalHeavyArmor"))
+		kActor.SetActorValue("LightArmor", StorageUtil.GetFloatValue(none, "_SLH_bimboOriginalLightArmor"))
+		kActor.SetActorValue("Pickpocket", StorageUtil.GetFloatValue(none, "_SLH_bimboOriginalPickpocket"))
 
-        kActor.SetScale (1.0)
+		kActor.SetScale(1.0)
 
-        SprigganFX.Play( kActor, 30 )
+		SprigganFX.Play(kActor, 30)
 
-        BimboAliasRef.ForceRefTo(BimboDummyRef)
+		BimboAliasRef.ForceRefTo(BimboDummyRef)
 
 		if StorageUtil.GetIntValue(kActor, "_SLH_bimboTransformFinal") == 1
 			SendModEvent("yps-EnableSmudgingEvent")
@@ -454,42 +439,42 @@ function bimboTransformEffectOFF(actor kActor)
 			SendModEvent("yps-NoPermanentMakeupEvent")
 		endif
 
-        SLH_Control.setHormonesStateDefault(kActor)
+		SLH_Control.setHormonesStateDefault(kActor)
 
-        Debug.Messagebox("The heatwave returns... hopefully restoring most of your normal self.")
-    Endif
+		Debug.Messagebox("The heatwave returns... hopefully restoring most of your normal self.")
+	Endif
 
-    Debug.Messagebox("[Technical note - If your face and eyes are messed up in the Race Menu, use the presets for your race to clear that up.]")
-    Debug.Messagebox("[Technical note - Once the transformation is complete, you should reset SexLab using the Clean Up option.]")
+	Debug.Messagebox("[Technical note - If your face and eyes are messed up in the Race Menu, use the presets for your race to clear that up.]")
+	Debug.Messagebox("[Technical note - Once the transformation is complete, you should reset SexLab using the Clean Up option.]")
 
-    If (StorageUtil.GetIntValue(none, "_SLH_bimboIsOriginalActorMale"))
-        ; Race change is enough for Bimbo -> female
-        Utility.Wait(1.0)
-        HRTEffectOFF( kActor)
+	If StorageUtil.GetIntValue(none, "_SLH_bimboIsOriginalActorMale")
+		; Race change is enough for Bimbo -> female
+		Utility.Wait(1.0)
+		HRTEffectOFF(kActor)
 
-        Utility.Wait(1.0)
-        TGEffectOFF( kActor)
-    Else
+		Utility.Wait(1.0)
+		TGEffectOFF(kActor)
+	Else
 		if !allowBimbo
 			; Race change is enough for Bimbo -> female
 			Utility.Wait(1.0)
-			HRTEffectOFF( kActor)
+			HRTEffectOFF(kActor)
 		EndIf
 
-        Utility.Wait(1.0)
-        TGEffectOFF( kActor)
-    EndIf
+		Utility.Wait(1.0)
+		TGEffectOFF(kActor)
+	EndIf
 
-    SLH_Control.playMoan(kActor)
+	SLH_Control.playMoan(kActor)
 
-    GV_isPolymorphON.SetValue(0)
-    StorageUtil.SetIntValue(kActor, "_SLH_isPolymorph", 0)   
-    fctColor.sendSlaveTatModEvent(kActor, "Bimbo","Feet Nails", bRefresh = True )
- 
-    SLH_Control.setBimboState(kActor, FALSE)
+	GV_isPolymorphON.SetValue(0)
+	StorageUtil.SetIntValue(kActor, "_SLH_isPolymorph", 0)
+	fctColor.sendSlaveTatModEvent(kActor, "Bimbo", "Feet Nails", bRefresh = True)
+
+	SLH_Control.setBimboState(kActor, FALSE)
 	SLH_BimboControl.endBimbo()
 
-    debugTrace(" Bimbo OFF")
+	debugTrace(" Bimbo OFF")
 endFunction
 
 function bimboFinalON(actor kActor)
