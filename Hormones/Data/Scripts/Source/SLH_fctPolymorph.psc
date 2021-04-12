@@ -587,6 +587,8 @@ function bimboTransformEffectOFF(actor kActor)
     fctColor.sendSlaveTatModEvent(kActor, "Bimbo","Feet Nails", bRefresh = True )
  
     SLH_Control.setBimboState(kActor, FALSE)
+	SLH_BimboControl.endBimbo()
+
     debugTrace(" Bimbo OFF")
 
  	; kActor.RegenerateHead()
