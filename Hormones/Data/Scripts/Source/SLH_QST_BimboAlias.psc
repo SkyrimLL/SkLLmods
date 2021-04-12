@@ -115,23 +115,7 @@ Function endBimbo()
 EndFunction
 
 Event OnUpdate()
-	; Safeguard - Exit if alias not set
-	if (StorageUtil.GetIntValue(Game.GetPlayer(), "_SLH_iBimbo")==0)
-		; Debug.Notification( "[SLH] Bimbo status update: " + StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") as Int )
-		Debug.Trace( "[SLH] Bimbo alias is None: " )
-		; try again later
-		RegisterForSingleUpdate( 10 )
-		Return
-	Endif
-
 	Utility.Wait(0.1) ;To prevent Update on Menu Mode
-
-	; Safeguard - Evaluate the rest only when transformation happened
-	if (StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") == -1)
-		; debugTrace(" bimbo OnUpdate, No TF Date")
-		RegisterForSingleUpdate( 10 )
-		Return
-	Endif
 
 	If (StorageUtil.GetIntValue(BimboActor, "_SD_iSlaveryExposure") <= 150)
 		StorageUtil.SetIntValue(BimboActor, "_SD_iSlaveryExposure", 150)
@@ -154,12 +138,6 @@ Event OnUpdate()
 EndEvent
 
 Event OnUpdateGameTime()
-	; Safeguard - Exit if alias not set
-	; Safeguard - Evaluate the rest only when transformation happened
-	if (StorageUtil.GetIntValue(BimboActor, "_SLH_iBimbo")==0) || (StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") == -1)
-		Return
-	Endif
-
 	updateClumsyBimbo() ;[mod] clumsy bimbo
 
 	; Compatiblity with Parasites - prevent update when full body armor is worn
