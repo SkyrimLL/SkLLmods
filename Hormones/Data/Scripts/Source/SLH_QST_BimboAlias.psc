@@ -30,7 +30,6 @@ GlobalVariable      Property GV_hornyBegArousal              Auto
 GlobalVariable      Property GV_bimboClumsinessMod              Auto
 GlobalVariable      Property GV_bimboClumsinessDrop    	Auto
 
-ReferenceAlias Property BimboAliasRef  Auto  
 Actor BimboActor 
 
 Int ibimboTransformDate = -1
@@ -64,7 +63,7 @@ Event OnPlayerLoadGame()
 
 		isMaleToBimbo =  StorageUtil.GetIntValue(none, "_SLH_bimboIsOriginalActorMale") as Bool
 
-		BimboActor= BimboAliasRef.GetReference() as Actor
+		BimboActor= self.GetReference() as Actor
 		debugTrace(" BimboActor: " + BimboActor)
 		debugTrace(" Bimbo Transform date: " + StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") )
 		debugTrace(" Player is bimbo: " + StorageUtil.GetIntValue(kPlayer, "_SLH_iBimbo"))
@@ -83,7 +82,7 @@ Function initBimbo()
 	Actor kPlayer = Game.GetPlayer()
 	isMaleToBimbo =  StorageUtil.GetIntValue(none, "_SLH_bimboIsOriginalActorMale") as Bool
 
-	BimboActor= BimboAliasRef.GetReference() as Actor
+	BimboActor= self.GetReference() as Actor
 	debugTrace(" Init BimboActor: " + BimboActor)
 	debugTrace(" Bimbo Transform date: " + StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") )
 	debugTrace(" Player is bimbo: " + StorageUtil.GetIntValue(kPlayer, "_SLH_iBimbo"))
