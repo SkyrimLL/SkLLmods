@@ -93,6 +93,22 @@ Function initBimbo()
 	RegisterForSingleUpdate( 10 )
 EndFunction
 
+Function endBimbo()
+	UnregisterForActorAction(0)
+	UnregisterForActorAction(5)
+	UnRegisterForUpdate()
+	UnRegisterForUpdateGameTime()
+
+	ibimboTransformDate = -1
+	iGameDateLastCheck = 0
+	bimboClumsyBuffer = 0
+	isBimboClumsyLegs = false
+	isBimboClumsyHands = false
+	isBimboFrailBody = false
+	isBimboPermanent = false
+	isClumsyHandsRegistered = False
+	isClumsyLegsRegistered = False
+EndFunction
 
 Event OnUpdate()
 	; Safeguard - Exit if alias not set
