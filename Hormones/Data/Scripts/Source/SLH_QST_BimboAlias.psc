@@ -15,9 +15,6 @@ Quest Property _SLH_QST_Bimbo  Auto
 Keyword Property ClothingOn Auto
 Keyword Property ArmorOn Auto
 
-Bool bArmorOn = false
-Bool bClothingOn = false
-
 GlobalVariable      Property GV_isTG                   Auto
 GlobalVariable      Property GV_isHRT                   Auto
 GlobalVariable      Property GV_isBimbo                 Auto
@@ -33,15 +30,11 @@ GlobalVariable      Property GV_hornyBegArousal              Auto
 GlobalVariable      Property GV_bimboClumsinessMod              Auto
 GlobalVariable      Property GV_bimboClumsinessDrop    	Auto
 
-Weapon Property ReturnItem Auto
-
 ReferenceAlias Property BimboAliasRef  Auto  
 Actor BimboActor 
 
 Int ibimboTransformDate = -1
-int iGameDateLastCheck
-
-Int iCommentThrottle = 0
+int iGameDateLastCheck = 0
 
 Bool isMaleToBimbo
 
@@ -801,10 +794,10 @@ function clumsyBimboLegs()
 					bimboClumsyBuffer = bimboClumsyBuffer + 1
 				else
 					Bool bTripped = false
+					Bool bArmorOn = BimboActor.WornHasKeyword(ArmorOn)
+					Bool bClothingOn = BimboActor.WornHasKeyword(ClothingOn)
 					string bimboTripMessage = ""
 					bimboClumsyBuffer = 0
-					bArmorOn = BimboActor.WornHasKeyword(ArmorOn)
-					bClothingOn = BimboActor.WornHasKeyword(ClothingOn)
 
 					rollMessage = Utility.RandomInt(0,100)
 
