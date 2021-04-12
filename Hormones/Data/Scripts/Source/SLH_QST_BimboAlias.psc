@@ -15,9 +15,6 @@ Quest Property _SLH_QST_Bimbo  Auto
 Keyword Property ClothingOn Auto
 Keyword Property ArmorOn Auto
 
-Bool bArmorOn = false
-Bool bClothingOn = false
-
 GlobalVariable      Property GV_isTG                   Auto
 GlobalVariable      Property GV_isHRT                   Auto
 GlobalVariable      Property GV_isBimbo                 Auto
@@ -33,15 +30,10 @@ GlobalVariable      Property GV_hornyBegArousal              Auto
 GlobalVariable      Property GV_bimboClumsinessMod              Auto
 GlobalVariable      Property GV_bimboClumsinessDrop    	Auto
 
-Weapon Property ReturnItem Auto
-
-ReferenceAlias Property BimboAliasRef  Auto  
 Actor BimboActor 
 
 Int ibimboTransformDate = -1
-int iGameDateLastCheck
-
-Int iCommentThrottle = 0
+int iGameDateLastCheck = 0
 
 Bool isMaleToBimbo
 
@@ -57,69 +49,73 @@ Bool isClumsyHandsRegistered = False
 Bool isClumsyLegsRegistered = False
 ;===========================================================================
 
+Event OnInit()
+	BimboActor = self.GetReference() as Actor
+	StorageUtil.SetIntValue(BimboActor, "_SLH_bimboTransformDate", -1)
+EndEvent
+
 ;===========================================================================
 ;Hack! Recover lost saves where the tf was done on day zero
 ;===========================================================================
 Event OnPlayerLoadGame()
-	Actor kPlayer = Game.GetPlayer()
-	; if (!isUpdating)
-		debugTrace(" game loaded, registering for update")
-		if (StorageUtil.GetIntValue(kPlayer, "_SLH_iBimbo")==0) && StorageUtil.GetIntValue(kPlayer, "_SLH_bimboTransformDate") == 0
-			StorageUtil.SetIntValue(kPlayer, "_SLH_bimboTransformDate", -1)
-			debugTrace(" poor bimbo, are you lost?")
-		endif
+	Bool isBimbo = StorageUtil.GetIntValue(BimboActor, "_SLH_iBimbo")
+	isMaleToBimbo = StorageUtil.GetIntValue(none, "_SLH_bimboIsOriginalActorMale") as Bool
 
-		isMaleToBimbo =  StorageUtil.GetIntValue(none, "_SLH_bimboIsOriginalActorMale") as Bool
+	SLH_Control._updatePlayerState()
 
-		BimboActor= BimboAliasRef.GetReference() as Actor
-		debugTrace(" BimboActor: " + BimboActor)
-		debugTrace(" Bimbo Transform date: " + StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") )
-		debugTrace(" Player is bimbo: " + StorageUtil.GetIntValue(kPlayer, "_SLH_iBimbo"))
+	If StorageUtil.GetIntValue(none, "_SLH_debugTraceON") == 1
+		Debug.Trace("[SLH_QST_BimboAlias] Bimbo Transform date: " + ibimboTransformDate)
+		Debug.Trace("[SLH_QST_BimboAlias] Player is bimbo: " + isBimbo)
+	EndIf
 
-		SLH_Control._updatePlayerState()
-		; debug.Notification(" Clumsy mod: " + StorageUtil.GetFloatValue(kPlayer, "_SLH_fBimboClumsyMod" ))
-
+	If isBimbo
 		RegisterForSingleUpdateGameTime(1)
-    	RegisterForSingleUpdate( 10 )
-    ; else
-	; 	debugTrace(" game loaded, is already updating (is it?)")
-    ; endif
+		RegisterForSingleUpdate(12)
+	EndIf
 EndEvent
 
-Function initBimbo()
-	Actor kPlayer = Game.GetPlayer()
-	isMaleToBimbo =  StorageUtil.GetIntValue(none, "_SLH_bimboIsOriginalActorMale") as Bool
+Function initBimbo(Bool bMaleToBimbo)
+	BimboActor = self.GetReference() as Actor
+	isMaleToBimbo = bMaleToBimbo
+	ibimboTransformDate = Game.QueryStat("Days Passed")
 
-	BimboActor= BimboAliasRef.GetReference() as Actor
-	debugTrace(" Init BimboActor: " + BimboActor)
-	debugTrace(" Bimbo Transform date: " + StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") )
-	debugTrace(" Player is bimbo: " + StorageUtil.GetIntValue(kPlayer, "_SLH_iBimbo"))
+	StorageUtil.SetIntValue(BimboActor, "_SLH_bimboTransformDate", ibimboTransformDate)
+	StorageUtil.SetIntValue(BimboActor, "_SLH_bimboTransformGameDays", 0)
+
+	If StorageUtil.GetIntValue(none, "_SLH_debugTraceON") == 1
+		Debug.Trace("[SLH_QST_BimboAlias] Init BimboActor: " + BimboActor)
+		Debug.Trace("[SLH_QST_BimboAlias] Bimbo Transform date: " + ibimboTransformDate)
+		Debug.Trace("[SLH_QST_BimboAlias] Player is bimbo: " + StorageUtil.GetIntValue(BimboActor, "_SLH_iBimbo"))
+	EndIf
 
 	debug.notification("(Giggle)")
-	
+
 	RegisterForSingleUpdateGameTime(1)
-	RegisterForSingleUpdate( 10 )
+	RegisterForSingleUpdate(12)
 EndFunction
 
+Function endBimbo()
+	UnregisterForActorAction(0)
+	UnregisterForActorAction(5)
+	UnRegisterForUpdate()
+	UnRegisterForUpdateGameTime()
+
+	ibimboTransformDate = -1
+	iGameDateLastCheck = 0
+	bimboClumsyBuffer = 0
+	isBimboClumsyLegs = false
+	isBimboClumsyHands = false
+	isBimboFrailBody = false
+	isBimboPermanent = false
+	isClumsyHandsRegistered = False
+	isClumsyLegsRegistered = False
+
+	StorageUtil.SetIntValue(BimboActor, "_SLH_bimboTransformDate", -1)
+	StorageUtil.SetIntValue(BimboActor, "_SLH_bimboTransformGameDays", 0)
+EndFunction
 
 Event OnUpdate()
-	; Safeguard - Exit if alias not set
-	if (StorageUtil.GetIntValue(Game.GetPlayer(), "_SLH_iBimbo")==0)
-		; Debug.Notification( "[SLH] Bimbo status update: " + StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") as Int )
-		Debug.Trace( "[SLH] Bimbo alias is None: " )
-		; try again later
-		RegisterForSingleUpdate( 10 )
-		Return
-	Endif
-
 	Utility.Wait(0.1) ;To prevent Update on Menu Mode
-
-	; Safeguard - Evaluate the rest only when transformation happened
-	if (StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") == -1)
-		; debugTrace(" bimbo OnUpdate, No TF Date")
-		RegisterForSingleUpdate( 10 )
-		Return
-	Endif
 
 	If (StorageUtil.GetIntValue(BimboActor, "_SD_iSlaveryExposure") <= 150)
 		StorageUtil.SetIntValue(BimboActor, "_SD_iSlaveryExposure", 150)
@@ -142,12 +138,6 @@ Event OnUpdate()
 EndEvent
 
 Event OnUpdateGameTime()
-	; Safeguard - Exit if alias not set
-	; Safeguard - Evaluate the rest only when transformation happened
-	if (StorageUtil.GetIntValue(BimboActor, "_SLH_iBimbo")==0) || (StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") == -1)
-		Return
-	Endif
-
 	updateClumsyBimbo() ;[mod] clumsy bimbo
 
 	; Compatiblity with Parasites - prevent update when full body armor is worn
@@ -801,10 +791,10 @@ function clumsyBimboLegs()
 					bimboClumsyBuffer = bimboClumsyBuffer + 1
 				else
 					Bool bTripped = false
+					Bool bArmorOn = BimboActor.WornHasKeyword(ArmorOn)
+					Bool bClothingOn = BimboActor.WornHasKeyword(ClothingOn)
 					string bimboTripMessage = ""
 					bimboClumsyBuffer = 0
-					bArmorOn = BimboActor.WornHasKeyword(ArmorOn)
-					bClothingOn = BimboActor.WornHasKeyword(ClothingOn)
 
 					rollMessage = Utility.RandomInt(0,100)
 
