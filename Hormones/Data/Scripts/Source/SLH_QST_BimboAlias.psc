@@ -49,37 +49,33 @@ Bool isClumsyHandsRegistered = False
 Bool isClumsyLegsRegistered = False
 ;===========================================================================
 
+Event OnInit()
+	BimboActor = self.GetReference() as Actor
+	StorageUtil.SetIntValue(BimboActor, "_SLH_bimboTransformDate", -1)
+EndEvent
+
 ;===========================================================================
 ;Hack! Recover lost saves where the tf was done on day zero
 ;===========================================================================
 Event OnPlayerLoadGame()
-	Actor kPlayer = Game.GetPlayer()
-	; if (!isUpdating)
-		debugTrace(" game loaded, registering for update")
-		if (StorageUtil.GetIntValue(kPlayer, "_SLH_iBimbo")==0) && StorageUtil.GetIntValue(kPlayer, "_SLH_bimboTransformDate") == 0
-			StorageUtil.SetIntValue(kPlayer, "_SLH_bimboTransformDate", -1)
-			debugTrace(" poor bimbo, are you lost?")
-		endif
+	Bool isBimbo = StorageUtil.GetIntValue(BimboActor, "_SLH_iBimbo")
+	isMaleToBimbo = StorageUtil.GetIntValue(none, "_SLH_bimboIsOriginalActorMale") as Bool
 
-		isMaleToBimbo =  StorageUtil.GetIntValue(none, "_SLH_bimboIsOriginalActorMale") as Bool
+	SLH_Control._updatePlayerState()
 
-		BimboActor= self.GetReference() as Actor
-		debugTrace(" BimboActor: " + BimboActor)
-		debugTrace(" Bimbo Transform date: " + StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") )
-		debugTrace(" Player is bimbo: " + StorageUtil.GetIntValue(kPlayer, "_SLH_iBimbo"))
+	If StorageUtil.GetIntValue(none, "_SLH_debugTraceON") == 1
+		Debug.Trace("[SLH_QST_BimboAlias] Bimbo Transform date: " + ibimboTransformDate)
+		Debug.Trace("[SLH_QST_BimboAlias] Player is bimbo: " + isBimbo)
+	EndIf
 
-		SLH_Control._updatePlayerState()
-		; debug.Notification(" Clumsy mod: " + StorageUtil.GetFloatValue(kPlayer, "_SLH_fBimboClumsyMod" ))
-
+	If isBimbo
 		RegisterForSingleUpdateGameTime(1)
-    	RegisterForSingleUpdate( 10 )
-    ; else
-	; 	debugTrace(" game loaded, is already updating (is it?)")
-    ; endif
+		RegisterForSingleUpdate(12)
+	EndIf
 EndEvent
 
 Function initBimbo(Bool bMaleToBimbo)
-	BimboActor= self.GetReference() as Actor
+	BimboActor = self.GetReference() as Actor
 	isMaleToBimbo = bMaleToBimbo
 	ibimboTransformDate = Game.QueryStat("Days Passed")
 
@@ -95,7 +91,7 @@ Function initBimbo(Bool bMaleToBimbo)
 	debug.notification("(Giggle)")
 
 	RegisterForSingleUpdateGameTime(1)
-	RegisterForSingleUpdate( 10 )
+	RegisterForSingleUpdate(12)
 EndFunction
 
 Function endBimbo()
