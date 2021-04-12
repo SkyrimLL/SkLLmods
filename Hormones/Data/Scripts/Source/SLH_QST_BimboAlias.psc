@@ -78,17 +78,22 @@ Event OnPlayerLoadGame()
     ; endif
 EndEvent
 
-Function initBimbo()
-	Actor kPlayer = Game.GetPlayer()
-	isMaleToBimbo =  StorageUtil.GetIntValue(none, "_SLH_bimboIsOriginalActorMale") as Bool
-
+Function initBimbo(Bool bMaleToBimbo)
 	BimboActor= self.GetReference() as Actor
-	debugTrace(" Init BimboActor: " + BimboActor)
-	debugTrace(" Bimbo Transform date: " + StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformDate") )
-	debugTrace(" Player is bimbo: " + StorageUtil.GetIntValue(kPlayer, "_SLH_iBimbo"))
+	isMaleToBimbo = bMaleToBimbo
+	ibimboTransformDate = Game.QueryStat("Days Passed")
+
+	StorageUtil.SetIntValue(BimboActor, "_SLH_bimboTransformDate", ibimboTransformDate)
+	StorageUtil.SetIntValue(BimboActor, "_SLH_bimboTransformGameDays", 0)
+
+	If StorageUtil.GetIntValue(none, "_SLH_debugTraceON") == 1
+		Debug.Trace("[SLH_QST_BimboAlias] Init BimboActor: " + BimboActor)
+		Debug.Trace("[SLH_QST_BimboAlias] Bimbo Transform date: " + ibimboTransformDate)
+		Debug.Trace("[SLH_QST_BimboAlias] Player is bimbo: " + StorageUtil.GetIntValue(BimboActor, "_SLH_iBimbo"))
+	EndIf
 
 	debug.notification("(Giggle)")
-	
+
 	RegisterForSingleUpdateGameTime(1)
 	RegisterForSingleUpdate( 10 )
 EndFunction
@@ -108,6 +113,9 @@ Function endBimbo()
 	isBimboPermanent = false
 	isClumsyHandsRegistered = False
 	isClumsyLegsRegistered = False
+
+	StorageUtil.SetIntValue(BimboActor, "_SLH_bimboTransformDate", -1)
+	StorageUtil.SetIntValue(BimboActor, "_SLH_bimboTransformGameDays", 0)
 EndFunction
 
 Event OnUpdate()

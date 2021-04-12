@@ -337,16 +337,13 @@ Bool function bimboTransformEffectON(actor kActor)
 
     SLH_Control.playMoan(kActor)
 
-    StorageUtil.SetIntValue(kActor, "_SLH_bimboTransformDate", Game.QueryStat("Days Passed"))
-    StorageUtil.SetIntValue(kActor, "_SLH_bimboTransformGameDays", 0)   
-
     GV_isPolymorphON.SetValue(1)
     StorageUtil.SetIntValue(kActor, "_SLH_isPolymorph", 1)   
 
     SLH_Control.setBimboState(kActor, TRUE)
     kActor.SendModEvent("SLHRefresh")
 
-    SLH_BimboControl.initBimbo()
+    SLH_BimboControl.initBimbo(isActorMale)
 
 	If StorageUtil.GetIntValue(none, "_SLH_debugTraceON") == 1
 		Debug.Trace("[SLH_fctPolymorph] Bimbo ON")
@@ -485,8 +482,6 @@ function bimboTransformEffectOFF(actor kActor)
 
     SLH_Control.playMoan(kActor)
 
-    StorageUtil.SetIntValue(kActor, "_SLH_bimboTransformDate", -1)
-    StorageUtil.SetIntValue(kActor, "_SLH_bimboTransformGameDays", 0)   
     GV_isPolymorphON.SetValue(0)
     StorageUtil.SetIntValue(kActor, "_SLH_isPolymorph", 0)   
     fctColor.sendSlaveTatModEvent(kActor, "Bimbo","Feet Nails", bRefresh = True )
