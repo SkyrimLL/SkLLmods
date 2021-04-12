@@ -1,8 +1,5 @@
 Scriptname SLH_fctPolymorph extends Quest  
 
-Import Utility
-Import Math
-
 SLH_fctBodyShape Property fctBodyShape Auto
 SLH_fctColor Property fctColor Auto
 SLH_fctUtil Property fctUtil Auto
@@ -18,12 +15,11 @@ Quest Property _SLH_QST_Bimbo  Auto
 ReferenceAlias Property BimboAliasRef  Auto  
 
 Actor Property Bimbo Auto
-ObjectReference Property PolymorphChest  Auto  
 
 GlobalVariable      Property GV_isBimboFinal                 Auto
 GlobalVariable      Property GV_isBimboLocked                 Auto
 
-Race Property ActorOriginalRace auto
+Race ActorOriginalRace
 Race Property PolymorphRace auto
 
 Race Property ArgonianRace auto
@@ -52,10 +48,6 @@ Quest Property CompanionsTrackingQuest auto
 Faction Property actorWerewolfFaction auto
 Faction Property MonsterFaction auto
 
-Shout Property MonsterShout auto
-
-Spell Property PolymorphSpell auto
-Spell Property PolymorphBimboFX auto
 Spell Property TransformationSpell Auto
 Spell Property TransformationEffect Auto
 Spell Property DiseaseSanguinareVampiris Auto
@@ -63,26 +55,13 @@ Spell Property VampireSunDamage01 auto
 Spell Property VampireSunDamage02 auto
 Spell Property VampireSunDamage03 auto
 Spell Property VampireSunDamage04 auto
-SPELL Property SPELLCLEAR1  Auto  
-SPELL Property SPELLCLEAR2  Auto  
 
-VisualEffect Property VFX1  Auto
-VisualEffect Property VFX2  Auto   
 VisualEffect Property VFX3 Auto
 VisualEffect Property SprigganFX  Auto  
- 
-Weapon Property ReturnItem Auto
-Weapon Property MonsterWeapon auto
-WEAPON Property WEAPONCLEAR1  Auto  
-WEAPON Property WEAPONCLEAR2  Auto  
 
-Ammo Property MonsterAmmo Auto
-
-Armor Property MonsterArmor Auto
-
-Int Property HP  Auto  
-Int Property Magicka  Auto  
-Int Property Stamina  Auto  
+Int Property HP = 50 AutoReadOnly Hidden
+Int Property Magicka = 50 AutoReadOnly Hidden
+Int Property Stamina = 200 AutoReadOnly Hidden
 
 ObjectReference Property BimboDummyRef  Auto  
 
@@ -113,10 +92,6 @@ int[] _actorPresets
 float[] _actorMorphs  
 int[] _bimboPresets  
 float[] _bimboMorphs 
-
-Int   iDaysPassed 
-int   iGameDateLastCheck = -1
-Int   iDaysSinceLastCheck
 
 Bool setSchlong = False
 Bool isActorMale = False
