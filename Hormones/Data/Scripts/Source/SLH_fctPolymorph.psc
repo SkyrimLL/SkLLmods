@@ -69,7 +69,7 @@ VisualEffect Property SprigganFX Auto
 
 Int Property HP = 50 AutoReadOnly Hidden
 Int Property Magicka = 50 AutoReadOnly Hidden
-Int Property Stamina = 200 AutoReadOnly Hidden
+Int Property Stamina = 100 AutoReadOnly Hidden
 
 Bool setSchlong = False
 Bool isActorMale = False
