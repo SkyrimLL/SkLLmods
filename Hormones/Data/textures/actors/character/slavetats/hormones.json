@@ -1,4 +1,5 @@
 [
+{"name": "Blue Milk Drip", "section":"hormones", "texture":"hormones\\lactation.dds", "area":"Body", "color": 2570499831, "glow": 2570499831},
 {"name": "Milk Drip", "section":"hormones", "texture":"hormones\\lactation.dds", "area":"Body"},
-{"name": "Milk Veins", "section":"hormones", "texture":"hormones\\MammaryVeins.dds", "area":"Body"}
+{"name": "Milk Veins", "section":"hormones", "texture":"hormones\\MammaryVeins.dds", "area":"Body", "color": 2568507243}
 ]

@@ -340,7 +340,12 @@ function tryHormonesTats(Actor kActor)
 
 	if (StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel")> StorageUtil.GetFloatValue( kActor , "_SLH_fLactationThreshold") ) 
 
-		if (StorageUtil.GetIntValue(kActor, "_SLP_toggleChaurusWorm")==1) || (StorageUtil.GetIntValue(kActor, "_SLP_toggleChaurusWormVag")==1)
+		if (StorageUtil.GetIntValue(kActor, "_SLP_iChaurusQueenStage")>=3)
+			; Compatibility with Parasites
+	 		debug.trace(" tryHormonesTats - Blue Milk - Compatibility with Parasites" )
+			bBlueMilk = True 
+
+		elseif (StorageUtil.GetIntValue(kActor, "_SLP_toggleChaurusWorm")==1) || (StorageUtil.GetIntValue(kActor, "_SLP_toggleChaurusWormVag")==1)
 			; Compatibility with Parasites
 	 		debug.trace(" tryHormonesTats - Blue Milk - Compatibility with Parasites" )
 			bBlueMilk = True 
@@ -360,9 +365,10 @@ function tryHormonesTats(Actor kActor)
 		endif
 
 		if (bBlueMilk)
-			debug.notification("Your milk is blue!")
-			sendSlaveTatRemoveModEvent(kActor, "hormones","Milk Drip", bRefresh = True )
-			sendSlaveTatModEvent(kActor, "hormones","Milk Drip", iColor = 0xdd36b6f7, bRefresh = True )
+			; debug.notification("Your milk is blue!")
+			sendSlaveTatRemoveModEvent(kActor, "milkfarm","Milk Drip", bRefresh = False )
+			sendSlaveTatRemoveModEvent(kActor, "hormones","Milk Drip", bRefresh = False )
+			sendSlaveTatModEvent(kActor, "hormones","Blue Milk Drip", iColor = 0x99184f6b, bRefresh = True )
 		else
 			sendSlaveTatModEvent(kActor, "hormones","Milk Drip", bRefresh = True )
 		endif
@@ -394,10 +400,10 @@ function sendSlaveTatModEvent(actor akActor, string sType, string sTatooName, in
   		debugTrace(" Applying slavetat: " + sTatooName)
   		debugTrace(" 	Applying actor: " + akActor)
         ModEvent.PushForm(STevent, akActor)      	; Form - actor
-        ModEvent.PushString(STevent, sType)    	; String - type of tattoo?
+        ModEvent.PushString(STevent, sType)    		; String - type of tattoo?
         ModEvent.PushString(STevent, sTatooName)  	; String - name of tattoo
         ModEvent.PushInt(STevent, iColor)  			; Int - color
-        ModEvent.PushBool(STevent, bRefresh)        	; Bool - last = false
+        ModEvent.PushBool(STevent, bRefresh)        ; Bool - last = false
         ModEvent.PushBool(STevent, true)         	; Bool - silent = true
 
         ModEvent.Send(STevent)
