@@ -657,7 +657,21 @@ Function UpdateMilkAfterOrgasm(Actor kActor, Int iMilkDateOffset)
 			endif
 
 			; SexLab.AddCum(kActor,False,True,False)
-			sendSlaveTatModEvent(kActor, "milkfarm","Milk Drip", bRefresh = True )
+			If (StorageUtil.GetIntValue(none, "_SLH_iHormones")!=1)
+				if (StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel")> StorageUtil.GetFloatValue( kActor , "_SLH_fLactationThreshold") ) 
+					sendSlaveTatModEvent(kActor, "milkfarm","Milk Drip", bRefresh = True )
+				else
+					sendSlaveTatRemoveModEvent(kActor, "milkfarm","Milk Drip", bRefresh = True )
+				endif
+
+				if (StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneLactation")>80.0)
+					sendSlaveTatModEvent(kActor, "milkfarm","Milk Veins", iColor = 0x99184f6b, bRefresh = True )
+				else
+					sendSlaveTatRemoveModEvent(kActor, "milkfarm","Milk Veins", bRefresh = True )
+				endif
+			else
+				kActor.SendModEvent("SLHTryHormoneTats")
+			endif
 
 			If (DivineCheeseQuest.GetStageDone(47)) && (!DivineCheeseQuest.GetStageDone(48)) && (!DivineCheeseQuest.GetStageDone(49))
 				; Enable dialogues about Farm Items for sale

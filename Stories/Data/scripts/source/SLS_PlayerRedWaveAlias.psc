@@ -299,6 +299,7 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 	Float fBreastScale 
 	Int iGoldAmount
  	Int randomNum  
+    sslBaseAnimation animation = SexLab.HookAnimation(_args)
 
  
 	if !Self || !SexLab   || (StorageUtil.GetIntValue(none, "_SLS_iStoriesPlayerRedWave")==0)
@@ -333,6 +334,10 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 
 		iGoldAmount += RedWaveController.GetPlayerValueModifier(PlayerActor) * 10
 
+
+		if animation.HasTag("Bestiality") || animation.HasTag("Canine") || animation.HasTag("Wolf")
+			StorageUtil.SetIntValue(none, "_SLS_iPlayerRedWaveBestiality", StorageUtil.GetIntValue(none, "_SLS_iPlayerRedWaveBestiality") + 1)
+		EndIf
 
 		RedWaveController.RedWavePayPlayer(iGoldAmount)
 	EndIf

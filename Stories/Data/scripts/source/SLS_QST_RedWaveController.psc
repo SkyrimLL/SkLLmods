@@ -31,6 +31,8 @@ GlobalVariable Property _SLS_isBigBelly  Auto
 GlobalVariable Property _SLS_isBigBreast  Auto  
 GlobalVariable Property _SLS_isBigButt  Auto  
 GlobalVariable Property _SLS_isBigSchlong  Auto  
+GlobalVariable Property _SLS_isCumCovered  Auto  
+GlobalVariable Property _SLS_isBestiality  Auto  
 
 String                   Property NINODE_SCHLONG	 	= "NPC GenitalsBase [GenBase]" AutoReadOnly
 String                   Property NINODE_RIGHT_BREAST   = "NPC R Breast" AutoReadOnly
@@ -335,6 +337,7 @@ Endfunction
 
 Int function GetPlayerValueModifier(Actor kActor)
 	Int iPlayerValueMod = 0
+	Int iSexLabCumLayers = 0
 	Float fNodeSize
 
 	; Modifiers based on player's status
@@ -420,6 +423,20 @@ Int function GetPlayerValueModifier(Actor kActor)
 		_SLS_isBigSchlong.SetValue(0)
 	endif
 
+	iSexLabCumLayers = SexLab.CountCum(kActor,  Vaginal = true,  Oral = true,  Anal = true)
+	if ( iSexLabCumLayers>= 1)
+		iPlayerValueMod += iSexLabCumLayers
+		_SLS_isCumCovered.SetValue(iSexLabCumLayers)
+	else
+		_SLS_isCumCovered.SetValue(0)
+	endif
+
+	if (StorageUtil.GetIntValue(none, "_SLS_iPlayerRedWaveBestiality")>0)
+		iPlayerValueMod += 5
+		_SLS_isBestiality.SetValue(1)
+	else
+		_SLS_isBestiality.SetValue(0)
+	endif
 
 	return iPlayerValueMod
 Endfunction
