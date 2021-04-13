@@ -225,7 +225,23 @@ Function _maintenance()
 	RegisterForSingleUpdate(10)
 EndFunction
 
+Int Function _getParasiteTickerThreshold(Int _iNextStageTicker, Int _iParasiteDuration)
+	; 1 ticker = 10 seconds realtime
+	Int iThreshold = 100
+	Int iThrottle = _iNextStageTicker / 2
 
+	iThreshold = (100 + (100 - (_iNextStageTicker * 5)) - (_iParasiteDuration * 10) )
+
+	if ( (iThrottle * 2) == _iNextStageTicker)
+		; debug.notification("_iNextStageTicker: " + _iNextStageTicker)
+		; debug.notification("_iParasiteDuration: " + _iParasiteDuration)
+		; debug.notification("iThreshold: " + iThreshold)
+	else
+		; debug.notification(".")
+	endif
+
+	return iThreshold
+EndFunction
 
 Event OnUpdate()
  	Actor PlayerActor= Game.GetPlayer() as Actor
@@ -249,25 +265,33 @@ Event OnUpdate()
 			iParasiteDuration = daysPassed - StorageUtil.GetIntValue(PlayerActor, "_SLP_iSpiderPenisDate")
 			; Force at least 5 days with the parasite. Increase chance of expelling parasite each day after 5 days
 			If (Utility.RandomInt(0,95) > (100 - (iParasiteDuration / 2) ) )
-				fctParasites.tryParasiteNextStage(PlayerActor, "SpiderPenis")
+				if (fctParasites.tryParasiteNextStage(PlayerActor, "SpiderPenis"))
+					iNextStageTicker = 0
+				endif
 			endif
 
 		ElseIf (fctParasites.isInfectedByString( PlayerActor,  "SpiderEgg" ))
 			iParasiteDuration = daysPassed - StorageUtil.GetIntValue(PlayerActor, "_SLP_iSpiderEggDate")
 			If (Utility.RandomInt(0,95) > (100 - (iParasiteDuration / 2) ) )
-				fctParasites.tryParasiteNextStage(PlayerActor, "SpiderEgg")
+				if (fctParasites.tryParasiteNextStage(PlayerActor, "SpiderEgg"))
+					iNextStageTicker = 0
+				endif
 			endif
 
 		ElseIf (fctParasites.isInfectedByString( PlayerActor,  "ChaurusWorm" ))
 			iParasiteDuration = daysPassed - StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusWormDate")
 			If (Utility.RandomInt(0,95) > (100 - (iParasiteDuration / 2) ) )
-				fctParasites.tryParasiteNextStage(PlayerActor, "ChaurusWorm")
+				if (fctParasites.tryParasiteNextStage(PlayerActor, "ChaurusWorm"))
+					iNextStageTicker = 0
+				endif
 			endif
 
 		ElseIf (fctParasites.isInfectedByString( PlayerActor,  "ChaurusWormVag" ))
 			iParasiteDuration = daysPassed - StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusWormVagDate")
 			If (Utility.RandomInt(0,95) > (100 - (iParasiteDuration / 2) ) )
-				fctParasites.tryParasiteNextStage(PlayerActor, "ChaurusWormVag")
+				if (fctParasites.tryParasiteNextStage(PlayerActor, "ChaurusWormVag"))
+					iNextStageTicker = 0
+				endif
 			endif
 		Endif
 
@@ -358,26 +382,43 @@ Event OnUpdate()
  
 			If (fctParasites.isInfectedByString( PlayerActor,  "SpiderPenis" ))
 				iParasiteDuration = daysPassed - StorageUtil.GetIntValue(PlayerActor, "_SLP_iSpiderPenisDate")
-				If (Utility.RandomInt(0,100) > (100 - (iParasiteDuration * 10) ) )
-					fctParasites.tryParasiteNextStage(PlayerActor, "SpiderPenis")
+				If (Utility.RandomInt(0,100) > _getParasiteTickerThreshold(iNextStageTicker, iParasiteDuration) )
+					if (fctParasites.tryParasiteNextStage(PlayerActor, "SpiderPenis"))
+						iNextStageTicker = 0
+					endif
 				endif
 
 			ElseIf (fctParasites.isInfectedByString( PlayerActor,  "SpiderEgg" ))
 				iParasiteDuration = daysPassed - StorageUtil.GetIntValue(PlayerActor, "_SLP_iSpiderEggDate")
-				If (Utility.RandomInt(0,100) > (100 - (iParasiteDuration * 10) ) )
-					fctParasites.tryParasiteNextStage(PlayerActor, "SpiderEgg")
+				If (Utility.RandomInt(0,100) > _getParasiteTickerThreshold(iNextStageTicker, iParasiteDuration) )
+					if (fctParasites.tryParasiteNextStage(PlayerActor, "SpiderEgg"))
+						iNextStageTicker = 0
+					endif
+
 				endif
 
 			ElseIf (fctParasites.isInfectedByString( PlayerActor,  "ChaurusWorm" )) 
 				iParasiteDuration = daysPassed - StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusWormDate")
-				If (Utility.RandomInt(0,100) > (100 - (iParasiteDuration * 10) ) )
-					fctParasites.tryParasiteNextStage(PlayerActor, "ChaurusWorm")
+				If (Utility.RandomInt(0,100) > _getParasiteTickerThreshold(iNextStageTicker, iParasiteDuration) )
+					if (fctParasites.tryParasiteNextStage(PlayerActor, "ChaurusWorm"))
+						iNextStageTicker = 0
+					endif
 				endif
 
 			ElseIf (fctParasites.isInfectedByString( PlayerActor,  "ChaurusWormVag" ))
 				iParasiteDuration = daysPassed - StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusWormVagDate")
-				If (Utility.RandomInt(0,100) > (100 - (iParasiteDuration * 10) ) )
-					fctParasites.tryParasiteNextStage(PlayerActor, "ChaurusWormVag")
+				If (Utility.RandomInt(0,100) > _getParasiteTickerThreshold(iNextStageTicker, iParasiteDuration) )
+					if (fctParasites.tryParasiteNextStage(PlayerActor, "ChaurusWormVag"))
+						iNextStageTicker = 0
+					endif
+				endif 
+
+			ElseIf (fctParasites.isInfectedByString( PlayerActor,  "TentacleMonster" ))
+				iParasiteDuration = daysPassed - StorageUtil.GetIntValue(PlayerActor, "_SLP_iTentacleMonsterDate")
+				If (Utility.RandomInt(0,100) > _getParasiteTickerThreshold(iNextStageTicker, iParasiteDuration) )
+					if (fctParasites.tryParasiteNextStage(PlayerActor, "TentacleMonster"))
+						iNextStageTicker = 0
+					endif
 				endif
 			Endif
 
@@ -1672,7 +1713,7 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 		PlayerActor.SendModEvent("SLHModHormone", "SexDrive", 5.0 + Utility.RandomFloat(0.0,10.0))
 	endif 
 
-	If (fctParasites.ActorHasKeywordByString(PlayerActor, "LivingArmor"))
+	If (fctParasites.ActorHasKeywordByString(PlayerActor, "TentacleMonster"))
 		PlayerActor.SendModEvent("SLHModHormone", "Immunity", 1.0 * Utility.RandomFloat(0.0,10.0))
 		PlayerActor.SendModEvent("SLHModHormone", "Lactation", 10.0 + Utility.RandomFloat(0.0,10.0))
 	endif 
