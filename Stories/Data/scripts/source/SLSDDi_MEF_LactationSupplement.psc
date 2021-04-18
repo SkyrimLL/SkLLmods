@@ -17,8 +17,8 @@ Event OnEffectStart(Actor Target, Actor Caster)
  	fLactationHormoneCooldown = StorageUtil.GetFloatValue( Target , "_SLH_fHormoneLactationCooldown")
  	fLactationHormoneCooldown = 0.8 * fLactationHormoneCooldown
 
- 	if (fLactationHormoneCooldown < 0.1)
- 		fLactationHormoneCooldown = 0.1
+ 	if (fLactationHormoneCooldown < 10.0)
+ 		fLactationHormoneCooldown = 10.0
  	endif
  	
  	StorageUtil.SetFloatValue( Target , "_SLH_fHormoneLactationCooldown", fLactationHormoneCooldown)
