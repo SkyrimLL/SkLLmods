@@ -70,7 +70,7 @@ Event OnPlayerLoadGame()
 
 	If isBimbo
 		RegisterForSingleUpdateGameTime(1)
-		RegisterForSingleUpdate(12)
+		RegisterForSingleUpdate(12) 
 	EndIf
 EndEvent
 
