@@ -174,7 +174,7 @@ EndFunction
 
 
 Bool function hasPlayer(Actor[] _actors)
-	ObjectReference PlayerREF= Game.GetPlayer()
+	Actor PlayerREF= Game.GetPlayer()
 
 	int idx = 0
 	while idx < _actors.Length
@@ -321,30 +321,39 @@ bool function isPregnantByBeeingFemale(actor kActor)
 endFunction
  
 bool function isPregnantByEstrusChaurus(actor kActor)
-  spell  ChaurusBreeder 
-  if (StorageUtil.GetIntValue(none, "_SLS_isEstrusChaurusON") ==  1) 
-  	ChaurusBreeder = StorageUtil.GetFormValue(none, "_SLS_getEstrusChaurusBreederSpell") as Spell
-  	if (ChaurusBreeder != none)
-    	return kActor.HasSpell(ChaurusBreeder)
-    endif
-  endIf
-  return false
+	if kActor && kActor != none
+		if (StorageUtil.GetIntValue(none, "_SLS_isEstrusChaurusON") ==  1) 
+			spell ChaurusBreeder = StorageUtil.GetFormValue(none, "_SLS_getEstrusChaurusBreederSpell") as Spell
+			if (ChaurusBreeder != none)
+				return kActor.HasSpell(ChaurusBreeder)
+			endif
+		endIf
+	endIf
+	return false
 endFunction
 
 bool function isExternalChangeModActive(actor kActor)
-	ObjectReference kActorREF = kActor as ObjectReference 
-	ActorBase pActorBase = kActor.GetActorBase()
-	Float fCurrentWeight = pActorBase.GetWeight()
+	bIsPregnant = false
+	bool bIsActorWeigth = false
+	if kActor && kActor != none
+		ActorBase pActorBase = kActor.GetActorBase()
+		Float fCurrentWeight = pActorBase.GetWeight()
+		bIsPregnant = ( isPregnantBySoulGemOven(kActor) || isPregnantBySimplePregnancy(kActor) || isPregnantByBeeingFemale(kActor) || isPregnantByEstrusChaurus(kActor))
+		bIsActorWeigth = ((fCurrentWeight!=StorageUtil.GetFloatValue(kActor, "_SLH_fWeight")) && (StorageUtil.GetFloatValue(kActor, "_SLH_fManualWeightChange") == -1))
+	endIf
 	Actor kPlayer = Game.GetPlayer()
 
-	bIsPregnant = ( isPregnantBySoulGemOven(kActor) || isPregnantBySimplePregnancy(kActor) || isPregnantByBeeingFemale(kActor) || isPregnantByEstrusChaurus(kActor) || ((StorageUtil.GetIntValue(kPlayer, "PSQ_SuccubusON") == 1) && (StorageUtil.GetIntValue(kPlayer, "PSQ_SoulGemPregnancyON") == 1)) )
+	bIsPregnant = bIsPregnant || ((StorageUtil.GetIntValue(kPlayer, "PSQ_SuccubusON") == 1) && (StorageUtil.GetIntValue(kPlayer, "PSQ_SoulGemPregnancyON") == 1))
 
-	Return bIsPregnant || (GV_changeOverrideToggle.GetValue() == 0) || ((fCurrentWeight!=StorageUtil.GetFloatValue(kActor, "_SLH_fWeight")) && (StorageUtil.GetFloatValue(kActor, "_SLH_fManualWeightChange") == -1))
+	Return bIsPregnant || (GV_changeOverrideToggle.GetValue() == 0) || bIsActorWeigth
 
 endFunction
 
 function manageSexLabAroused(Actor kActor, int aiModRank = -1)
- 
+	if !kActor || kActor == none
+		Return
+	endIf
+	
 	Float Libido = StorageUtil.GetFloatValue(kActor, "_SLH_fLibido" ) 
 	Float fAbsLibido = Math.abs(Libido)
 	Float fArousalRateMod = StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneSexDrive" ) / 11.0 ; between 0 and 9.0
@@ -383,6 +392,10 @@ function manageSexLabAroused(Actor kActor, int aiModRank = -1)
 endFunction
 
 function updateSexLabArousedExposure(Actor kActor, int iExposure)
+	if !kActor || kActor == none
+		Return
+	endIf
+	
 	slaUtil.UpdateActorExposure(kActor, iExposure, " Updated from SL Hormones")
 endFunction
 

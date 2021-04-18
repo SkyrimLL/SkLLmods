@@ -166,8 +166,8 @@ Function doInit()
 EndFunction
 
 Function Maintenance()
-	PlayerREF= Game.GetPlayer() ; PlayerAlias.GetReference()
-	PlayerActor= PlayerREF as Actor
+	PlayerActor= Game.GetPlayer() ; PlayerAlias.GetReference()
+	PlayerREF= PlayerActor as ObjectReference
 	pActorBase = PlayerActor.GetActorBase()
 
 
@@ -259,8 +259,8 @@ Function Maintenance()
 EndFunction
 
 Function maintenanceVersionEvents()
-	PlayerREF= Game.GetPlayer() ; PlayerAlias.GetReference()
-	PlayerActor= PlayerREF as Actor
+	PlayerActor= Game.GetPlayer() ; PlayerAlias.GetReference()
+	PlayerREF= PlayerActor as ObjectReference
 	pActorBase = PlayerActor.GetActorBase()
 	Int iBimbo = StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo") 
  
@@ -361,9 +361,13 @@ EndFunction
 
 
 function initHormones()
-	PlayerREF= Game.GetPlayer() ; PlayerAlias.GetReference()
-	PlayerActor= PlayerREF as Actor
+	PlayerActor= Game.GetPlayer() ; PlayerAlias.GetReference()
+	PlayerREF= PlayerActor as ObjectReference
 	pActorBase = PlayerActor.GetActorBase()
+
+	if !PlayerActor || PlayerActor == none
+		Return
+	endIf
 
 	bInit = True
 
@@ -587,8 +591,8 @@ Event OnSleepStop(bool abInterrupted)
 EndEvent
 
 Function _updatePlayerState()
-	PlayerREF= Game.GetPlayer() ; PlayerAlias.GetReference()
-	PlayerActor= PlayerREF as Actor
+	PlayerActor= Game.GetPlayer() ; PlayerAlias.GetReference()
+	PlayerREF= PlayerActor as ObjectReference
 	pActorBase = PlayerActor.GetActorBase()
 	Form kFormGag
 	Form kFormAnalPlug
@@ -659,9 +663,7 @@ Function _updatePlayerState()
 EndFunction
 
 Event OnUpdate()
-	PlayerREF= Game.GetPlayer() ; PlayerAlias.GetReference()
-	PlayerActor= PlayerREF as Actor
-	pActorBase = PlayerActor.GetActorBase()
+	PlayerActor = Game.GetPlayer() ; PlayerAlias.GetReference()
 	Int RandomNum = 0
 	Int rollFirstPerson 
 
@@ -961,9 +963,7 @@ Event OnUpdate()
 EndEvent
 
 Event OnLocationChange(Location akOldLoc, Location akNewLoc)
-  	If (GV_shapeUpdateOnCellChange.GetValue()==1)
-		PlayerREF= Game.GetPlayer() ; PlayerAlias.GetReference()
-		PlayerActor= PlayerREF as Actor
+  	If (GV_shapeUpdateOnCellChange.GetValue()==1) && PlayerActor != none
 
 		fctColor.applyColorChanges(PlayerActor)
 		fctBodyShape.getShapeState(PlayerActor) 
@@ -1408,8 +1408,7 @@ EndEvent
 
 
 Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
-	PlayerREF= Game.GetPlayer() ; PlayerAlias.GetReference()
-	PlayerActor= PlayerREF as Actor
+	PlayerActor= Game.GetPlayer() ; PlayerAlias.GetReference()
     sslBaseAnimation animation = SexLab.HookAnimation(_args)
 
     Bool bOral = False
@@ -1771,8 +1770,7 @@ EndEvent
 Event OnSexLabOrgasmSeparate(Form ActorRef, Int Thread)
 	string _args = Thread as string
 	actor kActor = ActorRef as actor
-	PlayerREF= Game.GetPlayer() ; PlayerAlias.GetReference()
-	PlayerActor= PlayerREF as Actor
+	PlayerActor= Game.GetPlayer() ; PlayerAlias.GetReference()
 
 	if (kActor==PlayerActor)
 		doOrgasm(_args)
@@ -1781,16 +1779,6 @@ Event OnSexLabOrgasmSeparate(Form ActorRef, Int Thread)
 EndEvent
 
 Function doOrgasm(String _args)
-	Int iDaedricInfluence = StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneSuccubus" ) as Int
-	Int iSuccubus = StorageUtil.GetIntValue(PlayerActor, "_SLH_iSuccubus")
-	Int isPregnant = StorageUtil.GetIntValue(PlayerActor, "_SLH_isPregnant")
-	Int isSuccubus = StorageUtil.GetIntValue(PlayerActor, "_SLH_isSuccubus")
-	Int isLactating = StorageUtil.GetIntValue(PlayerActor, "_SLH_iLactating")
-	Int isBimbo = StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo")
-  
-	PlayerREF= Game.GetPlayer() ; PlayerAlias.GetReference()
-	PlayerActor= PlayerREF as Actor
-
 	if !Self || !SexLab 
 		debugTrace("  Critical error on SexLab Orgasm")
 		Return
@@ -1804,6 +1792,15 @@ Function doOrgasm(String _args)
 
 	If (fctUtil.hasPlayer(actors))
 		debugTrace("  Orgasm!")
+
+		PlayerActor= Game.GetPlayer() ; PlayerAlias.GetReference()
+
+		Int iDaedricInfluence = StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneSuccubus" ) as Int
+		Int iSuccubus = StorageUtil.GetIntValue(PlayerActor, "_SLH_iSuccubus")
+		Int isPregnant = StorageUtil.GetIntValue(PlayerActor, "_SLH_isPregnant")
+		Int isSuccubus = StorageUtil.GetIntValue(PlayerActor, "_SLH_isSuccubus")
+		Int isLactating = StorageUtil.GetIntValue(PlayerActor, "_SLH_iLactating")
+		Int isBimbo = StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo")
 
 		; Manage orgasms count ==================================================
 		If (iGameDateLastSex  == 0) 
@@ -1890,8 +1887,8 @@ Function doOrgasm(String _args)
 EndFunction
 
 Function doSoulDevour(Actor[] _actors)
-	PlayerREF= Game.GetPlayer() ; PlayerAlias.GetReference()
-	PlayerActor= PlayerAlias.GetReference() as Actor
+	PlayerActor= Game.GetPlayer() ; PlayerAlias.GetReference()
+	PlayerREF= PlayerActor as ObjectReference
 
 	if _actors.Length < 2
 		Return
@@ -2401,8 +2398,7 @@ Function startSex(Actor kSpeaker, string sexTags="Sex", string sexMsg="")
 endFunction
 
 Function _nodeBalancing()
-	PlayerREF= Game.GetPlayer() ; PlayerAlias.GetReference() 
-	PlayerActor = PlayerREF as Actor
+	PlayerActor= Game.GetPlayer() ; PlayerAlias.GetReference()
 	pActorBase = PlayerActor.GetActorBase()
 	Float fNumModBreast = 1.0
 	Float fNumModButt = 1.0
@@ -2522,8 +2518,7 @@ EndFunction
 ;===========================================================================
 
 function showStatus()
-	PlayerREF= Game.GetPlayer() ; PlayerAlias.GetReference() 
-	PlayerActor = PlayerREF as Actor
+	PlayerActor= Game.GetPlayer() ; PlayerAlias.GetReference()
 	pActorBase = PlayerActor.GetActorBase()
 
 	string shapeMessageStatus = fctBodyShape.getMessageStatus(PlayerActor)
@@ -2533,8 +2528,7 @@ function showStatus()
 EndFunction
 
 function traceStatus()
-	PlayerREF= Game.GetPlayer() ; PlayerAlias.GetReference() 
-	PlayerActor = PlayerREF as Actor
+	PlayerActor= Game.GetPlayer() ; PlayerAlias.GetReference()
 
 	debugTrace("  Status ---------------------------------" )
 	debugTrace("  Libido: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fLibido") )

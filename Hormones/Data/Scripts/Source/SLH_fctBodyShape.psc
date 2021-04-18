@@ -2122,6 +2122,9 @@ function initShapeConstants(Actor kActor)
 endFunction
 
 function initShapeState(Actor kActor)
+	if !kActor || kActor == none
+		Return
+	endIf
 	ObjectReference kActorREF = kActor as ObjectReference
 	ActorBase pActorBase = kActor.GetActorBase()
 	ActorBase pLeveledActorBase = kActor.GetLeveledActorBase()
