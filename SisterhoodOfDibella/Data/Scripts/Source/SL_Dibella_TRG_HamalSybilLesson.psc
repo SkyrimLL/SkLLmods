@@ -52,7 +52,7 @@ Event OnTriggerEnter(ObjectReference akActionRef)
 				DibellaPathQuest.SetStage(10)
 			EndIf
 
-		ElseIf ( SybilLevel.GetValue() == 1)   ; Initiation to Accolyte
+		ElseIf ( SybilLevel.GetValue() == 1)   ; Initiation to Novice
 		;	InitiationQuest.SetStage(30)
 		;	InitiationFX.Cast(akActor ,akActor )
 		;	DibellaPathQuest.SetStage(20)
