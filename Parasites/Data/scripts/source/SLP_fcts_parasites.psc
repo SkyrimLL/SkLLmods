@@ -25,6 +25,8 @@ ObjectReference Property LastelleCampOutside  Auto
 
 Sound Property SummonSoundFX  Auto
 Sound Property VoicesFX  Auto
+Sound Property CritterFX  Auto
+Sound Property WetFX  Auto
 
 Actor Property EncChaurusActor Auto 
 Actor Property EncChaurusSpawnActor Auto 
@@ -62,6 +64,8 @@ Ingredient  Property SmallSpiderEgg Auto
 Ingredient  Property BarnaclesCluster Auto
 Ingredient Property ChaurusEgg  Auto  
 Ingredient Property GlowingMushrooms  Auto  
+
+Potion Property SLP_CritterSemen Auto
 
 Keyword Property ArmorCuirass  Auto  
 Keyword Property ClothingBody  Auto  
@@ -1217,7 +1221,7 @@ Bool Function applyEstrusTentacles( Actor kActor  )
 	EndIf
 
 	; StorageUtil.SetIntValue(kActor, "_SLP_toggleEstrusTentacle", 1 )
-	StorageUtil.SetIntValue(kActor, "_SLP_iEstrusTentaclseDate", Game.QueryStat("Days Passed"))
+	StorageUtil.SetIntValue(kActor, "_SLP_iEstrusTentaclesDate", Game.QueryStat("Days Passed"))
 	StorageUtil.SetIntValue(kActor, "_SLP_iInfections",  StorageUtil.GetIntValue(kActor, "_SLP_iInfections") + 1)
 	StorageUtil.SetIntValue(kActor, "_SLP_iEstrusTentaclesInfections",  StorageUtil.GetIntValue(kActor, "_SLP_iEstrusTentaclesInfections") + 1)
 
@@ -1322,6 +1326,12 @@ Function cureTentacleMonster( Actor kActor, Bool bHarvestParasite = False   )
 		If (kActor == PlayerActor)
 			TentacleMonsterInfectedAlias.ForceRefTo(DummyAlias)
 		endIf
+
+		TentacleMonsterQuest.Stop()
+
+		if (!KynesBlessingQuest.GetStageDone(60)) && (kActor == PlayerActor)
+			KynesBlessingQuest.SetStage(60)
+		endif
 
 	Else
 		; Reset variables if called after device is removed
@@ -1583,7 +1593,7 @@ Function cureFaceHugger( Actor kActor, Bool bHarvestParasite = False   )
 			PlayerActor.AddItem(SLP_harnessFaceHuggerInventory,1)
 		Endif
 
-		If (kActor == PlayerActor) && !(isInfectedByString( kActor,  "FaceHugger" ))
+		If (kActor == PlayerActor) && !(isInfectedByString( kActor,  "FaceHuggerGag" ))
 			FaceHuggerInfectedAlias.ForceRefTo(DummyAlias)
 		endIf
 
@@ -1636,16 +1646,16 @@ Bool Function applyFaceHuggerGag( Actor kActor  )
 	EndIf
 
 	StorageUtil.SetIntValue(kActor, "_SLP_toggleFaceHuggerGag", 1 )
-	StorageUtil.SetIntValue(kActor, "_SLP_iFaceHuggerDate", Game.QueryStat("Days Passed"))
+	StorageUtil.SetIntValue(kActor, "_SLP_iFaceHuggerGagDate", Game.QueryStat("Days Passed"))
 	StorageUtil.SetIntValue(kActor, "_SLP_iInfections",  StorageUtil.GetIntValue(kActor, "_SLP_iInfections") + 1)
-	StorageUtil.SetIntValue(kActor, "_SLP_iFaceHuggerInfections",  StorageUtil.GetIntValue(kActor, "_SLP_iFaceHuggerInfections") + 1)
+	StorageUtil.SetIntValue(kActor, "_SLP_iFaceHuggerGagInfections",  StorageUtil.GetIntValue(kActor, "_SLP_iFaceHuggerGagInfections") + 1)
 
 	If (kActor == PlayerActor)
 		_SLP_GV_numInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iInfections"))
-		_SLP_GV_numFaceHuggerInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iFaceHuggerInfections"))
+		_SLP_GV_numFaceHuggerInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iFaceHuggerGagInfections"))
 	endIf
 
-	SendModEvent("SLPFaceHuggerInfection")
+	SendModEvent("SLPFaceHuggerGagInfection")
 
 	if (!KynesBlessingQuest.GetStageDone(20)) && (kActor == PlayerActor)
 		KynesBlessingQuest.SetStage(20)
@@ -2771,7 +2781,7 @@ Bool Function tryParasiteNextStage(Actor kActor, String sParasite)
             	utility.wait(4)
            		Debug.SendAnimationEvent(PlayerRef, "IdleForceDefaultState")
            	else
-				Debug.Messagebox("The creature grabs pumps your womb full of a thick milky liquid.")
+				Debug.Messagebox("The creature pumps your womb full of a thick milky liquid.")
            	endif
 
  			voice.Moan(PlayerActor, 10 + (Utility.RandomInt(0,8) * 10 ), false)
@@ -2789,7 +2799,9 @@ Bool Function tryParasiteNextStage(Actor kActor, String sParasite)
             	utility.wait(4)
            		Debug.SendAnimationEvent(PlayerRef, "IdleForceDefaultState")
            	else
-				Debug.Messagebox("The creature grabs pumps your throat full of a thick milky liquid.")
+				Debug.Notification("The creature pumps your throat full of a sweet and milky liquid.")
+				PlayerActor.AddItem(SLP_CritterSemen, 1)
+				PlayerActor.EquipItem(SLP_CritterSemen, true,true)
            	endif
 
  			sslBaseVoice voice = SexLab.GetVoice(PlayerActor)

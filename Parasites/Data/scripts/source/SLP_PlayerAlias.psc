@@ -326,12 +326,16 @@ Event OnUpdate()
 				Debug.MessageBox("Your belly grows as the critter fills it with thick fluids.")
 				fValue = 1.0 + (iParasiteDuration as Float) / 5.0
 				fctParasites.ApplyBodyChange( PlayerActor, "FaceHugger", "Belly", fValue, StorageUtil.GetFloatValue(PlayerActor, "_SLP_bellyMaxFaceHugger" ) )
+				PlayerActor.AddItem(SLP_CritterSemen, 2)
+				PlayerActor.EquipItem(SLP_CritterSemen, true,true)
+				PlayerActor.EquipItem(SLP_CritterSemen, true,true)
+
 			ElseIf (iParasiteDuration >= 5)
 				Debug.MessageBox("Your belly suddenly expells copious amounts of thick fluids.")
 				StorageUtil.SetIntValue(PlayerActor, "_SLP_iFaceHuggerDate", Game.QueryStat("Days Passed"))
 				fValue = 1.0
-				PlayerActor.AddItem(SLP_CritterSemen, 1)
 				fctParasites.ApplyBodyChange( PlayerActor, "FaceHugger", "Belly", fValue, StorageUtil.GetFloatValue(PlayerActor, "_SLP_bellyMaxFaceHugger" ) )
+				SexLab.AddCum(PlayerActor,  Vaginal = true,  Oral = false,  Anal = true)
 			endif
 		Endif
 
@@ -409,6 +413,22 @@ Event OnUpdate()
 				iParasiteDuration = daysPassed - StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusWormVagDate")
 				If (Utility.RandomInt(0,100) > _getParasiteTickerThreshold(iNextStageTicker, iParasiteDuration) )
 					if (fctParasites.tryParasiteNextStage(PlayerActor, "ChaurusWormVag"))
+						iNextStageTicker = 0
+					endif
+				endif 
+
+			ElseIf (fctParasites.isInfectedByString( PlayerActor,  "FaceHugger" ))
+				iParasiteDuration = daysPassed - StorageUtil.GetIntValue(PlayerActor, "_SLP_iFaceHuggerDate")
+				If (Utility.RandomInt(0,100) > _getParasiteTickerThreshold(iNextStageTicker, iParasiteDuration) )
+					if (fctParasites.tryParasiteNextStage(PlayerActor, "FaceHugger"))
+						iNextStageTicker = 0
+					endif
+				endif 
+
+			ElseIf (fctParasites.isInfectedByString( PlayerActor,  "FaceHuggerGag" ))
+				iParasiteDuration = daysPassed - StorageUtil.GetIntValue(PlayerActor, "_SLP_iFaceHuggerGagDate")
+				If (Utility.RandomInt(0,100) > _getParasiteTickerThreshold(iNextStageTicker, iParasiteDuration) )
+					if (fctParasites.tryParasiteNextStage(PlayerActor, "FaceHuggerGag"))
 						iNextStageTicker = 0
 					endif
 				endif 
@@ -1451,6 +1471,12 @@ Event OnSLPSexCure(String _eventName, String _args, Float _argc = 0.0, Form _sen
 		
 	ElseIf (sParasite == "FaceHuggerGag")
 		fctParasites.cureFaceHuggerGag(kActor, bHarvestParasite)
+		
+	ElseIf (sParasite == "TentacleMonster")
+		SexLab.AddCum(kPlayer,  Vaginal = true,  Oral = false,  Anal = true)
+		SexLab.AddCum(kActor,  Vaginal = true,  Oral = false,  Anal = true)
+		fctParasites.cureTentacleMonster(kPlayer, false)
+		fctParasites.infectTentacleMonster(kActor)
 	Endif
 EndEvent
 
