@@ -1089,7 +1089,7 @@ function alterBreastNode(Actor kActor, float fNewBreast = 0.0)
 	fPregRightBreast   = fBreast
 
 
-	if (isSlifInstalled)
+	if (isSlifInstalled) && ( StorageUtil.GetIntValue(none, "_SLH_SLIFOverrideON") == 1)
 		debugTrace("	Using SLIF")
 		SLIF_inflateMax(kActor, "slif_breast", fPregLeftBreast * fApparelMod, fNodeMax, SLH_KEY)
 
@@ -1160,7 +1160,7 @@ function alterBellyNode(Actor kActor, float fNewBelly = 0.0)
 
 	fPregBelly     = fBelly
 
-	if (isSlifInstalled)
+	if (isSlifInstalled) && ( StorageUtil.GetIntValue(none, "_SLH_SLIFOverrideON") == 1)
 		debugTrace("	Using SLIF")
 		SLIF_inflateMax(kActor, "slif_belly", fPregBelly * fApparelMod, fNodeMax, SLH_KEY)
 
@@ -1232,7 +1232,7 @@ function alterButtNode(Actor kActor, float fNewButt = 0.0)
 	fPregLeftButt = fButt
 	fPregRightButt = fButt
 
-	if (isSlifInstalled)
+	if (isSlifInstalled) && ( StorageUtil.GetIntValue(none, "_SLH_SLIFOverrideON") == 1)
 		debugTrace("	Using SLIF")
 		SLIF_inflateMax(kActor, "slif_butt", fPregLeftButt * fApparelMod, fNodeMax, SLH_KEY)
 
@@ -1281,7 +1281,7 @@ function alterSchlongNode(Actor kActor, float fNewSchlong = 0.0)
 
  	debugTrace("  		Schlong New: " + fSchlong )
 
-	if (isSlifInstalled)
+	if (isSlifInstalled) && ( StorageUtil.GetIntValue(none, "_SLH_SLIFOverrideON") == 1)
 		debugTrace("	Using SLIF")
 		SLIF_inflateMax(kActor, "slif_schlong", fSchlong, fSchlongMax, SLH_KEY)
 

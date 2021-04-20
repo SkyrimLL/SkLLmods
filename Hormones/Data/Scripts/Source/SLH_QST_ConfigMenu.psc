@@ -66,7 +66,7 @@ GlobalVariable      Property GV_shapeUpdateOnCellChange	Auto
 GlobalVariable      Property GV_shapeUpdateAfterSex		Auto
 GlobalVariable      Property GV_shapeUpdateOnTimer		Auto
 GlobalVariable      Property GV_enableNiNodeUpdate		Auto
-GlobalVariable      Property GV_enableNiNodeOverride	Auto
+GlobalVariable      Property GV_enableNiNodeOverride	Auto 
 ; GlobalVariable      Property GV_enableBodyMorphs		Auto
 
 GlobalVariable      Property GV_allowExhibitionist		Auto
@@ -174,6 +174,7 @@ bool		_shapeUpdateAfterSex 	= true
 bool		_shapeUpdateOnTimer 	= true
 bool 		_enableBasicNetImmerse  = false
 bool		_enableNiNodeUpdate 	= false
+bool		_enableSLIFOverride		= true
 bool		_enableNiNodeOverride	= true
 bool		_enableBodyMorphs		= false
 
@@ -418,6 +419,7 @@ event OnPageReset(string a_page)
 	; _enableNiNodeUpdate = GV_enableNiNodeUpdate.GetValue()  as Int
 	_enableBasicNetImmerse = StorageUtil.GetIntValue(none, "_SLH_BasicNetImmerseON")
 	_enableNiNodeUpdate = StorageUtil.GetIntValue(none, "_SLH_NiNodeUpdateON")
+	_enableSLIFOverride = StorageUtil.GetIntValue(none, "_SLH_SLIFOverrideON")
 	_enableNiNodeOverride = StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON")
 	_enableBodyMorphs = StorageUtil.GetIntValue(none, "_SLH_BodyMorphsON")
 
@@ -602,6 +604,7 @@ event OnPageReset(string a_page)
 		AddHeaderOption(" Shape change method ")
  		AddTextOption(" Pick one", "", OPTION_FLAG_DISABLED)
 		AddToggleOptionST("STATE_ENABLE_BASIC_NETIMMERSE","Enable Basic NetImmerse", StorageUtil.GetIntValue(none, "_SLH_BasicNetImmerseON") as Float)
+		AddToggleOptionST("STATE_ENABLE_SLIF_OVERRIDE","$SLH_bENABLE_SLIF_OVERRIDE", StorageUtil.GetIntValue(none, "_SLH_SLIFOverrideON") as Float)
 		AddToggleOptionST("STATE_ENABLE_NODE_OVERRIDE","$SLH_bENABLE_NODE_OVERRIDE", StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON") as Float)
 		AddToggleOptionST("STATE_ENABLE_BODYMORPHS","Enable BodyMorphs", StorageUtil.GetIntValue(none, "_SLH_BodyMorphsON") as Float)
 		
@@ -2975,6 +2978,31 @@ state STATE_ENABLE_NODE_OVERRIDE ; TOGGLE
 
 	event OnHighlightST()
 		SetInfoText("$SLH_bENABLE_NODE_OVERRIDE_DESC")
+	endEvent
+
+endState
+
+; AddToggleOptionST("STATE_SLIF_NODE_OVERRIDE","Enable SLIF override", _enableSLIFOverride as Float)
+state STATE_ENABLE_SLIF_OVERRIDE ; TOGGLE
+	event OnSelectST()
+		; NiOverride and BodyMorphs are mutually exclusive
+		_enableSLIFOverride = StorageUtil.GetIntValue(none, "_SLH_SLIFOverrideON")
+		_enableSLIFOverride = Math.LogicalXor( 1, _enableSLIFOverride as Int ) 
+		StorageUtil.SetIntValue(none, "_SLH_SLIFOverrideON", _enableSLIFOverride as Int)
+
+		SetToggleOptionValueST( _enableSLIFOverride as Bool )
+		refreshStorageFromGlobals()
+		ForcePageReset()
+	endEvent
+
+	event OnDefaultST()
+		StorageUtil.SetIntValue(none, "_SLH_SLIFOverrideON", 1)
+		SetToggleOptionValueST( true )
+		ForcePageReset()
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("$SLH_bENABLE_SLIF_OVERRIDE_DESC")
 	endEvent
 
 endState

@@ -886,14 +886,19 @@ endfunction
 ;===========================================================================
 ;===========================================================================
 ;===========================================================================
-;Basically (read: 100%) lifted wholesale from slavetats events bridge, all credits to weird
-
+ 
+; RemoveBimboTattoo(BimboActor, "Bimbo", true, true)
+; BimboTattoo(BimboActor,"Bimbo","Tramp Stamp",false,true,true)
 
 Function BimboTattoo(Form _form, String _section, String _name, bool _last, bool _silent, bool _lock)
 	if !_form as Actor
 		debug.Trace("[SLH] ERROR: called BimboTattoo on a not-actor")
 		return
 	endIf
+
+	Actor kActor = _form as Actor
+
+	fctColor.sendSlaveTatModEvent(kActor, _section, _name, bRefresh = _last )
 
 	; Call mod event from Hormones Bimbo Add-on
 EndFunction
@@ -905,9 +910,13 @@ Function RemoveBimboTattoo(Form _form, String _section, bool _ignoreLock, bool _
 		return
 	endIf
 
+	Actor kActor = _form as Actor
+
 	; Call mod event from Hormones Bimbo Add-on
+	; fctColor.sendSlaveTatRemoveModEvent(kActor, _section, _name, bRefresh = True )
 
 EndFunction
+
 
 ;===========================================================================
 ;===========================================================================
@@ -934,9 +943,9 @@ function bimboDailyProgressiveTransformation(int transformationDays, Int transfo
 	StorageUtil.SetIntValue(BimboActor, "_SLH_bimboTransformCycle", transformationCycle)
 	StorageUtil.SetIntValue(BimboActor, "_SLH_iHairColor", iBimboHairColor)
 
-	fctHormones.modHormoneLevel(BimboActor, "Growth", 5.0 ) ; make breasts and butt larger
-	fctHormones.modHormoneLevel(BimboActor, "Bimbo", 5.0 ) ; make breasts and butt larger
-	fctHormones.modHormoneLevel(BimboActor, "Metabolism", -5.0 ) ; make breasts and butt larger
+	fctHormones.modHormoneLevel(BimboActor, "Growth", 5.0 ) 
+	fctHormones.modHormoneLevel(BimboActor, "Bimbo", 5.0 ) 
+	fctHormones.modHormoneLevel(BimboActor, "Metabolism", -5.0 )  
 
 	If StorageUtil.GetIntValue(none, "_SLH_debugTraceON") == 1
 		Debug.Trace("[SLH_QST_BimboAlias] bimbo transformation days: " + transformationDays)
@@ -953,14 +962,25 @@ function bimboDailyProgressiveTransformation(int transformationDays, Int transfo
 	If isBimboPermanent
 		Debug.Notification("I need more cocks! *giggle*")
 		SLH_Control.playMoan(BimboActor)
+
+		; Maintenance in case c=forced changes to the Bimbol look (ex: shaved head)
+		SetHairLength(transformationLevel)
 		SendModEvent("yps-HairColorBaseEvent", "Platinum Blonde", 0xCABFB1)
+		SendModEvent("yps-LipstickEvent", "Bimbo", -1)  ; SendModEvent("yps-LipstickEvent", "Red", 0xFF0000)  
+		SendModEvent("yps-EyeshadowEvent", "Bimbo", -1) ; SendModEvent("yps-EyeshadowEvent", "Black", 0x000000)   
+		BimboTattoo(BimboActor, "bimbo","Belly",false,true,true)
+		BimboTattoo(BimboActor, "bimbo","Tramp Stamp",false,true,true)
+		BimboTattoo(BimboActor, "bimbo","Tramp Stamp Upper",false,true,true)
+		BimboTattoo(BimboActor, "bimbo","Pubic Tattoo",false,true,true)
+		BimboTattoo(BimboActor, "bimbo","Permanent Bimbo",true,true,true)
+
 	ElseIf StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformFinal") == 1
-		RemoveBimboTattoo(BimboActor, "Bimbo", true, true)
-		BimboTattoo(BimboActor,"Bimbo","Tramp Stamp",false,true,true)
-		BimboTattoo(BimboActor,"Bimbo","Belly",false,true,true)
-		BimboTattoo(BimboActor,"Bimbo","Tramp Stamp Upper",false,true,true)
-		BimboTattoo(BimboActor,"Bimbo","Pubic Tattoo",false,true,true)
-		BimboTattoo(BimboActor,"Bimbo","Permanent Bimbo",true,true,true)
+		; RemoveBimboTattoo(BimboActor, "bimbo", true, true)
+		BimboTattoo(BimboActor, "bimbo","Tramp Stamp",false,true,true)
+		BimboTattoo(BimboActor, "bimbo","Belly",false,true,true)
+		BimboTattoo(BimboActor, "bimbo","Tramp Stamp Upper",false,true,true)
+		BimboTattoo(BimboActor, "bimbo","Pubic Tattoo",false,true,true)
+		BimboTattoo(BimboActor, "bimbo","Permanent Bimbo",true,true,true)
 
 		SendModEvent("yps-LipstickEvent", "Bimbo", -1)  ; SendModEvent("yps-LipstickEvent", "Red", 0xFF0000)  
 		SendModEvent("yps-EyeshadowEvent", "Bimbo", -1) ; SendModEvent("yps-EyeshadowEvent", "Black", 0x000000)   
@@ -986,6 +1006,7 @@ function bimboDailyProgressiveTransformation(int transformationDays, Int transfo
 
 		Debug.Messagebox("Somewhere in the back of your foggy, lust-addled mind you register the finality of your unfortunate predicament. What little remains of your lucid psyche screams in horror as the curse weaves into every fibre of your perversely modified body, its silhouette bearing little resemblance to your former self. The new you is completely tailor made for the singular purpose of pleasuring men. You moan in ecstacy as your bright gaudy makeup, your slutty erotic tattoos, and your lewd glittering piercings all tingle, then bind to your flesh, becoming permanent fixtures to your bimbo form, irrevocably marking your body as that of a modified, carnal, and peversely erotic masturbatory aid.")
 		Debug.Messagebox("The magical tattoo needles, which you've become so familiar with during your metamorphosis, return one final time to commemorate the permanence of your transformation. You writhe and moan in pleasure as the needles buzz over your smooth, hairless mound and permanently deposit pigments that form your final, obscene modification. Then, just as swiftly, the needles disappear, leaving behind a bright, pink tattoo that seems to shimmer above your soft, slick folds, irrevocably marking you as a PERMANENT BIMBO FUCKTOY, and advertising both your availability and eagerness to service your next sexual partner.")
+
 	ElseIf transformationLevel < 16
 		; Increment level for next update
 		StorageUtil.SetIntValue(BimboActor, "_SLH_bimboTransformLevel", transformationLevel+1)
@@ -1078,7 +1099,7 @@ function bimboDailyProgressiveTransformation(int transformationDays, Int transfo
 		;level 8: back tattoo
 		Elseif (transformationLevel == 8)
 			Debug.Notification("You writhe in discomfort as invisible tattoo needles ink your back.")
-			BimboTattoo(BimboActor,"Bimbo","Tramp Stamp",true,true,false)
+			BimboTattoo(BimboActor, "bimbo","Tramp Stamp",true,true,false)
 			SLH_Control.playMoan(BimboActor)
 
 			If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
@@ -1089,7 +1110,7 @@ function bimboDailyProgressiveTransformation(int transformationDays, Int transfo
 		;level 9: upper back tattoo
 		Elseif (transformationLevel == 9)
 			Debug.Notification("You writhe in discomfort as invisible tattoo needles continue inking your back.")
-			BimboTattoo(BimboActor,"Bimbo","Tramp Stamp Upper",true,true,false)
+			BimboTattoo(BimboActor, "bimbo","Tramp Stamp Upper",true,true,false)
 			SLH_Control.playMoan(BimboActor)
 
 			If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
@@ -1100,7 +1121,7 @@ function bimboDailyProgressiveTransformation(int transformationDays, Int transfo
 		;level 10: belly tattoo
 		Elseif (transformationLevel == 10)
 			Debug.Notification("You shudder in pained pleasure as the invisible tattoo needles mark your belly.")
-			BimboTattoo(BimboActor,"Bimbo","Belly",true,true,false)
+			BimboTattoo(BimboActor, "bimbo","Belly",true,true,false)
 			SLH_Control.playMoan(BimboActor)
 
 			If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
@@ -1139,7 +1160,7 @@ function bimboDailyProgressiveTransformation(int transformationDays, Int transfo
 		Elseif (transformationLevel == 13)
 			if !fctUtil.isMale(BimboActor) ;no schlong on the way
 				Debug.Notification("You moan in surprise as the invisible tattoo needles work their way down your smooth mound.")
-				BimboTattoo(BimboActor,"Bimbo","Pubic Tattoo",true,true,false)
+				BimboTattoo(BimboActor, "bimbo","Pubic Tattoo",true,true,false)
 				SLH_Control.playMoan(BimboActor)
 			endif
 
@@ -1206,6 +1227,10 @@ endfunction
 ;Separated for convenience
 Function SetHairLength(Int hairLength)
 	If StorageUtil.GetIntValue(BimboActor, "_SLH_iUseHair") == 1
+		if (hairLength>13)
+			hairLength = 13
+		endif
+
 		if StorageUtil.GetIntValue(none, "YpsCurrentHairLengthStage") < hairLength
 			SendModEvent("yps-SetHaircutEvent", "", hairLength)
 		endif
