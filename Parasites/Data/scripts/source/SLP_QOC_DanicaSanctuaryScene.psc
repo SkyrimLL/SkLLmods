@@ -1,11 +1,13 @@
 ;BEGIN FRAGMENT CODE - Do not edit anything between this and the end comment
-;NEXT FRAGMENT INDEX 7
+;NEXT FRAGMENT INDEX 9
 Scriptname SLP_QOC_DanicaSanctuaryScene Extends Scene Hidden
 
-;BEGIN FRAGMENT Fragment_1
-Function Fragment_1()
+;BEGIN FRAGMENT Fragment_7
+Function Fragment_7()
 ;BEGIN CODE
-; debug.messagebox("[SLP] Scene ends")
+; debug.notification("[Danica moving to Sanctuary]")
+
+DanicaPureSpring.MoveTo(SanctuaryMarker)
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -18,10 +20,13 @@ Function Fragment_0()
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_6
-Function Fragment_6()
+;BEGIN FRAGMENT Fragment_5
+Function Fragment_5()
 ;BEGIN CODE
-; debug.messagebox("[SLP] Scene phase 4")
+
+DanicaPureSpring.MoveTo(SanctuaryMarker)
+
+debug.messagebox("[Danica points at an object lodged at the base of the glowing roots] (Just grab the object while holding Nettlebane in your hand.. no need to try and hit it).")
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -34,20 +39,25 @@ debug.messagebox("[Danica motions you to follow her]")
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_4
-Function Fragment_4()
+;BEGIN FRAGMENT Fragment_1
+Function Fragment_1()
 ;BEGIN CODE
-; debug.messagebox("[SLP] Scene phase 2")
+; debug.messagebox("[SLP] Scene ends")
 ;END CODE
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_5
-Function Fragment_5()
+;BEGIN FRAGMENT Fragment_6
+Function Fragment_6()
 ;BEGIN CODE
-debug.messagebox("[Danica points at an object lodged at the base of the glowing roots] (Just grab the object while holding Nettlebane in your hand.. no need to try and hit it).")
+; debug.messagebox("[SLP] Scene phase 4")
+DanicaPureSpring.MoveTo(SanctuaryMarker)
 ;END CODE
 EndFunction
 ;END FRAGMENT
 
 ;END FRAGMENT CODE - Do not edit anything between this and the begin comment
+
+ObjectReference Property DanicaPureSpring  Auto  
+
+ObjectReference Property SanctuaryMarker  Auto  

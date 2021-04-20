@@ -207,7 +207,7 @@ event OnPageReset(string a_page)
 		AddSliderOptionST("STATE_LIVINGARMOR_CHANCE","Living Armor (Harness)", _chanceLivingArmor,"{0} %")
 		AddSliderOptionST("STATE_FACEHUGGER_CHANCE","Creepy Crawler (Belt)", _chanceFaceHugger,"{0} %")
 		AddSliderOptionST("STATE_FACEHUGGERGAG_CHANCE","Creepy Crawler (Gag)", _chanceFaceHuggerGag,"{0} %")
-		AddSliderOptionST("STATE_BARNACLES_CHANCE","Barnacles (Harness)", _chanceBarnacles,"{0} %")
+		AddSliderOptionST("STATE_BARNACLES_CHANCE","Blackreach Spores (Harness)", _chanceBarnacles,"{0} %")
 
 		SetCursorPosition(1)
 		AddHeaderOption(" Infect/Cure")
@@ -219,7 +219,7 @@ event OnPageReset(string a_page)
 		AddToggleOptionST("STATE_LIVINGARMOR_TOGGLE","Infect/Cure Living Armor", _toggleLivingArmor as Float)
 		AddToggleOptionST("STATE_FACEHUGGER_TOGGLE","Infect/Cure Hip Hugger", _toggleFaceHugger as Float)
 		AddToggleOptionST("STATE_FACEHUGGERGAG_TOGGLE","Infect/Cure Face Hugger", _toggleFaceHuggerGag as Float)
-		AddToggleOptionST("STATE_BARNACLES_TOGGLE","Infect/Cure Barnacles", _toggleBarnacles as Float)
+		AddToggleOptionST("STATE_BARNACLES_TOGGLE","Infect/Cure Blackreach Spores", _toggleBarnacles as Float)
 
 		AddHeaderOption(" NiOverride node scales")
 		AddSliderOptionST("STATE_SPIDEREGG_BELLY","Max belly size (Spider egg)", _bellyMaxSpiderEgg,"{1}")
@@ -250,7 +250,7 @@ event OnPageReset(string a_page)
 		AddTextOption("     Vaginal Chaurus Worm Infections: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iChaurusWormVagInfections") as Int, "", OPTION_FLAG_DISABLED)
 		AddTextOption("     Hip Hugger: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iFaceHuggerInfections") as Int, "", OPTION_FLAG_DISABLED)
 		AddTextOption("     Face Hugger: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iFaceHuggerInfections") as Int, "", OPTION_FLAG_DISABLED)
-		AddTextOption("     Barnacles: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iBarnaclesInfections") as Int, "", OPTION_FLAG_DISABLED)
+		AddTextOption("     Blackreach Spores: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iBarnaclesInfections") as Int, "", OPTION_FLAG_DISABLED)
 		AddTextOption("     Living Armor Infections: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iLivingArmorInfections") as Int, "", OPTION_FLAG_DISABLED)
 		AddTextOption("     Tentacle Monster Infections: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iTentacleMonsterInfections") as Int, "", OPTION_FLAG_DISABLED)
 		AddTextOption("     Estrus Tentacles Attacks: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iEstrusTentaclesInfections") as Int, "", OPTION_FLAG_DISABLED)
@@ -975,7 +975,7 @@ state STATE_BARNACLES_TOGGLE ; TOGGLE
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Manually Infect/Cure Barnacles for roleplay or testing purposes.")
+		SetInfoText("Manually Infect/Cure Blackreach Spores (Barnacles) for roleplay or testing purposes.")
 	endEvent
 endState
 

@@ -1436,12 +1436,27 @@ Event OnSLPSexCure(String _eventName, String _args, Float _argc = 0.0, Form _sen
 
 
 	If (!bIsPlayerHealer)
-		kActor = kPlayer
+		; kActor = kPlayer
 		Debug.Trace("[SLP]  	Player is the patient")
+		_afterSexCure( kPlayer, sParasite, bIsPlayerHealer, bHarvestParasite) 
+
+		If (kActor != kPlayer) && (sParasite == "TentacleMonster")
+			; Special case - if player 'removes' tentacle monster with someone else, parasite is transfered to new host
+			Debug.Notification("The creature slides into a new host.")
+			SexLab.AddCum(kActor,  Vaginal = true,  Oral = false,  Anal = true)
+			fctParasites.infectTentacleMonster(kActor)
+		endif
 	Else
 		Debug.Trace("[SLP]  	Player is the healer")
+		_afterSexCure( kActor, sParasite, bIsPlayerHealer, bHarvestParasite) 
 	Endif
 
+
+
+EndEvent
+
+Function _afterSexCure(Actor kActor, String sParasite, Bool bIsPlayerHealer, Bool bHarvestParasite) 
+ 	Actor kPlayer = Game.GetPlayer() as Actor
 	Debug.Trace("[SLP]  	Curing from: " + sParasite)
 	Debug.Trace("[SLP]  	Curing actor: " + kActor)
 
@@ -1473,12 +1488,10 @@ Event OnSLPSexCure(String _eventName, String _args, Float _argc = 0.0, Form _sen
 		fctParasites.cureFaceHuggerGag(kActor, bHarvestParasite)
 		
 	ElseIf (sParasite == "TentacleMonster")
-		SexLab.AddCum(kPlayer,  Vaginal = true,  Oral = false,  Anal = true)
 		SexLab.AddCum(kActor,  Vaginal = true,  Oral = false,  Anal = true)
-		fctParasites.cureTentacleMonster(kPlayer, false)
-		fctParasites.infectTentacleMonster(kActor)
+		fctParasites.cureTentacleMonster(kActor, false)
 	Endif
-EndEvent
+EndFunction
 
 Event OnSLPFalmerBlue(String _eventName, String _args, Float _argc = 0.0, Form _sender)
  	Actor kActor = _sender as Actor
@@ -1730,6 +1743,8 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 	If (fctParasites.ActorHasKeywordByString(PlayerActor, "FaceHugger")) || (fctParasites.ActorHasKeywordByString(PlayerActor, "FaceHuggerGag")) || (fctParasites.ActorHasKeywordByString(PlayerActor, "ChaurusWorm"))
 		PlayerActor.SendModEvent("SLHModHormone", "Female", 10.0 + Utility.RandomFloat(0.0,10.0))
 		PlayerActor.SendModEvent("SLHModHormone", "SexDrive", 1.0 + Utility.RandomFloat(0.0,5.0))
+		fctParasites.clearParasiteAlias(PlayerActor, "FaceHugger"  )
+		fctParasites.clearParasiteAlias(PlayerActor, "ChaurusWorm"  )
 	endif 
 
 	If ( (fctParasites.ActorHasKeywordByString(PlayerActor, "SpiderEgg")) || (fctParasites.ActorHasKeywordByString(PlayerActor, "SpiderPenis")) ) 
@@ -1737,16 +1752,20 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 			PlayerActor.SendModEvent("SLHModHormone", "Male", 10.0 + Utility.RandomFloat(0.0,10.0))
 		endif
 		PlayerActor.SendModEvent("SLHModHormone", "SexDrive", 5.0 + Utility.RandomFloat(0.0,10.0))
+		fctParasites.clearParasiteAlias(PlayerActor, "SpiderEgg"  )
+		fctParasites.clearParasiteAlias(PlayerActor, "SpiderPenis"  )
 	endif 
 
 	If (fctParasites.ActorHasKeywordByString(PlayerActor, "TentacleMonster"))
 		PlayerActor.SendModEvent("SLHModHormone", "Immunity", 1.0 * Utility.RandomFloat(0.0,10.0))
 		PlayerActor.SendModEvent("SLHModHormone", "Lactation", 10.0 + Utility.RandomFloat(0.0,10.0))
+		fctParasites.clearParasiteAlias(PlayerActor, "TentacleMonster"  )
 	endif 
 
 	If (fctParasites.ActorHasKeywordByString(PlayerActor, "Barnacles"))
 		PlayerActor.SendModEvent("SLHModHormone", "Immunity", -1.0 * Utility.RandomFloat(0.0,10.0))
 		PlayerActor.SendModEvent("SLHModHormone", "Pheromones", 1.0 + Utility.RandomFloat(0.0,5.0))
+		fctParasites.clearParasiteAlias(PlayerActor, "Barnacles"  )
 	endif 
 
 	If (fctParasites.ActorHasKeywordByString(PlayerActor, "ChaurusQueenVag"))

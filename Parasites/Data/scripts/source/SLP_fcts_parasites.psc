@@ -735,6 +735,57 @@ Function clearHiddenParasiteEffect(Actor akActor, String sParasite = ""  )
 
 EndFunction
 
+Function clearParasiteAlias(Actor akActor, String sParasite = ""  )
+ 
+	if (sParasite == "SpiderEgg" )  
+		SpiderEggInfectedAlias.ForceRefTo(DummyAlias)
+		SpiderFollowerAlias.ForceRefTo(DummyAlias)  
+
+	elseif (sParasite == "SpiderPenis" )  
+		SpiderEggInfectedAlias.ForceRefTo(DummyAlias)
+		SpiderFollowerAlias.ForceRefTo(DummyAlias)  
+
+	elseif (sParasite == "ChaurusWorm" )  
+		ChaurusWormInfectedAlias.ForceRefTo(DummyAlias)
+		
+	elseif (sParasite == "ChaurusWormVag" )  
+		ChaurusWormInfectedAlias.ForceRefTo(DummyAlias)
+		
+	elseif (sParasite == "ChaurusQueenGag" )  
+		;
+		
+	elseif (sParasite == "ChaurusQueenVag" )  
+		;
+		
+	elseif (sParasite == "ChaurusQueenSkin" )  
+		;
+		
+	elseif (sParasite == "ChaurusQueenArmor" )  
+		;
+		
+	elseif (sParasite == "ChaurusQueenBody" )  
+		;
+		
+	elseif (sParasite == "TentacleMonster" )  
+		TentacleMonsterInfectedAlias.ForceRefTo(DummyAlias)
+		
+	elseif (sParasite == "LivingArmor" )  
+		LivingArmorInfectedAlias.ForceRefTo(DummyAlias)
+		
+	elseif (sParasite == "FaceHugger" )  || (sParasite == "HipHugger" )  
+		FaceHuggerInfectedAlias.ForceRefTo(DummyAlias)
+		
+	elseif (sParasite == "FaceHuggerGag" )  
+		FaceHuggerInfectedAlias.ForceRefTo(DummyAlias)
+		
+	elseif (sParasite == "Barnacles" )  
+		BarnaclesInfectedAlias.ForceRefTo(DummyAlias)
+
+	endif
+
+EndFunction
+
+
 ;------------------------------------------------------------------------------
 Bool Function infectSpiderEgg( Actor kActor )
  	Actor PlayerActor = Game.GetPlayer()
@@ -804,6 +855,11 @@ Bool Function applySpiderEgg( Actor kActor )
 		_SLP_GV_numInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iInfections"))
 		_SLP_GV_numSpiderEggInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iSpiderEggInfections"))
 	endIf
+
+	Sound.SetInstanceVolume(WetFX.Play(PlayerActor), 1.0)
+	Utility.Wait(1.0)
+	Sound.SetInstanceVolume(CritterFX.Play(PlayerActor), 1.0)
+	Utility.Wait(1.0)
 
 	SendModEvent("SLPSpiderEggInfection")
 
@@ -940,6 +996,11 @@ Bool Function applySpiderPenis( Actor kActor  )
 		_SLP_GV_numSpiderEggInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iSpiderEggInfections"))
 	endIf
 
+	Sound.SetInstanceVolume(WetFX.Play(PlayerActor), 1.0)
+	Utility.Wait(1.0)
+	Sound.SetInstanceVolume(CritterFX.Play(PlayerActor), 1.0)
+	Utility.Wait(1.0)
+ 
 	SendModEvent("SLPSpiderEggInfection")
 
 	if (!KynesBlessingQuest.GetStageDone(20)) && (kActor == PlayerActor)
@@ -1029,6 +1090,11 @@ Bool Function applyChaurusWorm( Actor kActor  )
 		_SLP_GV_numChaurusWormInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iChaurusWormInfections"))
 	endIf
 
+	Sound.SetInstanceVolume(WetFX.Play(PlayerActor), 1.0)
+	Utility.Wait(1.0)
+	Sound.SetInstanceVolume(CritterFX.Play(PlayerActor), 1.0)
+	Utility.Wait(1.0)
+ 
 	SendModEvent("SLPChaurusWormInfection")
 
 	if (!KynesBlessingQuest.GetStageDone(20)) && (kActor == PlayerActor)
@@ -1124,6 +1190,11 @@ Bool Function applyChaurusWormVag( Actor kActor  )
 		_SLP_GV_numChaurusWormVagInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iChaurusWormVagInfections"))
 	endIf
 
+	Sound.SetInstanceVolume(WetFX.Play(PlayerActor), 1.0)
+	Utility.Wait(1.0)
+	Sound.SetInstanceVolume(CritterFX.Play(PlayerActor), 1.0)
+	Utility.Wait(1.0)
+ 
 	SendModEvent("SLPChaurusWormVagInfection")
 
 	if (!KynesBlessingQuest.GetStageDone(20)) && (kActor == PlayerActor)
@@ -1188,7 +1259,7 @@ Bool Function infectEstrusTentacles( Actor kActor  )
 				Debug.MessageBox("The ground shakes as slimy tentacles shoot up.")
 			endif
 	Else
-		Debug.Trace("[SLP]Tentacle Monster infection failed")
+		Debug.Trace("[SLP]Estrust Tentacles / Tentacle Monster infection failed")
 		Debug.Trace("[SLP]  Vaginal Plug: " + ActorHasKeywordByString(kActor,  "PlugVaginal"))
 		Debug.Trace("[SLP]  TentacleMonster: " + isInfectedByString( kActor,  "TentacleMonster" ))
 		Debug.Trace("[SLP]  Chance infection: " + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceTentacleMonster" ))
@@ -1230,6 +1301,11 @@ Bool Function applyEstrusTentacles( Actor kActor  )
 		_SLP_GV_numEstrusTentaclesInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iEstrusTentaclesInfections"))
 	endIf
 
+	Sound.SetInstanceVolume(WetFX.Play(PlayerActor), 1.0)
+	Utility.Wait(1.0)
+	Sound.SetInstanceVolume(CritterFX.Play(PlayerActor), 1.0)
+	Utility.Wait(1.0)
+ 
 	SendModEvent("SLPEstrusTentaclesInfection")
 
 
@@ -1298,6 +1374,11 @@ Bool Function applyTentacleMonster( Actor kActor  )
 		_SLP_GV_numTentacleMonsterInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iTentacleMonsterInfections"))
 	endIf
 
+	Sound.SetInstanceVolume(WetFX.Play(PlayerActor), 1.0)
+	Utility.Wait(1.0)
+	Sound.SetInstanceVolume(CritterFX.Play(PlayerActor), 1.0)
+	Utility.Wait(1.0)
+ 
 	SendModEvent("SLPTentacleMonsterInfection")
 
 	if (!KynesBlessingQuest.GetStageDone(20)) && (kActor == PlayerActor)
@@ -1367,7 +1448,7 @@ Bool Function infectEstrusSlime( Actor kActor  )
 				Debug.MessageBox("What looked like creepy clusters suddenly extends tentacles around.")
 			endif
 	Else
-		Debug.Trace("[SLP]Living Armor infection failed")
+		Debug.Trace("[SLP]Estrust Slime infection failed")
 		Debug.Trace("[SLP]  Harness: " + ActorHasKeywordByString(kActor,  "Harness"))
 		Debug.Trace("[SLP]  LivingArmor: " + isInfectedByString( kActor,  "LivingArmor" ))
 		Debug.Trace("[SLP]  Chance infection: " + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceLivingArmor" ))
@@ -1376,7 +1457,7 @@ Bool Function infectEstrusSlime( Actor kActor  )
 	int ECTrap = ModEvent.Create("ECStartAnimation")  ; Int  Does not have to be named "ECTrap" any name would do
 
 	if (ECTrap) 
-	    ModEvent.PushForm(ECTrap, Game.GetPlayer())             ; Form (Some SendModEvent scripting "black magic" - required)
+	    ModEvent.PushForm(ECTrap, PlayerActor)             ; Form (Some SendModEvent scripting "black magic" - required)
 	    ModEvent.PushForm(ECTrap, kActor)  ; Form The animation target
 	    ModEvent.PushInt(ECTrap, Utility.randomInt(2,3))    	; Int The animation required -1 = Impregnation only with No Animation,
                                                 ; 0 = Tentacles, 1 = Machines 2 = Slime 3 = Ooze
@@ -1409,6 +1490,11 @@ Bool Function applyEstrusSlime( Actor kActor  )
 		_SLP_GV_numEstrusSlimeInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iEstrusSlimeInfections"))
 	endIf
 
+	Sound.SetInstanceVolume(WetFX.Play(PlayerActor), 1.0)
+	Utility.Wait(1.0)
+	Sound.SetInstanceVolume(CritterFX.Play(PlayerActor), 1.0)
+	Utility.Wait(1.0)
+ 
 	SendModEvent("SLPEstrusSlimeInfection")
 
 	if (!KynesBlessingQuest.GetStageDone(20)) && (kActor == PlayerActor)
@@ -1477,6 +1563,11 @@ Bool Function applyLivingArmor( Actor kActor  )
 		_SLP_GV_numLivingArmorInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iLivingArmorInfections"))
 	endIf
 
+	Sound.SetInstanceVolume(WetFX.Play(PlayerActor), 1.0)
+	Utility.Wait(1.0)
+	Sound.SetInstanceVolume(CritterFX.Play(PlayerActor), 1.0)
+	Utility.Wait(1.0)
+ 
 	SendModEvent("SLPLivingArmorInfection")
 
 	if (!KynesBlessingQuest.GetStageDone(20)) && (kActor == PlayerActor)
@@ -1568,6 +1659,11 @@ Bool Function applyFaceHugger( Actor kActor  )
 		_SLP_GV_numFaceHuggerInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iFaceHuggerInfections"))
 	endIf
 
+	Sound.SetInstanceVolume(WetFX.Play(PlayerActor), 1.0)
+	Utility.Wait(1.0)
+	Sound.SetInstanceVolume(CritterFX.Play(PlayerActor), 1.0)
+	Utility.Wait(1.0)
+ 
 	SendModEvent("SLPFaceHuggerInfection")
 
 	if (!KynesBlessingQuest.GetStageDone(20)) && (kActor == PlayerActor)
@@ -1655,6 +1751,11 @@ Bool Function applyFaceHuggerGag( Actor kActor  )
 		_SLP_GV_numFaceHuggerInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iFaceHuggerGagInfections"))
 	endIf
 
+	Sound.SetInstanceVolume(WetFX.Play(PlayerActor), 1.0)
+	Utility.Wait(1.0)
+	Sound.SetInstanceVolume(CritterFX.Play(PlayerActor), 1.0)
+	Utility.Wait(1.0)
+ 
 	SendModEvent("SLPFaceHuggerGagInfection")
 
 	if (!KynesBlessingQuest.GetStageDone(20)) && (kActor == PlayerActor)
@@ -1750,6 +1851,9 @@ Bool Function applyBarnacles( Actor kActor  )
 		_SLP_GV_numBarnaclesInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iBarnaclesInfections"))
 	endIf
 
+	Sound.SetInstanceVolume(WetFX.Play(PlayerActor), 1.0)
+	Utility.Wait(1.0) 
+ 
 	SendModEvent("SLPBarnaclesInfection")
 
 	if (!KynesBlessingQuest.GetStageDone(20)) && (kActor == PlayerActor)
@@ -1871,6 +1975,11 @@ Bool Function applyChaurusQueenVag( Actor kActor  )
 		StorageUtil.SetIntValue(PlayerActor, "_SLP_iChaurusQueenStage",  2)
 	endif
 
+	Sound.SetInstanceVolume(WetFX.Play(PlayerActor), 1.0)
+	Utility.Wait(1.0)
+	Sound.SetInstanceVolume(CritterFX.Play(PlayerActor), 1.0)
+	Utility.Wait(1.0)
+ 
 	SendModEvent("SLPChaurusQueenVagInfection")
 
 	; if (!KynesBlessingQuest.GetStageDone(20)) && (kActor == PlayerActor)
@@ -1962,6 +2071,11 @@ Bool Function applyChaurusQueenGag( Actor kActor  )
 
 	applyBaseChaurusQueenSkin()
 
+	Sound.SetInstanceVolume(WetFX.Play(PlayerActor), 1.0)
+	Utility.Wait(1.0)
+	Sound.SetInstanceVolume(CritterFX.Play(PlayerActor), 1.0)
+	Utility.Wait(1.0)
+ 
 	SendModEvent("SLPChaurusQueenGagInfection")
 
 	; if (!KynesBlessingQuest.GetStageDone(20)) && (kActor == PlayerActor)
@@ -2065,6 +2179,11 @@ Bool Function applyChaurusQueenSkin( Actor kActor  )
 		StorageUtil.SetIntValue(PlayerActor, "_SLP_iChaurusQueenStage",  3)
 	endif
 
+	Sound.SetInstanceVolume(WetFX.Play(PlayerActor), 1.0)
+	Utility.Wait(1.0)
+	Sound.SetInstanceVolume(CritterFX.Play(PlayerActor), 1.0)
+	Utility.Wait(1.0)
+ 
 	SendModEvent("SLPChaurusQueenSkinInfection")
 
 	if (!QueenOfChaurusQuest.GetStageDone(300)) && (kActor == PlayerActor)
@@ -2165,6 +2284,11 @@ Bool Function applyChaurusQueenArmor( Actor kActor  )
 		; _SLP_GV_numChaurusQueenArmorInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iChaurusQueenArmorInfections"))
 	endIf
 
+	Sound.SetInstanceVolume(WetFX.Play(PlayerActor), 1.0)
+	Utility.Wait(1.0)
+	Sound.SetInstanceVolume(CritterFX.Play(PlayerActor), 1.0)
+	Utility.Wait(1.0)
+ 
 	applyBaseChaurusQueenSkin()
 
 	if (StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusQueenStage")<4)
@@ -2285,21 +2409,21 @@ Bool Function applyChaurusQueenBody( Actor kActor  )
 			DragonWingsPotion = StorageUtil.GetFormValue(none, "_SLS_getAnimatedWingsUltimatePotion") as Potion
 			debug.trace("[SLP]   Real Flying Potion: " + DragonWingsPotion)
 			PlayerActorRef.AddItem(DragonWingsPotion, 1, true)
-			PlayerActor.EquipItem(DragonWingsPotion, false, true)
+			PlayerActor.EquipItem(DragonWingsPotion,abPreventRemoval = false, abSilent = true)
 			StorageUtil.SetIntValue(none, "_SLP_AnimatedWingsEquipped", 1 )
 			
 		elseif (StorageUtil.GetIntValue(none, "_SLP_isRealFlying")==1) 
 			DragonWingsPotion = StorageUtil.GetFormValue(none, "_SLS_getRealFlyingPotion") as Potion
 			debug.trace("[SLP]   Real Flying Potion: " + DragonWingsPotion)
 			PlayerActorRef.AddItem(DragonWingsPotion, 1, true)
-			PlayerActor.EquipItem(DragonWingsPotion, false, true)
+			PlayerActor.EquipItem(DragonWingsPotion,abPreventRemoval = false, abSilent = true)
 			StorageUtil.SetIntValue(none, "_SLP_AnimatedWingsEquipped", 1 )
 			
 		elseif (StorageUtil.GetIntValue(none, "_SLP_isAnimatedDragonWings")==1) 
 			DragonWingsPotion = StorageUtil.GetFormValue(none, "_SLS_getDragonWingsPotion") as Potion
 			debug.trace("[SLP]   Dragon Wings Friendly Potion: " + DragonWingsPotion)
 			PlayerActorRef.AddItem(DragonWingsPotion, 1, true)
-			PlayerActor.EquipItem(DragonWingsPotion, false, true)
+			PlayerActor.EquipItem(DragonWingsPotion,abPreventRemoval = false, abSilent = true)
 			StorageUtil.SetIntValue(none, "_SLP_AnimatedWingsEquipped", 1 )
 			
 		endif
@@ -2309,6 +2433,11 @@ Bool Function applyChaurusQueenBody( Actor kActor  )
 		StorageUtil.SetIntValue(PlayerActor, "_SLP_iChaurusQueenStage",  5)
 	endif
 
+	Sound.SetInstanceVolume(WetFX.Play(PlayerActor), 1.0)
+	Utility.Wait(1.0)
+	Sound.SetInstanceVolume(CritterFX.Play(PlayerActor), 1.0)
+	Utility.Wait(1.0)
+ 
 	SendModEvent("SLPChaurusQueenBodyInfection")
 
 	; if (!KynesBlessingQuest.GetStageDone(20)) && (kActor == PlayerActor)
@@ -2340,21 +2469,21 @@ Function cureChaurusQueenBody( Actor kActor, Bool bHarvestParasite = False   )
 				DragonWingsCurePotion = StorageUtil.GetFormValue(none, "_SLS_getAnimatedWingsUltimateCurePotion") as Potion
 				debug.trace("[SLP]   Real Flying Cure Potion: " + DragonWingsCurePotion)
 				PlayerActorRef.AddItem(DragonWingsCurePotion, 1, true)
-				PlayerActor.EquipItem(DragonWingsCurePotion, false, true)
+				PlayerActor.EquipItem(DragonWingsCurePotion,abPreventRemoval = false, abSilent = true)
 				StorageUtil.SetIntValue(none, "_SLP_AnimatedWingsEquipped", 0 )
 				
 			elseif (StorageUtil.GetIntValue(none, "_SLP_isRealFlying")==1)
 				DragonWingsCurePotion = StorageUtil.GetFormValue(none, "_SLS_getRealFlyingCurePotion") as Potion
 				debug.trace("[SLP]   Real Flying Cure Potion: " + DragonWingsCurePotion)
 				PlayerActorRef.AddItem(DragonWingsCurePotion, 1, true)
-				PlayerActor.EquipItem(DragonWingsCurePotion, false, true)
+				PlayerActor.EquipItem(DragonWingsCurePotion,abPreventRemoval = false, abSilent = true)
 				StorageUtil.SetIntValue(none, "_SLP_AnimatedWingsEquipped", 0 )
 				
 			elseif (StorageUtil.GetIntValue(none, "_SLP_isAnimatedDragonWings")==1) 
 				DragonWingsCurePotion = StorageUtil.GetFormValue(none, "_SLS_getDragonWingsDispelPotion"  ) as Potion
 				debug.trace("[SLP]   Dragon Wings Cure Potion: " + DragonWingsCurePotion)
 				PlayerActorRef.AddItem(DragonWingsCurePotion, 1, true)
-				PlayerActor.EquipItem(DragonWingsCurePotion, false, true)
+				PlayerActor.EquipItem(DragonWingsCurePotion,abPreventRemoval = false, abSilent = true)
 				StorageUtil.SetIntValue(none, "_SLP_AnimatedWingsEquipped", 0 )
 				
 			endif
@@ -2379,8 +2508,9 @@ Function cureChaurusQueenBody( Actor kActor, Bool bHarvestParasite = False   )
 EndFunction
 
 ;------------------------------------------------------------------------------
-Bool Function infectEstrusChaurusEgg( Actor kActor  )
+Bool Function infectEstrusChaurusEgg( Actor kActor, Bool bSilent )
   	Actor PlayerActor = Game.GetPlayer()
+  	Int iAnimation = -1
 
   	if (kActor == None)
   		kActor = PlayerActor
@@ -2391,6 +2521,9 @@ Bool Function infectEstrusChaurusEgg( Actor kActor  )
 		Return False
 	Endif
 	
+	if (!bSilent)
+		iAnimation = 0
+	Endif
 
 	; If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceEstrusChaurusEgg" )==0.0)
 	;	Debug.Trace("		Parasite disabled - Aborting")
@@ -2400,14 +2533,17 @@ Bool Function infectEstrusChaurusEgg( Actor kActor  )
 	int ECTrap = ModEvent.Create("ECStartAnimation")  ; Int  Does not have to be named "ECTrap" any name would do
 
 	if (ECTrap) 
-	    ModEvent.PushForm(ECTrap, Game.GetPlayer())             ; Form (Some SendModEvent scripting "black magic" - required)
+	    ModEvent.PushForm(ECTrap,PlayerActor)             ; Form (Some SendModEvent scripting "black magic" - required)
 	    ModEvent.PushForm(ECTrap, kActor)  ; Form The animation target
-	    ModEvent.PushInt(ECTrap, -1)    	; Int The animation required -1 = Impregnation only with No Animation,
+	    ModEvent.PushInt(ECTrap, iAnimation)    	; Int The animation required -1 = Impregnation only with No Animation,
                                                 ; 0 = Tentacles, 1 = Machines 2 = Slime 3 = Ooze
 	    ModEvent.PushBool(ECTrap, true)         ; Bool Apply the linked EC effect (Ovipostion for Tentacles, Exhaustion for Machine) 
 	    ModEvent.Pushint(ECTrap, 500)           ; Int  Alarm radius in units (0 to disable) 
 	    ModEvent.PushBool(ECTrap, true)         ; Bool Use EC (basic) crowd control on hostiles 
 	    ModEvent.Send(ECtrap)
+	Else
+		Debug.Trace("[SLP]Estrus Chaurus Egg infection failed")
+		triggerFuroTub( PlayerActor, "")
 	endif
 
 	Return applyEstrusChaurusEgg( kActor  )
@@ -2774,6 +2910,11 @@ Bool Function tryParasiteNextStage(Actor kActor, String sParasite)
 			Int iEvent = Utility.RandomInt(1, 20)
  			sslBaseVoice voice = SexLab.GetVoice(PlayerActor)
 
+ 			Sound.SetInstanceVolume(WetFX.Play(PlayerRef), 1.0)
+ 			Utility.Wait(1.0)
+ 			Sound.SetInstanceVolume(CritterFX.Play(PlayerRef), 1.0)
+ 			Utility.Wait(1.0)
+
 			if (iEvent <= 10)
 				Debug.Messagebox("The creature cripples you with rapid thrusts of its tail deep inside you.")
 	 			voice.Moan(PlayerActor, 10 + (Utility.RandomInt(0,8) * 10 ), false)
@@ -2785,12 +2926,21 @@ Bool Function tryParasiteNextStage(Actor kActor, String sParasite)
            	endif
 
  			voice.Moan(PlayerActor, 10 + (Utility.RandomInt(0,8) * 10 ), false)
+ 			Sound.SetInstanceVolume(WetFX.Play(PlayerRef), 1.0)
+ 			Utility.Wait(1.0)
+ 			Sound.SetInstanceVolume(CritterFX.Play(PlayerRef), 1.0)
+ 			Utility.Wait(1.0)
  			           
             SexLab.AddCum(PlayerActor,  Vaginal = true,  Oral = false,  Anal = true)
 			bSuccess = True
 		
 		ElseIf (sParasite == "FaceHuggerGag")  
 			Int iEvent = Utility.RandomInt(1, 20)
+
+ 			Sound.SetInstanceVolume(WetFX.Play(PlayerRef), 1.0)
+ 			Utility.Wait(1.0)
+ 			Sound.SetInstanceVolume(CritterFX.Play(PlayerRef), 1.0)
+ 			Utility.Wait(1.0)
 
 			if (iEvent <= 10)
 				Debug.Messagebox("The creature grabs your face tight as its tail coils around your neck, leaving you light headed and breathless.")
@@ -2800,12 +2950,16 @@ Bool Function tryParasiteNextStage(Actor kActor, String sParasite)
            		Debug.SendAnimationEvent(PlayerRef, "IdleForceDefaultState")
            	else
 				Debug.Notification("The creature pumps your throat full of a sweet and milky liquid.")
-				PlayerActor.AddItem(SLP_CritterSemen, 1)
-				PlayerActor.EquipItem(SLP_CritterSemen, true,true)
+				PlayerActor.AddItem(SLP_CritterSemen, 1, abSilent = true)
+				PlayerActor.EquipItem(SLP_CritterSemen,abPreventRemoval = false, abSilent = true)
            	endif
 
  			sslBaseVoice voice = SexLab.GetVoice(PlayerActor)
  			voice.Moan(PlayerActor, 10 + (Utility.RandomInt(0,8) * 10 ), false)
+ 			Sound.SetInstanceVolume(WetFX.Play(PlayerRef), 1.0)
+ 			Utility.Wait(1.0)
+ 			Sound.SetInstanceVolume(CritterFX.Play(PlayerRef), 1.0)
+ 			Utility.Wait(1.0)
  			           
             SexLab.AddCum(PlayerActor,  Vaginal = false,  Oral = true,  Anal = false)
 			bSuccess = True
@@ -2816,6 +2970,8 @@ Bool Function tryParasiteNextStage(Actor kActor, String sParasite)
 
  			Sound.SetInstanceVolume(VoicesFX.Play(PlayerRef), 1.0)
  			Utility.Wait(1.0)
+ 			Sound.SetInstanceVolume(WetFX.Play(PlayerRef), 1.0)
+ 			Utility.Wait(1.0) 
 
 			sslBaseVoice voice = SexLab.GetVoice(PlayerActor)
  			voice.Moan(PlayerActor, 10 + (Utility.RandomInt(0,8) * 10 ), false)
