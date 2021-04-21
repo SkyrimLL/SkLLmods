@@ -21,7 +21,7 @@ Event OnItemRemoved(Form akBaseItem, int aiItemCount, ObjectReference akItemRefe
     elseif akDestContainer == Game.GetPlayer()
         ; Debug.Notification("I gave the player " + aiItemCount + "x " + akBaseItem.GetName() )
         If (akBaseItem.GetName() == "Tonal Key")
-    		Debug.MessageBox("[The button turns red]")
+    		Debug.MessageBox("[The button flashes red]")
             StorageUtil.SetIntValue(none, "_SLP_toggleTonalKey", 0 )
         EndIf
     else

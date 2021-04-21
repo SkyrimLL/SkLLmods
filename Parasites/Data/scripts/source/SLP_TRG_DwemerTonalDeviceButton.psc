@@ -52,6 +52,6 @@ Event OnActivate(ObjectReference akActionRef)
         Debug.MessageBox("The energy pulse from the device echoes through the caves. Before closing the Rift, the device briefly expands the doorway between world and lets the Queen go free. There can be only one Queen of the Chaurus. As long as you live, you will be a threat to the rightful Queen.")
 
     else
-    	Debug.Notification("[The button flashes red]")
+    	Debug.Notification("[The button turns red]")
     endif
 EndEvent
