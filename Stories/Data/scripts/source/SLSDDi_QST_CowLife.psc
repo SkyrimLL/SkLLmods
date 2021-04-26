@@ -347,7 +347,7 @@ Function updateCowStatus(Actor kActor, String sUpdateMode = "", Int iNumberBottl
  		; Reduce milk level from producing a bottle
  		Int iMilkRemoved = iNumberBottles * ((12.0 * (( StorageUtil.GetFloatValue( kActor , "_SLH_fHormoneLactation") / 100.0))) as Int )
 
- 		debug.notification("[SLSDDi] Milk removed: " + iMilkRemoved)
+ 		; debug.notification("[SLSDDi] Milk removed: " + iMilkRemoved)
  		debugTrace(" Milk removed: " + iMilkRemoved)
 
 		If (StorageUtil.GetIntValue(kActor, "_SLH_isPregnant") == 1) &&  (StorageUtil.GetIntValue(kActor, "_SLH_iMilkLevel") > 5)
