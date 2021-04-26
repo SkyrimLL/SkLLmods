@@ -76,16 +76,7 @@ Function _maintenance()
  	Actor PlayerActor= Game.GetPlayer() as Actor
  	ActorBase pActorBase = PlayerActor.GetActorBase()
 
-	if (!fctParasites.isNiOInstalled)
-		fctParasites.isNiOInstalled = fctParasites.CheckXPMSERequirements(PlayerActor, pActorBase.GetSex())
-	EndIf
-
-	fctParasites.isSlifInstalled = Game.GetModbyName("SexLab Inflation Framework.esp") != 255
-
-	If (!StorageUtil.HasIntValue(none, "_SLP_iSexLabParasites"))
-		StorageUtil.SetIntValue(none, "_SLP_iSexLabParasites", 1)
-		fctParasites._resetParasiteSettings()
-	EndIf
+	fctParasites.maintenance()
 
 	; Set Seed Stone ritual to today if missing
 	if (StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusQueenStage")==1) && (StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusQueenDate")==0)
@@ -230,7 +221,7 @@ Int Function _getParasiteTickerThreshold(Int _iNextStageTicker, Int _iParasiteDu
 	Int iThreshold = 100
 	Int iThrottle = _iNextStageTicker / 2
 
-	iThreshold = (100 + (100 - (_iNextStageTicker * 5)) - (_iParasiteDuration * 10) )
+	iThreshold = (100 + (100 - (_iNextStageTicker / 2)) - (_iParasiteDuration * 10) )
 
 	if ( (iThrottle * 2) == _iNextStageTicker)
 		; debug.notification("_iNextStageTicker: " + _iNextStageTicker)
@@ -248,6 +239,7 @@ Event OnUpdate()
 	Location kLocation = PlayerActor.GetCurrentLocation()
  	Int iParasiteDuration
  	Float fValue
+	Float	fChanceLivingArmor = StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceLivingArmor")
 
  	daysPassed = Game.QueryStat("Days Passed")
 
@@ -380,6 +372,20 @@ Event OnUpdate()
 			 	endif
 
 			endif
+		endif
+
+		if (PlayerActor.IsSwimming()) && (!PlayerActor.IsInCombat())
+			debug.notification("Player is swimming...")
+			If (!fctParasites.ActorHasKeywordByString(PlayerActor, "Belt")) && (!fctParasites.ActorHasKeywordByString(PlayerActor, "Plug"))
+				if (Utility.RandomInt(1,100)<= (fChanceLivingArmor as Int) )
+					; PlayerActor.SendModEvent("SLPInfectChaurusWorm")
+					if (fctParasites.infectLivingArmor( PlayerActor ))
+						iNextStageTicker = 0
+						Debug.MessageBox("You moan helplessly as a creature suddenly wraps itself around you.")
+					Endif
+				Endif
+
+			EndIf
 		endif
 
 		if (iNextStageTicker>0)
@@ -539,6 +545,8 @@ Event OnSexLabEnd(int threadID, bool HasPlayer)
 		EndIf
 		if animation.HasTag("Spider")
 			If (!fctParasites.ActorHasKeywordByString(PlayerActor, "Belt")) && (!fctParasites.ActorHasKeywordByString(PlayerActor, "PlugVaginal"))
+				fctParasites.tryPlayerSpiderStage()
+
 				if (Utility.RandomInt(1,100)<= (fChanceSpiderPenis as Int) )
 					if (fctParasites.infectSpiderPenis(PlayerActor))
 						iNextStageTicker = 0
@@ -1244,11 +1252,15 @@ EndEvent
 Event OnSLPInfectEstrusChaurusEgg(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
   	Actor PlayerActor = Game.GetPlayer()
+  	Bool bSilent = false
 
  	If (kActor == None)
  		kActor = PlayerActor
  	Endif
  	
+ 	if (_argc==1.0)
+ 		bSilent = true
+ 	endif
 
 	Debug.Trace("[SLP] Receiving 'infect estrus chaurus egg' event - Actor: " + kActor)
 
@@ -1259,7 +1271,7 @@ Event OnSLPInfectEstrusChaurusEgg(String _eventName, String _args, Float _argc =
 		return
 	Endif
 
-	fctParasites.infectEstrusChaurusEgg( kActor   )
+	fctParasites.infectEstrusChaurusEgg( kActor, bSilent   )
 	
 EndEvent
 
@@ -1683,7 +1695,7 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 	endIf
 
 	if (bLocationAllowed)
-		If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceBarnacles" )>0.0) && (fctParasites.isFemale(PlayerActor)) 
+		If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceBarnacles" )>0.0) 
 			; Sleeping naked in Blackreach -> chance of barnacles
 			If (!fctParasites.ActorHasKeywordByString(PlayerActor, "Harness")) && (!fctParasites.ActorHasKeywordByString(PlayerActor, "Belt")) && (!fctParasites.ActorHasKeywordByString(PlayerActor, "Barnacles")) && (fctOutfits.isActorNaked(PlayerActor)) && (Utility.RandomInt(1,100)<= (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceBarnacles" ) as Int) )
 				if (fctParasites.infectBarnacles( PlayerActor   ))
@@ -1700,7 +1712,7 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 
 		endif
 
-		if (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceFaceHugger" )>0.0) && (fctParasites.isFemale(PlayerActor)) 
+		if (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceFaceHugger" )>0.0) 
 			; Sleeping naked in a draugr crypt -> chance of face hugger
 			If (!fctParasites.ActorHasKeywordByString(PlayerActor, "Belt")) && (!fctParasites.ActorHasKeywordByString(PlayerActor, "Harness")) && (!fctParasites.ActorHasKeywordByString(PlayerActor, "PlugVaginal")) && (!fctParasites.ActorHasKeywordByString(PlayerActor, "FaceHugger")) && (fctOutfits.isActorNaked(PlayerActor)) && (Utility.RandomInt(1,100)<= (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceFaceHugger" ) as Int) )
 				if (fctParasites.infectFaceHugger( PlayerActor   ))
@@ -1748,9 +1760,6 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 	endif 
 
 	If ( (fctParasites.ActorHasKeywordByString(PlayerActor, "SpiderEgg")) || (fctParasites.ActorHasKeywordByString(PlayerActor, "SpiderPenis")) ) 
-		if (fctParasites.isMale(PlayerActor)) 
-			PlayerActor.SendModEvent("SLHModHormone", "Male", 10.0 + Utility.RandomFloat(0.0,10.0))
-		endif
 		PlayerActor.SendModEvent("SLHModHormone", "SexDrive", 5.0 + Utility.RandomFloat(0.0,10.0))
 		fctParasites.clearParasiteAlias(PlayerActor, "SpiderEgg"  )
 		fctParasites.clearParasiteAlias(PlayerActor, "SpiderPenis"  )
@@ -1782,6 +1791,27 @@ Event OnSleepStop(bool abInterrupted)
 
 	EndIf
 EndEvent
+
+Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile, bool abPowerAttack, bool abSneakAttack, bool abBashAttack, bool abHitBlocked)
+	Actor kPlayer = Game.GetPlayer()
+	Actor kTarget = akAggressor  as Actor
+
+	If (kTarget != None) && (kTarget != kPlayer)
+		;  Debug.Trace("We were hit by " + akAggressor)
+		; Debug.Notification("." )
+
+		if (StorageUtil.GetIntValue(kPlayer, "_SLP_iSpiderPheromoneON") == 1 )
+			fctParasites.tryCharmSpider( kTarget )
+		endif
+
+		if (StorageUtil.GetIntValue(kPlayer, "_SLP_iChaurusPheromoneON") == 1 )
+			fctParasites.tryCharmChaurus( kTarget )
+		endif
+
+	EndIf
+
+EndEvent
+
 
 Bool Function _hasPlayer(Actor[] _actors)
 	; ObjectReference PlayerREF= PlayerAlias.GetReference()

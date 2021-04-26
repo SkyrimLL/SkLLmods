@@ -1,6 +1,8 @@
 Scriptname SLP_QST_MCM extends SKI_ConfigBase  
 
 SLP_fcts_parasites Property fctParasites  Auto
+SLP_fcts_utils Property fctUtils  Auto
+
 Ingredient  Property IngredientSpiderEgg Auto
 
 GlobalVariable      Property _SLP_GV_numChaurusEggsLastelle                   Auto
@@ -209,6 +211,10 @@ event OnPageReset(string a_page)
 		AddSliderOptionST("STATE_FACEHUGGERGAG_CHANCE","Creepy Crawler (Gag)", _chanceFaceHuggerGag,"{0} %")
 		AddSliderOptionST("STATE_BARNACLES_CHANCE","Blackreach Spores (Harness)", _chanceBarnacles,"{0} %")
 
+		AddHeaderOption(" Factions")
+		AddTextOption("     Player in Spider Faction: " + fctUtils.CheckIfSpiderFaction(kPlayer) as Int, "", OPTION_FLAG_DISABLED)
+		AddTextOption("     Player in Chaurus Faction: " + fctUtils.CheckIfChaurusFaction(kPlayer) as Int, "", OPTION_FLAG_DISABLED)
+
 		SetCursorPosition(1)
 		AddHeaderOption(" Infect/Cure")
 		AddToggleOptionST("STATE_SPIDEREGG_TOGGLE","Infect/Cure Spider Egg", _toggleSpiderEgg as Float)
@@ -229,7 +235,7 @@ event OnPageReset(string a_page)
 		AddSliderOptionST("STATE_LIVINGARMOR_BREAST","Max breast size (Living Armor)", _breastMaxLivingArmor,"{1}")
 		AddSliderOptionST("STATE_CHAURUSWORM_BUTT","Max butt size (Chaurus worm)", _buttMaxChaurusWorm,"{1}")
 
-		AddHeaderOption(" ")
+		AddHeaderOption(" Maintenance ")
 		AddToggleOptionST("STATE_REFRESH_ALL","Refresh all equipped parasites", _toggleRefreshAll as Float)
 		AddToggleOptionST("STATE_CLEAR_ALL","Clear all parasites", _toggleClearAll as Float)
 
@@ -1345,7 +1351,7 @@ endState
 ; AddToggleOptionST("STATE_RESET","Reset changes", _resetToggle)
 state STATE_RESET ; TOGGLE
 	event OnSelectST()
-		fctParasites._resetParasiteSettings()
+		fctUtils._resetParasiteSettings()
 		kPlayer.SendModEvent("SLPRefreshBodyShape")
 	endEvent
 

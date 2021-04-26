@@ -5,6 +5,10 @@ Import SKSE
 zadLibs Property libs Auto
 SexLabFrameWork Property SexLab Auto
 
+SLP_fcts_outfits Property fctOutfits  Auto
+SLP_fcts_utils Property fctUtils  Auto
+
+ 
 ReferenceAlias Property PlayerAlias  Auto  
 ReferenceAlias Property SpiderEggInfectedAlias  Auto  
 ReferenceAlias Property ChaurusWormInfectedAlias  Auto  
@@ -14,6 +18,7 @@ ReferenceAlias Property TentacleMonsterInfectedAlias  Auto
 ReferenceAlias Property LivingArmorInfectedAlias  Auto  
 ReferenceAlias Property FaceHuggerInfectedAlias  Auto  
 ReferenceAlias Property SpiderFollowerAlias  Auto  
+ReferenceAlias Property ChaurusFollowerAlias  Auto  
 
 Quest Property KynesBlessingQuest  Auto 
 Quest Property QueenOfChaurusQuest  Auto 
@@ -45,6 +50,9 @@ GlobalVariable Property _SLP_GV_numLivingArmorInfections  Auto
 GlobalVariable Property _SLP_GV_numFaceHuggerInfections  Auto 
 GlobalVariable Property _SLP_GV_numBarnaclesInfections  Auto 
 GlobalVariable Property _SLP_GV_ZAPFuroTubOn  Auto  
+GlobalVariable Property _SLP_GV_numCharmChaurus Auto
+GlobalVariable Property _SLP_GV_numCharmSpider Auto
+
 
 Faction Property PlayerFollowerFaction Auto
 
@@ -52,6 +60,10 @@ SPELL Property StomachRot Auto
 SPELL Property SeedFlare Auto
 SPELL Property SeedSpawnSpider Auto
 SPELL Property SeedSpawnChaurus Auto
+Spell Property SeedCalm Auto
+Spell Property SeedChaurusBreeding Auto
+Spell Property SeedSpiderBreeding Auto
+Spell Property SeedTrack Auto
 
 ImageSpaceModifier Property FalmerBlueImod  Auto  
 
@@ -118,38 +130,6 @@ Armor Property _SLP_skinChaurusQueenNaked Auto
 
 Package Property _SLP_PKG_ZapFuroTub  Auto  
 
-; String                   Property NINODE_SCHLONG	 	= "NPC Genitals01 [Gen01]" AutoReadOnly
-string                   Property SLH_KEY               = "SexLab_Hormones.esp" AutoReadOnly
-String                   Property NINODE_SCHLONG	 	= "NPC GenitalsBase [GenBase]" AutoReadOnly
-String                   Property NINODE_LEFT_BREAST    = "NPC L Breast" AutoReadOnly
-String                   Property NINODE_LEFT_BREAST01  = "NPC L Breast01" AutoReadOnly
-String                   Property NINODE_LEFT_BUTT      = "NPC L Butt" AutoReadOnly
-String                   Property NINODE_RIGHT_BREAST   = "NPC R Breast" AutoReadOnly
-String                   Property NINODE_RIGHT_BREAST01 = "NPC R Breast01" AutoReadOnly
-String                   Property NINODE_RIGHT_BUTT     = "NPC R Butt" AutoReadOnly
-String                   Property NINODE_SKIRT02        = "SkirtBBone02" AutoReadOnly
-String                   Property NINODE_SKIRT03        = "SkirtBBone03" AutoReadOnly
-String                   Property NINODE_BELLY          = "NPC Belly" AutoReadOnly
-Float                    Property NINODE_MAX_SCALE      = 4.0 AutoReadOnly
-Float                    Property NINODE_MIN_SCALE      = 0.1 AutoReadOnly
-
-int                      Property SKEE_VERSION  = 1 AutoReadOnly
-
-
-; NiOverride version data
-int                      Property NIOVERRIDE_VERSION    = 4 AutoReadOnly
-int                      Property NIOVERRIDE_SCRIPT_VERSION = 4 AutoReadOnly
-
-; XPMSE version data
-float                    Property XPMSE_VERSION         = 3.0 AutoReadOnly
-float                    Property XPMSELIB_VERSION      = 3.0 AutoReadOnly
-
-
-int Property MAX_PRESETS = 4 AutoReadOnly
-int Property MAX_MORPHS = 19 AutoReadOnly
-
-Bool Property isNiOInstalled Auto
-Bool Property isSlifInstalled Auto
 
 
 ;  http://wiki.tesnexus.com/index.php/Skyrim_bodyparts_number
@@ -559,6 +539,9 @@ Keyword Function getDeviousKeywordByString(String deviousKeyword = ""  )
 	elseif (deviousKeyword == "zad_DeviousBelt") || (deviousKeyword == "Belt") 
 		thisKeyword = libs.zad_DeviousBelt
 
+	elseif (deviousKeyword == "zad_DeviousPlug") || (deviousKeyword == "Plug") 
+		thisKeyword = libs.zad_DeviousPlug
+
 	elseif (deviousKeyword == "zad_DeviousPlugAnal") || (deviousKeyword == "PlugAnal") 
 		thisKeyword = libs.zad_DeviousPlugAnal
 
@@ -640,38 +623,38 @@ EndFunction
 Function applyHiddenParasiteEffect(Actor akActor, String sParasite = ""  )
  
 	if (sParasite == "SpiderEgg" )  
-		ApplyBodyChange( akActor, sParasite, "Belly", 2.0, 2.0 )
+		fctUtils.ApplyBodyChange( akActor, sParasite, "Belly", 2.0, 2.0 )
 
 	elseif (sParasite == "SpiderPenis" )  
 		; ApplyBodyChange( akActor, sParasite, "Belly", 2.0, 2.0 )
 
 	elseif (sParasite == "ChaurusWorm" )  
-		ApplyBodyChange( akActor, sParasite, "Butt", 2.0, 2.0 )
+		fctUtils.ApplyBodyChange( akActor, sParasite, "Butt", 2.0, 2.0 )
 		
 	elseif (sParasite == "ChaurusWormVag" )  
-		ApplyBodyChange( akActor, sParasite, "Belly", 2.0, 2.0 )
+		fctUtils.ApplyBodyChange( akActor, sParasite, "Belly", 2.0, 2.0 )
 		
 	elseif (sParasite == "ChaurusQueenGag" )  
 		; ApplyBodyChange( akActor, sParasite, "Belly", 2.0, 2.0 )
 		
 	elseif (sParasite == "ChaurusQueenVag" )  
-		ApplyBodyChange( akActor, sParasite, "Belly", 2.0, 2.0 )
+		fctUtils.ApplyBodyChange( akActor, sParasite, "Belly", 2.0, 2.0 )
 		
 	elseif (sParasite == "ChaurusQueenSkin" )  
-		ApplyBodyChange( akActor, sParasite, "Breast", 2.0, 2.0 )
+		fctUtils.ApplyBodyChange( akActor, sParasite, "Breast", 2.0, 2.0 )
 		
 	elseif (sParasite == "ChaurusQueenArmor" )  
-		ApplyBodyChange( akActor, sParasite, "Breast", 2.0, 2.0 )
+		fctUtils.ApplyBodyChange( akActor, sParasite, "Breast", 2.0, 2.0 )
 		
 	elseif (sParasite == "ChaurusQueenBody" )  
-		ApplyBodyChange( akActor, sParasite, "Breast", 2.0, 2.0 )
-		ApplyBodyChange( akActor, sParasite, "Belly", 2.0, 2.0 )
+		fctUtils.ApplyBodyChange( akActor, sParasite, "Breast", 2.0, 2.0 )
+		fctUtils.ApplyBodyChange( akActor, sParasite, "Belly", 2.0, 2.0 )
 		
 	elseif (sParasite == "TentacleMonster" )  
-		ApplyBodyChange( akActor, sParasite, "Belly", 2.0, 2.0 )
+		fctUtils.ApplyBodyChange( akActor, sParasite, "Belly", 2.0, 2.0 )
 		
 	elseif (sParasite == "LivingArmor" )  
-		ApplyBodyChange( akActor, sParasite, "Belly", 2.0, 2.0 )
+		fctUtils.ApplyBodyChange( akActor, sParasite, "Belly", 2.0, 2.0 )
 		
 	elseif (sParasite == "FaceHugger" ) || (sParasite == "HipHugger" ) 
 		; ApplyBodyChange( akActor, sParasite, "Belly", 2.0, 2.0 )
@@ -689,38 +672,38 @@ EndFunction
 Function clearHiddenParasiteEffect(Actor akActor, String sParasite = ""  )
  
 	if (sParasite == "SpiderEgg" )  
-		ApplyBodyChange( akActor, sParasite, "Belly", 0.5, 2.0 )
+		fctUtils.ApplyBodyChange( akActor, sParasite, "Belly", 0.5, 2.0 )
 
 	elseif (sParasite == "SpiderPenis" )  
 		; ApplyBodyChange( akActor, sParasite, "Belly", 0.5, 2.0 )
 
 	elseif (sParasite == "ChaurusWorm" )  
-		ApplyBodyChange( akActor, sParasite, "Butt", 0.5, 2.0 )
+		fctUtils.ApplyBodyChange( akActor, sParasite, "Butt", 0.5, 2.0 )
 		
 	elseif (sParasite == "ChaurusWormVag" )  
-		ApplyBodyChange( akActor, sParasite, "Belly", 0.5, 2.0 )
+		fctUtils.ApplyBodyChange( akActor, sParasite, "Belly", 0.5, 2.0 )
 		
 	elseif (sParasite == "ChaurusQueenGag" )  
 		; ApplyBodyChange( akActor, sParasite, "Belly", 0.5, 2.0 )
 		
 	elseif (sParasite == "ChaurusQueenVag" )  
-		ApplyBodyChange( akActor, sParasite, "Belly", 0.5, 2.0 )
+		fctUtils.ApplyBodyChange( akActor, sParasite, "Belly", 0.5, 2.0 )
 		
 	elseif (sParasite == "ChaurusQueenSkin" )  
-		ApplyBodyChange( akActor, sParasite, "Breast", 0.5, 2.0 )
+		fctUtils.ApplyBodyChange( akActor, sParasite, "Breast", 0.5, 2.0 )
 		
 	elseif (sParasite == "ChaurusQueenArmor" )  
-		ApplyBodyChange( akActor, sParasite, "Breast", 0.5, 2.0 )
+		fctUtils.ApplyBodyChange( akActor, sParasite, "Breast", 0.5, 2.0 )
 		
 	elseif (sParasite == "ChaurusQueenBody" )  
-		ApplyBodyChange( akActor, sParasite, "Belly", 0.5, 2.0 )
-		ApplyBodyChange( akActor, sParasite, "Breast", 0.5, 2.0 )
+		fctUtils.ApplyBodyChange( akActor, sParasite, "Belly", 0.5, 2.0 )
+		fctUtils.ApplyBodyChange( akActor, sParasite, "Breast", 0.5, 2.0 )
 		
 	elseif (sParasite == "TentacleMonster" )  
-		ApplyBodyChange( akActor, sParasite, "Belly", 0.5, 2.0 )
+		fctUtils.ApplyBodyChange( akActor, sParasite, "Belly", 0.5, 2.0 )
 		
 	elseif (sParasite == "LivingArmor" )  
-		ApplyBodyChange( akActor, sParasite, "Belly", 0.5, 2.0 )
+		fctUtils.ApplyBodyChange( akActor, sParasite, "Belly", 0.5, 2.0 )
 		
 	elseif (sParasite == "FaceHugger" )  || (sParasite == "HipHugger" )  
 		; ApplyBodyChange( akActor, sParasite, "Belly", 0.5, 2.0 )
@@ -812,7 +795,7 @@ Bool Function infectSpiderEgg( Actor kActor )
 		Return False
 	Endif
 
-	If (!isFemale( kActor))
+	If (!fctUtils.isFemale( kActor))
 		Debug.Trace("[SLP]	Actor is not female - Aborting")
 		Return False
 	Endif
@@ -839,7 +822,7 @@ Bool Function applySpiderEgg( Actor kActor )
 		StomachRot.RemoteCast(kActor as ObjectReference, kActor,kActor as ObjectReference)
 	endIf
 
-	ApplyBodyChange( kActor, "SpiderEgg", "Belly", 1.0 + (4.0 * (iNumSpiderEggs as Float) / StorageUtil.GetFloatValue(PlayerActor, "_SLP_bellyMaxSpiderEgg" )), StorageUtil.GetFloatValue(PlayerActor, "_SLP_bellyMaxSpiderEgg" ))
+	fctUtils.ApplyBodyChange( kActor, "SpiderEgg", "Belly", 1.0 + (4.0 * (iNumSpiderEggs as Float) / StorageUtil.GetFloatValue(PlayerActor, "_SLP_bellyMaxSpiderEgg" )), StorageUtil.GetFloatValue(PlayerActor, "_SLP_bellyMaxSpiderEgg" ))
 
 	If !StorageUtil.HasIntValue(kActor, "_SLP_iSpiderEggInfections")
 			StorageUtil.SetIntValue(kActor, "_SLP_iSpiderEggInfections",  0)
@@ -918,7 +901,7 @@ Function cureSpiderEgg( Actor kActor, String _args, Bool bHarvestParasite = Fals
 			PlayerActor.AddItem(SmallSpiderEgg,iNumSpiderEggsRemoved)
 		Endif
 
-		ApplyBodyChange( kActor, "SpiderEgg", "Belly", 1.0 + (4.0 * (iNumSpiderEggs as Float) / StorageUtil.GetFloatValue(PlayerActor, "_SLP_bellyMaxSpiderEgg" )), StorageUtil.GetFloatValue(PlayerActor, "_SLP_bellyMaxSpiderEgg" ) )
+		fctUtils.ApplyBodyChange( kActor, "SpiderEgg", "Belly", 1.0 + (4.0 * (iNumSpiderEggs as Float) / StorageUtil.GetFloatValue(PlayerActor, "_SLP_bellyMaxSpiderEgg" )), StorageUtil.GetFloatValue(PlayerActor, "_SLP_bellyMaxSpiderEgg" ) )
  
 		StorageUtil.SetIntValue(kActor, "_SLP_iSpiderEggCount", iNumSpiderEggs )
 		SendModEvent("SLPSpiderEggInfection")
@@ -955,7 +938,7 @@ Bool Function infectSpiderPenis( Actor kActor  )
 		Return False
 	Endif
 
-	If (!isFemale( kActor))
+	If (!fctUtils.isFemale( kActor))
 		Debug.Trace("[SLP]	Actor is not female - Aborting")
 		Return False
 	Endif
@@ -978,7 +961,7 @@ Bool Function applySpiderPenis( Actor kActor  )
 		StomachRot.RemoteCast(kActor as ObjectReference, kActor,kActor as ObjectReference)
 	endIf
 
-	ApplyBodyChange( kActor, "SpiderEgg", "Belly", 1.0 + (4.0 * (iNumSpiderEggs as Float) / StorageUtil.GetFloatValue(PlayerActor, "_SLP_bellyMaxSpiderEgg" )), StorageUtil.GetFloatValue(PlayerActor, "_SLP_bellyMaxSpiderEgg" ) )
+	fctUtils.ApplyBodyChange( kActor, "SpiderEgg", "Belly", 1.0 + (4.0 * (iNumSpiderEggs as Float) / StorageUtil.GetFloatValue(PlayerActor, "_SLP_bellyMaxSpiderEgg" )), StorageUtil.GetFloatValue(PlayerActor, "_SLP_bellyMaxSpiderEgg" ) )
 
 	If !StorageUtil.HasIntValue(kActor, "_SLP_iSpiderEggInfections")
 			StorageUtil.SetIntValue(kActor, "_SLP_iSpiderEggInfections",  0)
@@ -1074,7 +1057,7 @@ Bool Function applyChaurusWorm( Actor kActor  )
 		ChaurusWormInfectedAlias.ForceRefTo(PlayerActor)
 	endIf
 
-	ApplyBodyChange( kActor, "ChaurusWorm", "Butt", 1.5, StorageUtil.GetFloatValue(PlayerActor, "_SLP_buttMaxChaurusWorm" ))
+	fctUtils.ApplyBodyChange( kActor, "ChaurusWorm", "Butt", 1.5, StorageUtil.GetFloatValue(PlayerActor, "_SLP_buttMaxChaurusWorm" ))
 
 	If !StorageUtil.HasIntValue(kActor, "_SLP_iChaurusWormInfections")
 			StorageUtil.SetIntValue(kActor, "_SLP_iChaurusWormInfections",  0)
@@ -1114,7 +1097,7 @@ Function cureChaurusWorm( Actor kActor, Bool bHarvestParasite = False   )
 	If (isInfectedByString( kActor,  "ChaurusWorm" ))
 		StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusWorm", 0)
 		clearParasiteNPCByString (kActor, "ChaurusWorm")
-		ApplyBodyChange( kActor, "ChaurusWorm", "Butt", 1.0, StorageUtil.GetFloatValue(PlayerActor, "_SLP_buttMaxChaurusWorm" ))
+		fctUtils.ApplyBodyChange( kActor, "ChaurusWorm", "Butt", 1.0, StorageUtil.GetFloatValue(PlayerActor, "_SLP_buttMaxChaurusWorm" ))
 
 		If (bHarvestParasite)
 			PlayerActor.AddItem(SLP_plugChaurusWormInventory,1)
@@ -1156,7 +1139,7 @@ Bool Function infectChaurusWormVag( Actor kActor  )
 		Return False
 	Endif
 
-	If (!isFemale( kActor))
+	If (!fctUtils.isFemale( kActor))
 		Debug.Trace("[SLP]	Actor is not female - Aborting")
 		Return False
 	Endif
@@ -1174,7 +1157,7 @@ Bool Function applyChaurusWormVag( Actor kActor  )
 		ChaurusWormInfectedAlias.ForceRefTo(PlayerActor)
 	endIf
 
-	ApplyBodyChange( kActor, "ChaurusWormVag", "Belly", 1.5, StorageUtil.GetFloatValue(PlayerActor, "_SLP_buttMaxChaurusWorm" ))
+	fctUtils.ApplyBodyChange( kActor, "ChaurusWormVag", "Belly", 1.5, StorageUtil.GetFloatValue(PlayerActor, "_SLP_buttMaxChaurusWorm" ))
 
 	If !StorageUtil.HasIntValue(kActor, "_SLP_iChaurusWormVagInfections")
 			StorageUtil.SetIntValue(kActor, "_SLP_iChaurusWormVagInfections",  0)
@@ -1214,7 +1197,7 @@ Function cureChaurusWormVag( Actor kActor, Bool bHarvestParasite = False   )
 	If (isInfectedByString( kActor,  "ChaurusWormVag" ))
 		StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusWormVag", 0)
 		clearParasiteNPCByString (kActor, "ChaurusWormVag")
-		ApplyBodyChange( kActor, "ChaurusWormVag", "Belly", 1.0, StorageUtil.GetFloatValue(PlayerActor, "_SLP_buttMaxChaurusWorm" ))
+		fctUtils.ApplyBodyChange( kActor, "ChaurusWormVag", "Belly", 1.0, StorageUtil.GetFloatValue(PlayerActor, "_SLP_buttMaxChaurusWorm" ))
 
 		If (bHarvestParasite)
 			PlayerActor.AddItem(SLP_plugChaurusWormVagInventory,1)
@@ -1243,7 +1226,7 @@ Bool Function infectEstrusTentacles( Actor kActor  )
 		Return False
 	Endif
 
-	If (!isFemale( kActor))
+	If (!fctUtils.isFemale( kActor))
 		Debug.Trace("[SLP]	Actor is not female - Aborting")
 		Return False
 	Endif
@@ -1342,7 +1325,7 @@ Bool Function infectTentacleMonster( Actor kActor  )
 		Return False
 	Endif
 
-	If (!isFemale( kActor))
+	If (!fctUtils.isFemale( kActor))
 		Debug.Trace("[SLP]	Actor is not female - Aborting")
 		Return False
 	Endif
@@ -1398,7 +1381,7 @@ Function cureTentacleMonster( Actor kActor, Bool bHarvestParasite = False   )
 	If (isInfectedByString( kActor,  "TentacleMonster" ))
 		StorageUtil.SetIntValue(kActor, "_SLP_toggleTentacleMonster", 0 )
 		clearParasiteNPCByString (kActor, "TentacleMonster")
-		ApplyBodyChange( kActor, "TentacleMonster", "Breast", 1.0, StorageUtil.GetFloatValue(PlayerActor, "_SLP_breastMaxTentacleMonster" ))
+		fctUtils.ApplyBodyChange( kActor, "TentacleMonster", "Breast", 1.0, StorageUtil.GetFloatValue(PlayerActor, "_SLP_breastMaxTentacleMonster" ))
 
 		If (bHarvestParasite)
 			PlayerActor.AddItem(SLP_harnessTentacleMonsterInventory,1)
@@ -1433,7 +1416,7 @@ Bool Function infectEstrusSlime( Actor kActor  )
 		Return False
 	Endif
 
-	If (!isFemale( kActor))
+	If (!fctUtils.isFemale( kActor))
 		Debug.Trace("[SLP]	Actor is not female - Aborting")
 		Return False
 	Endif
@@ -1531,7 +1514,7 @@ Bool Function infectLivingArmor( Actor kActor  )
 		Return False
 	Endif
 
-	If (!isFemale( kActor))
+	If (!fctUtils.isFemale( kActor))
 		Debug.Trace("[SLP]	Actor is not female - Aborting")
 		Return False
 	Endif
@@ -1587,7 +1570,7 @@ Function cureLivingArmor( Actor kActor, Bool bHarvestParasite = False   )
 	If (isInfectedByString( kActor,  "LivingArmor" ))
 		StorageUtil.SetIntValue(kActor, "_SLP_toggleLivingArmor", 0 )
 		clearParasiteNPCByString (kActor, "LivingArmor")
-		ApplyBodyChange( kActor, "LivingArmor", "Breast", 1.0, StorageUtil.GetFloatValue(PlayerActor, "_SLP_breastMaxLivingArmor" ))
+		fctUtils.ApplyBodyChange( kActor, "LivingArmor", "Breast", 1.0, StorageUtil.GetFloatValue(PlayerActor, "_SLP_breastMaxLivingArmor" ))
 
 		If (bHarvestParasite)
 			PlayerActor.AddItem(SLP_harnessLivingArmorInventory,1)
@@ -1628,7 +1611,7 @@ Bool Function infectFaceHugger( Actor kActor  )
 		Return False
 	Endif
 
-	If (!isFemale( kActor))
+	If (!fctUtils.isFemale( kActor))
 		Debug.Trace("[SLP]	Actor is not female - Aborting")
 		Return False
 	Endif
@@ -1683,7 +1666,7 @@ Function cureFaceHugger( Actor kActor, Bool bHarvestParasite = False   )
 	If (isInfectedByString( kActor,  "FaceHugger" ))
 		StorageUtil.SetIntValue(kActor, "_SLP_toggleFaceHugger", 0 )
 		clearParasiteNPCByString (kActor, "FaceHugger")
-		ApplyBodyChange( kActor, "FaceHugger", "Belly", 1.0, StorageUtil.GetFloatValue(PlayerActor, "_SLP_bellyMaxFaceHugger" ))
+		fctUtils.ApplyBodyChange( kActor, "FaceHugger", "Belly", 1.0, StorageUtil.GetFloatValue(PlayerActor, "_SLP_bellyMaxFaceHugger" ))
 
 		If (bHarvestParasite)
 			PlayerActor.AddItem(SLP_harnessFaceHuggerInventory,1)
@@ -1775,7 +1758,7 @@ Function cureFaceHuggerGag( Actor kActor, Bool bHarvestParasite = False   )
 	If (isInfectedByString( kActor,  "FaceHuggerGag" ))
 		StorageUtil.SetIntValue(kActor, "_SLP_toggleFaceHuggerGag", 0 )
 		clearParasiteNPCByString (kActor, "FaceHuggerGag")
-		ApplyBodyChange( kActor, "FaceHugger", "Belly", 1.0, StorageUtil.GetFloatValue(PlayerActor, "_SLP_bellyMaxFaceHugger" ))
+		fctUtils.ApplyBodyChange( kActor, "FaceHugger", "Belly", 1.0, StorageUtil.GetFloatValue(PlayerActor, "_SLP_bellyMaxFaceHugger" ))
 
 		If (bHarvestParasite)
 			PlayerActor.AddItem(SLP_harnessFaceHuggerGagInventory,1)
@@ -1819,7 +1802,7 @@ Bool Function infectBarnacles( Actor kActor  )
 	Endif
 
 
-	If (!isFemale( kActor))
+	If (!fctUtils.isFemale( kActor))
 		Debug.Trace("[SLP]	Actor is not female - Aborting")
 		Return False
 	Endif
@@ -1934,7 +1917,7 @@ Bool Function infectChaurusQueenVag( Actor kActor  )
 		Return False
 	Endif
 
-	If (!isFemale( kActor))
+	If (!fctUtils.isFemale( kActor))
 		Debug.Trace("[SLP]	Actor is not female - Aborting")
 		Return False
 	Endif
@@ -1953,7 +1936,7 @@ Bool Function applyChaurusQueenVag( Actor kActor  )
 	;	ChaurusQueenInfectedAlias.ForceRefTo(PlayerActor)
 	endIf
 
-	; ApplyBodyChange( kActor, "ChaurusQueenVag", "Belly", 1.5, StorageUtil.GetFloatValue(PlayerActor, "_SLP_buttMaxChaurusWorm" ))
+	; fctUtils.ApplyBodyChange( kActor, "ChaurusQueenVag", "Belly", 1.5, StorageUtil.GetFloatValue(PlayerActor, "_SLP_buttMaxChaurusWorm" ))
 
 	If !StorageUtil.HasIntValue(kActor, "_SLP_iChaurusQueenVagInfections")
 			StorageUtil.SetIntValue(kActor, "_SLP_iChaurusQueenVagInfections",  0)
@@ -1999,7 +1982,7 @@ Function cureChaurusQueenVag( Actor kActor, Bool bHarvestParasite = False   )
 	If (isInfectedByString( kActor,  "ChaurusQueenVag" ))
 		StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenVag", 0)
 		clearParasiteNPCByString (kActor, "ChaurusQueenVag")
-		; ApplyBodyChange( kActor, "ChaurusQueenVag", "Belly", 1.0, StorageUtil.GetFloatValue(PlayerActor, "_SLP_buttMaxChaurusWorm" ))
+		; fctUtils.ApplyBodyChange( kActor, "ChaurusQueenVag", "Belly", 1.0, StorageUtil.GetFloatValue(PlayerActor, "_SLP_buttMaxChaurusWorm" ))
 
 		If (bHarvestParasite)
 			PlayerActor.AddItem(SLP_plugChaurusQueenVagInventory,1)
@@ -2095,7 +2078,7 @@ Function cureChaurusQueenGag( Actor kActor, Bool bHarvestParasite = False   )
 	If (isInfectedByString( kActor,  "ChaurusQueenGag" ))
 		StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenGag", 0 )
 		clearParasiteNPCByString (kActor, "ChaurusQueenGag")
-		; ApplyBodyChange( kActor, "FaceHugger", "Belly", 1.0, StorageUtil.GetFloatValue(PlayerActor, "_SLP_bellyMaxFaceHugger" ))
+		; fctUtils.ApplyBodyChange( kActor, "FaceHugger", "Belly", 1.0, StorageUtil.GetFloatValue(PlayerActor, "_SLP_bellyMaxFaceHugger" ))
 
 		If (bHarvestParasite)
 			PlayerActor.AddItem(SLP_gagChaurusQueenInventory,1)
@@ -2140,7 +2123,7 @@ Bool Function infectChaurusQueenSkin( Actor kActor  )
 		Return False
 	Endif
 
-	If (!isFemale( kActor))
+	If (!fctUtils.isFemale( kActor))
 		Debug.Trace("[SLP]	Actor is not female - Aborting")
 		Return False
 	Endif
@@ -2203,7 +2186,7 @@ Function cureChaurusQueenSkin( Actor kActor, Bool bHarvestParasite = False   )
 	If (isInfectedByString( kActor,  "ChaurusQueenSkin" ))
 		StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenSkin", 0 )
 		clearParasiteNPCByString (kActor, "ChaurusQueenSkin")
-		; ApplyBodyChange( kActor, "ChaurusQueenSkin", "Breast", 1.0, StorageUtil.GetFloatValue(PlayerActor, "_SLP_breastMaxChaurusQueenSkin" ))
+		; fctUtils.ApplyBodyChange( kActor, "ChaurusQueenSkin", "Breast", 1.0, StorageUtil.GetFloatValue(PlayerActor, "_SLP_breastMaxChaurusQueenSkin" ))
 
 		If (bHarvestParasite)
 			PlayerActor.AddItem(SLP_harnessChaurusQueenSkinInventory,1)
@@ -2246,7 +2229,7 @@ Bool Function infectChaurusQueenArmor( Actor kActor  )
 		Return False
 	Endif
 
-	If (!isFemale( kActor))
+	If (!fctUtils.isFemale( kActor))
 		Debug.Trace("[SLP]	Actor is not female - Aborting")
 		Return False
 	Endif
@@ -2314,7 +2297,7 @@ Function cureChaurusQueenArmor( Actor kActor, Bool bHarvestParasite = False   )
 	If (isInfectedByString( kActor,  "ChaurusQueenArmor" ))
 		StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenArmor", 0 )
 		clearParasiteNPCByString (kActor, "ChaurusQueenArmor")
-		; ApplyBodyChange( kActor, "ChaurusQueenArmor", "Breast", 1.0, StorageUtil.GetFloatValue(PlayerActor, "_SLP_breastMaxChaurusQueenArmor" ))
+		; fctUtils.ApplyBodyChange( kActor, "ChaurusQueenArmor", "Breast", 1.0, StorageUtil.GetFloatValue(PlayerActor, "_SLP_breastMaxChaurusQueenArmor" ))
 
 		If (bHarvestParasite)
 			PlayerActor.AddItem(SLP_harnessChaurusQueenArmorInventory,1)
@@ -2358,7 +2341,7 @@ Bool Function infectChaurusQueenBody( Actor kActor  )
 		Return False
 	Endif
 
-	If (!isFemale( kActor))
+	If (!fctUtils.isFemale( kActor))
 		Debug.Trace("[SLP]	Actor is not female - Aborting")
 		Return False
 	Endif
@@ -2491,7 +2474,7 @@ Function cureChaurusQueenBody( Actor kActor, Bool bHarvestParasite = False   )
 
 		StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenBody", 0 )
 		clearParasiteNPCByString (kActor, "ChaurusQueenBody")
-		; ApplyBodyChange( kActor, "ChaurusQueenBody", "Breast", 1.0, StorageUtil.GetFloatValue(PlayerActor, "_SLP_breastMaxChaurusQueenBody" ))
+		; fctUtils.ApplyBodyChange( kActor, "ChaurusQueenBody", "Breast", 1.0, StorageUtil.GetFloatValue(PlayerActor, "_SLP_breastMaxChaurusQueenBody" ))
 
 		If (bHarvestParasite)
 			PlayerActor.AddItem(SLP_harnessChaurusQueenBodyInventory,1)
@@ -2516,7 +2499,7 @@ Bool Function infectEstrusChaurusEgg( Actor kActor, Bool bSilent )
   		kActor = PlayerActor
   	endIf
 
-	If (!isFemale( kActor))
+	If (!fctUtils.isFemale( kActor))
 		Debug.Trace("[SLP]	Actor is not female - Aborting")
 		Return False
 	Endif
@@ -2728,7 +2711,7 @@ Function triggerEstrusChaurusBirth( Actor kActor, String  sParasite, Int iBirthI
 		;To call an EC Birth event use the following code:
 		;
 		int ECBirth = ModEvent.Create("ECGiveBirth") ; Int          Int does not have to be named "ECBirth" any name would do
-		if (ECBirth) && (!(isPregnantByEstrusChaurus( kActor)))
+		if (ECBirth) && (!(fctUtils.isPregnantByEstrusChaurus( kActor)))
 			Debug.Trace("[SLP] 		EC event detected - ECBirth")
 		    ModEvent.PushForm(ECBirth, self)         ; Form         Pass the calling form to the event
 
@@ -3073,19 +3056,131 @@ Bool Function isPlayerInHeat()
  	; endif
 
  	Return bSuccess
- Endfunction
+Endfunction
+
+Function tryCharmSpider(Actor Target)
+	Actor kPlayer = Game.GetPlayer()
+ 	Int iChaurusQueenStage = StorageUtil.GetIntValue(kPlayer, "_SLP_iChaurusQueenStage")
+ 	Int iCharmThreshold = 50
+
+ 	if (StorageUtil.GetIntValue(kPlayer, "_SLP_iSpiderCharmON")==1)
+ 		; Charm is in progress - no need for more checks (needed for magic attackes)
+ 		return
+ 	endif
+
+
+	if fctUtils.checkIfSpider ( Target )
+
+		; Add code using Hormones pheromone levels
+		iCharmThreshold = iCharmThreshold + ((StorageUtil.GetFloatValue(kPlayer, "_SLH_fHormonePheromones") as Int) / 2)
+
+		If (Utility.RandomInt(0,100)<=iCharmThreshold)  
+			Debug.Notification("[SLP] Charm Spider" )
+		    ;   Debug.Messagebox(" Spider Pheromone charm spell started") 
+		 	; kPlayer.AddToFaction(SpiderFaction)
+		    Target.StopCombat()   
+		    Target.SetPlayerTeammate(true )
+			SpiderFollowerAlias.ForceRefTo(Target as objectReference)
+			StorageUtil.SetIntValue(kPlayer, "_SLP_iSpiderCharmON", 1)
+			Utility.Wait(1.0)
+
+		 	if (iChaurusQueenStage>=3) && (!kPlayer.HasSpell( SeedSpiderBreeding ))
+		 		kPlayer.AddSpell( SeedTrack )
+		 		kPlayer.AddSpell( SeedCalm )
+		 		kPlayer.AddSpell( SeedSpiderBreeding )
+		 		debug.messagebox("The Seed reacts strongly to the influence of the Spider pheromones and inflames your senses. As the pincers spread your vagina into a gaping hole for the spider to mate with, you feel your mind expand to new possibilities.")
+			endif
+
+			if (QueenOfChaurusQuest.GetStageDone(310)) && (!QueenOfChaurusQuest.GetStageDone(320)) 
+				QueenOfChaurusQuest.SetStage(320)
+				tryPlayerSpiderStage()
+			endif
+
+			_SLP_GV_numCharmSpider.Mod(1.0)
+			fctUtils.ParasiteSex(kPlayer, Target)			
+			
+		endif
+
+	else
+		Debug.Notification("[SLP] Charm Spider - Failed" )
+		Debug.Trace("[SLP] Charm Spider - Failed" )
+		Debug.Trace("[SLP]       iCharmThreshold: " + iCharmThreshold)
+		Debug.Trace("[SLP]       checkIfSpider: " + fctUtils.checkIfSpider ( Target ))
+		Debug.Trace("[SLP]       _SLP_iSpiderPheromoneON: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iSpiderPheromoneON"))
+
+	endif
+
+
+Endfunction
 
 Function tryPlayerSpiderStage()
  	Actor PlayerActor = Game.GetPlayer()
   	Int iChaurusQueenStage = StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusQueenStage")
 
-	if (iChaurusQueenStage>=3) && (isInfectedByString( PlayerActor,  "SpiderEgg" )) && (QueenOfChaurusQuest.GetStageDone(320))  
+	if (iChaurusQueenStage>=3) && (QueenOfChaurusQuest.GetStageDone(320))  
 		if (!PlayerActor.HasSpell( SeedSpawnSpider ))
 	 		PlayerActor.AddSpell( SeedSpawnSpider ) 
+	 		PlayerActor.AddItem(SmallSpiderEgg,5)
+	 		SeedSpawnSpider.Cast(PlayerActor as ObjectReference, PlayerActor as ObjectReference)
+
 	 		debug.messagebox("The Seed throbs deep inside you and forces the now fertilized eggs out of your womb. In a sudden flash of understanding, you realize you hold power over your newly spawned eggs.")
+	 		debug.messagebox("(Use the 'SEED SPAWN SPIDER' power to transmute spider eggs from your inventory.)")
 	 	endif
 		cureSpiderEgg( PlayerActor, "None", false )
-	 	triggerEstrusChaurusBirth(  PlayerActor, "SpiderEgg", RandomInt(5,15)  )
+	 	; triggerEstrusChaurusBirth(  PlayerActor, "SpiderEgg", RandomInt(5,15)  )
+
+	endif
+Endfunction
+
+Function tryCharmChaurus(Actor Target)
+	Actor kPlayer = Game.GetPlayer()
+ 	Int iChaurusQueenStage = StorageUtil.GetIntValue(kPlayer, "_SLP_iChaurusQueenStage")
+ 	Int iCharmThreshold = 50
+
+ 	if (StorageUtil.GetIntValue(kPlayer, "_SLP_iChaurusCharmON")==1)
+ 		; Charm is in progress - no need for more checks (needed for magic attackes)
+ 		return
+ 	endif
+
+	if fctUtils.checkIfChaurus ( Target )
+
+		; Add code using Hormones pheromone levels
+		iCharmThreshold = iCharmThreshold + ((StorageUtil.GetFloatValue(kPlayer, "_SLH_fHormonePheromones") as Int) / 2)
+
+		If (Utility.RandomInt(0,100)<=iCharmThreshold)   
+		    ; Debug.Messagebox(" Chaurus Pheromone charm spell started")    
+		 	; kPlayer.AddToFaction(ChaurusFaction)
+		    Target.StopCombat()   
+		    Target.SetPlayerTeammate(true )
+			ChaurusFollowerAlias.ForceRefTo(Target as objectReference)
+			_SLP_GV_numCharmChaurus.Mod(1.0)
+			Debug.Notification("[SLP] Charm Chaurus" )
+			StorageUtil.SetIntValue(kPlayer, "_SLP_iChaurusCharmON", 1)
+			Utility.Wait(1.0)
+
+			if (QueenOfChaurusQuest.GetStageDone(330)) 
+			 	if (iChaurusQueenStage==3) && (!kPlayer.HasSpell( SeedChaurusBreeding ))
+			 		kPlayer.AddSpell( SeedTrack )
+			 		kPlayer.AddSpell( SeedCalm )
+			 		kPlayer.AddSpell( SeedChaurusBreeding )
+			 		debug.messagebox("The Seed blooms inside you from the influence of the Chaurus pheromones. The pincers extend a hungry mouth for the chaurus to mate with, making your skin tingles with power and giving you a new understanding of the Chaurus biology.")
+				endif
+			endif
+
+			if (QueenOfChaurusQuest.GetStageDone(340)) && (!QueenOfChaurusQuest.GetStageDone(350)) 
+				QueenOfChaurusQuest.SetStage(350)
+				tryPlayerChaurusStage()
+			endif
+
+			fctUtils.ParasiteSex(kPlayer, Target)
+		endif
+
+	else
+		Debug.Notification("[SLP] Charm Chaurus - Failed" )
+		Debug.Trace("[SLP] Charm Chaurus - Failed" )
+		Debug.Trace("[SLP]       iCharmThreshold: " + iCharmThreshold)
+		Debug.Trace("[SLP]       checkIfChaurus: " + fctUtils.checkIfChaurus ( Target ))
+		Debug.Trace("[SLP]       _SLP_iChaurusPheromoneON: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iChaurusPheromoneON"))
 
 	endif
 EndFunction
@@ -3097,10 +3192,12 @@ Function tryPlayerChaurusStage()
 	if (iChaurusQueenStage>=3) && (QueenOfChaurusQuest.GetStageDone(350))
 		if (!PlayerActor.HasSpell( SeedSpawnChaurus ))
 	 		PlayerActor.AddSpell( SeedSpawnChaurus ) 
+	 		PlayerActor.AddItem(ChaurusEgg,5)
 
 	 		SeedSpawnChaurus.Cast(PlayerActor as ObjectReference, PlayerActor as ObjectReference)
 	 			
 	 		debug.messagebox("The Seed expands inside you in response to the chaurus, flooding your mind with strange symbols and visions of alien skies. Your womb aches from the urge to fertilize and spawn chaurus eggs.")
+	 		debug.messagebox("(Use the 'SEED SPAWN CHAURUS' power to transmute chaurus eggs from your inventory.)")
 	 	endif 	
 	endif
 EndFunction
@@ -3215,276 +3312,30 @@ Function refreshParasite(Actor kActor, String sParasite)
 EndFunction
 
 
-;------------------------------------------------------------------------------
+
+; -------------------------------------------------------
+; Wrapper functions for compatibility 
 Function ApplyBodyChange(Actor kActor, String sParasite, String sBodyPart, Float fValue=1.0, Float fValueMax=1.0)
-  	ActorBase pActorBase = kActor.GetActorBase()
- 	Actor PlayerActor = Game.GetPlayer()
-  	String NiOString = "SLP_" + sParasite
-
-	if ( isNiOInstalled  )  
-
-		Debug.Trace("[SLP]Receiving body change: " + sBodyPart)
-		Debug.Trace("[SLP] 	Node string: " + sParasite)
-		Debug.Trace("[SLP] 	Max node: " + fValueMax)
-
- 		if (!isSlifInstalled)
-			if (fValue < 1.0)
-				fValue = 1.0     ; NiO node is reset with value of 1.0 - not 0.0!
-			Endif		
-
-			if (fValue > fValueMax)
-				fValue = fValueMax
-			Endif
-		Endif
-
-		If (StorageUtil.GetIntValue(none, "_SLH_iHormones")!=1) && (kActor == PlayerActor)
-
-			if ( sBodyPart == "Breast"  )
-				StorageUtil.SetFloatValue(kActor, "_SLH_fBreast", fValue )  
-
-			elseif ( sBodyPart == "Belly"  )
-				StorageUtil.SetFloatValue(kActor, "_SLH_fBelly", fValue )  
-
-			elseif ( sBodyPart == "Butt"  )
-				StorageUtil.SetFloatValue(kActor, "_SLH_fButt", fValue )
-				  
-			elseif ( sBodyPart == "Schlong"  )
-				StorageUtil.SetFloatValue(kActor, "_SLH_fSchlong", fValue )  
-			endif
-
-			kActor.SendModEvent("SLHRefresh")
-
-		else
-
-			if (( sBodyPart == "Breast"  ) && (pActorBase.GetSex()==1)) ; Female change
-				Debug.Trace("[SLP]    Applying breast change: " + NiOString)
-				Debug.Trace("[SLP]    Value: " + fValue)
-
-				if (isSlifInstalled)
-					SLIF_inflateMax(kActor, "slif_breast", fValue, fValueMax, NiOString)
-				else
-					XPMSELib.SetNodeScale(kActor, true, NINODE_LEFT_BREAST, fValue, NiOString)
-					XPMSELib.SetNodeScale(kActor, true, NINODE_RIGHT_BREAST, fValue, NiOString)
-				Endif
-
-			Elseif (( sBodyPart == "Belly"  ) && (pActorBase.GetSex()==1)) ; Female change
-				Debug.Trace("[SLP]    Applying belly change: " + NiOString)
-				Debug.Trace("[SLP]    Value: " + fValue)
-
-				if (isSlifInstalled)
-					SLIF_inflateMax(kActor, "slif_belly", fValue, fValueMax, NiOString)
-				else
-					XPMSELib.SetNodeScale(kActor, true, NINODE_BELLY, fValue, NiOString)
-				Endif
-
-
-			Elseif (( sBodyPart == "Butt"  )) 
-				Debug.Trace("[SLP]    Applying butt change: " + NiOString)
-				Debug.Trace("[SLP]    Value: " + fValue)
-
-				if (isSlifInstalled)
-					SLIF_inflateMax(kActor, "slif_butt", fValue, fValueMax, NiOString)
-				else
-					XPMSELib.SetNodeScale(kActor, pActorBase.GetSex(), NINODE_LEFT_BUTT, fValue, NiOString)
-					XPMSELib.SetNodeScale(kActor, pActorBase.GetSex(), NINODE_RIGHT_BUTT, fValue, NiOString)
-				Endif
-
-
-			Elseif (( sBodyPart == "Schlong"  ) ) 
-				Debug.Trace("[SLP]    Applying schlong change: " + NiOString)
-				Debug.Trace("[SLP]    Value: " + fValue)
-
-				if (isSlifInstalled)
-					SLIF_inflateMax(kActor, "slif_schlong", fValue, fValueMax, NiOString)
-				else
-					XPMSELib.SetNodeScale(kActor, pActorBase.GetSex(), NINODE_SCHLONG, fValue, NiOString)
-				Endif
-
-			Endif
-		endif
-	Else
-		; Debug.Notification("[SLP]Receiving body change: NiO not installed")
-
-	EndIf
-
+	fctUtils.ApplyBodyChange( kActor,  sParasite,  sBodyPart,  fValue,  fValueMax)
 EndFunction
 
-Bool function isFemale(actor kActor)
-	return (kActor.GetActorBase().GetSex() == 1)
-EndFunction
-
-Bool function isMale(actor kActor)
-	return !isFemale(kActor)
-EndFunction
-
-;------------------------------------------------------------------------------
-bool function isPregnantByEstrusChaurus(actor kActor)
-  spell  ChaurusBreeder 
-  if (StorageUtil.GetIntValue(none, "_SLS_isEstrusChaurusON") ==  1) 
-  	ChaurusBreeder = StorageUtil.GetFormValue(none, "_SLS_getEstrusChaurusBreederSpell") as Spell
-  	if (ChaurusBreeder != none)
-    	return kActor.HasSpell(ChaurusBreeder)
-    endif
-  endIf
-  return false
-endFunction
-
-bool function isEstrusChaurusON()
-	if (StorageUtil.GetFormValue(none, "_SLS_getEstrusChaurusBreederSpell")!=none)
-		return true
-	else
-		return false
-	endif
-endFunction
-
-;------------------------------------------------------------------------------
-function SLIF_inflate(Actor kActor, String sKey, float value, String NiOString)
-	int SLIF_event = ModEvent.Create("SLIF_inflate")
-	If (SLIF_event)
-		ModEvent.PushForm(SLIF_event, kActor)
-		ModEvent.PushString(SLIF_event, "SexLab Parasites")
-		ModEvent.PushString(SLIF_event, sKey)
-		ModEvent.PushFloat(SLIF_event, value)
-		ModEvent.PushString(SLIF_event, NiOString)
-		ModEvent.Send(SLIF_event)
-	EndIf
-endFunction
-
-function SLIF_setMax(Actor kActor, String sKey, float maximum)
-	int SLIF_event = ModEvent.Create("SLIF_setMax")
-	If (SLIF_event)
-		ModEvent.PushForm(SLIF_event, kActor)
-		ModEvent.PushString(SLIF_event, "SexLab Parasites")
-		ModEvent.PushString(SLIF_event, sKey)
-		ModEvent.PushFloat(SLIF_event, maximum)
-		ModEvent.Send(SLIF_event)
-	EndIf	
-endFunction
-
-function SLIF_inflateMax(Actor kActor, String sKey, float value, float maximum, String NiOString)
-	SLIF_setMax(kActor, sKey, maximum)
-	SLIF_inflate(kActor, sKey, value, NiOString)
-endFunction
-
-;------------------------------------------------------------------------------
-Function ParasiteSex(Actor kActor, Actor kParasite)
-	If  (SexLab.ValidateActor( kActor ) > 0) &&  (SexLab.ValidateActor(kParasite) > 0) 
-
-		SexLab.QuickStart(kActor,  kParasite, AnimationTags = "Sex")
-	EndIf
-EndFunction
-;------------------------------------------------------------------------------
 Function FalmerBlue(Actor kActor, Actor kTarget)
-	If (StorageUtil.GetIntValue(none, "_SLH_iHormones")==1)
-		Int iFalmerSkinColor = Math.LeftShift(255, 24) + Math.LeftShift(100, 16) + Math.LeftShift(200, 8) + 255
-		Float breastMod = 0.05
-		Float weightMod = 2.0
-
-		FalmerBlueImod.Apply( )
-
-		If (Utility.RandomInt(0,100)>60)
-			Int randomNum = Utility.RandomInt(0,100)
-			If (randomNum>80)
-				Debug.MessageBox("Glowing fluids spread from the Falmer's skin across yours like quicksilver, making your nipples stiffen and tingle painfully with poisonous throbs. ")
-				breastMod = 0.5
-				weightMod = 15.0
-				StorageUtil.SetIntValue(none, "_SLH_iForcedHairLoss", 1)
-				kTarget.SendModEvent("SLHShaveHead")
-
-			ElseIf (randomNum>60)
-				Debug.MessageBox("The purpose of the glowing substance is clear to you now, fattening you up for breeding and turning you into an irresistible beacon for the Falmers and their pets.")
-				breastMod = 0.25
-				weightMod = 10.0
-				StorageUtil.SetIntValue(none, "_SLH_iForcedHairLoss", 1)
-				kTarget.SendModEvent("SLHShaveHead")
-
-			ElseIf (randomNum>40)
-				Debug.Notification("Your skin burns under glowing droplets.")
-				breastMod = 0.1
-				weightMod = 5.0
-
-			ElseIf (randomNum>20)
-				Debug.Notification("The tingling over your skin is driving you mad.")
-				breastMod = 0.25
-				weightMod = 2.0
-
-			EndIf
-
-		EndIf
-
-		StorageUtil.SetIntValue(kTarget, "_SLH_iSkinColor", iFalmerSkinColor ) 
-		StorageUtil.SetFloatValue(kTarget, "_SLH_fBreast", StorageUtil.GetFloatValue(kTarget, "_SLH_fBreast" ) + breastMod ) 
-		StorageUtil.SetFloatValue(kTarget, "_SLH_fWeight", StorageUtil.GetFloatValue(kTarget, "_SLH_fWeight" ) + weightMod ) 
-		kTarget.SendModEvent("SLHRefresh")
-		kTarget.SendModEvent("SLHRefreshColors")
-
-
-		if (Utility.RandomInt(0,100)>90)
-			SendModEvent("SLHModHormoneRandom", "Chaurus", 1.0)
-		else
-			SendModEvent("SLHModHormone", "Growth", 5.0)
-			SendModEvent("SLHModHormone", "Female", 10.0)
-			SendModEvent("SLHModHormone", "Male", -5.0)
-
-			if (isFemale(kTarget))
-				SendModEvent("SLHModHormone", "Metabolism", -15.0)
-				SendModEvent("SLHModHormone", "Lactation", 5.0)
-				SendModEvent("SLHModHormone", "Fertility", 5.0)
-			else
-				SendModEvent("SLHModHormone", "Metabolism", 15.0)
-			endif
-		endif
-	Endif	
-EndFunction
-;------------------------------------------------------------------------------
-
-bool Function CheckXPMSERequirements(Actor akActor, bool isFemale)
-	if (SKSE.GetPluginVersion("SKEE") >= SKEE_VERSION) ; SKEE detected - Skyrim SE
-		return XPMSELib.CheckXPMSEVersion(akActor, isFemale, XPMSE_VERSION, true) && XPMSELib.CheckXPMSELibVersion(XPMSELIB_VERSION) && (SKSE.GetPluginVersion("SKEE") >= SKEE_VERSION && SKSE.GetPluginVersion("NiOverride") >= NIOVERRIDE_VERSION) && NiOverride.GetScriptVersion() >= NIOVERRIDE_SCRIPT_VERSION
-	else
-		return XPMSELib.CheckXPMSEVersion(akActor, isFemale, XPMSE_VERSION, true) && XPMSELib.CheckXPMSELibVersion(XPMSELIB_VERSION) && SKSE.GetPluginVersion("NiOverride") >= NIOVERRIDE_VERSION && NiOverride.GetScriptVersion() >= NIOVERRIDE_SCRIPT_VERSION
-	endif
+	fctUtils.FalmerBlue( kActor,  kTarget)
 EndFunction
 
-Function _resetParasiteSettings()
-	Actor kPlayer = Game.GetPlayer()
+; -------------------------------------------------------
+Function maintenance()
+ 	Actor PlayerActor= Game.GetPlayer() as Actor
+ 	ActorBase pActorBase = PlayerActor.GetActorBase()
 
-	StorageUtil.SetIntValue(kPlayer, "_SLP_toggleSpiderEgg", 0 )
-	StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceSpiderEgg", 50.0 )
-	StorageUtil.SetFloatValue(kPlayer, "_SLP_bellyMaxSpiderEgg", 2.0 )
+	if (!fctUtils.isNiOInstalled)
+		fctUtils.isNiOInstalled = fctUtils.CheckXPMSERequirements(PlayerActor, pActorBase.GetSex())
+	EndIf
 
-	StorageUtil.SetIntValue(kPlayer, "_SLP_toggleSpiderPenis", 0 )
-	StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceSpiderPenis", 10.0 )
+	fctUtils.isSlifInstalled = Game.GetModbyName("SexLab Inflation Framework.esp") != 255
 
-	StorageUtil.SetIntValue(kPlayer, "_SLP_toggleChaurusWorm", 0 )
-	StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceChaurusWorm", 10.0 )
-	StorageUtil.SetFloatValue(kPlayer, "_SLP_buttMaxChaurusWorm", 2.0 )
-
-	StorageUtil.SetIntValue(kPlayer, "_SLP_toggleChaurusWormVag", 0 )
-	StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceChaurusWormVag", 10.0 )
-	StorageUtil.SetFloatValue(kPlayer, "_SLP_bellyMaxChaurusWormVag", 2.0 )
-
-	StorageUtil.SetIntValue(kPlayer, "_SLP_toggleEstrusTentacles", 0 )
-	StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceEstrusTentacles", 10.0 )
-
-	StorageUtil.SetIntValue(kPlayer, "_SLP_toggleTentacleMonster", 0 )
-	StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceTentacleMonster", 30.0 )
-	StorageUtil.SetFloatValue(kPlayer, "_SLP_breastMaxTentacleMonster", 2.0 )
-
-	StorageUtil.SetIntValue(kPlayer, "_SLP_toggleEstrusSlime", 0 )
-	StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceEstrusSlime", 10.0 )
-
-	StorageUtil.SetIntValue(kPlayer, "_SLP_toggleLivingArmor", 0 )
-	StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceLivingArmor", 30.0 )
-	StorageUtil.SetFloatValue(kPlayer, "_SLP_breastMaxLivingArmor", 2.0 )
-
-	StorageUtil.SetIntValue(kPlayer, "_SLP_toggleFaceHugger", 0 )
-	StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceFaceHugger", 30.0 )
-	StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceFaceHuggerGag", 30.0 )
-	StorageUtil.SetFloatValue(kPlayer, "_SLP_bellyMaxFaceHugger", 2.0 )
-
-	StorageUtil.SetIntValue(kPlayer, "_SLP_toggleBarnacles", 0 )
-	StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceBarnacles", 30.0 )
+	If (!StorageUtil.HasIntValue(none, "_SLP_iSexLabParasites"))
+		StorageUtil.SetIntValue(none, "_SLP_iSexLabParasites", 1)
+		fctUtils._resetParasiteSettings()
+	EndIf
 EndFunction
-
-
