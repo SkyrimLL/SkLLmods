@@ -1315,7 +1315,7 @@ Bool Function infectTentacleMonster( Actor kActor  )
 		Return False
 	Endif
 
-	If ((isInfectedByString( kActor,  "TentacleMonster" )) || (isInfectedByString( kActor,  "FaceHugger" )) )
+	If ((isInfectedByString( kActor,  "LivingArmor" )) || (isInfectedByString( kActor,  "Barnacles" )) || (isInfectedByString( kActor,  "FaceHugger" )) || (isInfectedByString( kActor,  "TentacleMonster" )) || (isInfectedByString( kActor,  "ChaurusQueenSkin" )) || (isInfectedByString( kActor,  "ChaurusQueenArmor" )) || (isInfectedByString( kActor,  "ChaurusQueenBody" )) )
 		Debug.Trace("[SLP]	Already infected - Aborting")
 		Return False
 	Endif
@@ -1504,7 +1504,7 @@ Bool Function infectLivingArmor( Actor kActor  )
 		Return False
 	Endif
 
-	If ((isInfectedByString( kActor,  "LivingArmor" )) || (isInfectedByString( kActor,  "FaceHugger" )) )
+	If ((isInfectedByString( kActor,  "LivingArmor" )) || (isInfectedByString( kActor,  "Barnacles" )) || (isInfectedByString( kActor,  "FaceHugger" )) || (isInfectedByString( kActor,  "TentacleMonster" )) || (isInfectedByString( kActor,  "ChaurusQueenSkin" )) || (isInfectedByString( kActor,  "ChaurusQueenArmor" )) || (isInfectedByString( kActor,  "ChaurusQueenBody" )) )		
 		Debug.Trace("[SLP]	Already infected - Aborting")
 		Return False
 	Endif
@@ -1601,7 +1601,8 @@ Bool Function infectFaceHugger( Actor kActor  )
 		Return False
 	Endif
 
-	If (( isInfectedByString( kActor,  "FaceHugger" )) || (isInfectedByString( kActor,  "LivingArmor" )) || (isInfectedByString( kActor,  "TentacleMonster" )) )
+	If ((isInfectedByString( kActor,  "LivingArmor" )) || (isInfectedByString( kActor,  "Barnacles" )) || (isInfectedByString( kActor,  "FaceHugger" )) || (isInfectedByString( kActor,  "TentacleMonster" )) || (isInfectedByString( kActor,  "ChaurusQueenSkin" )) || (isInfectedByString( kActor,  "ChaurusQueenArmor" )) || (isInfectedByString( kActor,  "ChaurusQueenBody" )) )
+
 		Debug.Trace("[SLP]	Already infected - Aborting")
 		Return False
 	Endif
@@ -1791,8 +1792,7 @@ Bool Function infectBarnacles( Actor kActor  )
 		Return False
 	Endif
 
-	If (isInfectedByString( kActor,  "Barnacles" ))
-		Debug.Trace("[SLP]	Already infected - Aborting")
+	If ((isInfectedByString( kActor,  "LivingArmor" )) || (isInfectedByString( kActor,  "Barnacles" )) || (isInfectedByString( kActor,  "FaceHugger" )) || (isInfectedByString( kActor,  "TentacleMonster" )) || (isInfectedByString( kActor,  "ChaurusQueenSkin" )) || (isInfectedByString( kActor,  "ChaurusQueenArmor" )) || (isInfectedByString( kActor,  "ChaurusQueenBody" )) )
 		Return False
 	Endif
 
@@ -2113,7 +2113,7 @@ Bool Function infectChaurusQueenSkin( Actor kActor  )
 		Return False
 	Endif
 
-	If ((isInfectedByString( kActor,  "ChaurusQueenSkin" )) || (isInfectedByString( kActor,  "FaceHugger" )) )
+	If ((isInfectedByString( kActor,  "LivingArmor" )) || (isInfectedByString( kActor,  "Barnacles" )) || (isInfectedByString( kActor,  "FaceHugger" )) || (isInfectedByString( kActor,  "TentacleMonster" )) || (isInfectedByString( kActor,  "ChaurusQueenSkin" )) || (isInfectedByString( kActor,  "ChaurusQueenArmor" )) || (isInfectedByString( kActor,  "ChaurusQueenBody" )) )
 		Debug.Trace("[SLP]	Already infected - Aborting")
 		Return False
 	Endif
@@ -2219,7 +2219,7 @@ Bool Function infectChaurusQueenArmor( Actor kActor  )
 		Return False
 	Endif
 
-	If ((isInfectedByString( kActor,  "ChaurusQueenArmor" )) || (isInfectedByString( kActor,  "FaceHugger" )) )
+	If ((isInfectedByString( kActor,  "LivingArmor" )) || (isInfectedByString( kActor,  "Barnacles" )) || (isInfectedByString( kActor,  "FaceHugger" )) || (isInfectedByString( kActor,  "TentacleMonster" )) || (isInfectedByString( kActor,  "ChaurusQueenSkin" )) || (isInfectedByString( kActor,  "ChaurusQueenArmor" )) || (isInfectedByString( kActor,  "ChaurusQueenBody" )) )
 		Debug.Trace("[SLP]	Already infected - Aborting")
 		Return False
 	Endif
@@ -2331,7 +2331,7 @@ Bool Function infectChaurusQueenBody( Actor kActor  )
 		Return False
 	Endif
 
-	If ((isInfectedByString( kActor,  "ChaurusQueenBody" )) || (isInfectedByString( kActor,  "FaceHugger" )) )
+	If ((isInfectedByString( kActor,  "LivingArmor" )) || (isInfectedByString( kActor,  "Barnacles" )) || (isInfectedByString( kActor,  "FaceHugger" )) || (isInfectedByString( kActor,  "TentacleMonster" )) || (isInfectedByString( kActor,  "ChaurusQueenSkin" )) || (isInfectedByString( kActor,  "ChaurusQueenArmor" )) || (isInfectedByString( kActor,  "ChaurusQueenBody" )) )
 		Debug.Trace("[SLP]	Already infected - Aborting")
 		Return False
 	Endif

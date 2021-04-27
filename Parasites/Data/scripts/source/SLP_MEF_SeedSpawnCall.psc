@@ -5,6 +5,8 @@ SLP_fcts_parasites Property fctParasites  Auto
 Quest Property QueenOfChaurusQuest  Auto 
 ObjectReference Property pocketDimensionRef Auto
 
+Faction Property ChaurusQueenSpawnFaction Auto
+
 Activator Property arPortalFX Auto 
 Sound Property SummonSoundFX  Auto
 
@@ -44,6 +46,7 @@ Event OnEffectStart(Actor Target, Actor Caster)
 			if (kChaurusSpawn != None)
 				debug.trace("[SLP] Adding actor to _SLP_lChaurusSpawnsList - " + kChaurusSpawn )
 				StorageUtil.FormListSet( none, "_SLP_lChaurusSpawnsList", i, kChaurusSpawn as Form )
+				kChaurusSpawn.AddToFaction(ChaurusQueenSpawnFaction)
 			else
 				debug.trace("[SLP]    Problem with fctParasites.getRandomChaurusSpawn - returned a None actor" )
 			endif
@@ -63,6 +66,7 @@ Event OnEffectStart(Actor Target, Actor Caster)
 				endif
 
 				summonChaurusSpawn(thisActorRef)
+				thisActor.AddToFaction(ChaurusQueenSpawnFaction)
 			endif
 
 		endif
