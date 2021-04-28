@@ -607,9 +607,9 @@ Bool Function isInfectedByString( Actor akActor,  String sParasite  )
 
 	; By order of complexity
 
-	if (akActor && sParasite && (StorageUtil.GetIntValue(akActor, "_SLP_iHiddenParasiteCount")>0))
+	if (akActor && sParasite && (StorageUtil.GetIntValue(akActor, "_SLP_toggle" + sParasite)==1) )
 		isInfected = True
-		
+
 	elseif (akActor && sParasite && (StorageUtil.GetIntValue(akActor, "_SLP_iHiddenParasite_" + sParasite)==1) )
 		isInfected = True
 

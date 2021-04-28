@@ -375,7 +375,11 @@ Event OnUpdate()
 		endif
 
 		if (PlayerActor.IsSwimming()) && (!PlayerActor.IsInCombat())
-			debug.notification("Player is swimming...")
+			; debug.notification("Player is swimming...")
+			if (StorageUtil.GetIntValue(PlayerActor, "_SLP_lastSwimDate")!= daysPassed)
+				StorageUtil.SetIntValue(PlayerActor, "_SLP_lastSwimDate", daysPassed)
+			endif
+
 			If (!fctParasites.ActorHasKeywordByString(PlayerActor, "Belt")) && (!fctParasites.ActorHasKeywordByString(PlayerActor, "Plug"))
 				if (Utility.RandomInt(1,100)<= (fChanceLivingArmor as Int) )
 					; PlayerActor.SendModEvent("SLPInfectChaurusWorm")
