@@ -11,7 +11,7 @@ Event OnEffectStart(Actor Target, Actor Caster)
  	Int iRandumNum = Utility.RandomInt(0,100)
  	Bool bHarvestParasite = False
 
-	Debug.Notification("[SLP] SLP_MEF_ParasiteRepellent ON - " + iRandumNum)
+	; Debug.Notification("[SLP] SLP_MEF_ParasiteRepellent ON - " + iRandumNum)
 
 	if (Target==kPlayer)
         Debug.SendAnimationEvent(kPlayer as ObjectReference, "bleedOutStart")
