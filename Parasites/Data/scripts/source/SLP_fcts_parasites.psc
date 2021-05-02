@@ -82,6 +82,7 @@ Potion Property SLP_CritterSemen Auto
 Keyword Property ArmorCuirass  Auto  
 Keyword Property ClothingBody  Auto  
 
+Keyword Property _SLP_Parasite  Auto  
 Keyword Property _SLP_ParasiteSpiderEgg  Auto  
 Keyword Property _SLP_ParasiteSpiderPenis  Auto  
 Keyword Property _SLP_ParasiteChaurusWorm  Auto  
@@ -602,6 +603,18 @@ Bool Function ActorHasKeywordByString(actor akActor, String deviousKeyword = "")
 	return libs.ActorHasKeyword(akActor, getDeviousKeywordByString( deviousKeyword ))
 EndFunction
 
+Bool Function isInfected( Actor akActor )
+	Bool isInfected = False
+
+	; By order of complexity
+
+	if (akActor && akActor.WornHasKeyword(_SLP_Parasite) )
+		isInfected = True
+	Endif
+
+	Return isInfected
+EndFunction
+
 Bool Function isInfectedByString( Actor akActor,  String sParasite  )
 	Bool isInfected = False
 
@@ -861,6 +874,11 @@ Function cureSpiderEgg( Actor kActor, String _args, Bool bHarvestParasite = Fals
   	if (kActor == None)
   		kActor = PlayerActor
   	endIf
+
+  	If (isInfectedByString( kActor,  "SpiderPenis" )) 
+  		; The spider penis is blocking the eggs
+  		return
+  	endif
  
 	If (isInfectedByString( kActor,  "SpiderEgg" ))
 		iNumSpiderEggsRemoved = Utility.RandomInt(2,8)
