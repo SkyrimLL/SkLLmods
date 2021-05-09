@@ -6,6 +6,7 @@ Scriptname SLP_aliasBarnacles extends ReferenceAlias
 SLP_fcts_parasites Property fctParasites  Auto
 
 Spell Property DLC2ExpSpiderShockCloakAb Auto
+Spell Property MassParalysis Auto
 
 Event OnCombatStateChanged(Actor akTarget, int aeCombatState)
 	Actor kPlayer= Game.GetPlayer() as Actor
@@ -51,11 +52,11 @@ Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile,
 		;  Debug.Trace("We were hit by " + akAggressor)
 		; Debug.Notification("." )
 
-		If (Utility.RandomInt(0,100)>90)  
+		If (Utility.RandomInt(0,100)>80)  
 			Debug.Trace("[SLP_aliasBarnacles] Cast Poison cloak" )
 			Debug.Notification("The spores release a poisonous cloud." )
 
-			DLC2ExpSpiderShockCloakAb.Cast(kPlayer as ObjectReference , kPlayer as ObjectReference ) 
+			MassParalysis.Cast(kPlayer as ObjectReference ,  kPlayer as ObjectReference ) 
 			
 		endif
 	EndIf

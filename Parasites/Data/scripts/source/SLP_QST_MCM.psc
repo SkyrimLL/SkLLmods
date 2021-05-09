@@ -1019,8 +1019,40 @@ state STATE_CHAURUSQUEENDEBUG_TOGGLE ; TOGGLE
 
 		If (toggle ==1)
 			Debug.MessageBox("The options to manually add or remove the Queen of Churus armor elements should be used for testing purposes only. They may break the main quest if you use them too early.") 
+
+			; Debug mode - allow all Chaurus Queen pieces
+			StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceChaurusQueenVag", 100.0 )
+			StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceChaurusQueenGag", 100.0 )
+			StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceChaurusQueenSkin", 100.0 )
+			StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceChaurusQueenArmor", 100.0 )
+			StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceChaurusQueenBody", 100.0 )
 		else
 			Debug.MessageBox("Chaurus Queen Debug override is disabled") 
+
+			; Normal mode - recalculate probabilities based on quest stage
+			Int  iChaurusQueenStage = StorageUtil.GetIntValue(kPlayer, "_SLP_iChaurusQueenStage")
+
+			StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceChaurusQueenVag", 0.0 )
+			StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceChaurusQueenGag", 0.0 )
+			StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceChaurusQueenSkin", 0.0 )
+			StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceChaurusQueenArmor", 0.0 )
+			StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceChaurusQueenBody", 0.0 )
+
+			if (iChaurusQueenStage>=1)
+				if (iChaurusQueenStage>=2)
+					StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceChaurusQueenVag", 100.0 )
+				endif
+				if (iChaurusQueenStage>=3)
+					StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceChaurusQueenSkin", 100.0 )
+				endif
+				if (iChaurusQueenStage>=4)
+					StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceChaurusQueenGag", 100.0 )
+					StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceChaurusQueenArmor", 100.0 )
+				endif
+				if (iChaurusQueenStage>=5)
+					StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceChaurusQueenBody", 100.0 )
+				endif
+			endif
 		Endif
 
 		SetToggleOptionValueST( toggle as Bool )

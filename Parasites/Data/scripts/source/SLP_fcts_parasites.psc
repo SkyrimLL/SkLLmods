@@ -2796,7 +2796,7 @@ Bool Function tryParasiteNextStage(Actor kActor, String sParasite)
 			Return bSuccess; Player is busy - try again later
  		Endif
 
-		If (sParasite == "ChaurusQueen") && (QueenOfChaurusQuest.GetStageDone(290))
+		If (sParasite == "ChaurusQueen") && (QueenOfChaurusQuest.GetStageDone(290) && (!QueenOfChaurusQuest.GetStageDone(400)) )
 			Int itriggerNextStageChaurusQueen = StorageUtil.GetIntValue(kActor, "_SLP_triggerNextStageChaurusQueen") +  (iChaurusQueenStage * 10)
 			debug.trace("[SLP]    itriggerNextStageChaurusQueen = " + itriggerNextStageChaurusQueen)
 
@@ -3172,7 +3172,7 @@ Function tryCharmChaurus(Actor Target)
 		    Target.SetPlayerTeammate(true )
 			ChaurusFollowerAlias.ForceRefTo(Target as objectReference)
 			_SLP_GV_numCharmChaurus.Mod(1.0)
-			Debug.Notification("[SLP] Charm Chaurus" )
+			; Debug.Notification("[SLP] Charm Chaurus" )
 			StorageUtil.SetIntValue(kPlayer, "_SLP_iChaurusCharmON", 1)
 			Utility.Wait(1.0)
 
@@ -3194,7 +3194,7 @@ Function tryCharmChaurus(Actor Target)
 		endif
 
 	else
-		Debug.Notification("[SLP] Charm Chaurus - Failed" )
+		; Debug.Notification("[SLP] Charm Chaurus - Failed" )
 		Debug.Trace("[SLP] Charm Chaurus - Failed" )
 		Debug.Trace("[SLP]       iCharmThreshold: " + iCharmThreshold)
 		Debug.Trace("[SLP]       checkIfChaurus: " + fctUtils.checkIfChaurus ( Target ))

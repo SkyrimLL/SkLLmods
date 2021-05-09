@@ -75,12 +75,29 @@ EndEvent
 Function _maintenance()
  	Actor PlayerActor= Game.GetPlayer() as Actor
  	ActorBase pActorBase = PlayerActor.GetActorBase()
+ 	iChaurusQueenStage = StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusQueenStage")
 
 	fctParasites.maintenance()
 
 	; Set Seed Stone ritual to today if missing
-	if (StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusQueenStage")==1) && (StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusQueenDate")==0)
+	if (iChaurusQueenStage==1) && (StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusQueenDate")==0)
 		StorageUtil.SetIntValue(PlayerActor, "_SLP_iChaurusQueenDate", Game.QueryStat("Days Passed"))
+	endif
+
+	if (iChaurusQueenStage>=1)
+		if (iChaurusQueenStage>=2)
+			StorageUtil.SetFloatValue(PlayerActor, "_SLP_chanceChaurusQueenVag", 100.0 )
+		endif
+		if (iChaurusQueenStage>=3)
+			StorageUtil.SetFloatValue(PlayerActor, "_SLP_chanceChaurusQueenSkin", 100.0 )
+		endif
+		if (iChaurusQueenStage>=4)
+			StorageUtil.SetFloatValue(PlayerActor, "_SLP_chanceChaurusQueenGag", 100.0 )
+			StorageUtil.SetFloatValue(PlayerActor, "_SLP_chanceChaurusQueenArmor", 100.0 )
+		endif
+		if (iChaurusQueenStage>=5)
+			StorageUtil.SetFloatValue(PlayerActor, "_SLP_chanceChaurusQueenBody", 100.0 )
+		endif
 	endif
 
 	; Set flags about known methods to remove parasites

@@ -8,6 +8,8 @@ SLP_fcts_parasites Property fctParasites  Auto
 
 Spell Property StoneFlesh Auto
 Spell Property DA02PoisonCloakDmg Auto
+Spell Property MassParalysis Auto
+Spell Property SchockCloak Auto
 
 Event OnCombatStateChanged(Actor akTarget, int aeCombatState)
 	Actor kPlayer= Game.GetPlayer() as Actor
@@ -55,13 +57,13 @@ Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile,
 
 		If (Utility.RandomInt(0,100)>97)  
 			Debug.Trace("[SLP_aliasLivingArmor] Cast stone flesh" )
-			Debug.MessageBox("The creature wraps you with a protective layer of slime." )
+			Debug.Notification("The creature wraps you with a protective layer of slime." )
 			StoneFlesh.Cast(kPlayer as ObjectReference , kPlayer as ObjectReference ) 
 
-		elseIf (Utility.RandomInt(0,100)>94)  
+		elseIf (Utility.RandomInt(0,100)>90)  
 			Debug.Trace("[SLP_aliasLivingArmor] Cast Poison cloak" )
-			Debug.MessageBox("The creature releses a poisonous gas." )
-			DA02PoisonCloakDmg.Cast(kPlayer as ObjectReference , kPlayer as ObjectReference ) 
+			Debug.Notification("The creature releases a surge of electricity." )
+			SchockCloak.Cast(kPlayer as ObjectReference , kPlayer as ObjectReference ) 
 			
 		endif
 	EndIf
