@@ -85,13 +85,7 @@ Bool Function infectFaceHugger( Actor kActor  )
 		Return False
 	Endif
 
-	If ((isInfectedByString( kActor,  "LivingArmor" )) || (isInfectedByString( kActor,  "Barnacles" )) || (isInfectedByString( kActor,  "FaceHugger" )) || (isInfectedByString( kActor,  "TentacleMonster" )) || (isInfectedByString( kActor,  "ChaurusQueenSkin" )) || (isInfectedByString( kActor,  "ChaurusQueenArmor" )) || (isInfectedByString( kActor,  "ChaurusQueenBody" )) )
-
-		Debug.Trace("[SLP]	Already infected - Aborting")
-		Return False
-	Endif
-
-	If (ActorHasKeywordByString( kActor, "Belt"  ))
+	If (fctDevious.ActorHasKeywordByString( kActor, "Belt"  )) || (fctDevious.ActorHasKeywordByString( kActor, "Harness"  ))
 		Debug.Trace("[SLP]	Already wearing a belt - Aborting")
 		Return False
 	Endif
@@ -188,7 +182,7 @@ Bool Function infectFaceHuggerGag( Actor kActor  )
 		Return False
 	Endif
 
-	If (ActorHasKeywordByString( kActor, "Gag"  ))
+	If (fctDevious.ActorHasKeywordByString( kActor, "Gag"  ))
 		Debug.Trace("[SLP]	Already wearing a gag - Aborting")
 		Return False
 	Endif
@@ -263,7 +257,7 @@ EndFunction
 Function refreshParasite(Actor kActor, String sParasite)
 
 	If (sParasite == "FaceHugger")
-		If (isInfectedByString( kActor,  "FaceHugger" )) && (!ActorHasKeywordByString( kActor, "Belt"  ))
+		If (isInfectedByString( kActor,  "FaceHugger" )) && (!fctDevious.ActorHasKeywordByString( kActor, "Belt"  ))
 			StorageUtil.SetIntValue(kActor, "_SLP_toggleFaceHugger", 1)
 			equipParasiteNPCByString (kActor, "FaceHugger")
 
@@ -273,7 +267,7 @@ Function refreshParasite(Actor kActor, String sParasite)
 		Endif
 
 	ElseIf (sParasite == "FaceHuggerGag")
-		If (isInfectedByString( kActor,  "FaceHuggerGag" )) && (!ActorHasKeywordByString( kActor, "Gag"  ))
+		If (isInfectedByString( kActor,  "FaceHuggerGag" )) && (!fctDevious.ActorHasKeywordByString( kActor, "Gag"  ))
 			StorageUtil.SetIntValue(kActor, "_SLP_toggleFaceHuggerGag", 1)
 			equipParasiteNPCByString (kActor, "FaceHuggerGag")
 

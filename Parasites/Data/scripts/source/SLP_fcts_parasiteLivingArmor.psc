@@ -71,14 +71,9 @@ Bool Function infectLivingArmor( Actor kActor  )
 	If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceLivingArmor" )==0.0)
 		Debug.Trace("[SLP]	Parasite disabled - Aborting")
 		Return False
-	Endif
+	Endif 
 
-	If ((isInfectedByString( kActor,  "LivingArmor" )) || (isInfectedByString( kActor,  "Barnacles" )) || (isInfectedByString( kActor,  "FaceHugger" )) || (isInfectedByString( kActor,  "TentacleMonster" )) || (isInfectedByString( kActor,  "ChaurusQueenSkin" )) || (isInfectedByString( kActor,  "ChaurusQueenArmor" )) || (isInfectedByString( kActor,  "ChaurusQueenBody" )) )		
-		Debug.Trace("[SLP]	Already infected - Aborting")
-		Return False
-	Endif
-
-	If (ActorHasKeywordByString( kActor, "Harness"  ))
+	If (fctDevious.ActorHasKeywordByString( kActor, "Harness"  ))
 		Debug.Trace("[SLP]	Already wearing a corset - Aborting")
 		Return False
 	Endif
@@ -157,7 +152,7 @@ EndFunction
 Function refreshParasite(Actor kActor, String sParasite)
 
 	If (sParasite == "LivingArmor")
-		If (isInfectedByString( kActor,  "LivingArmor" )) && (!ActorHasKeywordByString( kActor, "Harness"  )) && (!ActorHasKeywordByString( kActor, "Corset"  ))
+		If (isInfectedByString( kActor,  "LivingArmor" )) && (!fctDevious.ActorHasKeywordByString( kActor, "Harness"  )) && (!fctDevious.ActorHasKeywordByString( kActor, "Corset"  ))
 			StorageUtil.SetIntValue(kActor, "_SLP_toggleLivingArmor", 1)
 			equipParasiteNPCByString (kActor, "LivingArmor")
 

@@ -92,7 +92,7 @@ Bool Function infectChaurusWorm( Actor kActor  )
 		Return False
 	Endif
 
-	If (ActorHasKeywordByString( kActor, "PlugAnal"  ))
+	If (fctDevious.ActorHasKeywordByString( kActor, "PlugAnal"  ))
 		Debug.Trace("[SLP]	Already wearing an anal plug - Aborting")
 		Return False
 	Endif
@@ -187,7 +187,7 @@ Bool Function infectChaurusWormVag( Actor kActor  )
 		Return False
 	Endif
 
-	If (ActorHasKeywordByString( kActor, "PlugVaginal"  ))
+	If (fctDevious.ActorHasKeywordByString( kActor, "PlugVaginal"  ))
 		Debug.Trace("[SLP]	Already wearing a vaginal plug - Aborting")
 		Return False
 	Endif
@@ -269,7 +269,7 @@ EndFunction
 Function refreshParasite(Actor kActor, String sParasite)
 
 	If (sParasite == "ChaurusWorm")
-		If (isInfectedByString( kActor,  "ChaurusWorm" )) && (!ActorHasKeywordByString( kActor, "PlugAnal"  ))
+		If (isInfectedByString( kActor,  "ChaurusWorm" )) && (!fctDevious.ActorHasKeywordByString( kActor, "PlugAnal"  ))
 			StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusWorm", 1)
 			equipParasiteNPCByString (kActor, "ChaurusWorm")
 
@@ -279,7 +279,7 @@ Function refreshParasite(Actor kActor, String sParasite)
 		Endif
 
 	ElseIf (sParasite == "ChaurusWormVag")
-		If (isInfectedByString( kActor,  "ChaurusWormVag" )) && (!ActorHasKeywordByString( kActor, "PlugVaginal"  ))
+		If (isInfectedByString( kActor,  "ChaurusWormVag" )) && (!fctDevious.ActorHasKeywordByString( kActor, "PlugVaginal"  ))
 			StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusWormVag", 1)
 			equipParasiteNPCByString (kActor, "ChaurusWormVag")
 

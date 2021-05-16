@@ -53,7 +53,7 @@ Bool Function infectEstrusTentacles( Actor kActor  )
 	Endif
 	
 
-	If (!ActorHasKeywordByString(kActor,  "PlugVaginal")) && (!ActorHasKeywordByString(kActor,  "Harness")) && (!isInfectedByString( kActor,  "TentacleMonster" )) && (Utility.RandomInt(1,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceTentacleMonster" )))
+	If (!fctDevious.ActorHasKeywordByString(kActor,  "PlugVaginal")) && (!fctDevious.ActorHasKeywordByString(kActor,  "Harness")) && (Utility.RandomInt(1,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceTentacleMonster" )))
 			; PlayerActor.SendModEvent("SLPInfectTentacleMonster")
 			fctParasiteTentacleMonster.infectTentacleMonster(kActor)
 
@@ -64,8 +64,8 @@ Bool Function infectEstrusTentacles( Actor kActor  )
 			endif
 	Else
 		Debug.Trace("[SLP]Estrust Tentacles / Tentacle Monster infection failed")
-		Debug.Trace("[SLP]  Vaginal Plug: " + ActorHasKeywordByString(kActor,  "PlugVaginal"))
-		Debug.Trace("[SLP]  TentacleMonster: " + isInfectedByString( kActor,  "TentacleMonster" ))
+		Debug.Trace("[SLP]  Vaginal Plug: " + fctDevious.ActorHasKeywordByString(kActor,  "PlugVaginal")) 
+		Debug.Trace("[SLP]  Harness: " + fctDevious.ActorHasKeywordByString(kActor,  "Harness")) 
 		Debug.Trace("[SLP]  Chance infection: " + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceTentacleMonster" ))
 	EndIf
 
@@ -139,7 +139,7 @@ Bool Function infectEstrusSlime( Actor kActor  )
 	Endif
 	
 
-	If (!ActorHasKeywordByString(kActor,  "Harness")) && (!isInfectedByString( kActor,  "LivingArmor" )) && (Utility.RandomInt(1,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceLivingArmor" )))
+	If (!fctDevious.ActorHasKeywordByString(kActor,  "Harness")) && (Utility.RandomInt(1,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceLivingArmor" )))
 			; PlayerActor.SendModEvent("SLPInfectLivingArmor")
 			fctParasiteLivingArmor.infectLivingArmor(kActor)
 			if (kActor==PlayerActor)
@@ -149,8 +149,7 @@ Bool Function infectEstrusSlime( Actor kActor  )
 			endif
 	Else
 		Debug.Trace("[SLP]Estrust Slime infection failed")
-		Debug.Trace("[SLP]  Harness: " + ActorHasKeywordByString(kActor,  "Harness"))
-		Debug.Trace("[SLP]  LivingArmor: " + isInfectedByString( kActor,  "LivingArmor" ))
+		Debug.Trace("[SLP]  Harness: " + fctDevious.ActorHasKeywordByString(kActor,  "Harness")) 
 		Debug.Trace("[SLP]  Chance infection: " + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceLivingArmor" ))
 	EndIf
 

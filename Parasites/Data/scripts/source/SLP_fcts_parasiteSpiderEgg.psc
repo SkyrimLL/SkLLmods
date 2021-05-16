@@ -95,7 +95,7 @@ Bool Function infectSpiderEgg( Actor kActor )
 		Return False
 	Endif
 
-	If (ActorHasKeywordByString( kActor, "PlugVaginal"  ))
+	If (fctDevious.ActorHasKeywordByString( kActor, "PlugVaginal"  ))
 		Debug.Trace("[SLP]	Already wearing a vaginal plug - Aborting")
 		Return False
 	Endif
@@ -232,7 +232,7 @@ Function cureSpiderEggAll( Actor kActor, Bool bHarvestParasite = False   )
 		If (kActor == PlayerActor)
 			SpiderEggInfectedAlias.ForceRefTo(DummyAlias)
 		endIf
-		
+
 		iNumSpiderEggs = 0
 		StorageUtil.SetIntValue(kActor, "_SLP_iSpiderEggCount", 0 )
 
@@ -280,7 +280,7 @@ Bool Function infectSpiderPenis( Actor kActor  )
 		Return False
 	Endif
 
-	If (ActorHasKeywordByString( kActor, "PlugVaginal"  ))
+	If (fctDevious.ActorHasKeywordByString( kActor, "PlugVaginal"  ))
 		Debug.Trace("[SLP]	Already wearing a vaginal plug - Aborting")
 		Return False
 	Endif
@@ -368,7 +368,7 @@ EndFunction
 Function refreshParasite(Actor kActor, String sParasite)
 
 	If (sParasite == "SpiderPenis")
-		If (isInfectedByString( kActor,  "SpiderPenis" )) && (!ActorHasKeywordByString( kActor, "PlugVaginal")) 
+		If (isInfectedByString( kActor,  "SpiderPenis" )) && (!fctDevious.ActorHasKeywordByString( kActor, "PlugVaginal")) 
 			StorageUtil.SetIntValue(kActor, "_SLP_toggleSpiderPenis", 1)
 			equipParasiteNPCByString (kActor, "SpiderPenis")
 
@@ -378,7 +378,7 @@ Function refreshParasite(Actor kActor, String sParasite)
 		Endif
 
 	ElseIf (sParasite == "SpiderEgg")
-		If (isInfectedByString( kActor,  "SpiderEgg" )) && (!ActorHasKeywordByString( kActor, "PlugVaginal"  ))
+		If (isInfectedByString( kActor,  "SpiderEgg" )) && (!fctDevious.ActorHasKeywordByString( kActor, "PlugVaginal"  ))
 			StorageUtil.SetIntValue(kActor, "_SLP_toggleSpiderEgg", 1)
 			equipParasiteNPCByString (kActor, "SpiderEgg")
 

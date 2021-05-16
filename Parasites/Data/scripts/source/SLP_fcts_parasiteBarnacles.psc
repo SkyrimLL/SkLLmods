@@ -70,11 +70,7 @@ Bool Function infectBarnacles( Actor kActor  )
 		Return False
 	Endif
 
-	If ((isInfectedByString( kActor,  "LivingArmor" )) || (isInfectedByString( kActor,  "Barnacles" )) || (isInfectedByString( kActor,  "FaceHugger" )) || (isInfectedByString( kActor,  "TentacleMonster" )) || (isInfectedByString( kActor,  "ChaurusQueenSkin" )) || (isInfectedByString( kActor,  "ChaurusQueenArmor" )) || (isInfectedByString( kActor,  "ChaurusQueenBody" )) )
-		Return False
-	Endif
-
-	If ((ActorHasKeywordByString( kActor, "Harness"  )) || (ActorHasKeywordByString( kActor, "Corset"  )) )
+	If ((fctDevious.ActorHasKeywordByString( kActor, "Harness"  )) || (fctDevious.ActorHasKeywordByString( kActor, "Corset"  )) )
 		Debug.Trace("[SLP]	Already wearing a corset - Aborting")
 		Return False
 	Endif
@@ -153,7 +149,7 @@ EndFunction
 Function refreshParasite(Actor kActor, String sParasite)
 
 	If (sParasite == "Barnacles")
-		If (isInfectedByString( kActor,  "Barnacles" )) && (!ActorHasKeywordByString( kActor, "Harness"  )) && (!ActorHasKeywordByString( kActor, "Corset"  ))
+		If (isInfectedByString( kActor,  "Barnacles" )) && (!fctDevious.ActorHasKeywordByString( kActor, "Harness"  )) && (!fctDevious.ActorHasKeywordByString( kActor, "Corset"  ))
 			StorageUtil.SetIntValue(kActor, "_SLP_toggleBarnacles", 1)
 			equipParasiteNPCByString (kActor, "Barnacles")
 

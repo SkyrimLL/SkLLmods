@@ -161,7 +161,7 @@ Bool Function infectChaurusQueenVag( Actor kActor  )
 		Return False
 	Endif
 
-	If (ActorHasKeywordByString( kActor, "PlugVaginal"  ))
+	If (fctDevious.ActorHasKeywordByString( kActor, "PlugVaginal"  ))
 		Debug.Trace("[SLP]	Already wearing a vaginal plug - Aborting")
 		Return False
 	Endif
@@ -269,7 +269,7 @@ Bool Function infectChaurusQueenGag( Actor kActor  )
 		Return False
 	Endif
 
-	If (ActorHasKeywordByString( kActor, "Gag"  ))
+	If (fctDevious.ActorHasKeywordByString( kActor, "Gag"  ))
 		Debug.Trace("[SLP]	Already wearing a gag - Aborting")
 		Return False
 	Endif
@@ -360,14 +360,9 @@ Bool Function infectChaurusQueenSkin( Actor kActor  )
 	If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceChaurusQueenSkin" )==0.0)
 		Debug.Trace("[SLP]	Parasite disabled - Aborting")
 		Return False
-	Endif
+	Endif 
 
-	If ((isInfectedByString( kActor,  "LivingArmor" )) || (isInfectedByString( kActor,  "Barnacles" )) || (isInfectedByString( kActor,  "FaceHugger" )) || (isInfectedByString( kActor,  "TentacleMonster" )) || (isInfectedByString( kActor,  "ChaurusQueenSkin" )) || (isInfectedByString( kActor,  "ChaurusQueenArmor" )) || (isInfectedByString( kActor,  "ChaurusQueenBody" )) )
-		Debug.Trace("[SLP]	Already infected - Aborting")
-		Return False
-	Endif
-
-	If ( (ActorHasKeywordByString( kActor, "Harness"  )) || (ActorHasKeywordByString( kActor, "Bra"  )))
+	If ( (fctDevious.ActorHasKeywordByString( kActor, "Harness"  )) || (fctDevious.ActorHasKeywordByString( kActor, "Bra"  )))
 		Debug.Trace("[SLP]	Already wearing a harness- Aborting")
 		Return False
 	Endif
@@ -467,13 +462,9 @@ Bool Function infectChaurusQueenArmor( Actor kActor  )
 		Debug.Trace("[SLP]	Parasite disabled - Aborting")
 		Return False
 	Endif
+ 
 
-	If ((isInfectedByString( kActor,  "LivingArmor" )) || (isInfectedByString( kActor,  "Barnacles" )) || (isInfectedByString( kActor,  "FaceHugger" )) || (isInfectedByString( kActor,  "TentacleMonster" )) || (isInfectedByString( kActor,  "ChaurusQueenSkin" )) || (isInfectedByString( kActor,  "ChaurusQueenArmor" )) || (isInfectedByString( kActor,  "ChaurusQueenBody" )) )
-		Debug.Trace("[SLP]	Already infected - Aborting")
-		Return False
-	Endif
-
-	If ( (ActorHasKeywordByString( kActor, "Harness"  )) || (ActorHasKeywordByString( kActor, "Bra"  )))
+	If ( (fctDevious.ActorHasKeywordByString( kActor, "Harness"  )) || (fctDevious.ActorHasKeywordByString( kActor, "Bra"  )))
 		Debug.Trace("[SLP]	Already wearing a harness- Aborting")
 		Return False
 	Endif
@@ -578,14 +569,9 @@ Bool Function infectChaurusQueenBody( Actor kActor  )
 	If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceChaurusQueenBody" )==0.0)
 		Debug.Trace("[SLP]	Parasite disabled - Aborting")
 		Return False
-	Endif
+	Endif 
 
-	If ((isInfectedByString( kActor,  "LivingArmor" )) || (isInfectedByString( kActor,  "Barnacles" )) || (isInfectedByString( kActor,  "FaceHugger" )) || (isInfectedByString( kActor,  "TentacleMonster" )) || (isInfectedByString( kActor,  "ChaurusQueenSkin" )) || (isInfectedByString( kActor,  "ChaurusQueenArmor" )) || (isInfectedByString( kActor,  "ChaurusQueenBody" )) )
-		Debug.Trace("[SLP]	Already infected - Aborting")
-		Return False
-	Endif
-
-	If ( (ActorHasKeywordByString( kActor, "Harness"  )) || (ActorHasKeywordByString( kActor, "Bra"  )))
+	If ( (fctDevious.ActorHasKeywordByString( kActor, "Harness"  )) || (fctDevious.ActorHasKeywordByString( kActor, "Bra"  )))
 		Debug.Trace("[SLP]	Already wearing a harness- Aborting")
 		Return False
 	Endif
