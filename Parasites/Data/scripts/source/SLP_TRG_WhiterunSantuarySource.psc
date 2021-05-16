@@ -18,8 +18,9 @@ Event OnContainerChanged(ObjectReference akNewContainer, ObjectReference akOldCo
 
 		 	CorruptionOffSpell.cast(WhiterunSancturaryCorruptionActivator, akNewContainer)
 		 	WhiterunSancturaryCorruptionMarker.disable()
+ 
+		 	fctParasites.infectParasiteByString(akPlayer, "EstrusChaurusEgg")
 
-		 	fctParasites.infectEstrusChaurusEgg( akPlayer , False )
 
 		 	QueenOfChaurusQuest.SetStage(255) 
 		 	; checkpoint flag to mark the end of corruption of the temple

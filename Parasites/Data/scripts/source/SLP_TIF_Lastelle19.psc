@@ -6,9 +6,9 @@ Scriptname SLP_TIF_Lastelle19 Extends TopicInfo Hidden
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
-self.GetOwningQuest().setstage(19)
-fctParasites.infectEstrusTentacles( akSpeaker )
-fctParasites.infectEstrusChaurusEgg( akSpeaker )
+self.GetOwningQuest().setstage(19) 
+fctParasites.infectParasiteByString(akSpeaker, "EstrusTentacles")
+fctParasites.infectParasiteByString(akSpeaker, "ChaurusEgg")
 ;END CODE
 EndFunction
 ;END FRAGMENT

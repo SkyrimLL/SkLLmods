@@ -62,8 +62,8 @@ Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile,
 
 			elseIf (Utility.RandomInt(0,100)>94)  
 				Debug.Trace("[SLP_aliasTentacleMonster] Cast Tentacle attack spell" )
-				Debug.Notification("The Voices extend their reach to your aggressor." )
-				fctParasites.infectEstrusTentacles( akAggressor as Actor )
+				Debug.Notification("The Voices extend their reach to your aggressor." ) 
+				fctParasites.infectParasiteByString(akAggressor as Actor , "EstrusTentacles")
 
 			endif
 		EndIf

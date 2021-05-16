@@ -12,6 +12,7 @@ Race Property ChaurusRace  Auto
 Race Property SpiderRace  Auto
 Race Property SpiderLargeRace  Auto
 
+Keyword Property _SLP_Parasite  Auto  
 
 ImageSpaceModifier Property FalmerBlueImod  Auto  
 
@@ -47,6 +48,21 @@ int Property MAX_MORPHS = 19 AutoReadOnly
 
 Bool Property isNiOInstalled Auto
 Bool Property isSlifInstalled Auto
+
+
+;------------------------------------------------------------------------------
+Bool Function isInfected( Actor akActor )
+	Bool isInfected = False
+
+	; By order of complexity
+
+	if (akActor && akActor.WornHasKeyword(_SLP_Parasite) )
+		isInfected = True
+	Endif
+
+	Return isInfected
+EndFunction
+
 
 ;------------------------------------------------------------------------------
 Function ApplyBodyChange(Actor kActor, String sParasite, String sBodyPart, Float fValue=1.0, Float fValueMax=1.0)
@@ -258,13 +274,7 @@ function SLIF_inflateMax(Actor kActor, String sKey, float value, float maximum, 
 	SLIF_inflate(kActor, sKey, value, NiOString)
 endFunction
 
-;------------------------------------------------------------------------------
-Function ParasiteSex(Actor kActor, Actor kParasite)
-	If  (SexLab.ValidateActor( kActor ) > 0) &&  (SexLab.ValidateActor(kParasite) > 0) 
 
-		SexLab.QuickStart(kActor,  kParasite, AnimationTags = "Sex")
-	EndIf
-EndFunction
 ;------------------------------------------------------------------------------
 Function FalmerBlue(Actor kActor, Actor kTarget)
 	If (StorageUtil.GetIntValue(none, "_SLH_iHormones")==1)

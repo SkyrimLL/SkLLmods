@@ -35,7 +35,7 @@ Event OnEffectStart(Actor Target, Actor Caster)
 
 	If (fctParasites.isInfectedByString( kPlayer,  "SpiderEgg" ))
 		Debug.notification("[SLP] Hatching spider cluster.") 
-		fctParasites.cureSpiderEgg( kPlayer, "All", false )
+		fctParasites.cureParasiteByString(kPlayer,  "SpiderEgg")
 		; kPlayer.AddItem(SmallSpiderEgg, Utility.RandomInt(5,15))
 	endif
 

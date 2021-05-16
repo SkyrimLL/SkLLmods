@@ -54,7 +54,7 @@ Function OnEquippedPost(actor akActor)
 		legacyPlugs = true
 	EndIf
 
-	fctParasites.applyChaurusWormVag(akActor )
+	fctParasites.applyParasiteByString(akActor, "ChaurusWormVag" )
 
 
 	; if ((!akActor.WornHasKeyword(zad_DeviousBelt))  || (akActor.WornHasKeyword(zad_DeviousBelt) && akActor.WornHasKeyword(libs.zad_PermitAnal) && !legacyPlugs && deviceRendered.HasKeyword(libs.zad_DeviousPlugAnal))) && akActor.WornHasKeyword(zad_DeviousDevice) && !akActor.WornHasKeyword(libs.zad_EffectPossessed) && akActor == libs.PlayerRef && akActor.GetActorBase().GetSex() != 0

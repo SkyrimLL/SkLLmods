@@ -1,6 +1,7 @@
 Scriptname SLP_MEF_SeedSpawnDismiss extends ActiveMagicEffect  
 
 SLP_fcts_parasites Property fctParasites  Auto 
+SLP_fcts_parasiteChaurusQueen Property fctParasiteChaurusQueen  Auto
 
 Quest Property QueenOfChaurusQuest  Auto 
 ObjectReference Property pocketDimensionRef Auto
@@ -46,7 +47,7 @@ Event OnEffectStart(Actor Target, Actor Caster)
 		i += 1
 	endwhile
 
-	fctParasites.displayChaurusSpawnList()
+	fctParasiteChaurusQueen.displayChaurusSpawnList()
 
 EndEvent
 

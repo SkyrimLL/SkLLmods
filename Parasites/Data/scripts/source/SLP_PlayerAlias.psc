@@ -256,7 +256,6 @@ Event OnUpdate()
 	Location kLocation = PlayerActor.GetCurrentLocation()
  	Int iParasiteDuration
  	Float fValue
-	Float	fChanceLivingArmor = StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceLivingArmor")
 
  	daysPassed = Game.QueryStat("Days Passed")
 
@@ -397,16 +396,9 @@ Event OnUpdate()
 				StorageUtil.SetIntValue(PlayerActor, "_SLP_lastSwimDate", daysPassed)
 			endif
 
-			If (!fctParasites.ActorHasKeywordByString(PlayerActor, "Belt")) && (!fctParasites.ActorHasKeywordByString(PlayerActor, "Plug"))
-				if (Utility.RandomInt(1,100)<= (fChanceLivingArmor as Int) )
-					; PlayerActor.SendModEvent("SLPInfectChaurusWorm")
-					if (fctParasites.infectLivingArmor( PlayerActor ))
-						iNextStageTicker = 0
-						Debug.MessageBox("You moan helplessly as a creature suddenly wraps itself around you.")
-					Endif
-				Endif
-
-			EndIf
+			if (fctParasites.tryPlayerLivingArmor())
+				iNextStageTicker = 0
+			Endif
 		endif
 
 		if (iNextStageTicker>0)
@@ -524,13 +516,15 @@ Event OnSexLabEnd(int threadID, bool HasPlayer)
 			fChanceSpiderPenis = 0.0
 			fChanceSpiderEgg = fChanceSpiderEgg + 50.0
 			debug.Notification("The tentacle retracts inside you.")
-			fctParasites.cureChaurusQueenVag(PlayerActor)
+			fctParasites.cureParasiteByString(PlayerActor, "ChaurusQueenVag")
+
 		ElseIf (fctParasites.isInfectedByString(PlayerActor, "ChaurusQueenSkin"))
 			; Player is more receptive if the breast feelers are extended
 			fChanceChaurusWorm = fChanceChaurusWorm + 20.0
 			fChanceChaurusWormVag = fChanceChaurusWormVag + 20.0
 			fChanceSpiderPenis = 0.0
 			fChanceSpiderEgg = fChanceSpiderEgg + 20.0
+
 		elseif (iChaurusQueenStage>=3)
 			; Player is a little more receptive if carrying the Seed Stone
 			fChanceChaurusWorm = fChanceChaurusWorm + 10.0
@@ -546,37 +540,34 @@ Event OnSexLabEnd(int threadID, bool HasPlayer)
 			If (!fctParasites.ActorHasKeywordByString(PlayerActor, "Belt")) && (!fctParasites.ActorHasKeywordByString(PlayerActor, "PlugAnal"))
 				if (Utility.RandomInt(1,100)<= (fChanceChaurusWorm as Int) )
 					; PlayerActor.SendModEvent("SLPInfectChaurusWorm")
-					if (fctParasites.infectChaurusWorm(PlayerActor))
+					if (fctParasites.infectParasiteByString(PlayerActor, "ChaurusWorm"))
 						iNextStageTicker = 0
 						Debug.MessageBox("You moan helplessly as a thick worm forces itself inside your guts.")
 					Endif
 				Endif
 				if (Utility.RandomInt(1,100)<= (fChanceChaurusWormVag as Int) )
 					; PlayerActor.SendModEvent("SLPInfectChaurusWormVag")
-					if (fctParasites.infectChaurusWormVag(PlayerActor))
+					if (fctParasites.infectParasiteByString(PlayerActor, "ChaurusWormVag"))
 						iNextStageTicker = 0
 						Debug.MessageBox("You shudder deeply as a squirming worm forces itself inside your womb.")
 					Endif
 				Endif
 			EndIf
 
-			if (StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusQueenStage")>=5)
-				fctParasites.getRandomChaurusEggs(PlayerActor, 0, 20)
-			endif
 		EndIf
 		if animation.HasTag("Spider")
 			If (!fctParasites.ActorHasKeywordByString(PlayerActor, "Belt")) && (!fctParasites.ActorHasKeywordByString(PlayerActor, "PlugVaginal"))
 				fctParasites.tryPlayerSpiderStage()
 
 				if (Utility.RandomInt(1,100)<= (fChanceSpiderPenis as Int) )
-					if (fctParasites.infectSpiderPenis(PlayerActor))
+					if (fctParasites.infectParasiteByString(PlayerActor, "SpiderPenis"))
 						iNextStageTicker = 0
 						kSexPartner = _firstNotPlayer(actors)
 						SpiderFollowerAlias.ForceRefTo(kSexPartner)
 						Debug.MessageBox("You gasp as the spider fills your womb with a string of slimy eggs. Unfortunately, the penis of the spider remains firmly lodged inside you after the act.")
 					Endif
 				elseif (Utility.RandomInt(1,100)<= (fChanceSpiderEgg as Int) )
-					if (fctParasites.infectSpiderEgg(PlayerActor))
+					if (fctParasites.infectParasiteByString(PlayerActor, "SpiderEgg"))
 						iNextStageTicker = 0
 						Debug.MessageBox("You gasp as the spider fills your womb with a string of slimy eggs.")
 					Endif
@@ -593,11 +584,11 @@ Event OnSexLabEnd(int threadID, bool HasPlayer)
 				If (!fctParasites.ActorHasKeywordByString(actors[idx], "Belt")) && (!fctParasites.ActorHasKeywordByString(actors[idx], "PlugAnal"))
 					if (Utility.RandomInt(1,100)< (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceChaurusWorm" ) as Int) )
 						; actors[idx].SendModEvent("SLPInfectChaurusWorm")
-						fctParasites.infectChaurusWorm(actors[idx])
+						fctParasites.infectParasiteByString(actors[idx], "ChaurusWorm")
 					Endif
 					if (Utility.RandomInt(1,100)< (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceChaurusWormVag" ) as Int) )
 						; actors[idx].SendModEvent("SLPInfectChaurusWormVag")
-						fctParasites.infectChaurusWormVag(actors[idx])
+						fctParasites.infectParasiteByString(actors[idx], "ChaurusWormVag")
 					Endif
 				EndIf
 			EndIf
@@ -605,10 +596,10 @@ Event OnSexLabEnd(int threadID, bool HasPlayer)
 				If (!fctParasites.ActorHasKeywordByString(actors[idx], "Belt")) && (!fctParasites.ActorHasKeywordByString(actors[idx], "PlugVaginal"))
 					if (Utility.RandomInt(1,100)<= (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceSpiderPenis" ) as Int) )
 						; actors[idx].SendModEvent("SLPInfectSpiderPenis")
-						fctParasites.infectSpiderPenis(actors[idx])
+						fctParasites.infectParasiteByString(actors[idx], "SpiderPenis")
 					elseif (Utility.RandomInt(1,100)<= (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceSpiderEgg" ) as Int) )
 						; actors[idx].SendModEvent("SLPInfectSpiderEgg")
-						fctParasites.infectSpiderEgg(actors[idx])
+						fctParasites.infectParasiteByString(actors[idx], "SpiderEgg")
 					endif
 				EndIf
 			EndIf
@@ -629,7 +620,7 @@ Event OnSexLabOrgasm(int threadID, bool HasPlayer)
 			if (fctParasites.isInfectedByString(PlayerActor, "SpiderEgg" )) && (Utility.RandomInt(2,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceSpiderEgg" ) / 4))
 				Debug.MessageBox("As you lay on the floor, still panting, you realize the spider extracted the fertilized eggs out of your exhausted body.")
 				; PlayerActor.SendModEvent("SLPCureSpiderEgg","All")
-				fctParasites.cureSpiderEgg( PlayerActor, "All"  )
+				fctParasites.cureParasiteByString(PlayerActor, "SpiderEgg", "All" )
 				PlayerActor.PlaceAtMe(EggSac)
 			endIf
 		EndIf
@@ -637,12 +628,12 @@ Event OnSexLabOrgasm(int threadID, bool HasPlayer)
 		If (fctParasites.isInfectedByString( PlayerActor, "ChaurusWorm" )) && (Utility.RandomInt(2,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceChaurusWorm" ) / 5))
 			Debug.MessageBox("The power of your orgasm is enough to expel the worm from your bowels, making you nearly black out from the added stimulation.")
 			; PlayerActor.SendModEvent("SLPCureChaurusWorm")
-			fctParasites.cureChaurusWorm(PlayerActor)
+			fctParasites.cureParasiteByString(PlayerActor, "ChaurusWorm")
 		EndIf
 		If (fctParasites.isInfectedByString( PlayerActor, "ChaurusWormVag" )) && (Utility.RandomInt(2,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceChaurusWormVag" ) / 5))
 			Debug.MessageBox("The power of your orgasm is enough to expel the worm, making you nearly black out from the added stimulation.")
 			; PlayerActor.SendModEvent("SLPCureChaurusWormVag")
-			fctParasites.cureChaurusWormVag(PlayerActor)
+			fctParasites.cureParasiteByString(PlayerActor, "ChaurusWormVag")
 		EndIf
 	endif
 
@@ -652,18 +643,18 @@ Event OnSexLabOrgasm(int threadID, bool HasPlayer)
 			if animation.HasTag("Spider")
 				if (fctParasites.isInfectedByString( actors[idx],  "SpiderEgg" )) && (Utility.RandomInt(2,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceSpiderEgg" ) / 4))
 					; actors[idx].SendModEvent("SLPCureSpiderEgg","All")
-					fctParasites.cureSpiderEgg( actors[idx], "All" )
+					fctParasites.cureParasiteByString( actors[idx], "SpiderEgg", "All" )
 					actors[idx].PlaceAtMe(EggSac)
 				endIf
 			endif
 
 			If (fctParasites.isInfectedByString( actors[idx], "ChaurusWorm" )) && (Utility.RandomInt(1,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceChaurusWorm" ) / 5))
 				; actors[idx].SendModEvent("SLPCureChaurusWorm")
-				fctParasites.cureChaurusWorm( actors[idx])
+				fctParasites.cureParasiteByString( actors[idx], "ChaurusWorm")
 			EndIf
 			If (fctParasites.isInfectedByString(actors[idx], "ChaurusWormVag" )) && (Utility.RandomInt(1,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceChaurusWormVag" ) / 5))
 				; actors[idx].SendModEvent("SLPCureChaurusWormVag")
-				fctParasites.cureChaurusWormVag(actors[idx])
+				fctParasites.cureParasiteByString( actors[idx], "ChaurusWormVag")
 			EndIf
 		endIf
 		idx += 1
@@ -680,7 +671,7 @@ Event OnSexLabOrgasmSeparate(Form ActorRef, Int Thread)
 			if (fctParasites.isInfectedByString( PlayerActor, "SpiderEgg" )) && (Utility.RandomInt(2,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceSpiderEgg" ) / 4))
 				Debug.MessageBox("As you lay on the floor, still panting, you realize the spider extracted the fertilized eggs out of your exhausted body.")
 				; PlayerActor.SendModEvent("SLPCureSpiderEgg","All")
-				fctParasites.cureSpiderEgg( PlayerActor, "All" )
+				fctParasites.cureParasiteByString( PlayerActor, "SpiderEgg", "All" )
 				PlayerActor.PlaceAtMe(EggSac)
 			endIf
 		EndIf
@@ -688,29 +679,29 @@ Event OnSexLabOrgasmSeparate(Form ActorRef, Int Thread)
 		If (fctParasites.isInfectedByString( PlayerActor, "ChaurusWorm" )) && (Utility.RandomInt(2,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceChaurusWorm" ) / 5))
 			Debug.MessageBox("The power of your orgasm is enough to expel the worm from your bowels, making you nearly black out from the added stimulation.")
 			; PlayerActor.SendModEvent("SLPCureChaurusWorm")
-			fctParasites.cureChaurusWorm(PlayerActor)
+			fctParasites.cureParasiteByString(PlayerActor, "ChaurusWorm")
 		EndIf
 		If (fctParasites.isInfectedByString( PlayerActor, "ChaurusWormVag" )) && (Utility.RandomInt(2,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceChaurusWormVag" ) / 5))
 			Debug.MessageBox("The power of your orgasm is enough to expel the worm, making you nearly black out from the added stimulation.")
 			; PlayerActor.SendModEvent("SLPCureChaurusWormVag")
-			fctParasites.cureChaurusWormVag(PlayerActor)
+			fctParasites.cureParasiteByString(PlayerActor, "ChaurusWormVag")
 		EndIf
 	Else
 		if animation.HasTag("Spider")
 			if (fctParasites.isInfectedByString( kActor, "SpiderEgg" )) && (Utility.RandomInt(2,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceSpiderEgg" ) / 4))
 				; kActor.SendModEvent("SLPCureSpiderEgg","All")
-				fctParasites.cureSpiderEgg( kActor, "All" )
+				fctParasites.cureParasiteByString(kActor, "SpiderEgg")
 				kActor.PlaceAtMe(EggSac)
 			endIf
 		endif
 
 		If (fctParasites.isInfectedByString( kActor, "ChaurusWorm" )) && (Utility.RandomInt(1,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceChaurusWorm" ) / 5))
 			; kActor.SendModEvent("SLPCureChaurusWorm")
-			fctParasites.cureChaurusWorm(kActor)
+			fctParasites.cureParasiteByString(kActor, "ChaurusWorm")
 		EndIf
 		If (fctParasites.isInfectedByString( kActor, "ChaurusWormVag" )) && (Utility.RandomInt(1,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceChaurusWormVag" ) / 5))
 			; kActor.SendModEvent("SLPCureChaurusWormVag")
-			fctParasites.cureChaurusWormVag(kActor)
+			fctParasites.cureParasiteByString(kActor, "ChaurusWormVag")
 		EndIf
 	endIf
 EndEvent
@@ -725,11 +716,11 @@ Event OnArachnophobiaPlayerCaptured(String _eventName, String _args, Float _argc
 
 		if (Utility.RandomInt(1,100)<= (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceSpiderPenis" ) as Int) )
 			; PlayerActor.SendModEvent("SLPInfectSpiderPenis")
-			fctParasites.infectSpiderPenis( PlayerActor  )
+			fctParasites.infectParasiteByString(PlayerActor, "SpiderPenis")
 
 		elseif (Utility.RandomInt(1,100)<= (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceSpiderEgg" ) as Int) )
 			; PlayerActor.SendModEvent("SLPInfectSpiderEgg")
-			fctParasites.infectSpiderEgg( PlayerActor  )
+			fctParasites.infectParasiteByString(PlayerActor, "SpiderEgg")
 		endif
 	EndIf
 EndEvent
@@ -741,8 +732,9 @@ Event OnECBirthCompleted(String _eventName, String _args, Float _argc = 1.0, For
 
 	If ( (fctParasites.isInfectedByString( kActor,  "ChaurusWorm" )) || (fctParasites.isInfectedByString( kActor,  "ChaurusWormVag" )) )
 		Debug.MessageBox("The excruciating contractions expelling the eggs out of your body push out your chaurus worms as well.")
-		fctParasites.cureChaurusWorm( kActor  ) 
-		fctParasites.cureChaurusWormVag( kActor  ) 
+
+		fctParasites.cureParasiteByString(kActor, "ChaurusWorm")
+		fctParasites.cureParasiteByString(kActor, "ChaurusWormVag")
 	Endif
 
 EndEvent
@@ -764,7 +756,7 @@ Event OnSLPInfectSpiderEgg(String _eventName, String _args, Float _argc = 1.0, F
 		return
 	Endif
 
-	fctParasites.infectSpiderEgg( kActor   )
+	fctParasites.infectParasiteByString(kActor, "SpiderEgg")
 	
 EndEvent
 
@@ -778,7 +770,7 @@ Event OnSLPCureSpiderEgg(String _eventName, String _args, Float _argc = 1.0, For
  
 	Debug.Trace("[SLP] Receiving 'cure spider egg' event - Actor: " + kActor)
 
-	fctParasites.cureSpiderEgg( kActor, _args  )
+	fctParasites.cureParasiteByString(kActor, "SpiderEgg", _args )
 	
 EndEvent
 
@@ -801,7 +793,7 @@ Event OnSLPInfectSpiderPenis(String _eventName, String _args, Float _argc = 1.0,
 		return
 	Endif
 
-	fctParasites.infectSpiderPenis( kActor   )
+	fctParasites.infectParasiteByString(kActor, "SpiderPenis")
 
 	
 EndEvent
@@ -816,7 +808,7 @@ Event OnSLPCureSpiderPenis(String _eventName, String _args, Float _argc = 1.0, F
 
 	Debug.Trace("[SLP] Receiving 'cure spider penis' event - Actor: " + kActor)
 
-	fctParasites.cureSpiderPenis( kActor   )
+	fctParasites.cureParasiteByString(kActor, "SpiderPenis", _args )
 	
 EndEvent
 
@@ -831,7 +823,7 @@ Event OnSLPInfectChaurusWorm(String _eventName, String _args, Float _argc = 1.0,
 
 	Debug.Trace("[SLP] Receiving 'infect chaurus worm' event - Actor: " + kActor)
 
-	fctParasites.infectChaurusWorm( kActor   )
+	fctParasites.infectParasiteByString(kActor, "ChaurusWorm")
 	
 EndEvent
 
@@ -845,7 +837,7 @@ Event OnSLPCureChaurusWorm(String _eventName, String _args, Float _argc = 1.0, F
  
 	Debug.Trace("[SLP] Receiving 'cure chaurus worm' event - Actor: " + kActor)
 
-	fctParasites.cureChaurusWorm( kActor   )
+	fctParasites.cureParasiteByString(kActor, "ChaurusWorm", _args )
 
 EndEvent
 
@@ -867,7 +859,8 @@ Event OnSLPInfectChaurusWormVag(String _eventName, String _args, Float _argc = 1
 		return
 	Endif
 
-	fctParasites.infectChaurusWormVag( kActor   )
+	fctParasites.infectParasiteByString(kActor, "ChaurusWormVag")
+	
 	
 EndEvent
 
@@ -881,7 +874,8 @@ Event OnSLPCureChaurusWormVag(String _eventName, String _args, Float _argc = 1.0
  
 	Debug.Trace("[SLP] Receiving 'cure chaurus worm vaginal' event - Actor: " + kActor)
 
-	fctParasites.cureChaurusWormVag( kActor   )
+	fctParasites.cureParasiteByString(kActor, "ChaurusWormVag", _args )
+
 
 EndEvent
 
@@ -896,7 +890,7 @@ Event OnSLPInfectEstrusTentacles(String _eventName, String _args, Float _argc = 
 
 	Debug.Trace("[SLP] Receiving 'infect estrus tentacle' event - Actor: " + kActor)
 	
-	fctParasites.infectEstrusTentacles( kActor   )
+	fctParasites.infectParasiteByString(kActor, "EstrusTentacles")
 	
 EndEvent
 
@@ -917,7 +911,7 @@ Event OnSLPInfectTentacleMonster(String _eventName, String _args, Float _argc = 
 		return
 	Endif
 
-	fctParasites.infectTentacleMonster( kActor   )
+	fctParasites.infectParasiteByString(kActor, "TentacleMonster")
 	
 EndEvent
 
@@ -931,7 +925,7 @@ Event OnSLPCureTentacleMonster(String _eventName, String _args, Float _argc = 1.
 
 	Debug.Trace("[SLP] Receiving 'cure tentacle monster' event - Actor: " + kActor)
 
-	fctParasites.cureTentacleMonster( kActor   )
+	fctParasites.cureParasiteByString(kActor, "TentacleMonster", _args )
 
 EndEvent
 
@@ -946,7 +940,7 @@ Event OnSLPInfectEstrusSlime(String _eventName, String _args, Float _argc = 1.0,
 
 	Debug.Trace("[SLP] Receiving 'infect estrus slime' event - Actor: " + kActor)
 
-	fctParasites.infectEstrusSlime( kActor   )
+	fctParasites.infectParasiteByString(kActor, "EstrusSlime")
 	
 EndEvent
 
@@ -967,7 +961,7 @@ Event OnSLPInfectLivingArmor(String _eventName, String _args, Float _argc = 1.0,
 		return
 	Endif
 
-	fctParasites.infectLivingArmor( kActor   )
+	fctParasites.infectParasiteByString(kActor, "LivingArmor")
 	
 EndEvent
 
@@ -981,7 +975,7 @@ Event OnSLPCureLivingArmor(String _eventName, String _args, Float _argc = 1.0, F
 
 	Debug.Trace("[SLP] Receiving 'cure living armor' event - Actor: " + kActor)
 
-	fctParasites.cureLivingArmor( kActor   )
+	fctParasites.cureParasiteByString(kActor, "LivingArmor", _args )
 
 EndEvent
 
@@ -1003,7 +997,7 @@ Event OnSLPInfectFaceHugger(String _eventName, String _args, Float _argc = 1.0, 
 		return
 	Endif
 
-	fctParasites.infectFaceHugger( kActor   )
+	fctParasites.infectParasiteByString(kActor, "FaceHugger")
 	
 EndEvent
 
@@ -1017,7 +1011,7 @@ Event OnSLPCureFaceHugger(String _eventName, String _args, Float _argc = 1.0, Fo
 
 	Debug.Trace("[SLP] Receiving 'cure face hugger' event - Actor: " + kActor)
 
-	fctParasites.cureFaceHugger( kActor   )
+	fctParasites.cureParasiteByString(kActor, "FaceHugger", _args )
 
 EndEvent
 
@@ -1032,7 +1026,7 @@ Event OnSLPInfectFaceHuggerGag(String _eventName, String _args, Float _argc = 1.
  
 	Debug.Trace("[SLP] Receiving 'infect face hugger (gag)' event - Actor: " + kActor)
 
-	fctParasites.infectFaceHuggerGag( kActor   )
+	fctParasites.infectParasiteByString(kActor, "FaceHuggerGag")
 	
 EndEvent
 
@@ -1047,7 +1041,7 @@ Event OnSLPCureFaceHuggerGag(String _eventName, String _args, Float _argc = 1.0,
 
 	Debug.Trace("[SLP] Receiving 'cure face hugger (gag)' event - Actor: " + kActor)
 
-	fctParasites.cureFaceHuggerGag( kActor   )
+	fctParasites.cureParasiteByString(kActor, "FaceHuggerGag", _args )
 
 EndEvent
 
@@ -1070,7 +1064,7 @@ Event OnSLPInfectBarnacles(String _eventName, String _args, Float _argc = 1.0, F
 		return
 	Endif
 
-	fctParasites.infectBarnacles( kActor   )
+	fctParasites.infectParasiteByString(kActor, "Barnacles")
 	
 EndEvent
 
@@ -1085,7 +1079,8 @@ Event OnSLPCureBarnacles(String _eventName, String _args, Float _argc = 1.0, For
 
 	Debug.Trace("[SLP] Receiving 'cure barnacles' event - Actor: " + kActor)
 
-	fctParasites.cureBarnacles( kActor   )
+	fctParasites.cureParasiteByString(kActor, "Barnacles", _args )
+
 
 EndEvent
 ;------------------------------------------------------------------------------
@@ -1106,7 +1101,7 @@ Event OnSLPInfectChaurusQueenVag(String _eventName, String _args, Float _argc = 
 		return
 	Endif
 
-	fctParasites.infectChaurusQueenVag( kActor   )
+	fctParasites.infectParasiteByString(kActor, "ChaurusQueenVag")
 	
 EndEvent
 
@@ -1120,7 +1115,7 @@ Event OnSLPCureChaurusQueenVag(String _eventName, String _args, Float _argc = 1.
  
 	Debug.Trace("[SLP] Receiving 'cure chaurus queen vaginal' event - Actor: " + kActor)
 
-	fctParasites.cureChaurusQueenVag( kActor   )
+	fctParasites.cureParasiteByString(kActor, "ChaurusQueenVag", _args )
 
 EndEvent
 
@@ -1142,7 +1137,7 @@ Event OnSLPInfectChaurusQueenGag(String _eventName, String _args, Float _argc = 
 		return
 	Endif
 
-	fctParasites.infectChaurusQueenGag( kActor   )
+	fctParasites.infectParasiteByString(kActor, "ChaurusQueenGag")
 	
 EndEvent
 
@@ -1156,7 +1151,7 @@ Event OnSLPCureChaurusQueenGag(String _eventName, String _args, Float _argc = 1.
  
 	Debug.Trace("[SLP] Receiving 'cure chaurus queen mask' event - Actor: " + kActor)
 
-	fctParasites.cureChaurusQueenGag( kActor   )
+	fctParasites.cureParasiteByString(kActor, "ChaurusQueenGag", _args )
 
 EndEvent
 
@@ -1179,7 +1174,7 @@ Event OnSLPInfectChaurusQueenSkin(String _eventName, String _args, Float _argc =
 		return
 	Endif
 
-	fctParasites.infectChaurusQueenSkin( kActor   )
+	fctParasites.infectParasiteByString(kActor, "ChaurusQueenSkin")
 	
 EndEvent
 
@@ -1193,7 +1188,7 @@ Event OnSLPCureChaurusQueenSkin(String _eventName, String _args, Float _argc = 1
  
 	Debug.Trace("[SLP] Receiving 'cure chaurus queen skin' event - Actor: " + kActor)
 
-	fctParasites.cureChaurusQueenSkin( kActor   )
+	fctParasites.cureParasiteByString(kActor, "ChaurusQueenSkin", _args )
 
 EndEvent
 
@@ -1216,7 +1211,7 @@ Event OnSLPInfectChaurusQueenArmor(String _eventName, String _args, Float _argc 
 		return
 	Endif
 
-	fctParasites.infectChaurusQueenArmor( kActor   )
+	fctParasites.infectParasiteByString(kActor, "ChaurusQueenArmor")
 	
 EndEvent
 
@@ -1230,7 +1225,7 @@ Event OnSLPCureChaurusQueenArmor(String _eventName, String _args, Float _argc = 
  
 	Debug.Trace("[SLP] Receiving 'cure chaurus queen armor' event - Actor: " + kActor)
 
-	fctParasites.cureChaurusQueenArmor( kActor   )
+	fctParasites.cureParasiteByString(kActor, "ChaurusQueenArmor", _args )
 
 EndEvent
 
@@ -1252,7 +1247,7 @@ Event OnSLPInfectChaurusQueenBody(String _eventName, String _args, Float _argc =
 		return
 	Endif
 
-	fctParasites.infectChaurusQueenBody( kActor   )
+	fctParasites.infectParasiteByString(kActor, "ChaurusQueenBody")
 	
 EndEvent
 
@@ -1266,7 +1261,7 @@ Event OnSLPCureChaurusQueenBody(String _eventName, String _args, Float _argc = 1
  
 	Debug.Trace("[SLP] Receiving 'cure chaurus queen body' event - Actor: " + kActor)
 
-	fctParasites.cureChaurusQueenBody( kActor   )
+	fctParasites.cureParasiteByString(kActor, "ChaurusQueenBody", _args )
 
 EndEvent
 ;------------------------------------------------------------------------------
@@ -1292,7 +1287,7 @@ Event OnSLPInfectEstrusChaurusEgg(String _eventName, String _args, Float _argc =
 		return
 	Endif
 
-	fctParasites.infectEstrusChaurusEgg( kActor, bSilent   )
+	fctParasites.infectParasiteByString(kActor, "ChaurusEggSilent"  )
 	
 EndEvent
 
@@ -1312,7 +1307,7 @@ Event OnSLPTriggerEstrusChaurusBirth(String _eventName, String _args, Float _arg
 	
 	Debug.Trace("[SLP] Receiving 'trigger estrus chaurus birth' event - Actor: " + kActor)
 
-	fctParasites.triggerEstrusChaurusBirth( kActor, sParasite, iBirthItemCount  )
+	fctParasites.triggerEstrusChaurusBirth( kActor, sParasite, iBirthItemCount )
 	
 EndEvent
 
@@ -1477,7 +1472,7 @@ Event OnSLPSexCure(String _eventName, String _args, Float _argc = 0.0, Form _sen
 			; Special case - if player 'removes' tentacle monster with someone else, parasite is transfered to new host
 			Debug.Notification("The creature slides into a new host.")
 			SexLab.AddCum(kActor,  Vaginal = true,  Oral = false,  Anal = true)
-			fctParasites.infectTentacleMonster(kActor)
+			fctParasites.infectParasiteByString(kActor, "TentacleMonster")
 		endif
 	Else
 		Debug.Trace("[SLP]  	Player is the healer")
@@ -1494,35 +1489,44 @@ Function _afterSexCure(Actor kActor, String sParasite, Bool bIsPlayerHealer, Boo
 	Debug.Trace("[SLP]  	Curing actor: " + kActor)
 
 	If (sParasite == "SpiderEgg")
-		fctParasites.cureSpiderEgg(kActor,"All", bHarvestParasite)
+		SexLab.AddCum(kActor,  Vaginal = true,  Oral = false,  Anal = true)
+		fctParasites.cureParasiteByString(kActor, "SpiderEgg", bHarvestParasite)
 
 		If (!bHarvestParasite)
 			kPlayer.AddItem(IngredientSpiderEgg,Utility.RandomInt(5,10))
 		Endif
 
 	ElseIf (sParasite == "ChaurusWorm")
-		fctParasites.cureChaurusWorm(kActor, bHarvestParasite)
+		SexLab.AddCum(kActor,  Vaginal = true,  Oral = false,  Anal = true)
+		fctParasites.cureParasiteByString(kActor, "ChaurusWorm", bHarvestParasite)
 
 		If (!bHarvestParasite)
 			kPlayer.AddItem(IngredientChaurusWorm,1)
 		Endif
 		
 	ElseIf (sParasite == "ChaurusWormVag")
-		fctParasites.cureChaurusWormVag(kActor, bHarvestParasite)
+		SexLab.AddCum(kActor,  Vaginal = true,  Oral = false,  Anal = true)
+		fctParasites.cureParasiteByString(kActor, "ChaurusWormVag", bHarvestParasite)
 
 		If (!bHarvestParasite)
 			kPlayer.AddItem(IngredientChaurusWorm,1)
 		Endif
 		
 	ElseIf (sParasite == "FaceHugger")
-		fctParasites.cureFaceHugger(kActor, bHarvestParasite)
+		SexLab.AddCum(kActor,  Vaginal = true,  Oral = false,  Anal = true)
+		fctParasites.cureParasiteByString(kActor, "FaceHugger", bHarvestParasite)
 		
 	ElseIf (sParasite == "FaceHuggerGag")
-		fctParasites.cureFaceHuggerGag(kActor, bHarvestParasite)
+		SexLab.AddCum(kActor,  Vaginal = false,  Oral = true,  Anal = false)
+		fctParasites.cureParasiteByString(kActor, "FaceHuggerGag", bHarvestParasite)
 		
 	ElseIf (sParasite == "TentacleMonster")
 		SexLab.AddCum(kActor,  Vaginal = true,  Oral = false,  Anal = true)
-		fctParasites.cureTentacleMonster(kActor, false)
+		fctParasites.cureParasiteByString(kActor, "TentacleMonster", bHarvestParasite)
+		
+	ElseIf (sParasite == "LivingArmor")
+		SexLab.AddCum(kActor,  Vaginal = true,  Oral = false,  Anal = true)
+		fctParasites.cureParasiteByString(kActor, "LivingArmor", bHarvestParasite)
 	Endif
 EndFunction
 
@@ -1544,15 +1548,16 @@ Event OnSLPClearParasites(String _eventName, String _args, Float _argc = 1.0, Fo
  	
 	Debug.Trace("[SLP] Receiving 'clear parasites' event - Actor: " + kActor)
 
-	fctParasites.cureSpiderEgg(kActor,"All", bHarvestParasite)
-	fctParasites.cureSpiderPenis(kActor,bHarvestParasite)
- 	fctParasites.cureChaurusWorm(kActor, bHarvestParasite)
- 	fctParasites.cureChaurusWormVag(kActor, bHarvestParasite)
-	fctParasites.cureTentacleMonster( kActor )
-	fctParasites.cureLivingArmor( kActor )
-  	fctParasites.cureFaceHugger(kActor, bHarvestParasite)
-	fctParasites.cureFaceHuggerGag(kActor, bHarvestParasite)
-	fctParasites.cureBarnacles( kActor )
+	fctParasites.cureParasiteByString(kActor, "SpiderPenis", bHarvestParasite)
+	fctParasites.cureParasiteByString(kActor, "SpiderEggAll", bHarvestParasite)
+	fctParasites.cureParasiteByString(kActor, "ChaurusWorm", bHarvestParasite)
+	fctParasites.cureParasiteByString(kActor, "ChaurusWormVag", bHarvestParasite)
+	fctParasites.cureParasiteByString(kActor, "FaceHugger", bHarvestParasite)
+	fctParasites.cureParasiteByString(kActor, "FaceHuggerGag", bHarvestParasite)
+	fctParasites.cureParasiteByString(kActor, "TentacleMonster", bHarvestParasite)
+	fctParasites.cureParasiteByString(kActor, "LivingArmor", bHarvestParasite)
+	fctParasites.cureParasiteByString(kActor, "Barnacles", bHarvestParasite) 
+   
 
 EndEvent
 
@@ -1719,7 +1724,7 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 		If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceBarnacles" )>0.0) 
 			; Sleeping naked in Blackreach -> chance of barnacles
 			If (!fctParasites.ActorHasKeywordByString(PlayerActor, "Harness")) && (!fctParasites.ActorHasKeywordByString(PlayerActor, "Belt")) && (!fctParasites.ActorHasKeywordByString(PlayerActor, "Barnacles")) && (fctOutfits.isActorNaked(PlayerActor)) && (Utility.RandomInt(1,100)<= (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceBarnacles" ) as Int) )
-				if (fctParasites.infectBarnacles( PlayerActor   ))
+				if (fctParasites.infectParasiteByString(PlayerActor, "Barnacles"))
 					Debug.Trace("[SLP] Barnacle infection successful")
 					Debug.MessageBox("As you wake up from an uneasy sleep, you discover your skin is covered with hard growths. They pulsate with a soft glow and burry painfully into your skin when you touch them.")
 				Endif
@@ -1736,7 +1741,7 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 		if (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceFaceHugger" )>0.0) 
 			; Sleeping naked in a draugr crypt -> chance of face hugger
 			If (!fctParasites.ActorHasKeywordByString(PlayerActor, "Belt")) && (!fctParasites.ActorHasKeywordByString(PlayerActor, "Harness")) && (!fctParasites.ActorHasKeywordByString(PlayerActor, "PlugVaginal")) && (!fctParasites.ActorHasKeywordByString(PlayerActor, "FaceHugger")) && (fctOutfits.isActorNaked(PlayerActor)) && (Utility.RandomInt(1,100)<= (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceFaceHugger" ) as Int) )
-				if (fctParasites.infectFaceHugger( PlayerActor   ))
+				if (fctParasites.infectParasiteByString(PlayerActor, "FaceHugger"))
 					Debug.Trace("[SLP] Creepy crawler infection successful")
 					Debug.MessageBox("As you wake up from a restless sleep, you find with horror that your exposed crotch is filled with the tail of a critter, firmly wrapped around your hips. The end of that tail throbs deeply inside you.")
 				Endif
@@ -1756,7 +1761,7 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 		if (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceFaceHuggerGag" )>0.0)
 			; Sleeping naked in a draugr crypt -> chance of face hugger
 			If (!fctParasites.ActorHasKeywordByString(PlayerActor, "Gag")) && (!fctParasites.ActorHasKeywordByString(PlayerActor, "FaceHuggerGag")) && (Utility.RandomInt(1,100)<= (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceFaceHuggerGag" ) as Int) )
-				if (fctParasites.infectFaceHuggerGag( PlayerActor   ))
+				if (fctParasites.infectParasiteByString(PlayerActor, "FaceHuggerGag"))
 					Debug.Trace("[SLP] Creepy crawler (face) infection successful")
 					Debug.MessageBox("A suffocating sensation wakes you suddenly. You find your face wrapped in the sticky embrace of a creature as its tail squirms deeply into your throat. Surprisinly, you seem to be breathing through the creature.")
 				Endif
@@ -1776,26 +1781,26 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 	If (fctParasites.ActorHasKeywordByString(PlayerActor, "FaceHugger")) || (fctParasites.ActorHasKeywordByString(PlayerActor, "FaceHuggerGag")) || (fctParasites.ActorHasKeywordByString(PlayerActor, "ChaurusWorm"))
 		PlayerActor.SendModEvent("SLHModHormone", "Female", 10.0 + Utility.RandomFloat(0.0,10.0))
 		PlayerActor.SendModEvent("SLHModHormone", "SexDrive", 1.0 + Utility.RandomFloat(0.0,5.0))
-		fctParasites.clearParasiteAlias(PlayerActor, "FaceHugger"  )
-		fctParasites.clearParasiteAlias(PlayerActor, "ChaurusWorm"  )
+		fctParasites.clearParasiteAlias(PlayerActor, "FaceHugger" )
+		fctParasites.clearParasiteAlias(PlayerActor, "ChaurusWorm" )
 	endif 
 
 	If ( (fctParasites.ActorHasKeywordByString(PlayerActor, "SpiderEgg")) || (fctParasites.ActorHasKeywordByString(PlayerActor, "SpiderPenis")) ) 
 		PlayerActor.SendModEvent("SLHModHormone", "SexDrive", 5.0 + Utility.RandomFloat(0.0,10.0))
-		fctParasites.clearParasiteAlias(PlayerActor, "SpiderEgg"  )
-		fctParasites.clearParasiteAlias(PlayerActor, "SpiderPenis"  )
+		fctParasites.clearParasiteAlias(PlayerActor, "SpiderEgg" )
+		fctParasites.clearParasiteAlias(PlayerActor, "SpiderPenis" )
 	endif 
 
 	If (fctParasites.ActorHasKeywordByString(PlayerActor, "TentacleMonster"))
 		PlayerActor.SendModEvent("SLHModHormone", "Immunity", 1.0 * Utility.RandomFloat(0.0,10.0))
 		PlayerActor.SendModEvent("SLHModHormone", "Lactation", 10.0 + Utility.RandomFloat(0.0,10.0))
-		fctParasites.clearParasiteAlias(PlayerActor, "TentacleMonster"  )
+		fctParasites.clearParasiteAlias(PlayerActor, "TentacleMonster" )
 	endif 
 
 	If (fctParasites.ActorHasKeywordByString(PlayerActor, "Barnacles"))
 		PlayerActor.SendModEvent("SLHModHormone", "Immunity", -1.0 * Utility.RandomFloat(0.0,10.0))
 		PlayerActor.SendModEvent("SLHModHormone", "Pheromones", 1.0 + Utility.RandomFloat(0.0,5.0))
-		fctParasites.clearParasiteAlias(PlayerActor, "Barnacles"  )
+		fctParasites.clearParasiteAlias(PlayerActor, "Barnacles" )
 	endif 
 
 	If (fctParasites.ActorHasKeywordByString(PlayerActor, "ChaurusQueenVag"))

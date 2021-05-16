@@ -53,12 +53,12 @@ Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile,
 			Debug.Trace("[SLP_aliasFaceHugger] Cure Face or Hip Hugger" )
  
 			if (fctParasites.isInfectedByString( kPlayer,  "FaceHugger" ))
-				Debug.Notification("The creature releases its grip around your hips under the violence of the attack." )
- 				fctParasites.cureFaceHugger( kPlayer )
+				Debug.Notification("The creature releases its grip around your hips under the violence of the attack." ) 
+ 				fctParasites.cureParasiteByString(kPlayer, "FaceHugger")
 
 			elseif (!fctParasites.isInfectedByString( kPlayer,  "FaceHuggerGag" ))
 				Debug.Notification("The creature releases its grip around your face under the violence of the attack." )
-				fctParasites.cureFaceHuggerGag( kPlayer )
+ 				fctParasites.cureParasiteByString(kPlayer, "FaceHuggerGag")
 			endif			
 		endif
 	EndIf

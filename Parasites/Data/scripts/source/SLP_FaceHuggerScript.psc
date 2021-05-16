@@ -174,7 +174,7 @@ Function OnEquippedPost(actor akActor)
         Aroused.SetActorExposureRate(akActor, modRate)
 	libs.CorsetMagic(akActor)
 
-	fctParasites.applyFaceHugger(akActor )
+	fctParasites.applyParasiteByString(akActor, "FaceHugger" )
 
 EndFunction
  

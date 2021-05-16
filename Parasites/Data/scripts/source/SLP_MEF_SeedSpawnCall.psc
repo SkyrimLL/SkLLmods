@@ -1,6 +1,7 @@
 Scriptname SLP_MEF_SeedSpawnCall extends ActiveMagicEffect  
 
 SLP_fcts_parasites Property fctParasites  Auto 
+SLP_fcts_parasiteChaurusQueen Property fctParasiteChaurusQueen  Auto
 
 Quest Property QueenOfChaurusQuest  Auto 
 ObjectReference Property pocketDimensionRef Auto
@@ -41,7 +42,7 @@ Event OnEffectStart(Actor Target, Actor Caster)
 		if (thisActorRef==None)
 			Debug.Trace("[SLP] 	Actor [" + i + "] = "+ thisActorForm )
 			Debug.Trace("[SLP] 		Actor is None - Calling a replacement actor") 
-			kChaurusSpawn = fctParasites.getRandomChaurusSpawn(kPlayer)
+			kChaurusSpawn = fctParasiteChaurusQueen.getRandomChaurusSpawn(kPlayer)
 			
 			if (kChaurusSpawn != None)
 				debug.trace("[SLP] Adding actor to _SLP_lChaurusSpawnsList - " + kChaurusSpawn )
@@ -78,7 +79,7 @@ Event OnEffectStart(Actor Target, Actor Caster)
 		i += 1
 	endwhile
 
-	fctParasites.displayChaurusSpawnList()
+	fctParasiteChaurusQueen.displayChaurusSpawnList()
 
 EndEvent
 

@@ -173,8 +173,8 @@ Actor kLastelle = Alias__SLP_LastelleRef.GetReference() as Actor
 ObjectReference LastelleRef = Alias__SLP_LastelleRef.GetReference()
 
 
-; fctParasites.infectTentacleMonster( kLastelle )
-fctParasites.infectEstrusChaurusEgg( kLastelle , true)
+; fctParasites.infectTentacleMonster( kLastelle ) 
+fctParasites.infectParasiteByString(kLastelle, "ChaurusEggSilent")
 
 EggSackOutsideMarker.disable()
 EggSackInsideMarker.enable()

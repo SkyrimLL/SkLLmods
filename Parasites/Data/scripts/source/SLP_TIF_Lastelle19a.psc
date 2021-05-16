@@ -7,8 +7,9 @@ Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
 self.GetOwningQuest().setstage(19)
-fctParasites.infectEstrusTentacles( akSpeaker )
-fctParasites.infectEstrusChaurusEgg( akSpeaker )
+fctParasites.infectParasiteByString(akSpeaker, "EstrusTentacles")
+fctParasites.infectParasiteByString(akSpeaker, "ChaurusEgg")
+
 ;END CODE
 EndFunction
 ;END FRAGMENT

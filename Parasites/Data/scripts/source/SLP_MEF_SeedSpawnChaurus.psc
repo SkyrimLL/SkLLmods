@@ -1,6 +1,7 @@
 Scriptname SLP_MEF_SeedSpawnChaurus extends activemagiceffect  
 
 SLP_fcts_parasites Property fctParasites  Auto 
+SLP_fcts_parasiteChaurusQueen Property fctParasiteChaurusQueen  Auto
 
 Quest Property QueenOfChaurusQuest  Auto 
 
@@ -100,7 +101,7 @@ Event OnEffectStart(Actor Target, Actor Caster)
 					; if the list isn't full, add the chaurus
 					
 					kPlayer.RemoveItem(ChaurusEgg, iChaurusSpawnCount)
-					kChaurusSpawn = fctParasites.getRandomChaurusSpawn(kPlayer)
+					kChaurusSpawn = fctParasiteChaurusQueen.getRandomChaurusSpawn(kPlayer)
 
 					debug.trace("[SLP] Adding actor to _SLP_lChaurusSpawnsList - " + kChaurusSpawn )
 					StorageUtil.FormListAdd( none, "_SLP_lChaurusSpawnsList", kChaurusSpawn as Form )
@@ -108,7 +109,7 @@ Event OnEffectStart(Actor Target, Actor Caster)
 				endif
 
 				; Debug
-				fctParasites.displayChaurusSpawnList()
+				fctParasiteChaurusQueen.displayChaurusSpawnList()
 
 			endif
 
@@ -120,7 +121,7 @@ Event OnEffectStart(Actor Target, Actor Caster)
 	endif
 
 	; clean up list from dead actors  
-	fctParasites.cleanChaurusSpawnList()
+	fctParasiteChaurusQueen.cleanChaurusSpawnList()
  
     ;   Debug.Messagebox(" Spider Pheromone charm spell started")    
 	

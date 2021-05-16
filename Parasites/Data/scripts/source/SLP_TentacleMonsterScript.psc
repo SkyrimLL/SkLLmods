@@ -41,6 +41,6 @@ EndFunction
 Function OnEquippedPost(actor akActor)
 	libs.Log("RestraintScript OnEquippedPost BodyHarness")
 
-	fctParasites.applyTentacleMonster(akActor )
+	fctParasites.applyParasiteByString(akActor, "TentacleMonster" )
 
 EndFunction

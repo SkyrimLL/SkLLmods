@@ -29,31 +29,31 @@ Event OnEffectStart(Actor Target, Actor Caster)
 			kPlayer.RemoveItem(ChaurusEgg, iChaurusSpawnCount)
 
 	 		if (fctParasites.isInfectedByString( kPlayer,  "LivingArmor" ))
-	 			fctParasites.cureLivingArmor( kPlayer )
+	 			fctParasites.cureParasiteByString(kPlayer, "LivingArmor")
 	 		endif
 
 	 		if (fctParasites.isInfectedByString( kPlayer,  "TentacleMonster" ))
-	 			fctParasites.cureTentacleMonster( kPlayer )
+	 			fctParasites.cureParasiteByString(kPlayer, "TentacleMonster")
 	 		endif
 
 	 		if (fctParasites.isInfectedByString( kPlayer,  "Barnacles" ))
-	 			fctParasites.cureBarnacles( kPlayer )
+	 			fctParasites.cureParasiteByString(kPlayer, "Barnacles")
 	 		endif
 
 	 		if (fctParasites.isInfectedByString( kPlayer,  "ChaurusQueenSkin" ))
-	 			fctParasites.cureChaurusQueenSkin( kPlayer )
+	 			fctParasites.cureParasiteByString(kPlayer, "ChaurusQueenSkin")
 	 		endif
 
 	 		if (fctParasites.isInfectedByString( kPlayer,  "ChaurusQueenArmor" ))
-	 			fctParasites.cureChaurusQueenArmor( kPlayer )
+	 			fctParasites.cureParasiteByString(kPlayer, "ChaurusQueenArmor")
 	 		endif
 
-			fctParasites.infectChaurusQueenBody( kPlayer )
+			fctParasites.infectParasiteByString(kPlayer, "ChaurusQueenBody")
 	 	else
 			Debug.notification("Without at least six chaurus egg near you, the spell has no effect.") 
 		endif
 	else
-		fctParasites.cureChaurusQueenBody( kPlayer )
+		fctParasites.cureParasiteByString(kPlayer, "ChaurusQueenBody")
 	endif
 EndEvent
 

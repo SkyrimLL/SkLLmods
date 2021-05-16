@@ -22,16 +22,16 @@ Event OnEffectStart(Actor Target, Actor Caster)
 			kPlayer.RemoveItem(ChaurusEgg, iChaurusSpawnCount)
 
  	 		if (fctParasites.isInfectedByString( kPlayer,  "FaceHuggerGag" ))
-	 			fctParasites.cureFaceHuggerGag( kPlayer )
+	 			fctParasites.cureParasiteByString(kPlayer,  "FaceHuggerGag")
 	 		endif
 
-			fctParasites.infectChaurusQueenGag( kPlayer )
+			fctParasites.infectParasiteByString(kPlayer,  "ChaurusQueenGag")
 		else
 			Debug.notification("Without at least one chaurus egg near you, the spell has no effect.") 
 		endif
 
 	else
-		fctParasites.cureChaurusQueenGag( kPlayer )
+		fctParasites.cureParasiteByString(kPlayer,  "ChaurusQueenGag")
 	endif
 EndEvent
 

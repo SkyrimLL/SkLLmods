@@ -40,6 +40,6 @@ EndFunction
 Function OnEquippedPost(actor akActor)
 	libs.Log("RestraintScript OnEquippedPost BodyHarness")
 
-	fctParasites.applyChaurusQueenArmor(akActor )
+	fctParasites.applyParasiteByString(akActor, "ChaurusQueenArmor" )
 
 EndFunction

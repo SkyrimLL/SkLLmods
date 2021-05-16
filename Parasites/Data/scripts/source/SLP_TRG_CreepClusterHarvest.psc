@@ -10,7 +10,7 @@ Event OnActivate(ObjectReference akActionRef)
   	; Debug.Trace("Activated by " + akActionRef)
 
   	If (akActionRef==kPlayer) && (Utility.RandomInt(1,100) <= StorageUtil.GetFloatValue(kPlayer, "_SLP_chanceEstrusTentacles")) && (!fctParasites.isInfectedByString( kPlayer,  "ChaurusQueenArmor" )) && (!fctParasites.isInfectedByString( kPlayer,  "ChaurusQueenBody" ))
-  		fctParasites.infectEstrusTentacles( kPlayer   )
+  		fctParasites.infectParasiteByString(kPlayer, "EstrusTentacles")
   	Endif
 
   	kPlayer.AddItem(CreepyCluster, Utility.RandomInt(1,3) )

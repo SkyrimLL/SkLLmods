@@ -88,6 +88,6 @@ EndFunction
 Function OnEquippedPost(actor akActor)
 	libs.ApplyGagEffect(akActor)
 
-	fctParasites.applyChaurusQueenGag(akActor )
+	fctParasites.applyParasiteByString(akActor, "ChaurusQueenGag" )
 
 EndFunction

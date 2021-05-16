@@ -12,8 +12,8 @@ Actor kPlayer = Game.GetPlayer()
 self.GetOwningQuest().setstage(70)
 
 Debug.Messagebox("Lastelle comes closer and kisses you deeply, forcing a mouthful of milky fluids down your throat and inserting something slimy down your lower back.")
-
-fctParasites.infectChaurusWorm( kPlayer )
+ 
+fctParasites.infectParasiteByString(kPlayer, "ChaurusWorm")
 
 fctParasites.ParasiteSex(kPlayer,kChaurus )
 ;END CODE

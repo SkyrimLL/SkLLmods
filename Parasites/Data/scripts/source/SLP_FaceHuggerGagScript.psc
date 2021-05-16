@@ -85,6 +85,6 @@ EndFunction
 Function OnEquippedPost(actor akActor)
 	libs.ApplyGagEffect(akActor)
 
-	fctParasites.applyFaceHuggerGag(akActor )
+	fctParasites.applyParasiteByString(akActor, "FaceHuggerGag" )
 
 EndFunction

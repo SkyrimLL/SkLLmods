@@ -3,6 +3,8 @@ Scriptname SLP_MEF_ParasiteRepellent extends activemagiceffect
 SexLabFramework     property SexLab Auto
 
 SLP_fcts_parasites Property fctParasites  Auto
+SLP_fcts_utils Property fctUtils  Auto
+
 Quest Property KynesBlessingQuest  Auto 
 
 
@@ -18,11 +20,11 @@ Event OnEffectStart(Actor Target, Actor Caster)
         utility.wait(4)
         Debug.SendAnimationEvent(kPlayer as ObjectReference, "IdleForceDefaultState")
 
-        if (fctParasites.isInfected( Target )) 
+        if (fctUtils.isInfected( Target )) 
             SexLab.AddCum(Target,  Vaginal = true,  Oral = true,  Anal = true)
 		endif
 
-		if (iRandumNum >= 90) && (fctParasites.isInfected( Target )) 
+		if (iRandumNum >= 90) && (fctUtils.isInfected( Target )) 
 			; Chance to remove all
 			debug.MessageBox("You are overwhelmed by convulsions as your body suddenly rejects all parasites.")
 
@@ -31,8 +33,9 @@ Event OnEffectStart(Actor Target, Actor Caster)
 		elseif (iRandumNum >= 80) 
 			; Chance to remove full body parasites
 			if (fctParasites.isInfectedByString( Target,  "TentacleMonster" )) 
-				debug.MessageBox("Under the effect of the potion, the tentacles melt in a pool of slime.")
-				fctParasites.cureTentacleMonster( Target )
+				debug.MessageBox("Under the effect of the potion, the tentacles melt in a pool of slime.") 
+				fctParasites.cureParasiteByString(Target, "TentacleMonster")
+
 
 			elseif (fctParasites.isInfectedByString( Target,  "LivingArmor" )) 
 				debug.MessageBox("Under the effect of the potion, the tentacles melt in a pool of slime.")
@@ -41,35 +44,35 @@ Event OnEffectStart(Actor Target, Actor Caster)
 		        	KynesBlessingQuest.SetStage(70)
 		        endif
 
-				fctParasites.cureLivingArmor( Target )
- 			
+				fctParasites.cureParasiteByString(Target, "LivingArmor")
+			
  			elseif (fctParasites.isInfectedByString( Target,  "Barnacles" )) 
 				debug.MessageBox("The poisonous potion turn the spores into ash.")
-				fctParasites.cureBarnacles( Target )
+				fctParasites.cureParasiteByString(Target, "Barnacles")
 			endif
 
 		elseif (iRandumNum >= 60) 
 			; chance to remove big parasites
 			if (fctParasites.isInfectedByString( Target,  "FaceHugger" )) 
 				debug.MessageBox("The creature releases its grasp and scurries away from the poison in your veins.")
-			  	fctParasites.cureFaceHugger(Target, bHarvestParasite)
+				fctParasites.cureParasiteByString(Target, "FaceHugger")
 			endif
 
 			if (fctParasites.isInfectedByString( Target,  "FaceHuggerGag" )) 
 				debug.MessageBox("The creature releases its grasp and scurries away from the poison in your veins.")
-				fctParasites.cureFaceHuggerGag(Target, bHarvestParasite)
+				fctParasites.cureParasiteByString(Target, "FaceHuggerGag")
 			endif
 
 		elseif (iRandumNum >= 20) 
 			; Chance to remove small parasites
 			if (fctParasites.isInfectedByString( Target,  "SpiderEgg" ))  && (!fctParasites.isInfectedByString( Target,  "SpiderPenis" )) 
 				debug.MessageBox("Wracked by powerful cramps, your body rejects the eggs")
-				fctParasites.cureSpiderEgg(Target,"All", bHarvestParasite) 
+				fctParasites.cureParasiteByString(Target, "SpiderEgg") 
 
 			elseif ( (fctParasites.isInfectedByString( Target,  "ChaurusWorm" )) || (fctParasites.isInfectedByString( Target,  "ChaurusWormVag" )) )
 				debug.MessageBox("Powerful cramps expel the worms inside you.")
-			 	fctParasites.cureChaurusWorm(Target, bHarvestParasite)
-			 	fctParasites.cureChaurusWormVag(Target, bHarvestParasite)
+				fctParasites.cureParasiteByString(Target, "ChaurusWorm")  
+				fctParasites.cureParasiteByString(Target, "ChaurusWormVag")  
 			 endif
 
 		else 
