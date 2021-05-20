@@ -9,6 +9,7 @@ Faction Property ChaurusFaction  Auto
 Faction Property SpiderFaction  Auto
 
 Race Property ChaurusRace  Auto
+Race Property ChaurusReaperRace  Auto  
 Race Property SpiderRace  Auto
 Race Property SpiderLargeRace  Auto
 
@@ -172,7 +173,7 @@ Bool Function checkIfSpider ( Actor akActor )
 			Debug.Trace("[SLP]       actorRace.GetName(): " + actorRace.GetName())
 			Debug.Trace("[SLP]       actorRace.GetName(): " + actorRace.GetName())
 
-			bIsSpider = (actorRace == SpiderRace ) || (actorRace == SpiderLArgeRace ) || (StringUtil.Find(actorRace.GetName(),"Spider")!= -1)
+			bIsSpider = (actorRace == SpiderRace ) || (actorRace == SpiderLargeRace ) || (StringUtil.Find(actorRace.GetName(),"Spider")!= -1)
 
 			StorageUtil.SetIntValue( akActor, "_SD_bIsSpider", bIsSpider as Int) 
 		else
@@ -195,7 +196,7 @@ Bool Function checkIfChaurus ( Actor akActor )
 
 			Debug.Trace("[SLP]       actorRace.GetName(): " + actorRace.GetName())
 
-			bIsChaurus = (actorRace == ChaurusRace ) || (StringUtil.Find(actorRace.GetName(), "Chaurus")!= -1)
+			bIsChaurus = (actorRace == ChaurusRace ) || (actorRace == ChaurusReaperRace ) || (StringUtil.Find(actorRace.GetName(), "Chaurus")!= -1)
 
 			StorageUtil.SetIntValue( akActor, "_SD_bIsChaurus", bIsChaurus as Int) 
 		else

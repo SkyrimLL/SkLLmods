@@ -954,7 +954,7 @@ Function tryCharmSpider(Actor Target)
 		iCharmThreshold = iCharmThreshold + ((StorageUtil.GetFloatValue(kPlayer, "_SLH_fHormonePheromones") as Int) / 2)
 
 		If (Utility.RandomInt(0,100)<=iCharmThreshold)  
-			Debug.Notification("[SLP] Charm Spider" )
+			; Debug.Notification("[SLP] Charm Spider" )
 		    ;   Debug.Messagebox(" Spider Pheromone charm spell started") 
 		 	; kPlayer.AddToFaction(SpiderFaction)
 		    Target.StopCombat()   
@@ -986,6 +986,7 @@ Function tryCharmSpider(Actor Target)
 		Debug.Trace("[SLP]       iCharmThreshold: " + iCharmThreshold)
 		Debug.Trace("[SLP]       checkIfSpider: " + fctUtils.checkIfSpider ( Target ))
 		Debug.Trace("[SLP]       _SLP_iSpiderPheromoneON: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iSpiderPheromoneON"))
+		Debug.Trace("[SLP]       _SLH_fHormonePheromones: " + StorageUtil.GetFloatValue(kPlayer, "_SLH_fHormonePheromones"))
 
 	endif
 
@@ -1027,6 +1028,7 @@ Function tryCharmChaurus(Actor Target)
 		iCharmThreshold = iCharmThreshold + ((StorageUtil.GetFloatValue(kPlayer, "_SLH_fHormonePheromones") as Int) / 2)
 
 		If (Utility.RandomInt(0,100)<=iCharmThreshold)   
+			Debug.Notification("[SLP] Charm Chaurus" )
 		    ; Debug.Messagebox(" Chaurus Pheromone charm spell started")    
 		 	; kPlayer.AddToFaction(ChaurusFaction)
 		    Target.StopCombat()   
@@ -1060,6 +1062,7 @@ Function tryCharmChaurus(Actor Target)
 		Debug.Trace("[SLP]       iCharmThreshold: " + iCharmThreshold)
 		Debug.Trace("[SLP]       checkIfChaurus: " + fctUtils.checkIfChaurus ( Target ))
 		Debug.Trace("[SLP]       _SLP_iChaurusPheromoneON: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iChaurusPheromoneON"))
+		Debug.Trace("[SLP]       _SLH_fHormonePheromones: " + StorageUtil.GetFloatValue(kPlayer, "_SLH_fHormonePheromones"))
 
 	endif
 EndFunction
