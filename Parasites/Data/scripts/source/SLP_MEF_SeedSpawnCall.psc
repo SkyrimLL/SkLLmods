@@ -41,7 +41,7 @@ Event OnEffectStart(Actor Target, Actor Caster)
 		thisActor = thisActorForm as Actor
 		thisActorRef = thisActor as ObjectReference
 
-		if (iChaurusCount <= iChaurusSpawnListMax)
+		if (iChaurusCount < iChaurusSpawnListMax)
 			if (thisActorRef==None)
 				Debug.Trace("[SLP] 	Actor [" + i + "] = "+ thisActorForm )
 				Debug.Trace("[SLP] 		Actor is None - Calling a replacement actor") 
