@@ -18,6 +18,7 @@ Event OnEffectStart(Actor Target, Actor Caster)
 	ObjectReference kPlayerRef
 	int valueCount = StorageUtil.FormListCount(none, "_SLP_lChaurusSpawnsList")
 	int i = 0
+	int iChaurusCount = 0
 	Form thisActorForm
 	Actor thisActor
 	ActorBase thisActorBase
@@ -27,6 +28,7 @@ Event OnEffectStart(Actor Target, Actor Caster)
 
  	if (iChaurusSpawnListMax<1)
  		StorageUtil.SetIntValue(kPlayer, "_SLP_maxBroodSpawns" , 1)
+ 		iChaurusSpawnListMax = 1
  	endif
 
     SummonSoundFX.Play(kPlayer)
@@ -39,37 +41,51 @@ Event OnEffectStart(Actor Target, Actor Caster)
 		thisActor = thisActorForm as Actor
 		thisActorRef = thisActor as ObjectReference
 
-		if (thisActorRef==None)
-			Debug.Trace("[SLP] 	Actor [" + i + "] = "+ thisActorForm )
-			Debug.Trace("[SLP] 		Actor is None - Calling a replacement actor") 
-			kChaurusSpawn = fctParasiteChaurusQueen.getRandomChaurusSpawn(kPlayer)
-			
-			if (kChaurusSpawn != None)
-				debug.trace("[SLP] Adding actor to _SLP_lChaurusSpawnsList - " + kChaurusSpawn )
-				StorageUtil.FormListSet( none, "_SLP_lChaurusSpawnsList", i, kChaurusSpawn as Form )
-				kChaurusSpawn.AddToFaction(ChaurusQueenSpawnFaction)
+		if (iChaurusCount <= iChaurusSpawnListMax)
+			if (thisActorRef==None)
+				Debug.Trace("[SLP] 	Actor [" + i + "] = "+ thisActorForm )
+				Debug.Trace("[SLP] 		Actor is None - Calling a replacement actor") 
+				kChaurusSpawn = fctParasiteChaurusQueen.getRandomChaurusSpawn(kPlayer)
+
+				if (kChaurusSpawn != None)
+					debug.trace("[SLP] Adding actor to _SLP_lChaurusSpawnsList - " + kChaurusSpawn )
+					StorageUtil.FormListSet( none, "_SLP_lChaurusSpawnsList", i, kChaurusSpawn as Form )
+					kChaurusSpawn.AddToFaction(ChaurusQueenSpawnFaction)
+					iChaurusCount += 1
+				else
+					debug.trace("[SLP]    Problem with fctParasites.getRandomChaurusSpawn - returned a None actor" )
+				endif
+
 			else
-				debug.trace("[SLP]    Problem with fctParasites.getRandomChaurusSpawn - returned a None actor" )
-			endif
+				Debug.Trace("[SLP] 	Actor [" + i + "] = "+ thisActorForm +" - " + thisActorForm.GetName())
 
+				if (thisActorRef.GetDistance(kPlayerRef) > 100.0)
+					Debug.Trace("[SLP] 		Moving Actor to player [" + i + "] = "+ thisActorForm +" - " + thisActorForm.GetName())
+
+					if (thisActor.IsDisabled())
+						thisActor.Enable()
+					endif
+
+					if (thisActor.IsDead())
+						thisActor.Resurrect()
+					endif
+
+					summonChaurusSpawn(thisActorRef)
+					thisActor.AddToFaction(ChaurusQueenSpawnFaction)
+					iChaurusCount += 1
+				endif
+
+			endif
 		else
-			Debug.Trace("[SLP] 	Actor [" + i + "] = "+ thisActorForm +" - " + thisActorForm.GetName())
+			; continuing past iChaurusSpawnListMax - cleaning up empty slots
 
-			if (thisActorRef.GetDistance(kPlayerRef) > 100.0)
-				Debug.Trace("[SLP] 		Moving Actor to player [" + i + "] = "+ thisActorForm +" - " + thisActorForm.GetName())
+			Debug.Trace("[SLP] summonChaurusSpawnList - continuing past iChaurusSpawnListMax - cleaning up empty slots: " + i)
 
-				if (thisActor.IsDisabled())
-					thisActor.Enable()
-				endif
-
-				if (thisActor.IsDead())
-					thisActor.Resurrect()
-				endif
-
-				summonChaurusSpawn(thisActorRef)
-				thisActor.AddToFaction(ChaurusQueenSpawnFaction)
+			if (thisActorRef!=None)			
+				thisActor.Disable()
 			endif
-
+			
+			StorageUtil.FormListSet( none, "_SLP_lChaurusSpawnsList", i, None )
 		endif
 
 		; if (StorageUtil.FormListFind( kActor, "_SD_lActivePunishmentDevices", kwDeviceKeyword as Form) <0)

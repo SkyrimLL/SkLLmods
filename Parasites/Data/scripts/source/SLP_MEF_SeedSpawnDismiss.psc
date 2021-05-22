@@ -15,9 +15,16 @@ Event OnEffectStart(Actor Target, Actor Caster)
 	ObjectReference kPlayerRef
 	int valueCount = StorageUtil.FormListCount(none, "_SLP_lChaurusSpawnsList")
 	int i = 0
+    int iChaurusCount = 0
 	Form thisActorForm
 	Actor thisActor
  	ObjectReference thisActorRef
+    Int iChaurusSpawnListMax = StorageUtil.GetIntValue(kPlayer, "_SLP_maxBroodSpawns" )
+
+    if (iChaurusSpawnListMax<1)
+        StorageUtil.SetIntValue(kPlayer, "_SLP_maxBroodSpawns" , 1)
+        iChaurusSpawnListMax = 1
+    endif
 
     SummonSoundFX.Play(kPlayer)
 
@@ -29,21 +36,33 @@ Event OnEffectStart(Actor Target, Actor Caster)
 		thisActor = thisActorForm as Actor
 		thisActorRef = thisActor as ObjectReference
 
-		if (thisActorRef==None)
-			Debug.Trace("[SLP] 	Dismiss actor [" + i + "] = "+ thisActorForm )
-			Debug.Trace("[SLP] 		Actor is None - skipping")
-		else
+        if (iChaurusCount <= iChaurusSpawnListMax)
+    		if (thisActorRef==None)
+    			Debug.Trace("[SLP] 	Dismiss actor [" + i + "] = "+ thisActorForm )
+    			Debug.Trace("[SLP] 		Actor is None - skipping")
+    		else
 
-			; Debug.Trace("	Actor [" + i + "] = "+ thisActorForm +" - " + thisActorForm.GetName())
+    			; Debug.Trace("	Actor [" + i + "] = "+ thisActorForm +" - " + thisActorForm.GetName())
 
-			Debug.Trace("[SLP] 	Dismiss actor [" + i + "] = "+ thisActorForm +" - " + thisActorForm.GetName())
-			dismissChaurusSpawn(thisActorRef)
+    			Debug.Trace("[SLP] 	Dismiss actor [" + i + "] = "+ thisActorForm +" - " + thisActorForm.GetName())
+    			dismissChaurusSpawn(thisActorRef)
+                iChaurusCount += 1
 
-			; if (StorageUtil.FormListFind( kActor, "_SD_lActivePunishmentDevices", kwDeviceKeyword as Form) <0)
-			;	StorageUtil.FormListAdd( kActor, "_SD_lActivePunishmentDevices", kwDeviceKeyword as Form )
-			; endif
-		endif
+    			; if (StorageUtil.FormListFind( kActor, "_SD_lActivePunishmentDevices", kwDeviceKeyword as Form) <0)
+    			;	StorageUtil.FormListAdd( kActor, "_SD_lActivePunishmentDevices", kwDeviceKeyword as Form )
+    			; endif
+    		endif
+        else
+            ; continuing past iChaurusSpawnListMax - cleaning up empty slots
 
+            Debug.Trace("[SLP] dismissChaurusSpawnList - continuing past iChaurusSpawnListMax - cleaning up empty slots: " + i)
+
+            if (thisActorRef!=None)         
+                thisActor.Disable()
+            endif
+            
+            StorageUtil.FormListSet( none, "_SLP_lChaurusSpawnsList", i, None )
+        endif
 		i += 1
 	endwhile
 
