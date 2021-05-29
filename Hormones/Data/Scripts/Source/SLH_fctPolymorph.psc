@@ -103,6 +103,7 @@ Bool function bimboTransformEffectON(actor kActor)
     GV_allowHRT.SetValue(allowHRT)
     GV_allowBimbo.SetValue(allowBimbo)
 
+    fctUtil.checkGender(kActor) 
     isActorMale = fctUtil.isMale(kActor)
 
     ; Abort if no gender/bimbo option checked in MCM
@@ -160,6 +161,10 @@ Bool function bimboTransformEffectON(actor kActor)
     if wEquipped != None; right hand
         kActor.UnequipItem(wEquipped, false, true)
     endif
+   
+    if (StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneFemale") < 50.0)
+		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneFemale", 50.0) 			 
+    endif
 
     If isActorMale
         ; Do not switch sex for female -> bimbo
@@ -167,7 +172,7 @@ Bool function bimboTransformEffectON(actor kActor)
         HRTEffectON(kActor)
 
         Utility.Wait(1.0)
-        TGEffectON(kActor)
+        fctBodyShape.tryTGEvent(kActor, 1)
 
         StorageUtil.SetFloatValue(kActor, "_SLH_fWeight", 0.0)
         StorageUtil.SetFloatValue(kActor, "_SLH_fBreast", 0.9)
@@ -176,11 +181,11 @@ Bool function bimboTransformEffectON(actor kActor)
         If allowBimbo == 0
             ; Allow sex change if bimbo effect is OFF
             Utility.Wait(1.0)
-            HRTEffectON(kActor)
+	    fctBodyShape.tryHRTEvent(kActor, 1)
         EndIf
 
         Utility.Wait(1.0)
-        TGEffectON(kActor)
+        fctBodyShape.tryTGEvent(kActor, 1)
     EndIf
 
     If GV_allowBimboRace.GetValue() == 1
@@ -189,8 +194,8 @@ Bool function bimboTransformEffectON(actor kActor)
         _bimboPresets = new int[4]
         _bimboMorphs = new float[19]
 
-        fctBodyShape.SaveFaceValues(kActor, _actorPresets, _actorMorphs)
-        fctBodyShape.SaveFaceValues(Bimbo, _bimboPresets, _bimboMorphs)
+        fctBodyShape.SaveFaceValues(kActor, _actorPresets,  _actorMorphs)
+        fctBodyShape.SaveFaceValues(Bimbo as Actor, _bimboPresets,  _bimboMorphs)
 
         ; get actor's race so we have it permanently to switch back
         if (ActorOriginalRace == ArgonianRaceVampire)
@@ -387,9 +392,9 @@ function bimboTransformEffectOFF(actor kActor)
 
             kActor.DispelSpell(TransformationSpell)
 
-            debugTrace(" Original race - " + ActorOriginalRace)
 
             ActorOriginalRace = StorageUtil.GetFormValue(none, "_SLH_bimboOriginalRace") as Race
+            debugTrace(" Original race - " + ActorOriginalRace)
             If ActorOriginalRace == None
                 ; In case of upgrade while in Bimbo mode
                 Debug.MessageBox("[Transformation cannot continue. Try going back to an earlier version of Hormones and update after being cured from the Bimbo curse.]")
@@ -402,8 +407,8 @@ function bimboTransformEffectOFF(actor kActor)
             _bimboPresets = new int[4]
             _bimboMorphs = new float[19]
 
-            fctBodyShape.SaveFaceValues(StorageUtil.GetFormValue(none, "_SLH_bimboOriginalActor") as Actor, _actorPresets, _actorMorphs)
-            fctBodyShape.SaveFaceValues(Bimbo, _bimboPresets, _bimboMorphs)
+            fctBodyShape.SaveFaceValues(StorageUtil.GetFormValue(none, "_SLH_bimboOriginalActor") as Actor, _actorPresets,  _actorMorphs )
+            fctBodyShape.SaveFaceValues(Bimbo as Actor, _bimboPresets, _bimboMorphs)
 
             fctBodyShape.LoadFaceValues(kActor, _actorPresets, _actorMorphs)
         EndIf
@@ -455,15 +460,19 @@ function bimboTransformEffectOFF(actor kActor)
         Utility.Wait(1.0)
         TGEffectOFF(kActor)
     Else
-        if !allowBimbo
+    ;    if !allowBimbo
             ; Race change is enough for Bimbo -> female
-            Utility.Wait(1.0)
-            HRTEffectOFF(kActor)
-        EndIf
+    ;        Utility.Wait(1.0)
+    ;        HRTEffectOFF(kActor)
+    ;    EndIf
 
-        Utility.Wait(1.0)
-        TGEffectOFF(kActor)
+    ;    Utility.Wait(1.0)
+    ;    TGEffectOFF(kActor)
     EndIf
+
+	If StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneBimbo") > 15.0
+		StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneBimbo", 15.0)
+	EndIf
 
     SLH_Control.playMoan(kActor)
 
@@ -503,7 +512,18 @@ Bool function HRTEffectON(actor kActor)
     Endif
 
     debugTrace(" SexChange Init")
- 
+
+	fctUtil.checkGender(kActor) 
+	if (fctUtil.isMale(kActor))
+		if (StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneMale") > 50.0)
+			StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneMale", 50.0) 			 
+		endif
+	Else
+		if (StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneFemale") > 50.0)
+			StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneFemale", 50.0) 			 
+		endif
+	Endif
+
     If (fctBodyShape.isSchlongSet(kActor )) ; add check for isGenderChangeON
         setSchlong = True
     endif
@@ -542,6 +562,17 @@ function HRTEffectOFF(actor kActor)
         Return
     Endif
 
+	fctUtil.checkGender(kActor) 
+	if (fctUtil.isMale(kActor))
+		if (StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneFemale") < 50.0)
+			StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneFemale", 50.0) 			 
+		endif
+	Else
+		if (StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneMale") < 50.0)
+			StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneMale", 50.0) 			 
+		endif
+	Endif
+
     SexLab.ClearForcedGender(kActor)
 
     ; MiscUtil.ExecuteBat("SLH_sexchange.bat")
@@ -551,8 +582,8 @@ function HRTEffectOFF(actor kActor)
     SLH_Control.playMoan(kActor)
     fctColor.sendSlaveTatModEvent(kActor, "Bimbo","Feet Nails", bRefresh = True )
 
-    debugTrace(" HRT OFF")
     SLH_Control.setHRTState(kActor, FALSE)
+    debugTrace(" HRT OFF")
          
 endFunction
 
@@ -575,9 +606,9 @@ Bool function TGEffectON(actor kActor)
         setSchlong = True
     endif
 
-    isActorMale = fctUtil.isMale(kActor)
-
-    If (isActorMale)
+    fctUtil.checkGender(kActor) 
+    
+    If (fctUtil.isMale(kActor))
         ; Reserved for later - Find a way to add boobs to a male character
            
         ;    kActor.SendModEvent("SLHSetSchlong", "UNP Bimbo")
@@ -592,22 +623,26 @@ Bool function TGEffectON(actor kActor)
         StorageUtil.SetFloatValue(kActor, "_SLH_fSchlong",0.7 ) 
         kActor.SendModEvent("SLHRefresh")
 
-        Sexlab.TreatAsMale(kActor)
-        SLH_Control.setTGState(kActor, TRUE)
-        debugTrace(" TG ON")
-
-    elseif (!isActorMale) 
+        Sexlab.TreatAsFemale(kActor)
+    else 
         ; Female to Female + Schlong
+
+		if (StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneMale") < 50.0)
+			StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneMale", 50.0) 			 
+		endif
+		if (StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneFemale") > 75.0)
+			StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneFemale", 75.0) 			 
+		endif
 
         kActor.SendModEvent("SLHSetSchlong", "UNP Bimbo")
         StorageUtil.SetFloatValue(kActor, "_SLH_fSchlong",0.7 ) 
         kActor.SendModEvent("SLHRefresh")
 
         Sexlab.TreatAsMale(kActor)
-        SLH_Control.setTGState(kActor, TRUE)
-        debugTrace(" TG ON")
-
     endif
+
+	SLH_Control.setTGState(kActor, TRUE)
+	debugTrace(" TG ON")
 
     debugTrace(" TG Start - IsTG: " + GV_isTG.GetValue() as Int)
     Return True
@@ -624,32 +659,39 @@ function TGEffectOFF(actor kActor)
         Return
     Endif
 
-    isActorMale = fctUtil.isMale(kActor)
-
-    If (isActorMale) 
+    fctUtil.checkGender(kActor) 
+    
+    If (fctUtil.isMale(kActor)) 
         ; Reserved - Remove boobs from male
+
+		if (StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneFemale") > 50.0)
+			StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneFemale", 50.0) 			 
+		endif
 
         SexLab.ClearForcedGender(kActor)
 
-        debugTrace(" TG OFF")
         kActor.SendModEvent("SLHSetSchlong", "")
-        SLH_Control.setTGState(kActor, FALSE)
-
+        Sexlab.TreatAsMale(kActor)
         SLH_Control.playMoan(kActor)
-
-    elseif (!isActorMale) 
+    else
         ; Female to Female 
+
+		if (StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneMale") > 50.0)
+			StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneMale", 50.0) 			 
+		endif
+		if (StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneFemale") < 50.0)
+			StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneFemale", 50.0) 			 
+		endif
 
         SexLab.ClearForcedGender(kActor)
 
         kActor.SendModEvent("SLHRemoveSchlong")
         Sexlab.TreatAsFemale(kActor)
-        SLH_Control.setTGState(kActor, FALSE)
-        debugTrace(" TG OFF")
-
         SLH_Control.playMoan(kActor)
-
     endif                
+
+	SLH_Control.setTGState(kActor, FALSE)
+	debugTrace(" TG OFF")
 
 endFunction
 

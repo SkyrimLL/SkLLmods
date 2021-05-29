@@ -6,10 +6,11 @@ ActorBase pActorBase
  
 Event OnEffectStart(Actor Target, Actor Caster)
 
-    pActorBase = Target.GetActorBase()
+    if Target != none
+		Target.SendModEvent("SLHCastHRTCurse")
+	endIf
 
-    fctPolymorph.HRTEffectON(Target)
-    Game.ShowRaceMenu()
+    ; Game.ShowRaceMenu()
  
 EndEvent
 

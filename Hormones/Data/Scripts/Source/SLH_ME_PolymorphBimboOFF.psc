@@ -6,10 +6,11 @@ ActorBase pActorBase
  
 Event OnEffectStart(Actor Target, Actor Caster)
 
-    pActorBase = Target.GetActorBase()
-
-    fctPolymorph.bimboTransformEffectOFF(Target)
-    Game.ShowRaceMenu()
+    if Target != none
+		Target.SendModEvent("SLHCureBimboCurse")
+	endIf 
+	
+    ; Game.ShowRaceMenu()
  
 EndEvent
 

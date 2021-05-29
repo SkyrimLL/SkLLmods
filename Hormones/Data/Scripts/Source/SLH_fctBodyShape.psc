@@ -411,6 +411,7 @@ function alterBodyAfterRest(Actor kActor)
 	Float fLibido = StorageUtil.GetFloatValue(kActor, "_SLH_fLibido")
 	Int iSexActivityBuffer = StorageUtil.GetIntValue(kActor, "_SLH_iSexActivityBuffer")
 	Int iSexActivityThreshold = StorageUtil.GetIntValue(kActor, "_SLH_iSexActivityThreshold")
+	Int iSexActivityThresholdPlus = StorageUtil.GetIntValue(kActor, "_SLH_iSexActivityThresholdPlus")
 
 
 	Float fBreastSwellMod   = StorageUtil.GetFloatValue(kActor, "_SLH_fBreastSwellMod")
@@ -473,13 +474,8 @@ function alterBodyAfterRest(Actor kActor)
 	iDaedricInfluence = StorageUtil.GetIntValue(kActor, "_SLH_iDaedricInfluence") 
 
 
-	if (iSexCountToday < iSexActivityBuffer)
-		; no body change if sex activity below buffer
-		debugTrace("  no body change - sex activity below buffer")
-		return
-	endif
-
-	if (iDaysSinceLastSex >= iSexActivityThreshold )
+	if (iDaysSinceLastSex >= iSexActivityThreshold + iSexActivityThresholdPlus )
+		StorageUtil.SetIntValue(kActor, "_SLH_iSexActivityThresholdPlus",iSexActivityThresholdPlus+1)
 		; invert body changes if sex activity below threshold
 		debugTrace("  invert body changes - sex activity below threshold")
 		fWeightSwellMod = -1.0 * fWeightSwellMod
@@ -487,6 +483,11 @@ function alterBodyAfterRest(Actor kActor)
 		fButtSwellMod = -1.0 * fButtSwellMod
 		fBellySwellMod = -1.0 * fBellySwellMod
 		fSchlongSwellMod = -1.0 * fSchlongSwellMod
+	elseIf (iSexCountToday < iSexActivityBuffer)
+		StorageUtil.UnsetIntValue(kActor, "_SLH_iSexActivityThresholdPlus")
+		; no body change if sex activity below buffer
+		debugTrace("  no body change - sex activity below buffer")
+		return
 	endif
 
 	debugTrace( ">>>>> alterBodyAfterRest detected " )

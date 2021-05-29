@@ -1022,6 +1022,8 @@ Event OnCastBimboCurseEvent(String _eventName, String _args, Float _argc = 1.0, 
  	if (kActor == None)
  		kActor = Game.GetPlayer()
  	EndIf
+	fctUtil.checkGender(kActor) 
+	Bool fromMale = fctUtil.isMale(kActor)
 	debugTrace(" Cast Bimbo Curse event" )	  
 	; PolymorphBimbo.Cast(PlayerActor,PlayerActor)
 	isBimbo = fctPolymorph.bimboTransformEffectON(kActor)
@@ -1029,7 +1031,9 @@ Event OnCastBimboCurseEvent(String _eventName, String _args, Float _argc = 1.0, 
 	If (isBimbo)
 		_SLH_QST_Bimbo.SetStage(4)
 
-		Game.ShowRaceMenu()
+		if fromMale != fctUtil.isMale(kActor) || (fctPolymorph.GV_allowBimboRace.GetValue()==1)
+			Game.ShowRaceMenu()
+		endif
 	Endif
 
 endEvent
@@ -1041,12 +1045,16 @@ Event OnCureBimboCurseEvent(String _eventName, String _args, Float _argc = 1.0, 
  		kActor = Game.GetPlayer()
  	EndIf
 
+	fctUtil.checkGender(kActor) 
+	Bool fromMale = fctUtil.isMale(kActor)
  	if (GV_isBimboFinal.GetValue()==0)
 		debugTrace(" Cure Bimbo Curse event" )	  
 
 	    GV_isBimboFinal.SetValue(0)
 		fctPolymorph.bimboTransformEffectOFF(kActor)
-	    Game.ShowRaceMenu()	
+		if fromMale != fctUtil.isMale(kActor) || (fctPolymorph.GV_allowBimboRace.GetValue()==1)
+			Game.ShowRaceMenu()
+		endif
 	Else
 		debugTrace(" Cure Bimbo Curse event - Aborted. Bimbo is locked." )	  
 	Endif
@@ -1061,14 +1069,16 @@ Event OnCastTGCurseEvent(String _eventName, String _args, Float _argc = 1.0, For
  		kActor = Game.GetPlayer()
  	EndIf
 	debugTrace(" Cast TG Curse event" )	  
+	fctUtil.checkGender(kActor) 
+	Bool fromMale = fctUtil.isMale(kActor)
 	isTG = fctPolymorph.TGEffectON(kActor)
 
 	if (isTG)
 		; PolymorphBimbo.Cast(PlayerActor,PlayerActor)
 		_SLH_QST_Bimbo.SetStage(6)
-
-		if (fctUtil.isMale(kActor))
-		    Game.ShowRaceMenu()
+		
+		if fromMale != fctUtil.isMale(kActor)
+			Game.ShowRaceMenu()
 		endif
 
 	endif
@@ -1082,11 +1092,17 @@ Event OnCureTGCurseEvent(String _eventName, String _args, Float _argc = 1.0, For
  		kActor = Game.GetPlayer()
  	EndIf
 
+	fctUtil.checkGender(kActor) 
+	Bool fromMale = fctUtil.isMale(kActor)
  	if (GV_isTGFinal.GetValue()==0)
 		debugTrace(" Cure TG Curse event" )	  
 
 	    GV_isTGFinal.SetValue(0)
 		fctPolymorph.TGEffectOFF(kActor)
+		
+		if fromMale != fctUtil.isMale(kActor)
+			Game.ShowRaceMenu()
+		endif
 	Else
 		debugTrace(" Cure TG Curse event - Aborted. TG is locked." )	  
 	Endif

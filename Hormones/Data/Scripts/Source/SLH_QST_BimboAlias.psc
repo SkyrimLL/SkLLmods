@@ -112,6 +112,9 @@ Function endBimbo()
 
 	StorageUtil.SetIntValue(BimboActor, "_SLH_bimboTransformDate", -1)
 	StorageUtil.SetIntValue(BimboActor, "_SLH_bimboTransformGameDays", 0)
+	If StorageUtil.GetFloatValue(BimboActor, "_SLH_fHormoneBimbo") > 15.0
+		StorageUtil.SetFloatValue(BimboActor, "_SLH_fHormoneBimbo", 15.0)
+	EndIf
 EndFunction
 
 Event OnUpdate()
