@@ -13,9 +13,6 @@ ObjectReference  PetSlaveActorREF= _SLSD_PetSlaveREF.GetReference()
 	_SLSD_PetFollow.SetValue(1)
 	_SLSD_PetPosition.SetValue(0)
 
-	FlameAuraFX.RemoteCast( PetFreeActor, PetFreeActor, kPlayer )
-	Utility.Wait(1.0)
-
 	if (_SLSD_PetPlugFree.GetValue() == 1)
 		PetFreeActor.RemoveFromFaction( WEPlayerFriend )
 		PetFreeActor.AddToFaction( WEPlayerEnemy )
@@ -29,14 +26,11 @@ ObjectReference  PetSlaveActorREF= _SLSD_PetSlaveREF.GetReference()
 
 	EndIf
 
-
-	PetSlaveActorREF.MoveTo(kPlayer )
-	PetSlaveActor.Enable()
-
-	Utility.Wait(1.0)
-
+	PetSlaveActorREF.MoveTo(PetFreeActor)
+	FlameAuraFX.RemoteCast( PetFreeActor, PetFreeActor, kPlayer )
 	PetFreeActor.Disable()
 
+	PetSlaveActor.Enable()
 	IsPetHuman.SetValue(1)
 
 	Utility.Wait(1.0)

@@ -21,7 +21,7 @@ EndFunction
 ;BEGIN FRAGMENT Fragment_17
 Function Fragment_17()
 ;BEGIN CODE
-Actor PetSlaveActor= _SLSD_PetSlaveREF.GetReference() as Actor
+	Actor PetSlaveActor= _SLSD_PetSlaveREF.GetReference() as Actor
 	ObjectReference PetFreeActorREF= _SLSD_PetFreeREF.GetReference() 
 	Actor PetFreeActor= _SLSD_PetFreeREF.GetReference() as Actor
 	string PetRaceID = MiscUtil.GetActorRaceEditorID(PetFreeActor)
@@ -34,18 +34,18 @@ Actor PetSlaveActor= _SLSD_PetSlaveREF.GetReference() as Actor
 	_SLSD_PetFollow.SetValue(1)
 	_SLSD_PetPosition.SetValue(0)
 
-	PetFreeActorREF.MoveTo(kPlayer)
-	Debug.Trace("[SL Stories] Enabling Pet Free")
-	PetFreeActor.Enable()
-
-	Sexlab.TreatAsFemale(PetFreeActor)
-
-	Utility.Wait(1.0)
-
 	Debug.Trace("[SL Stories] Removing Pet Slave")
+	PetFreeActorREF.MoveTo(PetSlaveActor)
+	FlameAuraFX.RemoteCast( PetSlaveActor, PetSlaveActor, Game.GetPlayer())
 	PetSlaveActor.Disable()
 
+	Debug.Trace("[SL Stories] Enabling Pet Free")
+	PetFreeActor.Enable()
 	IsPetHuman.SetValue(0)
+
+	if !Sexlab.IsValidActor(PetFreeActor)
+		Sexlab.TreatAsFemale(PetFreeActor)
+	endif
 
 	Utility.Wait(1.0)
 
