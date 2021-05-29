@@ -29,7 +29,8 @@ EndFunction
 
 
 function DeviceMenuRemoveWithKey()
-    if RemoveDeviceWithKey()
+	libs.PlayerRef.SendModEvent("SLPSexCure","FaceHugger",1)
+	if RemoveDeviceWithKey()
 	    string msg = ""
 	    if Aroused.GetActorExposure(libs.PlayerRef) < libs.ArousalThreshold("Desire")
 		    msg = "You poke the critter enough to force it away from you - more due to discomfort than your desire for pleasure."
@@ -44,6 +45,18 @@ function DeviceMenuRemoveWithKey()
     Endif
 EndFunction
 
+Function EscapeAttemptLockPick()
+	Escape(0)
+	DestroyLockPick()
+	Aroused.UpdateActorExposure(libs.PlayerRef,1)
+	libs.NotifyPlayer("In addition, your struggles with the creature have left you aroused.", true)
+EndFunction
+
+Function EscapeAttemptStruggle()
+	Escape(0)
+	Aroused.UpdateActorExposure(libs.PlayerRef,2, "Brute force fail")
+	libs.NotifyPlayer("Your efforts just leave you exhausted and aroused.", true)
+EndFunction
 
 string Function DeviceMenuPickLockFail()
 	libs.PlayerRef.RemoveItem(Lockpick)
@@ -95,7 +108,7 @@ EndFunction
 
 function BeltMenuMasturbate()
 	libs.NotifyPlayer("You attempt to seek relief from the burning desire that fills you...")
-	sslBaseAnimation[] anims = SexLab.GetAnimationsByTag(1, "Solo", "F", "DeviousDevice", requireAll=true)
+	sslBaseAnimation[] anims = SexLab.GetAnimationsByTag(1, "Solo, F", "Oral,Vaginal,Estrus,Dwemer", requireAll=true)
 	actor[] tmp = new actor[1]
 	tmp[0] = libs.PlayerRef
         Aroused.UpdateActorExposure(libs.PlayerRef,3)

@@ -83,6 +83,7 @@ ReferenceAlias Property BarnaclesInfectedAlias  Auto
 ReferenceAlias Property TentacleMonsterInfectedAlias  Auto  
 ReferenceAlias Property LivingArmorInfectedAlias  Auto  
 ReferenceAlias Property FaceHuggerInfectedAlias  Auto   
+ReferenceAlias Property SprigganRootInfectedAlias  Auto   
 ObjectReference Property DummyAlias  Auto  
 
 GlobalVariable Property _SLP_GV_numInfections  Auto 
@@ -209,6 +210,18 @@ Bool Function infectParasiteByString(Actor kActor, String sParasiteKeyword = "" 
 	elseif (sParasiteKeyword == "Barnacles" )  
 		return fctParasiteBarnacles.infectBarnacles(kActor)
  
+	elseif (sParasiteKeyword == "SprigganRootGag" )  
+		return fctParasiteSprigganRoot.infectSprigganRootGag(kActor)
+ 
+	elseif (sParasiteKeyword == "SprigganRootArms" )  
+		return fctParasiteSprigganRoot.infectSprigganRootArms(kActor)
+ 
+	elseif (sParasiteKeyword == "SprigganRootFeet" )  
+		return fctParasiteSprigganRoot.infectSprigganRootFeet(kActor)
+ 
+	elseif (sParasiteKeyword == "SprigganRootBody" )  
+		return fctParasiteSprigganRoot.infectSprigganRootBody(kActor)
+ 
 	EndIf
 
 	return  false
@@ -271,6 +284,18 @@ Bool Function applyParasiteByString(Actor kActor, String sParasiteKeyword = "" )
 		
 	elseif (sParasiteKeyword == "Barnacles" )  
 		return fctParasiteBarnacles.applyBarnacles(kActor)
+
+	elseif (sParasiteKeyword == "SprigganRootGag" )  
+		return fctParasiteSprigganRoot.applySprigganRootGag(kActor)
+ 
+	elseif (sParasiteKeyword == "SprigganRootArms" )  
+		return fctParasiteSprigganRoot.applySprigganRootArms(kActor)
+ 
+	elseif (sParasiteKeyword == "SprigganRootFeet" )  
+		return fctParasiteSprigganRoot.applySprigganRootFeet(kActor)
+ 
+	elseif (sParasiteKeyword == "SprigganRootBody" )  
+		return fctParasiteSprigganRoot.applySprigganRootBody(kActor)
  
 	EndIf
 
@@ -333,6 +358,17 @@ Function cureParasiteByString(Actor kActor, String sParasiteKeyword = "", Bool b
 	elseif (sParasiteKeyword == "Barnacles" )  
 		fctParasiteBarnacles.cureBarnacles(kActor, bHarvestParasite)
  
+	elseif (sParasiteKeyword == "SprigganRootGag" )  
+		return fctParasiteSprigganRoot.cureSprigganRootGag(kActor)
+ 
+	elseif (sParasiteKeyword == "SprigganRootArms" )  
+		return fctParasiteSprigganRoot.cureSprigganRootArms(kActor)
+ 
+	elseif (sParasiteKeyword == "SprigganRootFeet" )  
+		return fctParasiteSprigganRoot.cureSprigganRootFeet(kActor)
+ 
+	elseif (sParasiteKeyword == "SprigganRootBody" )  
+		return fctParasiteSprigganRoot.cureSprigganRootBody(kActor)
 	EndIf
 
 EndFunction
@@ -358,6 +394,9 @@ Bool Function ActorHasKeywordByString(actor akActor, String sParasiteKeyword = "
 		
 	elseif (sParasiteKeyword == "Barnacles" )  
 		return fctParasiteBarnacles.ActorHasKeywordByString(akActor, sParasiteKeyword)
+		
+	elseif (sParasiteKeyword == "SprigganRootGag" ) || (sParasiteKeyword == "SprigganRootArms" )  || (sParasiteKeyword == "SprigganRootFeet" )  || (sParasiteKeyword == "SprigganRootBody" )  
+		return fctParasiteSprigganRoot.ActorHasKeywordByString(akActor, sParasiteKeyword)
  	else
  		return fctDevious.ActorHasKeywordByString(akActor, sParasiteKeyword)
 	EndIf
@@ -387,7 +426,10 @@ Armor Function getParasiteByString(String sParasiteKeyword = ""  )
 		
 	elseif (sParasiteKeyword == "Barnacles" )  
 		thisArmor = fctParasiteBarnacles.getParasiteByString(sParasiteKeyword)
- 
+ 		
+	elseif (sParasiteKeyword == "SprigganRootGag" ) || (sParasiteKeyword == "SprigganRootArms" )  || (sParasiteKeyword == "SprigganRootFeet" )  || (sParasiteKeyword == "SprigganRootBody" )  
+		thisArmor = fctParasiteSprigganRoot.getParasiteByString(sParasiteKeyword)
+
 	EndIf
 
 	return thisArmor
@@ -416,6 +458,9 @@ Armor Function getParasiteRenderedByString(String sParasiteKeyword = ""  )
 		
 	elseif (sParasiteKeyword == "Barnacles" )  
 		thisArmor = fctParasiteBarnacles.getParasiteRenderedByString(sParasiteKeyword)
+ 		
+	elseif (sParasiteKeyword == "SprigganRootGag" ) || (sParasiteKeyword == "SprigganRootArms" )  || (sParasiteKeyword == "SprigganRootFeet" )  || (sParasiteKeyword == "SprigganRootBody" )  
+		thisArmor = fctParasiteSprigganRoot.getParasiteRenderedByString(sParasiteKeyword)
  
 	EndIf
 	return thisArmor
@@ -445,7 +490,10 @@ Keyword Function getDeviousKeywordByString(String sParasiteKeyword = ""  )
 		
 	elseif (sParasiteKeyword == "Barnacles" )  
 		thisKeyword = fctParasiteBarnacles.getDeviousKeywordByString( sParasiteKeyword )
-		
+ 		
+	elseif (sParasiteKeyword == "SprigganRootGag" ) || (sParasiteKeyword == "SprigganRootArms" )  || (sParasiteKeyword == "SprigganRootFeet" )  || (sParasiteKeyword == "SprigganRootBody" )  
+		thisKeyword = fctParasiteSprigganRoot.getDeviousKeywordByString(sParasiteKeyword)
+ 		
 	else
 		thisKeyword = fctParasitesDevious.getDeviousDeviceKeywordByString( sParasiteKeyword )
 	endIf
@@ -475,6 +523,9 @@ Function equipParasiteNPCByString(Actor kActor, String sParasiteKeyword = ""  )
 		
 	elseif (sParasiteKeyword == "Barnacles" )  
 		fctParasiteBarnacles.equipParasiteNPCByString(kActor,  sParasiteKeyword )
+ 		
+	elseif (sParasiteKeyword == "SprigganRootGag" ) || (sParasiteKeyword == "SprigganRootArms" )  || (sParasiteKeyword == "SprigganRootFeet" )  || (sParasiteKeyword == "SprigganRootBody" )  
+		fctParasiteSprigganRoot.equipParasiteNPCByString(kActor,  sParasiteKeyword )
 		
 	else
 	; Function only available for custom parasite devices
@@ -506,6 +557,9 @@ Function clearParasiteNPCByString(Actor kActor, String sParasiteKeyword = ""  )
 	elseif (sParasiteKeyword == "Barnacles" )  
 		fctParasiteBarnacles.clearParasiteNPCByString(kActor,  sParasiteKeyword )
 		
+ 		
+	elseif (sParasiteKeyword == "SprigganRootGag" ) || (sParasiteKeyword == "SprigganRootArms" )  || (sParasiteKeyword == "SprigganRootFeet" )  || (sParasiteKeyword == "SprigganRootBody" )  
+		fctParasiteSprigganRoot.clearParasiteNPCByString(kActor,  sParasiteKeyword )
 	else
 	; Function only available for custom parasite devices
 	;	fctParasitesDevious.clearParasiteNPCByString(kActor,  sParasiteKeyword )
@@ -613,18 +667,11 @@ EndFunction
 
 Function clearParasiteAlias(Actor akActor, String sParasite = ""  )
  
-	if (sParasite == "SpiderEgg" )  
+	if (sParasite == "SpiderEgg" ) || (sParasite == "SpiderPenis" )  
 		SpiderEggInfectedAlias.ForceRefTo(DummyAlias)
 		SpiderFollowerAlias.ForceRefTo(DummyAlias)  
 
-	elseif (sParasite == "SpiderPenis" )  
-		SpiderEggInfectedAlias.ForceRefTo(DummyAlias)
-		SpiderFollowerAlias.ForceRefTo(DummyAlias)  
-
-	elseif (sParasite == "ChaurusWorm" )  
-		ChaurusWormInfectedAlias.ForceRefTo(DummyAlias)
-		
-	elseif (sParasite == "ChaurusWormVag" )  
+	elseif (sParasite == "ChaurusWorm" )  || (sParasite == "ChaurusWormVag" )  
 		ChaurusWormInfectedAlias.ForceRefTo(DummyAlias)
 		
 	elseif (sParasite == "ChaurusQueenGag" )  
@@ -648,14 +695,14 @@ Function clearParasiteAlias(Actor akActor, String sParasite = ""  )
 	elseif (sParasite == "LivingArmor" )  
 		LivingArmorInfectedAlias.ForceRefTo(DummyAlias)
 		
-	elseif (sParasite == "FaceHugger" )  || (sParasite == "HipHugger" )  
-		FaceHuggerInfectedAlias.ForceRefTo(DummyAlias)
-		
-	elseif (sParasite == "FaceHuggerGag" )  
+	elseif (sParasite == "FaceHugger" )  || (sParasite == "HipHugger" )  || (sParasite == "FaceHuggerGag" )  
 		FaceHuggerInfectedAlias.ForceRefTo(DummyAlias)
 		
 	elseif (sParasite == "Barnacles" )  
 		BarnaclesInfectedAlias.ForceRefTo(DummyAlias)
+		
+	elseif (sParasite == "SprigganRootGag" ) || (sParasite == "SprigganRootArms" )  || (sParasite == "SprigganRootFeet" )  || (sParasite == "SprigganRootBody" )  
+		SprigganRootInfectedAlias.ForceRefTo(DummyAlias)
 
 	endif
 

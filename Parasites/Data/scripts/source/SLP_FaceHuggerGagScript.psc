@@ -31,6 +31,34 @@ Function DeviceMenuExt(int msgChoice)
 	EndIf
 EndFunction
 
+function DeviceMenuRemoveWithKey()
+	libs.PlayerRef.SendModEvent("SLPSexCure","FaceHuggerGag",1)
+	if RemoveDeviceWithKey()
+	    string msg = ""
+	    if Aroused.GetActorExposure(libs.PlayerRef) < libs.ArousalThreshold("Desire")
+		    msg = "You poke the critter enough to force it away from you."
+	    elseif Aroused.GetActorExposure(libs.PlayerRef) < libs.ArousalThreshold("Horny")
+		    msg = "You jab the critter in the right spot and let out a sigh of relief as it unwraps his legs from your face."
+	    elseif Aroused.GetActorExposure(libs.PlayerRef) < libs.ArousalThreshold("Desperate")
+		    msg = "Unable to resist any longer you anxiously desperately jab the critter until it leaves your face."
+	    else
+		    msg = "After several frenzied attempts your trembling fingers finally manage to somehow pull the squirmy critter away from your throbbing mouth."
+	    endif
+	    libs.Notify(msg, true)
+    Endif
+EndFunction
+
+Function EscapeAttemptLockPick()
+	Escape(0)
+	DestroyLockPick()
+	libs.NotifyPlayer("In addition, your struggles with the creature have left you exhausted.", true)
+EndFunction
+
+Function EscapeAttemptStruggle()
+	Escape(0)
+	libs.NotifyPlayer("Your efforts just leave you exhausted.", true)
+EndFunction
+
 string Function DeviceMenuPickLockSuccess()
 	RemoveDevice(libs.PlayerRef)
 	zad_GagPickLockSuccessMsg.Show()
@@ -49,19 +77,6 @@ string Function DeviceMenuPickLockFail()
 		libs.PlayerRef.RemoveItem(Lockpick)
 		zad_GagPickLockFailMsg.Show()
 		return ""
-	endif
-EndFunction
-
-Function DeviceMenuPickLock()
-	if libs.PlayerRef.WornHasKeyword(libs.zad_DeviousArmbinder)
-		zad_GagArmsTiedMsg.Show()
-		return
-	EndIf
-	int unlockChance = libs.CheckDeviceEscape(libs.GetUnlockThreshold(), "Lockpicking")
-        if (unlockChance == -1)
-		DeviceMenuPickLockSuccess()
-	else
-		DeviceMenuPickLockFail()
 	endif
 EndFunction
 

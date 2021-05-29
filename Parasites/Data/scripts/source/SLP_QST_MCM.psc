@@ -54,6 +54,15 @@ float		_bellyMaxFaceHugger = 1.0
 bool		_toggleBarnacles = true
 float		_chanceBarnacles = -1.0 
 
+bool		_toggleSprigganRootGag = true
+float		_chanceSprigganRootGag = -1.0
+bool		_toggleSprigganRootArms = true
+float		_chanceSprigganRootArms = -1.0
+bool		_toggleSprigganRootFeet = true
+float		_chanceSprigganRootFeet = -1.0
+bool		_toggleSprigganRootBody = true
+float		_chanceSprigganRootBody = -1.0
+
 bool		_toggleChaurusQueenDebug = false
 bool		_toggleChaurusQueenVag = true
 float		_chanceChaurusQueenVag = -1.0
@@ -68,6 +77,7 @@ float		_chanceChaurusQueenBody = -1.0
 float		_bellyMaxChaurusQueen = -1.0
 float		_maxBroodSpawns = -1.0
 bool		_autoRemoveDragonWings = false
+
 
 bool		_toggleRefreshAll = false
 bool		_toggleClearAll = false
@@ -128,13 +138,17 @@ event OnPageReset(string a_page)
 	; ActorBase pActorBase = PlayerActor.GetActorBase()
 
 
-	_resetTrigger = (0.1 + _chanceSpiderEgg) * (0.1 + _chanceSpiderPenis) * (0.1 + _chanceChaurusWorm) * (0.1 + _chanceChaurusWormVag) * (0.1 + _chanceEstrusTentacles) * (0.1 + _chanceTentacleMonster) * (0.1 + _chanceEstrusSlime) * (0.1 + _chanceLivingArmor) * (0.1 + _chanceFaceHugger) * (0.1 + _chanceBarnacles)  * (0.1 + _chanceChaurusQueenVag)   * (0.1 + _chanceChaurusQueenGag)   * (0.1 + _chanceChaurusQueenSkin)   * (0.1 + _chanceChaurusQueenArmor)   * (0.1 + _chanceChaurusQueenBody) 
+	_resetTrigger = 1.0
 
 	If (StorageUtil.GetIntValue(none, "_SLP_initMCM" )!=1)
 		StorageUtil.SetIntValue(none, "_SLP_initMCM", 1 )
 	EndIf
 
-	StorageUtil.SetIntValue(none, "_SLP_versionMCM", 20210121 )
+	StorageUtil.SetIntValue(none, "_SLP_versionMCM", 20210528 )
+
+ 	; If (StorageUtil.GetIntValue(none, "_SLP_versionMCM" ) == 0) || (_resetTrigger<0.0)
+ 		_setParasiteSettings()
+ 	; Endif
 
 	_toggleSpiderEgg = StorageUtil.GetIntValue(kPlayer, "_SLP_toggleSpiderEgg" )
 	_chanceSpiderEgg = StorageUtil.GetFloatValue(kPlayer, "_SLP_chanceSpiderEgg" )
@@ -174,6 +188,16 @@ event OnPageReset(string a_page)
 	_toggleBarnacles = StorageUtil.GetIntValue(kPlayer, "_SLP_toggleBarnacles" )
 	_chanceBarnacles = StorageUtil.GetFloatValue(kPlayer, "_SLP_chanceBarnacles" ) 
 
+	_toggleSprigganRootGag = StorageUtil.GetIntValue(kPlayer, "_SLP_toggleSprigganRootGag" )
+	_chanceSprigganRootGag = StorageUtil.GetFloatValue(kPlayer, "_SLP_chanceSprigganRootGag" )
+	_toggleSprigganRootArms = StorageUtil.GetIntValue(kPlayer, "_SLP_toggleSprigganRootArms" )
+	_chanceSprigganRootArms = StorageUtil.GetFloatValue(kPlayer, "_SLP_chanceSprigganRootArms" )
+	_toggleSprigganRootFeet = StorageUtil.GetIntValue(kPlayer, "_SLP_toggleSprigganRootFeet" )
+	_chanceSprigganRootFeet = StorageUtil.GetFloatValue(kPlayer, "_SLP_chanceSprigganRootFeet" )
+	_toggleSprigganRootBody = StorageUtil.GetIntValue(kPlayer, "_SLP_toggleSprigganRootBody" )
+	_chanceSprigganRootBody = StorageUtil.GetFloatValue(kPlayer, "_SLP_chanceSprigganRootBody" )
+
+
 	_toggleChaurusQueenDebug = StorageUtil.GetIntValue(kPlayer, "_SLP_toggleChaurusQueenDebug" )
 	_toggleChaurusQueenVag = StorageUtil.GetIntValue(kPlayer, "_SLP_toggleChaurusQueenVag" )
 	_chanceChaurusQueenVag = StorageUtil.GetFloatValue(kPlayer, "_SLP_chanceChaurusQueenVag" )
@@ -190,9 +214,7 @@ event OnPageReset(string a_page)
 
 	_togglePriestOutfits = StorageUtil.GetIntValue(none, "_SLP_togglePriestOutfits" )
 
- 	; If (StorageUtil.GetIntValue(none, "_SLP_versionMCM" ) == 0) || (_resetTrigger<0.0)
- 		_setParasiteSettings()
- 	; Endif
+	Int iChaurusQueenStage = StorageUtil.GetIntValue(kPlayer, "_SLP_iChaurusQueenStage")
 
 	If (a_page == "Parasites")
 
@@ -202,18 +224,29 @@ event OnPageReset(string a_page)
 		AddSliderOptionST("STATE_SPIDEREGG_CHANCE","Spider Eggs (Vaginal plug)", _chanceSpiderEgg,"{0} %")
 		AddSliderOptionST("STATE_SPIDERPENIS_CHANCE","Spider Penis (Vaginal plug)", _chanceSpiderPenis,"{0} %")
 		AddSliderOptionST("STATE_CHAURUSWORM_CHANCE","Chaurus Worm (Anal plug)", _chanceChaurusWorm,"{0} %")
-		AddSliderOptionST("STATE_CHAURUSWORMVAG_CHANCE","Chaurus Worm (Vaginal plug)", _chanceChaurusWormVag,"{0} %")
-		AddSliderOptionST("STATE_ESTRUSTENTACLES_CHANCE","Estrus Tentacles (EC+)", _chanceEstrusTentacles,"{0} %") 
+		AddSliderOptionST("STATE_CHAURUSWORMVAG_CHANCE","Vaginal Chaurus Worm (Vaginal plug)", _chanceChaurusWormVag,"{0} %")
 		AddSliderOptionST("STATE_TENTACLEMONSTER_CHANCE","Tentacle Monster (Harness)", _chanceTentacleMonster,"{0} %") 
-		AddSliderOptionST("STATE_ESTRUSSLIME_CHANCE","Estrus Slime (EC+)", _chanceEstrusSlime,"{0} %")
 		AddSliderOptionST("STATE_LIVINGARMOR_CHANCE","Living Armor (Harness)", _chanceLivingArmor,"{0} %")
-		AddSliderOptionST("STATE_FACEHUGGER_CHANCE","Creepy Crawler (Belt)", _chanceFaceHugger,"{0} %")
-		AddSliderOptionST("STATE_FACEHUGGERGAG_CHANCE","Creepy Crawler (Gag)", _chanceFaceHuggerGag,"{0} %")
+		AddSliderOptionST("STATE_FACEHUGGER_CHANCE","Hip Hugger (Belt)", _chanceFaceHugger,"{0} %")
+		AddSliderOptionST("STATE_FACEHUGGERGAG_CHANCE","Face Hugger (Gag)", _chanceFaceHuggerGag,"{0} %")
 		AddSliderOptionST("STATE_BARNACLES_CHANCE","Blackreach Spores (Harness)", _chanceBarnacles,"{0} %")
+
+		AddSliderOptionST("STATE_SPRIGGANROOTGAG_CHANCE","Spriggan Mask (Gag)", _chanceSprigganRootGag,"{0} %")
+		AddSliderOptionST("STATE_SPRIGGANROOTARMS_CHANCE","Spriggan Hands (Cuffs)", _chanceSprigganRootArms,"{0} %")
+		AddSliderOptionST("STATE_SPRIGGANROOTFEET_CHANCE","Spriggan Feet (Cuffs)", _chanceSprigganRootFeet,"{0} %")
+		AddSliderOptionST("STATE_SPRIGGANROOTBODY_CHANCE","Spriggan Body (Harness)", _chanceSprigganRootBody,"{0} %")
+
+		AddSliderOptionST("STATE_ESTRUSTENTACLES_CHANCE","Estrus Tentacles (EC+)", _chanceEstrusTentacles,"{0} %") 
+		AddSliderOptionST("STATE_ESTRUSSLIME_CHANCE","Estrus Slime (EC+)", _chanceEstrusSlime,"{0} %")
 
 		AddHeaderOption(" Factions")
 		AddTextOption("     Player in Spider Faction: " + fctUtils.CheckIfSpiderFaction(kPlayer) as Int, "", OPTION_FLAG_DISABLED)
 		AddTextOption("     Player in Chaurus Faction: " + fctUtils.CheckIfChaurusFaction(kPlayer) as Int, "", OPTION_FLAG_DISABLED)
+		AddTextOption("     Player in Spriggan Faction: " + fctUtils.CheckIfSprigganFaction(kPlayer) as Int, "", OPTION_FLAG_DISABLED)
+
+		AddHeaderOption(" Long term curses")
+		AddTextOption("     Chaurus Queen Infection: " + iChaurusQueenStage as Int, "", OPTION_FLAG_DISABLED)
+		AddTextOption("     Spriggan Infection: " + StorageUtil.GetIntValue(kPlayer, "_SLP_toggleSprigganRoot") as Int, "", OPTION_FLAG_DISABLED)
 
 		SetCursorPosition(1)
 		AddHeaderOption(" Infect/Cure")
@@ -226,6 +259,11 @@ event OnPageReset(string a_page)
 		AddToggleOptionST("STATE_FACEHUGGER_TOGGLE","Infect/Cure Hip Hugger", _toggleFaceHugger as Float)
 		AddToggleOptionST("STATE_FACEHUGGERGAG_TOGGLE","Infect/Cure Face Hugger", _toggleFaceHuggerGag as Float)
 		AddToggleOptionST("STATE_BARNACLES_TOGGLE","Infect/Cure Blackreach Spores", _toggleBarnacles as Float)
+
+		AddToggleOptionST("STATE_SPRIGGANROOTGAG_TOGGLE","Infect/Cure Spriggan Mask", _toggleSprigganRootGag as Float)
+		AddToggleOptionST("STATE_SPRIGGANROOTARMS_TOGGLE","Infect/Cure Spriggan Hands", _toggleSprigganRootArms as Float)
+		AddToggleOptionST("STATE_SPRIGGANROOTFEET_TOGGLE","Infect/Cure Spriggan Feet", _toggleSprigganRootFeet as Float)
+		AddToggleOptionST("STATE_SPRIGGANROOTBODY_TOGGLE","Infect/Cure Spriggan Body", _toggleSprigganRootBody as Float)
 
 		AddHeaderOption(" NiOverride node scales")
 		AddSliderOptionST("STATE_SPIDEREGG_BELLY","Max belly size (Spider egg)", _bellyMaxSpiderEgg,"{1}")
@@ -257,6 +295,7 @@ event OnPageReset(string a_page)
 		AddTextOption("     Hip Hugger: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iFaceHuggerInfections") as Int, "", OPTION_FLAG_DISABLED)
 		AddTextOption("     Face Hugger: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iFaceHuggerInfections") as Int, "", OPTION_FLAG_DISABLED)
 		AddTextOption("     Blackreach Spores: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iBarnaclesInfections") as Int, "", OPTION_FLAG_DISABLED)
+		AddTextOption("     Spriggan Roots: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iSprigganRootInfections") as Int, "", OPTION_FLAG_DISABLED)
 		AddTextOption("     Living Armor Infections: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iLivingArmorInfections") as Int, "", OPTION_FLAG_DISABLED)
 		AddTextOption("     Tentacle Monster Infections: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iTentacleMonsterInfections") as Int, "", OPTION_FLAG_DISABLED)
 		AddTextOption("     Estrus Tentacles Attacks: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iEstrusTentaclesInfections") as Int, "", OPTION_FLAG_DISABLED)
@@ -268,10 +307,11 @@ event OnPageReset(string a_page)
 		AddTextOption("     Lastelle Eggs: " + _SLP_GV_numChaurusEggsLastelle.GetValue() as Int, "", OPTION_FLAG_DISABLED)
 
 		AddHeaderOption(" Chaurus Queen ")
-		AddToggleOptionST("STATE_CHAURUSQUEENDEBUG_TOGGLE","Unlock Chaurus Queen items", _toggleChaurusQueenDebug as Float)
-
-
-		Int iChaurusQueenStage = StorageUtil.GetIntValue(kPlayer, "_SLP_iChaurusQueenStage")
+		if (iChaurusQueenStage==0)
+			AddToggleOptionST("STATE_CHAURUSQUEENDEBUG_TOGGLE","Unlock Chaurus Queen items", _toggleChaurusQueenDebug as Float)
+		else
+			AddToggleOptionST("STATE_CHAURUSQUEENDEBUG_TOGGLE","Unlock Chaurus Queen items", _toggleChaurusQueenDebug as Float, OPTION_FLAG_DISABLED)
+		endif
 		
 		if (_toggleChaurusQueenDebug) || (iChaurusQueenStage>0)
 			AddSliderOptionST("STATE_CHAURUSQUEEN_BELLY","Max belly size (Chaurus Queen)", _bellyMaxChaurusQueen,"{1}")
@@ -1011,6 +1051,223 @@ state STATE_BARNACLES_CHANCE ; SLIDER
 	endEvent
 endState
 
+; AddToggleOptionST("STATE_SPRIGGANROOTGAG_TOGGLE","SprigganRootGag", _toggleSprigganRootGag as Float, OPTION_FLAG_DISABLED)
+state STATE_SPRIGGANROOTGAG_TOGGLE ; TOGGLE
+	event OnSelectST() 
+		Int toggle = Math.LogicalXor( 1,  StorageUtil.GetIntValue(kPlayer, "_SLP_toggleSprigganRootGag" )  )  
+
+		If (toggle ==1)
+			Debug.MessageBox("Infecting player with Spriggan Mask")
+			kPlayer.SendModEvent("SLPInfectSprigganRootGag")
+		else
+			Debug.MessageBox("Curing player from Spriggan Mask")
+			kPlayer.SendModEvent("SLPCureSprigganRootGag")
+		Endif
+
+		SetToggleOptionValueST( toggle as Bool )
+		ForcePageReset()
+	endEvent
+
+	event OnDefaultST()
+		StorageUtil.SetIntValue(kPlayer, "_SLP_toggleSprigganRootGag", 1 )
+		SetToggleOptionValueST( true )
+		ForcePageReset()
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Manually Infect/Cure Spriggan Mask for roleplay or testing purposes.")
+	endEvent
+endState
+
+
+; AddSliderOptionST("STATE_SPRIGGANROOTGAG_CHANCE","Chance of infection", _chanceSprigganRootGag,"{0} %")
+state STATE_SPRIGGANROOTGAG_CHANCE ; SLIDER
+	event OnSliderOpenST()
+		SetSliderDialogStartValue( StorageUtil.GetFloatValue(kPlayer, "_SLP_chanceSprigganRootGag" ) )
+		SetSliderDialogDefaultValue( 30.0 )
+		SetSliderDialogRange( 0.0, 100.0 )
+		SetSliderDialogInterval( 1.0 )
+	endEvent
+
+	event OnSliderAcceptST(float value)
+		float thisValue = value 
+		StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceSprigganRootGag", thisValue )
+		SetSliderOptionValueST( thisValue,"{0} %" )
+	endEvent
+
+	event OnDefaultST()
+		StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceSprigganRootGag ", 30.0 )
+		SetSliderOptionValueST( 30.0,"{0} %" )
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Chance of infection by Spriggan Mask")
+	endEvent
+endState
+
+; AddToggleOptionST("STATE_SPRIGGANROOTARMS_TOGGLE","SprigganRootArms", _toggleSprigganRootArms as Float, OPTION_FLAG_DISABLED)
+state STATE_SPRIGGANROOTARMS_TOGGLE ; TOGGLE
+	event OnSelectST() 
+		Int toggle = Math.LogicalXor( 1,  StorageUtil.GetIntValue(kPlayer, "_SLP_toggleSprigganRootArms" )  )  
+
+		If (toggle ==1)
+			Debug.MessageBox("Infecting player with Spriggan Hands")
+			kPlayer.SendModEvent("SLPInfectSprigganRootArms")
+		else
+			Debug.MessageBox("Curing player from Spriggan Hands")
+			kPlayer.SendModEvent("SLPCureSprigganRootArms")
+		Endif
+
+		SetToggleOptionValueST( toggle as Bool )
+		ForcePageReset()
+	endEvent
+
+	event OnDefaultST()
+		StorageUtil.SetIntValue(kPlayer, "_SLP_toggleSprigganRootArms", 1 )
+		SetToggleOptionValueST( true )
+		ForcePageReset()
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Manually Infect/Cure Spriggan Hands for roleplay or testing purposes.")
+	endEvent
+endState
+
+
+; AddSliderOptionST("STATE_SPRIGGANROOTARMS_CHANCE","Chance of infection", _chanceSprigganRootArms,"{0} %")
+state STATE_SPRIGGANROOTARMS_CHANCE ; SLIDER
+	event OnSliderOpenST()
+		SetSliderDialogStartValue( StorageUtil.GetFloatValue(kPlayer, "_SLP_chanceSprigganRootArms" ) )
+		SetSliderDialogDefaultValue( 30.0 )
+		SetSliderDialogRange( 0.0, 100.0 )
+		SetSliderDialogInterval( 1.0 )
+	endEvent
+
+	event OnSliderAcceptST(float value)
+		float thisValue = value 
+		StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceSprigganRootArms", thisValue )
+		SetSliderOptionValueST( thisValue,"{0} %" )
+	endEvent
+
+	event OnDefaultST()
+		StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceSprigganRootArms ", 30.0 )
+		SetSliderOptionValueST( 30.0,"{0} %" )
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Chance of infection by Spriggan Hands")
+	endEvent
+endState
+
+; AddToggleOptionST("STATE_SPRIGGANROOTFEET_TOGGLE","SprigganRootFeet", _toggleSprigganRootFeet as Float, OPTION_FLAG_DISABLED)
+state STATE_SPRIGGANROOTFEET_TOGGLE ; TOGGLE
+	event OnSelectST() 
+		Int toggle = Math.LogicalXor( 1,  StorageUtil.GetIntValue(kPlayer, "_SLP_toggleSprigganRootFeet" )  )  
+
+		If (toggle ==1)
+			Debug.MessageBox("Infecting player with Spriggan Feet")
+			kPlayer.SendModEvent("SLPInfectSprigganRootFeet")
+		else
+			Debug.MessageBox("Curing player from Spriggan Feet")
+			kPlayer.SendModEvent("SLPCureSprigganRootFeet")
+		Endif
+
+		SetToggleOptionValueST( toggle as Bool )
+		ForcePageReset()
+	endEvent
+
+	event OnDefaultST()
+		StorageUtil.SetIntValue(kPlayer, "_SLP_toggleSprigganRootFeet", 1 )
+		SetToggleOptionValueST( true )
+		ForcePageReset()
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Manually Infect/Cure Spriggan Feet for roleplay or testing purposes.")
+	endEvent
+endState
+
+
+; AddSliderOptionST("STATE_SPRIGGANROOTFEET_CHANCE","Chance of infection", _chanceSprigganRootFeet,"{0} %")
+state STATE_SPRIGGANROOTFEET_CHANCE ; SLIDER
+	event OnSliderOpenST()
+		SetSliderDialogStartValue( StorageUtil.GetFloatValue(kPlayer, "_SLP_chanceSprigganRootFeet" ) )
+		SetSliderDialogDefaultValue( 30.0 )
+		SetSliderDialogRange( 0.0, 100.0 )
+		SetSliderDialogInterval( 1.0 )
+	endEvent
+
+	event OnSliderAcceptST(float value)
+		float thisValue = value 
+		StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceSprigganRootFeet", thisValue )
+		SetSliderOptionValueST( thisValue,"{0} %" )
+	endEvent
+
+	event OnDefaultST()
+		StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceSprigganRootFeet ", 30.0 )
+		SetSliderOptionValueST( 30.0,"{0} %" )
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Chance of infection by Spriggan Feet")
+	endEvent
+endState
+
+; AddToggleOptionST("STATE_SPRIGGANROOTBODY_TOGGLE","SprigganRootBody", _toggleSprigganRootBody as Float, OPTION_FLAG_DISABLED)
+state STATE_SPRIGGANROOTBODY_TOGGLE ; TOGGLE
+	event OnSelectST() 
+		Int toggle = Math.LogicalXor( 1,  StorageUtil.GetIntValue(kPlayer, "_SLP_toggleSprigganRootBody" )  )  
+
+		If (toggle ==1)
+			Debug.MessageBox("Infecting player with Spriggan Body")
+			kPlayer.SendModEvent("SLPInfectSprigganRootBody")
+		else
+			Debug.MessageBox("Curing player from Spriggan Body")
+			kPlayer.SendModEvent("SLPCureSprigganRootBody")
+		Endif
+
+		SetToggleOptionValueST( toggle as Bool )
+		ForcePageReset()
+	endEvent
+
+	event OnDefaultST()
+		StorageUtil.SetIntValue(kPlayer, "_SLP_toggleSprigganRootBody", 1 )
+		SetToggleOptionValueST( true )
+		ForcePageReset()
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Manually Infect/Cure Spriggan Body for roleplay or testing purposes.")
+	endEvent
+endState
+
+
+; AddSliderOptionST("STATE_SPRIGGANROOTBODY_CHANCE","Chance of infection", _chanceSprigganRootBody,"{0} %")
+state STATE_SPRIGGANROOTBODY_CHANCE ; SLIDER
+	event OnSliderOpenST()
+		SetSliderDialogStartValue( StorageUtil.GetFloatValue(kPlayer, "_SLP_chanceSprigganRootBody" ) )
+		SetSliderDialogDefaultValue( 30.0 )
+		SetSliderDialogRange( 0.0, 100.0 )
+		SetSliderDialogInterval( 1.0 )
+	endEvent
+
+	event OnSliderAcceptST(float value)
+		float thisValue = value 
+		StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceSprigganRootBody", thisValue )
+		SetSliderOptionValueST( thisValue,"{0} %" )
+	endEvent
+
+	event OnDefaultST()
+		StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceSprigganRootBody ", 30.0 )
+		SetSliderOptionValueST( 30.0,"{0} %" )
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Chance of infection by Spriggan Body")
+	endEvent
+endState
+
+
 ; AddToggleOptionST("STATE_CHAURUSQUEENDEBUG_TOGGLE","Chaurus Queen Debug override", _toggleChaurusQueenDebug as Float, OPTION_FLAG_DISABLED)
 state STATE_CHAURUSQUEENDEBUG_TOGGLE ; TOGGLE
 	event OnSelectST() 
@@ -1450,6 +1707,22 @@ Function _setParasiteSettings()
 	if (_chanceBarnacles==-1.0)
 		StorageUtil.SetIntValue(kPlayer, "_SLP_toggleBarnacles", 0 )
 		StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceBarnacles", 30.0 )
+	Endif
+	if (_chanceSprigganRootGag==-1.0)
+		StorageUtil.SetIntValue(kPlayer, "_SLP_toggleSprigganRootGag", 0 )
+		StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceSprigganRootGag", 10.0 )
+	Endif
+	if (_chanceSprigganRootArms==-1.0)
+		StorageUtil.SetIntValue(kPlayer, "_SLP_toggleSprigganRootArms", 0 )
+		StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceSprigganRootArms", 20.0 )
+	Endif
+	if (_chanceSprigganRootFeet==-1.0)
+		StorageUtil.SetIntValue(kPlayer, "_SLP_toggleSprigganRootFeet", 0 )
+		StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceSprigganRootFeet", 30.0 )
+	Endif
+	if (_chanceSprigganRootBody==-1.0)
+		StorageUtil.SetIntValue(kPlayer, "_SLP_toggleSprigganRootBody", 0 )
+		StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceSprigganRootBody", 50.0 )
 	Endif
 	if (_chanceChaurusQueenVag==-1.0)
 		StorageUtil.SetIntValue(kPlayer, "_SLP_toggleChaurusQueenVag", 0 )

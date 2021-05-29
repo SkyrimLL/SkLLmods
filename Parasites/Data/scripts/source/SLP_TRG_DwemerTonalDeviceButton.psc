@@ -10,6 +10,7 @@ ObjectReference Property DwemerTonalDeviceRef Auto
 ObjectReference Property DwemerTonalDeviceEffectsRef Auto
 ObjectReference Property SilentCityOrbRef Auto 
 ObjectReference Property SilentCityOrbShoutTriggerRef Auto 
+ObjectReference Property ChaurusQueenRift Auto 
 
 ReferenceAlias Property ChaurusQueenInfectedAlias  Auto  
 ObjectReference Property DummyAlias  Auto  
@@ -32,6 +33,8 @@ Event OnActivate(ObjectReference akActionRef)
     	UnrelentingForceSpell.cast(DwemerTonalDeviceRef, SilentCityOrbRef)
 
     	SilentCityOrbShoutTriggerRef.disable()
+
+        ChaurusQueenRift.Disable()
 
     	if (ChaurusQueenDragon.IsDead())
     		ChaurusQueenDragon.resurrect()

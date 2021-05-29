@@ -7,6 +7,7 @@ SexLabFrameWork Property SexLab Auto
 
 Faction Property ChaurusFaction  Auto
 Faction Property SpiderFaction  Auto
+Faction Property SprigganFaction  Auto
 
 Race Property ChaurusRace  Auto
 Race Property ChaurusReaperRace  Auto  
@@ -213,6 +214,10 @@ EndFunction
 
 Bool Function checkIfChaurusFaction ( Actor akActor )
 	return akActor.IsInFaction(ChaurusFaction)
+EndFunction
+
+Bool Function checkIfSprigganFaction ( Actor akActor )
+	return akActor.IsInFaction(SprigganFaction)
 EndFunction
 
 

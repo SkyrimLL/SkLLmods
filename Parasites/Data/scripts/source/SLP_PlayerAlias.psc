@@ -143,6 +143,15 @@ Function _maintenance()
 	RegisterForModEvent("SLPInfectBarnacles",   "OnSLPInfectBarnacles")
 	RegisterForModEvent("SLPCureBarnacles",   "OnSLPCureBarnacles")
 
+	RegisterForModEvent("SLPInfectSprigganRootGag",   "OnSLPInfectSprigganRootGag")
+	RegisterForModEvent("SLPCureSprigganRootGag",   "OnSLPCureSprigganRootGag")
+	RegisterForModEvent("SLPInfectSprigganRootArms",   "OnSLPInfectSprigganRootArms")
+	RegisterForModEvent("SLPCureSprigganRootArms",   "OnSLPCureSprigganRootArms")
+	RegisterForModEvent("SLPInfectSprigganRootFeet",   "OnSLPInfectSprigganRootFeet")
+	RegisterForModEvent("SLPCureSprigganRootFeet",   "OnSLPCureSprigganRootFeet")
+	RegisterForModEvent("SLPInfectSprigganRootBody",   "OnSLPInfectSprigganRootBody")
+	RegisterForModEvent("SLPCureSprigganRootBody",   "OnSLPCureSprigganRootBody")
+
 	RegisterForModEvent("SLPInfectChaurusQueenVag",   "OnSLPInfectChaurusQueenVag")
 	RegisterForModEvent("SLPCureChaurusQueenVag",   "OnSLPCureChaurusQueenVag")
 	RegisterForModEvent("SLPInfectChaurusQueenGag",   "OnSLPInfectChaurusQueenGag")
@@ -477,11 +486,11 @@ Event OnSexLabStart(int threadID, bool HasPlayer)
 	If HasPlayer
 		Actor PlayerActor= PlayerAlias.GetReference() as Actor
 		If (fctParasites.isInfectedByString( PlayerActor,  "SpiderEgg" ))
-			slaUtil.UpdateActorExposure(akRef = PlayerActor, val = 2, debugMsg = "Aroused from sex while carrying spider eggs.")
+			slaUtil.UpdateActorExposure(PlayerActor, 2, "Aroused from sex while carrying spider eggs.")
 		ElseIf (fctParasites.isInfectedByString( PlayerActor,  "SpiderPenis" ))
-			slaUtil.UpdateActorExposure(akRef = PlayerActor, val = 5, debugMsg = "Aroused from sex while carrying spider eggs.")
+			slaUtil.UpdateActorExposure(PlayerActor, 5, "Aroused from sex while carrying spider eggs.")
 		ElseIf (fctParasites.isInfectedByString( PlayerActor,  "ChaurusWorm" )) || (fctParasites.isInfectedByString( PlayerActor,  "ChaurusWormVag" ))
-			slaUtil.UpdateActorExposure(akRef = PlayerActor, val = 10, debugMsg = "Aroused from sex while carrying chaurus worm.")
+			slaUtil.UpdateActorExposure(PlayerActor, 10, "Aroused from sex while carrying chaurus worm.")
 		Endif
 	endif
 EndEvent
@@ -1083,6 +1092,137 @@ Event OnSLPCureBarnacles(String _eventName, String _args, Float _argc = 1.0, For
 
 
 EndEvent
+
+;------------------------------------------------------------------------------
+Event OnSLPInfectSprigganRootGag(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+   	Actor PlayerActor = Game.GetPlayer()
+
+ 	If (kActor == None)
+ 		kActor = PlayerActor
+ 	Endif
+ 	
+
+	Debug.Trace("[SLP] Receiving 'infect SprigganRootGag' event - Actor: " + kActor)
+
+	fctParasites.infectParasiteByString(kActor, "SprigganRootGag")
+	
+EndEvent
+
+Event OnSLPCureSprigganRootGag(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+  	Actor PlayerActor = Game.GetPlayer()
+
+ 	If (kActor == None)
+ 		kActor = PlayerActor
+ 	Endif
+ 	
+
+	Debug.Trace("[SLP] Receiving 'cure SprigganRootGag' event - Actor: " + kActor)
+
+	fctParasites.cureParasiteByString(kActor, "SprigganRootGag", _args )
+
+
+EndEvent
+
+;------------------------------------------------------------------------------
+Event OnSLPInfectSprigganRootArms(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+   	Actor PlayerActor = Game.GetPlayer()
+
+ 	If (kActor == None)
+ 		kActor = PlayerActor
+ 	Endif
+ 	
+
+	Debug.Trace("[SLP] Receiving 'infect SprigganRootArms' event - Actor: " + kActor)
+
+	fctParasites.infectParasiteByString(kActor, "SprigganRootArms")
+	
+EndEvent
+
+Event OnSLPCureSprigganRootArms(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+  	Actor PlayerActor = Game.GetPlayer()
+
+ 	If (kActor == None)
+ 		kActor = PlayerActor
+ 	Endif
+ 	
+
+	Debug.Trace("[SLP] Receiving 'cure SprigganRootArms' event - Actor: " + kActor)
+
+	fctParasites.cureParasiteByString(kActor, "SprigganRootArms", _args )
+
+
+EndEvent
+
+;------------------------------------------------------------------------------
+Event OnSLPInfectSprigganRootFeet(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+   	Actor PlayerActor = Game.GetPlayer()
+
+ 	If (kActor == None)
+ 		kActor = PlayerActor
+ 	Endif
+ 	
+
+	Debug.Trace("[SLP] Receiving 'infect SprigganRootFeet' event - Actor: " + kActor)
+
+	fctParasites.infectParasiteByString(kActor, "SprigganRootFeet")
+	
+EndEvent
+
+Event OnSLPCureSprigganRootFeet(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+  	Actor PlayerActor = Game.GetPlayer()
+
+ 	If (kActor == None)
+ 		kActor = PlayerActor
+ 	Endif
+ 	
+
+	Debug.Trace("[SLP] Receiving 'cure SprigganRootFeet' event - Actor: " + kActor)
+
+	fctParasites.cureParasiteByString(kActor, "SprigganRootFeet", _args )
+
+
+EndEvent
+
+;------------------------------------------------------------------------------
+Event OnSLPInfectSprigganRootBody(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+   	Actor PlayerActor = Game.GetPlayer()
+
+ 	If (kActor == None)
+ 		kActor = PlayerActor
+ 	Endif
+ 	
+
+	Debug.Trace("[SLP] Receiving 'infect SprigganRootBody' event - Actor: " + kActor)
+
+	fctParasites.infectParasiteByString(kActor, "SprigganRootBody")
+	
+EndEvent
+
+Event OnSLPCureSprigganRootBody(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+  	Actor PlayerActor = Game.GetPlayer()
+
+ 	If (kActor == None)
+ 		kActor = PlayerActor
+ 	Endif
+ 	
+
+	Debug.Trace("[SLP] Receiving 'cure SprigganRootBody' event - Actor: " + kActor)
+
+	fctParasites.cureParasiteByString(kActor, "SprigganRootBody", _args )
+
+
+EndEvent
+
+
+
 ;------------------------------------------------------------------------------
 Event OnSLPInfectChaurusQueenVag(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
@@ -1437,10 +1577,11 @@ Event OnSLPSexCure(String _eventName, String _args, Float _argc = 0.0, Form _sen
 			endif
 
 			sslBaseAnimation[] anims
-			anims = new sslBaseAnimation[1]
 			anims = SexLab.GetAnimationsByTags(2, sTags,"Estrus,Dwemer")
 
-			SexLab.StartSex(sexActors, anims)
+			If (anims && anims.Length > 0)
+				SexLab.StartSex(sexActors, anims)
+			endif
 		Else
 			Debug.Trace("[SLP] Actors not ready - skipping parasite cure sex scene")
 		EndIf
@@ -1453,10 +1594,11 @@ Event OnSLPSexCure(String _eventName, String _args, Float _argc = 0.0, Form _sen
 			sexActors[0] = kPlayer
 
 			sslBaseAnimation[] anims
-			anims = new sslBaseAnimation[1]
 			anims = SexLab.GetAnimationsByTags(1, sTags,"Estrus,Dwemer")
 
-			SexLab.StartSex(sexActors, anims)
+			If (anims && anims.Length > 0)
+				SexLab.StartSex(sexActors, anims)
+			endif
 		Else
 			Debug.Trace("[SLP] Player Actor not ready - skipping parasite cure sex scene")
 		EndIf
@@ -1557,6 +1699,10 @@ Event OnSLPClearParasites(String _eventName, String _args, Float _argc = 1.0, Fo
 	fctParasites.cureParasiteByString(kActor, "TentacleMonster", bHarvestParasite)
 	fctParasites.cureParasiteByString(kActor, "LivingArmor", bHarvestParasite)
 	fctParasites.cureParasiteByString(kActor, "Barnacles", bHarvestParasite) 
+ 	fctParasites.cureParasiteByString(kActor, "SprigganRootGag", bHarvestParasite) 
+ 	fctParasites.cureParasiteByString(kActor, "SprigganRootArms", bHarvestParasite) 
+ 	fctParasites.cureParasiteByString(kActor, "SprigganRootFeet", bHarvestParasite) 
+ 	fctParasites.cureParasiteByString(kActor, "SprigganRootBody", bHarvestParasite) 
    
 
 EndEvent
@@ -1807,6 +1953,14 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 		PlayerActor.SendModEvent("SLHModHormone", "Pheromones", 10.0 + Utility.RandomFloat(0.0,20.0))
 		PlayerActor.SendModEvent("SLHModHormone", "Lactation", -1.0 * Utility.RandomFloat(0.0,10.0))
 	endif 
+
+	If (fctParasites.ActorHasKeywordByString(PlayerActor, "SprigganRootGag")) || (fctParasites.ActorHasKeywordByString(PlayerActor, "SprigganRootArms")) || (fctParasites.ActorHasKeywordByString(PlayerActor, "SprigganRootFeet")) || (fctParasites.ActorHasKeywordByString(PlayerActor, "SprigganRootBody"))
+		PlayerActor.SendModEvent("SLHModHormone", "Female", 20.0 + Utility.RandomFloat(0.0,10.0))
+		PlayerActor.SendModEvent("SLHModHormone", "Male", -1.0 * (10.0 + Utility.RandomFloat(0.0,10.0)) )
+		PlayerActor.SendModEvent("SLHModHormone", "Metabolism", 10.0 + Utility.RandomFloat(0.0,10.0))
+		; fctParasites.clearParasiteAlias(PlayerActor, "FaceHugger" ) 
+	endif 
+
 
 	; Bring Lastelle where she belongs if needed
 	fctParasites.resetOnSleep()
