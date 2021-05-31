@@ -45,7 +45,8 @@ objectreference property SLS_PlayerSexbotStartMarker auto
 objectreference property SLS_PlayerPetStartMarker auto
 objectreference property SLS_PlayerMilkFarmStartMarker auto
 objectreference property SLS_PlayerAliciaStartMarker auto
-objectreference property SLS_PlayerSprigganStartMarker auto
+objectreference property SLS_PlayerSprigganStartMarker auto  ; Deprecated - had to create a dulicate because of Skyrim's shitty baked properties in saved games
+objectreference property SLS_PlayerSprigganRootStartMarker auto
 objectreference property SLS_PlayerKinStartMarker auto
 objectreference property SLS_PlayerDibellaStartMarker auto
 objectreference property SLS_PlayerNordicQueenStartMarker auto
@@ -86,6 +87,19 @@ Function _Maintenance()
 	If (!StorageUtil.HasIntValue(none, "_SLS_iStories"))
 		StorageUtil.SetIntValue(none, "_SLS_iStories", 1)
 	EndIf
+
+	Int iCurrentVersionNumber = 20210531
+	Int iVersionNumber = StorageUtil.GetIntValue(none, "_SLP_iStoriesVersion")	
+	
+	If (iVersionNumber != iCurrentVersionNumber)
+		Debug.Notification("[SLH] Upgrading Stories to " + iCurrentVersionNumber)
+
+		If (iVersionNumber <= 20210531) 
+			;
+		Endif
+ 
+		StorageUtil.SetIntValue(none, "_SLP_iStoriesVersion", iCurrentVersionNumber)	
+	Endif
 
 	UnregisterForAllModEvents()
 	; Debug.Trace("SexLab Stories: Reset SexLab events")
@@ -286,24 +300,30 @@ Event OnPCStartSpriggan(String _eventName, String _args, Float _argc = -1.0, For
 	; Enable Hormone changes
 	StorageUtil.SetIntValue(none, "_SLH_iHormonesSleepInit", 1)
 
-	PlayerActor.MoveTo(SLS_PlayerSprigganStartMarker)
+	; PlayerActor.MoveTo(SLS_PlayerSprigganStartMarker)
+	PlayerActor.MoveTo(SLS_PlayerSprigganRootStartMarker)
 
-	PlayerActor.addtofaction(SprigganFaction) 
+	; PlayerActor.addtofaction(SprigganFaction) 
 
-	Int iSprigganSkinColor = Math.LeftShift(255, 24) + Math.LeftShift(196, 16) + Math.LeftShift(238, 8) + 218
-	StorageUtil.SetIntValue(PlayerActor, "_SLH_iSkinColor", iSprigganSkinColor ) 
-	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast", 0.8 ) 
-	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fWeight", 20.0 ) 
-	StorageUtil.SetIntValue(PlayerActor, "_SLH_iForcedHairLoss", 1)
-	PlayerActor.SendModEvent("SLHShaveHead")
-	PlayerActor.SendModEvent("SLHRefresh")
-	PlayerActor.SendModEvent("SLHRefreshColors")
-	StorageUtil.SetIntValue(PlayerActor, "_SD_iSprigganEnslavedCount",5)
-	SendModEvent("SDSprigganEnslave")
+	; Int iSprigganSkinColor = Math.LeftShift(255, 24) + Math.LeftShift(196, 16) + Math.LeftShift(238, 8) + 218
+	; StorageUtil.SetIntValue(PlayerActor, "_SLH_iSkinColor", iSprigganSkinColor ) 
+	; StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast", 0.8 ) 
+	; StorageUtil.SetFloatValue(PlayerActor, "_SLH_fWeight", 20.0 ) 
+	; StorageUtil.SetIntValue(PlayerActor, "_SLH_iForcedHairLoss", 1)
+	; PlayerActor.SendModEvent("SLHShaveHead")
+	; PlayerActor.SendModEvent("SLHRefresh")
+	; PlayerActor.SendModEvent("SLHRefreshColors")
+	; StorageUtil.SetIntValue(PlayerActor, "_SD_iSprigganEnslavedCount",5)
+	; SendModEvent("SDSprigganEnslave")
+	PlayerActor.SendModEvent("SLPInfectSprigganRootArms")
+	PlayerActor.SendModEvent("SLPInfectSprigganRootBody")
+	; PlayerActor.SendModEvent("SLPInfectSprigganRootGag")
+
+	SendModEvent("da_PacifyNearbyEnemies" )
 
 	SendModEvent("_SLS_PlayerSpriggan")
 
-	Debug.MessageBox("You are finally free to serve Kyne and tend to her flock. Her sweet sap pumps through your veins and makes you one with her creation.")
+	Debug.MessageBox("You have been blessed by Kyne and must tend to her flock. Her sweet sap pumps through your veins and makes you one with her creation.")
 
 EndEvent
 
