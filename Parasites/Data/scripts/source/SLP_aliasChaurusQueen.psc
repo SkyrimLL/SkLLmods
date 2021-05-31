@@ -73,25 +73,25 @@ Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile,
 				SeedSpawnSpider.Cast(kPlayer as ObjectReference  , kPlayer as ObjectReference ) 
 			endif
 
-		elseIf (Utility.RandomInt(0,100)>92) && (kPlayer.HasSpell( ChaurusBody )) 
+		elseIf (Utility.RandomInt(0,100)>92) && (kPlayer.HasSpell( ChaurusMask )) 
 			Debug.Trace("[SLP_aliasChaurusQueen] Cast Chaurus Body spell" )
 
-			if (!fctParasites.isInfectedByString( kPlayer,  "ChaurusQueenBody" ))
-				Debug.Notification("The Seed reacts to the attack with an armor around you." )
-				ChaurusBody.Cast(kPlayer as ObjectReference , kPlayer as ObjectReference ) 
-			endif
+			; if (!fctParasites.isInfectedByString( kPlayer,  "ChaurusQueenBody" ))
+			;	Debug.Notification("The Seed reacts to the attack with an armor around you." )
+			;	ChaurusBody.Cast(kPlayer as ObjectReference , kPlayer as ObjectReference ) 
+			; endif
 
 			if (!fctParasites.isInfectedByString( kPlayer,  "ChaurusQueenGag" ))
 				ChaurusMask.Cast(kPlayer as ObjectReference , kPlayer as ObjectReference ) 
 			endif
 			
-		elseIf (Utility.RandomInt(0,100)>88) && (kPlayer.HasSpell( ChaurusArmor )) 
+		elseIf (Utility.RandomInt(0,100)>88) && (kPlayer.HasSpell( ChaurusMask )) 
 			Debug.Trace("[SLP_aliasChaurusQueen] Cast Chaurus Armor spell" )
 
-			if (!fctParasites.isInfectedByString( kPlayer,  "ChaurusQueenArmor" ))
-				Debug.Notification("The Seed reacts to the attack with an armor around you." )
-				ChaurusArmor.Cast(kPlayer as ObjectReference , kPlayer as ObjectReference ) 
-			endif
+			; if (!fctParasites.isInfectedByString( kPlayer,  "ChaurusQueenArmor" ))
+			;	Debug.Notification("The Seed reacts to the attack with an armor around you." )
+			;	ChaurusArmor.Cast(kPlayer as ObjectReference , kPlayer as ObjectReference ) 
+			; endif
 
 			if (!fctParasites.isInfectedByString( kPlayer,  "ChaurusQueenGag" ))
 				ChaurusMask.Cast(kPlayer as ObjectReference , kPlayer as ObjectReference ) 

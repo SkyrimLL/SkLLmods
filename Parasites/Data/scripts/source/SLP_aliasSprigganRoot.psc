@@ -4,8 +4,10 @@ Scriptname SLP_aliasSprigganRoot extends ReferenceAlias
 ; Chance of estrus tentacles attack if hit
 
 SLP_fcts_parasites Property fctParasites  Auto
+SLP_fcts_utils Property fctUtils  Auto
 
 Spell Property crSprigganCallCreatures Auto
+Spell Property _SLP_SP_SprigganCallCreatures Auto
 
 
 Event OnCombatStateChanged(Actor akTarget, int aeCombatState)
@@ -47,6 +49,7 @@ EndEvent
 
 Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile, bool abPowerAttack, bool abSneakAttack, bool abBashAttack, bool abHitBlocked)
 	Actor kPlayer = Game.GetPlayer()
+	Actor kAgressor = akAggressor as Actor
 
 	If (akAggressor != None)
 		;  Debug.Trace("We were hit by " + akAggressor)
@@ -54,17 +57,26 @@ Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile,
 
 		Cell akAggressorCell = akAggressor.GetParentCell()
 
-		If (!akAggressorCell.IsInterior())
-			If (Utility.RandomInt(0,100)>97)  
-				Debug.Trace("[SLP_aliasSprigganRoot] Cast Call Creatures spell" )
-				; Debug.Notification("The Voices scream for help." )
-				crSprigganCallCreatures.RemoteCast(kPlayer as ObjectReference , kPlayer , akAggressor ) 
+		If (!akAggressorCell.IsInterior()) && (kAgressor != kPlayer)
+			if (fctUtils.CheckIfSprigganFaction( kAgressor ))
+				; Debug.Notification("[SLP_aliasSprigganRoot] Spriggan friendly hit - Stop combat" )
+				; Debug.Trace("[SLP_aliasSprigganRoot]  Spriggan friendly hit - Stop combat" )
 
-			elseIf (Utility.RandomInt(0,100)>94)  
-				Debug.Trace("[SLP_aliasSprigganRoot] Cast Tentacle attack spell" )
-				; Debug.Notification("The Voices extend their reach to your aggressor." )
-				; fctParasites.infectEstrusTentacles( akAggressor as Actor )
+				; SendModEvent("da_PacifyNearbyEnemies") 
+				_SLP_SP_SprigganCallCreatures.Cast(kPlayer as ObjectReference ,  kPlayer as ObjectReference ) 
 
+			else
+				If (Utility.RandomInt(0,100)>97)  
+					Debug.Trace("[SLP_aliasSprigganRoot] Cast Call Creatures spell" )
+					; Debug.Notification("The Voices scream for help." )
+					_SLP_SP_SprigganCallCreatures.Cast(kPlayer as ObjectReference ,  kPlayer as ObjectReference ) 
+
+				elseIf (Utility.RandomInt(0,100)>94)  
+					Debug.Trace("[SLP_aliasSprigganRoot] Cast Tentacle attack spell" )
+					; Debug.Notification("The Voices extend their reach to your aggressor." )
+					; fctParasites.infectEstrusTentacles( akAggressor as Actor )
+
+				endif
 			endif
 		EndIf
 	EndIf

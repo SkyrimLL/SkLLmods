@@ -210,6 +210,9 @@ Bool Function infectParasiteByString(Actor kActor, String sParasiteKeyword = "" 
 	elseif (sParasiteKeyword == "Barnacles" )  
 		return fctParasiteBarnacles.infectBarnacles(kActor)
  
+	elseif (sParasiteKeyword == "SprigganRoot" )  
+		return fctParasiteSprigganRoot.infectSprigganRoot(kActor)
+ 
 	elseif (sParasiteKeyword == "SprigganRootGag" )  
 		return fctParasiteSprigganRoot.infectSprigganRootGag(kActor)
  
@@ -288,7 +291,7 @@ Bool Function applyParasiteByString(Actor kActor, String sParasiteKeyword = "" )
 	elseif (sParasiteKeyword == "SprigganRootGag" )  
 		return fctParasiteSprigganRoot.applySprigganRootGag(kActor)
  
-	elseif (sParasiteKeyword == "SprigganRootArms" )  
+	elseif (sParasiteKeyword == "SprigganRootArms" ) || (sParasiteKeyword == "SprigganRoot" )  
 		return fctParasiteSprigganRoot.applySprigganRootArms(kActor)
  
 	elseif (sParasiteKeyword == "SprigganRootFeet" )  
@@ -358,17 +361,23 @@ Function cureParasiteByString(Actor kActor, String sParasiteKeyword = "", Bool b
 	elseif (sParasiteKeyword == "Barnacles" )  
 		fctParasiteBarnacles.cureBarnacles(kActor, bHarvestParasite)
  
+	elseif (sParasiteKeyword == "SprigganRoot" )  
+		fctParasiteSprigganRoot.cureSprigganRoot(kActor)
+ 
+	elseif (sParasiteKeyword == "SprigganRootAll" )  
+		fctParasiteSprigganRoot.cureSprigganRootAll(kActor)
+ 
 	elseif (sParasiteKeyword == "SprigganRootGag" )  
-		return fctParasiteSprigganRoot.cureSprigganRootGag(kActor)
+		fctParasiteSprigganRoot.cureSprigganRootGag(kActor)
  
 	elseif (sParasiteKeyword == "SprigganRootArms" )  
-		return fctParasiteSprigganRoot.cureSprigganRootArms(kActor)
+		fctParasiteSprigganRoot.cureSprigganRootArms(kActor)
  
 	elseif (sParasiteKeyword == "SprigganRootFeet" )  
-		return fctParasiteSprigganRoot.cureSprigganRootFeet(kActor)
+		fctParasiteSprigganRoot.cureSprigganRootFeet(kActor)
  
 	elseif (sParasiteKeyword == "SprigganRootBody" )  
-		return fctParasiteSprigganRoot.cureSprigganRootBody(kActor)
+		fctParasiteSprigganRoot.cureSprigganRootBody(kActor)
 	EndIf
 
 EndFunction
@@ -395,7 +404,7 @@ Bool Function ActorHasKeywordByString(actor akActor, String sParasiteKeyword = "
 	elseif (sParasiteKeyword == "Barnacles" )  
 		return fctParasiteBarnacles.ActorHasKeywordByString(akActor, sParasiteKeyword)
 		
-	elseif (sParasiteKeyword == "SprigganRootGag" ) || (sParasiteKeyword == "SprigganRootArms" )  || (sParasiteKeyword == "SprigganRootFeet" )  || (sParasiteKeyword == "SprigganRootBody" )  
+	elseif (sParasiteKeyword == "SprigganRoot" ) || (sParasiteKeyword == "SprigganRootGag" ) || (sParasiteKeyword == "SprigganRootArms" )  || (sParasiteKeyword == "SprigganRootFeet" )  || (sParasiteKeyword == "SprigganRootBody" )  
 		return fctParasiteSprigganRoot.ActorHasKeywordByString(akActor, sParasiteKeyword)
  	else
  		return fctDevious.ActorHasKeywordByString(akActor, sParasiteKeyword)
@@ -427,7 +436,7 @@ Armor Function getParasiteByString(String sParasiteKeyword = ""  )
 	elseif (sParasiteKeyword == "Barnacles" )  
 		thisArmor = fctParasiteBarnacles.getParasiteByString(sParasiteKeyword)
  		
-	elseif (sParasiteKeyword == "SprigganRootGag" ) || (sParasiteKeyword == "SprigganRootArms" )  || (sParasiteKeyword == "SprigganRootFeet" )  || (sParasiteKeyword == "SprigganRootBody" )  
+	elseif (sParasiteKeyword == "SprigganRoot" ) || (sParasiteKeyword == "SprigganRootGag" ) || (sParasiteKeyword == "SprigganRootArms" )  || (sParasiteKeyword == "SprigganRootFeet" )  || (sParasiteKeyword == "SprigganRootBody" )  
 		thisArmor = fctParasiteSprigganRoot.getParasiteByString(sParasiteKeyword)
 
 	EndIf
@@ -459,7 +468,7 @@ Armor Function getParasiteRenderedByString(String sParasiteKeyword = ""  )
 	elseif (sParasiteKeyword == "Barnacles" )  
 		thisArmor = fctParasiteBarnacles.getParasiteRenderedByString(sParasiteKeyword)
  		
-	elseif (sParasiteKeyword == "SprigganRootGag" ) || (sParasiteKeyword == "SprigganRootArms" )  || (sParasiteKeyword == "SprigganRootFeet" )  || (sParasiteKeyword == "SprigganRootBody" )  
+	elseif (sParasiteKeyword == "SprigganRoot" ) || (sParasiteKeyword == "SprigganRootGag" ) || (sParasiteKeyword == "SprigganRootArms" )  || (sParasiteKeyword == "SprigganRootFeet" )  || (sParasiteKeyword == "SprigganRootBody" )  
 		thisArmor = fctParasiteSprigganRoot.getParasiteRenderedByString(sParasiteKeyword)
  
 	EndIf
@@ -491,7 +500,7 @@ Keyword Function getDeviousKeywordByString(String sParasiteKeyword = ""  )
 	elseif (sParasiteKeyword == "Barnacles" )  
 		thisKeyword = fctParasiteBarnacles.getDeviousKeywordByString( sParasiteKeyword )
  		
-	elseif (sParasiteKeyword == "SprigganRootGag" ) || (sParasiteKeyword == "SprigganRootArms" )  || (sParasiteKeyword == "SprigganRootFeet" )  || (sParasiteKeyword == "SprigganRootBody" )  
+	elseif (sParasiteKeyword == "SprigganRoot" ) || (sParasiteKeyword == "SprigganRootGag" ) || (sParasiteKeyword == "SprigganRootArms" )  || (sParasiteKeyword == "SprigganRootFeet" )  || (sParasiteKeyword == "SprigganRootBody" )  
 		thisKeyword = fctParasiteSprigganRoot.getDeviousKeywordByString(sParasiteKeyword)
  		
 	else
@@ -524,7 +533,7 @@ Function equipParasiteNPCByString(Actor kActor, String sParasiteKeyword = ""  )
 	elseif (sParasiteKeyword == "Barnacles" )  
 		fctParasiteBarnacles.equipParasiteNPCByString(kActor,  sParasiteKeyword )
  		
-	elseif (sParasiteKeyword == "SprigganRootGag" ) || (sParasiteKeyword == "SprigganRootArms" )  || (sParasiteKeyword == "SprigganRootFeet" )  || (sParasiteKeyword == "SprigganRootBody" )  
+	elseif (sParasiteKeyword == "SprigganRoot" ) ||  (sParasiteKeyword == "SprigganRootGag" ) || (sParasiteKeyword == "SprigganRootArms" )  || (sParasiteKeyword == "SprigganRootFeet" )  || (sParasiteKeyword == "SprigganRootBody" )  
 		fctParasiteSprigganRoot.equipParasiteNPCByString(kActor,  sParasiteKeyword )
 		
 	else
@@ -558,7 +567,7 @@ Function clearParasiteNPCByString(Actor kActor, String sParasiteKeyword = ""  )
 		fctParasiteBarnacles.clearParasiteNPCByString(kActor,  sParasiteKeyword )
 		
  		
-	elseif (sParasiteKeyword == "SprigganRootGag" ) || (sParasiteKeyword == "SprigganRootArms" )  || (sParasiteKeyword == "SprigganRootFeet" )  || (sParasiteKeyword == "SprigganRootBody" )  
+	elseif (sParasiteKeyword == "SprigganRoot" ) ||  (sParasiteKeyword == "SprigganRootGag" ) || (sParasiteKeyword == "SprigganRootArms" )  || (sParasiteKeyword == "SprigganRootFeet" )  || (sParasiteKeyword == "SprigganRootBody" )  
 		fctParasiteSprigganRoot.clearParasiteNPCByString(kActor,  sParasiteKeyword )
 	else
 	; Function only available for custom parasite devices
@@ -701,7 +710,7 @@ Function clearParasiteAlias(Actor akActor, String sParasite = ""  )
 	elseif (sParasite == "Barnacles" )  
 		BarnaclesInfectedAlias.ForceRefTo(DummyAlias)
 		
-	elseif (sParasite == "SprigganRootGag" ) || (sParasite == "SprigganRootArms" )  || (sParasite == "SprigganRootFeet" )  || (sParasite == "SprigganRootBody" )  
+	elseif (sParasite == "SprigganRoot" ) ||  (sParasite == "SprigganRootGag" ) || (sParasite == "SprigganRootArms" )  || (sParasite == "SprigganRootFeet" )  || (sParasite == "SprigganRootBody" )  
 		SprigganRootInfectedAlias.ForceRefTo(DummyAlias)
 
 	endif
@@ -732,7 +741,70 @@ Bool Function tryParasiteNextStage(Actor kActor, String sParasite)
 			Return bSuccess; Player is busy - try again later
  		Endif
 
-		If (sParasite == "ChaurusQueen") && (QueenOfChaurusQuest.GetStageDone(290) && (!QueenOfChaurusQuest.GetStageDone(400)) )
+		If (sParasite == "SprigganRoot")
+
+			If (!fctParasiteChaurusQueen.isInfectedByString( kActor,  "SprigganRootArms" )) 
+				if (Utility.RandomInt(0,100)<StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceSprigganRootArms" ))
+					debug.trace("[SLP]    Effect - add Spriggan Root Arms")
+					
+					debug.MessageBox("The Spriggan spores cover your hands.") 
+	 
+					fctParasiteSprigganRoot.infectSprigganRootArms( kActor  ) 
+					bSuccess = True
+				endif
+
+			elseIf (!fctParasiteChaurusQueen.isInfectedByString( kActor,  "SprigganRootBody" )) 
+				if (Utility.RandomInt(0,100)<StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceSprigganRootBody" ))
+					debug.trace("[SLP]    Effect - add Spriggan Root Body")
+					
+					debug.MessageBox("The Spriggan spores spread to your body.") 
+	 
+					fctParasiteSprigganRoot.infectSprigganRootBody( kActor  ) 
+					bSuccess = True
+				endif
+
+			; Spriggan Feet commented out because of mesh issues for now
+
+			; elseIf (!fctParasiteChaurusQueen.isInfectedByString( kActor,  "SprigganRootFeet" )) 
+			;	if (Utility.RandomInt(0,100)<StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceSprigganRootFeet" ))
+			;		debug.trace("[SLP]    Effect - add Spriggan Root Feet")
+			;		
+			;		debug.MessageBox("The Spriggan spores extend to your feet.") 
+	 		;
+			;		fctParasiteSprigganRoot.infectSprigganRootFeet( kActor  ) 
+			;		bSuccess = True
+			;	endif
+
+			elseIf (!fctParasiteChaurusQueen.isInfectedByString( kActor,  "SprigganRootGag" )) 
+				if (Utility.RandomInt(0,100)<StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceSprigganRootGag" ))
+					debug.trace("[SLP]    Effect - add Spriggan Root Gag")
+					
+					debug.MessageBox("The spores shape your face into a Spriggan mask.") 
+	 
+					fctParasiteSprigganRoot.infectSprigganRootGag( kActor  ) 
+					bSuccess = True
+				endif
+
+			elseIf (fctParasiteChaurusQueen.isInfectedByString( kActor,  "SprigganRootGag" )) 
+				if (Utility.RandomInt(0,100)<StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceSprigganRootGag" ))
+					debug.trace("[SLP]    Effect - add Spriggan Root Gag")
+					
+					debug.MessageBox("The spores take a toll on your body.") 
+	 
+					Int iSprigganSkinColor = Math.LeftShift(255, 24) + Math.LeftShift(196, 16) + Math.LeftShift(238, 8) + 218
+					StorageUtil.SetIntValue(PlayerActor, "_SLH_iSkinColor", iSprigganSkinColor ) 
+					StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast", 0.8 ) 
+					StorageUtil.SetFloatValue(PlayerActor, "_SLH_fWeight", 20.0 ) 
+					StorageUtil.SetIntValue(PlayerActor, "_SLH_iForcedHairLoss", 1)
+					PlayerActor.SendModEvent("SLHShaveHead")
+					PlayerActor.SendModEvent("SLHRefresh")
+					PlayerActor.SendModEvent("SLHRefreshColors")
+
+					bSuccess = True
+				endif
+			endif 
+
+		Elseif (sParasite == "ChaurusQueen") && (QueenOfChaurusQuest.GetStageDone(290) && (!QueenOfChaurusQuest.GetStageDone(400)) )
 			Int itriggerNextStageChaurusQueen = StorageUtil.GetIntValue(kActor, "_SLP_triggerNextStageChaurusQueen") +  (iChaurusQueenStage * 10)
 			debug.trace("[SLP]    itriggerNextStageChaurusQueen = " + itriggerNextStageChaurusQueen)
 
@@ -1028,7 +1100,7 @@ Function tryCharmSpider(Actor Target)
 		endif
 
 	else
-		Debug.Notification("[SLP] Charm Spider - Failed" )
+		; Debug.Notification("[SLP] Charm Spider - Failed" )
 		Debug.Trace("[SLP] Charm Spider - Failed" )
 		Debug.Trace("[SLP]       iCharmThreshold: " + iCharmThreshold)
 		Debug.Trace("[SLP]       checkIfSpider: " + fctUtils.checkIfSpider ( Target ))
@@ -1036,7 +1108,6 @@ Function tryCharmSpider(Actor Target)
 		Debug.Trace("[SLP]       _SLH_fHormonePheromones: " + StorageUtil.GetFloatValue(kPlayer, "_SLH_fHormonePheromones"))
 
 	endif
-
 
 Endfunction
 
@@ -1075,7 +1146,7 @@ Function tryCharmChaurus(Actor Target)
 		iCharmThreshold = iCharmThreshold + ((StorageUtil.GetFloatValue(kPlayer, "_SLH_fHormonePheromones") as Int) / 2)
 
 		If (Utility.RandomInt(0,100)<=iCharmThreshold)   
-			Debug.Notification("[SLP] Charm Chaurus" )
+			; Debug.Notification("[SLP] Charm Chaurus" )
 		    ; Debug.Messagebox(" Chaurus Pheromone charm spell started")    
 		 	; kPlayer.AddToFaction(ChaurusFaction)
 		    Target.StopCombat()   
@@ -1105,7 +1176,7 @@ Function tryCharmChaurus(Actor Target)
 
 	else
 		; Debug.Notification("[SLP] Charm Chaurus - Failed" )
-		Debug.Trace("[SLP] Charm Chaurus - Failed" )
+		; Debug.Trace("[SLP] Charm Chaurus - Failed" )
 		Debug.Trace("[SLP]       iCharmThreshold: " + iCharmThreshold)
 		Debug.Trace("[SLP]       checkIfChaurus: " + fctUtils.checkIfChaurus ( Target ))
 		Debug.Trace("[SLP]       _SLP_iChaurusPheromoneON: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iChaurusPheromoneON"))
@@ -1135,6 +1206,49 @@ Function tryPlayerChaurusStage()
 		fctParasiteChaurusQueen.getRandomChaurusEggs(PlayerActor, 0, 20)
 	endif
 EndFunction
+
+Function tryPlayerSpriggan(Actor Target)
+	Actor kPlayer = Game.GetPlayer()
+ 	Int iChaurusQueenStage = StorageUtil.GetIntValue(kPlayer, "_SLP_iChaurusQueenStage")
+ 	Int iInfectThreshold = StorageUtil.GetFloatValue(kPlayer, "_SLP_chanceSprigganRootArms" ) as int
+
+ 	if (StorageUtil.GetIntValue(kPlayer, "_SLP_toggleSprigganRoot")==1)
+ 		; Spriggan infection is on already, skipping
+ 		return
+ 	endif
+
+
+	if fctUtils.checkIfSpriggan ( Target ) 
+
+		If (Utility.RandomInt(0,100)<=iInfectThreshold)  
+			Debug.Notification("[SLP] Spriggan Infection" )
+
+		    Target.StopCombat()   
+		    Target.SetPlayerTeammate(true )  
+			Utility.Wait(1.0)
+
+			if (infectParasiteByString(kPlayer, "SprigganRoot") )
+		 		debug.messagebox("A swarm of spores from the Spriggan cover your hands.")
+			endif
+
+			; if (QueenOfChaurusQuest.GetStageDone(310)) && (!QueenOfChaurusQuest.GetStageDone(320)) 
+			;	QueenOfChaurusQuest.SetStage(320)
+			;	tryPlayerSpiderStage()
+			; endif
+ 
+			; ParasiteSex(kPlayer, Target)			
+			
+		endif
+
+	else
+		Debug.Notification("[SLP] Spriggan Infection - Failed" )
+		Debug.Trace("[SLP] Spriggan Infection - Failed" )
+		Debug.Trace("[SLP]       iInfectThreshold: " + iInfectThreshold)
+		Debug.Trace("[SLP]       checkIfSpriggan: " + fctUtils.checkIfSpriggan ( Target )) 
+
+	endif
+
+Endfunction
 
 Bool Function tryPlayerLivingArmor()
  	Actor PlayerActor = Game.GetPlayer()
@@ -1277,6 +1391,8 @@ EndFunction
 Function getRandomChaurusEggs(Actor kActor, int iMinEggs = 0, int iMaxEggs = 20 )
 	fctParasiteChaurusQueen.getRandomChaurusEggs(kActor, iMinEggs , iMaxEggs )
 EndFunction
+ 
+
 ; -------------------------------------------------------
 Function maintenance()
  	Actor PlayerActor= Game.GetPlayer() as Actor

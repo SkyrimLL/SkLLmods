@@ -49,6 +49,10 @@ Event OnEffectStart(Actor Target, Actor Caster)
 
 				fctParasites.cureParasiteByString(Caster, "LivingArmor")
 			
+ 			elseif (fctParasites.isInfectedByString( Caster,  "SprigganRootBody" )) 
+				debug.MessageBox("The poisonous potion turn the spores into ash.")
+				fctParasites.cureParasiteByString(Caster, "SprigganRootBody")
+			
  			elseif (fctParasites.isInfectedByString( Caster,  "Barnacles" )) 
 				debug.MessageBox("The poisonous potion turn the spores into ash.")
 				fctParasites.cureParasiteByString(Caster, "Barnacles")
@@ -68,6 +72,12 @@ Event OnEffectStart(Actor Target, Actor Caster)
 				fctParasites.cureParasiteByString(Caster, "FaceHuggerGag")
 			endif
 
+			
+ 			if (fctParasites.isInfectedByString( Caster,  "SprigganRootArms" )) || (fctParasites.isInfectedByString( Caster,  "SprigganRootFeet" )) 
+				debug.MessageBox("The poisonous potion turn the spores into ash.")
+				fctParasites.cureParasiteByString(Caster, "SprigganRootArms")
+				fctParasites.cureParasiteByString(Caster, "SprigganRootFeet")
+			endif
 		elseif (iRandumNum >= 20) 
 			; Chance to remove small parasites
 			; debug.Notification("[SLP] Chance to remove Eggs and Worms. " + iRandumNum)
@@ -80,7 +90,12 @@ Event OnEffectStart(Actor Target, Actor Caster)
 				debug.MessageBox("Powerful cramps expel the worms inside you.")
 				fctParasites.cureParasiteByString(Caster, "ChaurusWorm")  
 				fctParasites.cureParasiteByString(Caster, "ChaurusWormVag")  
-			 endif
+
+ 			elseif (fctParasites.isInfectedByString( Caster,  "SprigganRootGag" ))  
+				debug.MessageBox("The poisonous potion turn the spores into ash.")
+				fctParasites.cureParasiteByString(Caster, "SprigganRootGag") 
+
+			endif 
 
 		else 
 			debug.MessageBox("The potion made you nauseous but the effect wasn't strong enough to reject the parasites.")

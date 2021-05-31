@@ -13,6 +13,11 @@ Race Property ChaurusRace  Auto
 Race Property ChaurusReaperRace  Auto  
 Race Property SpiderRace  Auto
 Race Property SpiderLargeRace  Auto
+Race Property SprigganRace  Auto
+Race Property SprigganMatronRace  Auto
+Race Property SprigganEarthMotherRace  Auto
+Race Property SprigganSwarmRace  Auto
+Race Property SprigganBurntRace  Auto
 
 Keyword Property _SLP_Parasite  Auto  
 
@@ -208,6 +213,29 @@ Bool Function checkIfChaurus ( Actor akActor )
 	Return bIsChaurus
 EndFunction
 
+Bool Function checkIfSpriggan ( Actor akActor )
+	Bool bIsSpriggan = False
+	ActorBase akActorBase = akActor.GetLeveledActorBase() as ActorBase
+	Race actorRace = akActorBase.GetRace()
+	; Race _SD_Race_FalmerFrozen = StorageUtil.GetFormValue(None, "_SD_Race_FalmerFrozen") as Race
+
+	if (akActor)
+		if (StorageUtil.GetIntValue( akActor, "_SLP_iDateSprigganRaceChecked")==0)
+			StorageUtil.SetIntValue( akActor, "_SLP_iDateSprigganRaceChecked", Game.QueryStat("Days Passed"))
+
+			Debug.Trace("[SLP]       actorRace.GetName(): " + actorRace.GetName())
+
+			bIsSpriggan = (actorRace == SprigganRace ) || (actorRace == SprigganMatronRace ) || (actorRace == SprigganEarthMotherRace ) || (actorRace == SprigganSwarmRace ) || (actorRace == SprigganBurntRace ) || (StringUtil.Find(actorRace.GetName(), "Spriggan")!= -1)
+
+			StorageUtil.SetIntValue( akActor, "_SD_bIsSpriggan", bIsSpriggan as Int) 
+		else
+			bIsSpriggan = StorageUtil.GetIntValue( akActor, "_SD_bIsSpriggan") as Bool
+		endIf
+	EndIf
+	
+	Return bIsSpriggan
+EndFunction
+
 Bool Function checkIfSpiderFaction ( Actor akActor )
 	return akActor.IsInFaction(SpiderFaction)
 EndFunction
@@ -393,6 +421,15 @@ Function _resetParasiteSettings()
 
 	StorageUtil.SetIntValue(kPlayer, "_SLP_toggleBarnacles", 0 )
 	StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceBarnacles", 30.0 )
+
+	StorageUtil.SetIntValue(kPlayer, "_SLP_toggleSprigganRootGag", 0 )
+	StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceSprigganRootGag", 10.0 )
+	StorageUtil.SetIntValue(kPlayer, "_SLP_toggleSprigganRootArms", 0 )
+	StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceSprigganRootArms", 20.0 )
+	StorageUtil.SetIntValue(kPlayer, "_SLP_toggleSprigganRootFeet", 0 )
+	StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceSprigganRootFeet", 30.0 )
+	StorageUtil.SetIntValue(kPlayer, "_SLP_toggleSprigganRootBody", 0 )
+	StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceSprigganRootBody", 50.0 )
 EndFunction
 
 

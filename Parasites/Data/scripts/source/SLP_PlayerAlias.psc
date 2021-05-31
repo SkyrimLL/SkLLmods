@@ -77,7 +77,27 @@ Function _maintenance()
  	ActorBase pActorBase = PlayerActor.GetActorBase()
  	iChaurusQueenStage = StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusQueenStage")
 
-	fctParasites.maintenance()
+	Int iCurrentVersionNumber = 20210531
+	Int iVersionNumber = StorageUtil.GetIntValue(none, "_SLP_iParasitesVersion")	
+	
+	If (iVersionNumber != iCurrentVersionNumber)
+		Debug.Notification("[SLH] Upgrading Parasites to " + iCurrentVersionNumber)
+
+		If (iVersionNumber <= 20210531)
+			StorageUtil.SetIntValue(PlayerActor, "_SLP_toggleSprigganRootGag", 0 )
+			StorageUtil.SetFloatValue(PlayerActor, "_SLP_chanceSprigganRootGag", 10.0 )
+			StorageUtil.SetIntValue(PlayerActor, "_SLP_toggleSprigganRootArms", 0 )
+			StorageUtil.SetFloatValue(PlayerActor, "_SLP_chanceSprigganRootArms", 20.0 )
+			StorageUtil.SetIntValue(PlayerActor, "_SLP_toggleSprigganRootFeet", 0 )
+			StorageUtil.SetFloatValue(PlayerActor, "_SLP_chanceSprigganRootFeet", 30.0 )
+			StorageUtil.SetIntValue(PlayerActor, "_SLP_toggleSprigganRootBody", 0 )
+			StorageUtil.SetFloatValue(PlayerActor, "_SLP_chanceSprigganRootBody", 50.0 )
+		Endif
+ 
+		StorageUtil.SetIntValue(none, "_SLP_iParasitesVersion", iCurrentVersionNumber)	
+	Endif
+
+	fctParasites.maintenance() 
 
 	; Set Seed Stone ritual to today if missing
 	if (iChaurusQueenStage==1) && (StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusQueenDate")==0)
@@ -143,6 +163,8 @@ Function _maintenance()
 	RegisterForModEvent("SLPInfectBarnacles",   "OnSLPInfectBarnacles")
 	RegisterForModEvent("SLPCureBarnacles",   "OnSLPCureBarnacles")
 
+	RegisterForModEvent("SLPInfectSprigganRoot",   "OnSLPInfectSprigganRoot")
+	RegisterForModEvent("SLPCureSprigganRoot",   "OnSLPCureSprigganRoot")
 	RegisterForModEvent("SLPInfectSprigganRootGag",   "OnSLPInfectSprigganRootGag")
 	RegisterForModEvent("SLPCureSprigganRootGag",   "OnSLPCureSprigganRootGag")
 	RegisterForModEvent("SLPInfectSprigganRootArms",   "OnSLPInfectSprigganRootArms")
@@ -265,6 +287,7 @@ Event OnUpdate()
 	Location kLocation = PlayerActor.GetCurrentLocation()
  	Int iParasiteDuration
  	Float fValue
+ 	Bool isWeatherRainy = false
 
  	daysPassed = Game.QueryStat("Days Passed")
 
@@ -372,9 +395,13 @@ Event OnUpdate()
 		iChaurusQueenStage = StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusQueenStage")
 		iChaurusQueenDate = StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusQueenDate")
 
-		if (iChaurusQueenStage>=1) 
+		if (iChaurusQueenStage>=1) && (!(StorageUtil.GetIntValue(PlayerActor, "_SLP_toggleSprigganRoot") == 1 ) )
 			if (fctParasites.isPlayerInHeat())
 				iTickerEventFrequency = 10 - (Game.QueryStat("Days Passed") - iChaurusQueenDate)
+
+				if (iTickerEventFrequency<=0)
+					iTickerEventFrequency = 1
+				endif
 			else
 				; reduce frequency of flares if player isn't in heat
 				iTickerEventFrequency = 100
@@ -399,18 +426,54 @@ Event OnUpdate()
 			endif
 		endif
 
-		if (PlayerActor.IsSwimming()) && (!PlayerActor.IsInCombat())
+		; Chance of Living Armor infection when swimming
+		if (PlayerActor.IsSwimming()) 
 			; debug.notification("Player is swimming...")
 			if (StorageUtil.GetIntValue(PlayerActor, "_SLP_lastSwimDate")!= daysPassed)
+				; Use date later to trigger 'dry tentacles' effect 
 				StorageUtil.SetIntValue(PlayerActor, "_SLP_lastSwimDate", daysPassed)
 			endif
 
-			if (fctParasites.tryPlayerLivingArmor())
-				iNextStageTicker = 0
-			Endif
+			if (!PlayerActor.IsInCombat())
+				if (fctParasites.tryPlayerLivingArmor())
+					iNextStageTicker = 0
+				Endif
+			endif
+
+			; Heal while swimming
+			if (fctParasites.isInfectedByString( PlayerActor,  "SprigganRoot" )) || (fctParasites.isInfectedByString( PlayerActor,  "LivingArmor" ))
+				Float playersHealth = PlayerActor.GetActorValuePercentage("health")
+				if (playersHealth < 0.8)  
+				  	; Debug.Trace("The player has over half their health left")
+					;_SDSP_heal.RemoteCast(kPlayer, kPlayer, kPlayer)
+					PlayerActor.resethealthandlimbs()
+				endIf
+			endif
 		endif
 
 		if (iNextStageTicker>0)
+
+			; Chance of Spriggan Root growth when player is wet
+			if (fctParasites.isInfectedByString( PlayerActor,  "SprigganRoot" ))
+				Weather currentWeather = Weather.GetCurrentWeather()
+				if (currentWeather.GetClassification() == 2)
+				    isWeatherRainy = true
+				endIf
+
+				if ( (PlayerActor.IsSwimming() || isWeatherRainy) && (!PlayerActor.IsInCombat()) )
+					debug.notification("Player is wet...")
+					if (StorageUtil.GetIntValue(PlayerActor, "_SLP_lastWetDate")!= daysPassed)
+						StorageUtil.SetIntValue(PlayerActor, "_SLP_lastWetDate", daysPassed)
+					endif
+
+					iParasiteDuration = daysPassed - StorageUtil.GetIntValue(PlayerActor, "_SLP_iSprigganRootArmsDate")
+					If (Utility.RandomInt(0,100) > _getParasiteTickerThreshold(iNextStageTicker, iParasiteDuration) )
+						if (fctParasites.tryParasiteNextStage(PlayerActor, "SprigganRoot"))
+							iNextStageTicker = 0
+						Endif
+					endif
+				endif
+			endif
  
 			If (fctParasites.isInfectedByString( PlayerActor,  "SpiderPenis" ))
 				iParasiteDuration = daysPassed - StorageUtil.GetIntValue(PlayerActor, "_SLP_iSpiderPenisDate")
@@ -1094,6 +1157,42 @@ Event OnSLPCureBarnacles(String _eventName, String _args, Float _argc = 1.0, For
 EndEvent
 
 ;------------------------------------------------------------------------------
+Event OnSLPInfectSprigganRoot(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+   	Actor PlayerActor = Game.GetPlayer()
+
+ 	If (kActor == None)
+ 		kActor = PlayerActor
+ 	Endif
+ 	
+
+	Debug.Trace("[SLP] Receiving 'infect SprigganRoot' event - Actor: " + kActor)
+
+	fctParasites.infectParasiteByString(kActor, "SprigganRoot")
+	
+EndEvent
+
+Event OnSLPCureSprigganRoot(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+  	Actor PlayerActor = Game.GetPlayer()
+
+ 	If (kActor == None)
+ 		kActor = PlayerActor
+ 	Endif
+ 	
+
+	Debug.Trace("[SLP] Receiving 'cure SprigganRoot' event - Actor: " + kActor)
+
+	if (_args == "All")
+		fctParasites.cureParasiteByString(kActor, "SprigganRootAll", _args )
+	else
+		fctParasites.cureParasiteByString(kActor, "SprigganRoot", _args )
+	endif
+
+
+EndEvent
+
+;------------------------------------------------------------------------------
 Event OnSLPInfectSprigganRootGag(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
    	Actor PlayerActor = Game.GetPlayer()
@@ -1700,7 +1799,7 @@ Event OnSLPClearParasites(String _eventName, String _args, Float _argc = 1.0, Fo
 	fctParasites.cureParasiteByString(kActor, "LivingArmor", bHarvestParasite)
 	fctParasites.cureParasiteByString(kActor, "Barnacles", bHarvestParasite) 
  	fctParasites.cureParasiteByString(kActor, "SprigganRootGag", bHarvestParasite) 
- 	fctParasites.cureParasiteByString(kActor, "SprigganRootArms", bHarvestParasite) 
+ 	; fctParasites.cureParasiteByString(kActor, "SprigganRootArms", bHarvestParasite) 
  	fctParasites.cureParasiteByString(kActor, "SprigganRootFeet", bHarvestParasite) 
  	fctParasites.cureParasiteByString(kActor, "SprigganRootBody", bHarvestParasite) 
    
@@ -1987,6 +2086,8 @@ Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile,
 		if (StorageUtil.GetIntValue(kPlayer, "_SLP_iChaurusPheromoneON") == 1 )
 			fctParasites.tryCharmChaurus( kTarget )
 		endif
+
+		fctParasites.tryPlayerSpriggan( kTarget )
 
 	EndIf
 
