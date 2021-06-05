@@ -728,6 +728,7 @@ Bool Function tryParasiteNextStage(Actor kActor, String sParasite)
 
  	If (kActor == PlayerActor)
  		If (PlayerActor.IsBleedingOut() || PlayerActor.IsDead() || PlayerActor.IsOnMount() || PlayerActor.IsFlying() || PlayerActor.IsUnconscious() || !Game.IsActivateControlsEnabled() || SexLab.IsActorActive(PlayerActor) )
+ 			debug.notification("[SLP] tryParasiteNextStage failed  " )
  			debug.trace("[SLP] tryParasiteNextStage failed  " )
  			;debug.notification("[SLP]    Player is busy " )
  			debug.trace("[SLP]    Player is busy " )
@@ -742,8 +743,8 @@ Bool Function tryParasiteNextStage(Actor kActor, String sParasite)
  		Endif
 
 		If (sParasite == "SprigganRoot")
-
-			If (!fctParasiteChaurusQueen.isInfectedByString( kActor,  "SprigganRootArms" )) 
+			Debug.Notification(".." )
+			If (!fctParasiteSprigganRoot.isInfectedByString( kActor,  "SprigganRootArms" )) 
 				if (Utility.RandomInt(0,100)<StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceSprigganRootArms" ))
 					debug.trace("[SLP]    Effect - add Spriggan Root Arms")
 					
@@ -753,7 +754,7 @@ Bool Function tryParasiteNextStage(Actor kActor, String sParasite)
 					bSuccess = True
 				endif
 
-			elseIf (!fctParasiteChaurusQueen.isInfectedByString( kActor,  "SprigganRootBody" )) 
+			elseIf (!fctParasiteSprigganRoot.isInfectedByString( kActor,  "SprigganRootBody" )) 
 				if (Utility.RandomInt(0,100)<StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceSprigganRootBody" ))
 					debug.trace("[SLP]    Effect - add Spriggan Root Body")
 					
@@ -775,7 +776,7 @@ Bool Function tryParasiteNextStage(Actor kActor, String sParasite)
 			;		bSuccess = True
 			;	endif
 
-			elseIf (!fctParasiteChaurusQueen.isInfectedByString( kActor,  "SprigganRootGag" )) 
+			elseIf (!fctParasiteSprigganRoot.isInfectedByString( kActor,  "SprigganRootGag" )) 
 				if (Utility.RandomInt(0,100)<StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceSprigganRootGag" ))
 					debug.trace("[SLP]    Effect - add Spriggan Root Gag")
 					
@@ -785,7 +786,7 @@ Bool Function tryParasiteNextStage(Actor kActor, String sParasite)
 					bSuccess = True
 				endif
 
-			elseIf (fctParasiteChaurusQueen.isInfectedByString( kActor,  "SprigganRootGag" )) 
+			elseIf (fctParasiteSprigganRoot.isInfectedByString( kActor,  "SprigganRootGag" )) 
 				if (Utility.RandomInt(0,100)<StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceSprigganRootGag" ))
 					debug.trace("[SLP]    Effect - add Spriggan Root Gag")
 					
@@ -1330,6 +1331,7 @@ Function resetOnSleep()
 Endfunction
 ;------------------------------------------------------------------------------
 Function refreshParasite(Actor kActor, String sParasite)
+	debug.trace("[SLP] Refreshing parasite - " + sParasite)
 
 	if (sParasite == "SpiderEgg" )  || (sParasite == "SpiderPenis" )  
 		fctParasiteSpiderEgg.refreshParasite( kActor, sParasite )
@@ -1338,7 +1340,7 @@ Function refreshParasite(Actor kActor, String sParasite)
 		fctParasiteChaurusWorm.refreshParasite(  kActor, sParasite )
 		
 	elseif (sParasite == "ChaurusQueenGag" ) || (sParasite == "ChaurusQueenVag" )  || (sParasite == "ChaurusQueenSkin" )  || (sParasite == "ChaurusQueenArmor" ) || (sParasite == "ChaurusQueenBody" )  
-		; fctParasiteChaurusQueen.refreshParasite(  kActor,  sParasite )
+		fctParasiteChaurusQueen.refreshParasite(  kActor,  sParasite )
 		
 	elseif (sParasite == "TentacleMonster" )  
 		fctParasiteTentacleMonster.refreshParasite(  kActor, sParasite )
@@ -1351,7 +1353,10 @@ Function refreshParasite(Actor kActor, String sParasite)
 		
 	elseif (sParasite == "Barnacles" )  
 		fctParasiteBarnacles.refreshParasite(  kActor, sParasite )
-		
+	
+	elseif (sParasite == "SprigganRoot" ) || (sParasite == "SprigganRootGag" ) || (sParasite == "SprigganRootArms" )  || (sParasite == "SprigganRootFeet" )  || (sParasite == "SprigganRootBody" )  
+		fctParasiteSprigganRoot.refreshParasite(  kActor, sParasite )
+
 	else
 		; fctParasitesDevious.refreshParasite( deviousKeyword )
 	endIf

@@ -76,7 +76,7 @@ Bool Function infectChaurusWorm( Actor kActor  )
  	Actor PlayerActor = Game.GetPlayer()
 
  	; Setting toggle back to 0 in case equip fails - the 'apply' function sets it to 1 if it succeeds
-	StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusWorm", 0 )
+	; StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusWorm", 0 )
 
   	if (kActor == None)
   		kActor = PlayerActor
@@ -171,7 +171,7 @@ Bool Function infectChaurusWormVag( Actor kActor  )
  	Actor PlayerActor = Game.GetPlayer()
 
  	; Setting toggle back to 0 in case equip fails - the 'apply' function sets it to 1 if it succeeds
-	StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusWormVag", 0 )
+	; StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusWormVag", 0 )
  
   	if (kActor == None)
   		kActor = PlayerActor
@@ -269,7 +269,7 @@ EndFunction
 Function refreshParasite(Actor kActor, String sParasite)
 
 	If (sParasite == "ChaurusWorm")
-		If (isInfectedByString( kActor,  "ChaurusWorm" )) && (!fctDevious.ActorHasKeywordByString( kActor, "PlugAnal"  ))
+		If (isInfectedByString( kActor,  "ChaurusWorm" ))  
 			StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusWorm", 1)
 			equipParasiteNPCByString (kActor, "ChaurusWorm")
 
@@ -279,7 +279,7 @@ Function refreshParasite(Actor kActor, String sParasite)
 		Endif
 
 	ElseIf (sParasite == "ChaurusWormVag")
-		If (isInfectedByString( kActor,  "ChaurusWormVag" )) && (!fctDevious.ActorHasKeywordByString( kActor, "PlugVaginal"  ))
+		If (isInfectedByString( kActor,  "ChaurusWormVag" ))  
 			StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusWormVag", 1)
 			equipParasiteNPCByString (kActor, "ChaurusWormVag")
 

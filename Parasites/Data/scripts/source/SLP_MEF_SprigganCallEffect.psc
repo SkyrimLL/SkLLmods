@@ -41,7 +41,7 @@ EVENT OnEffectStart(Actor akTarget, Actor akCaster)
 		; if the spriggan caster has a combat target (she should) then I will beeline to attack it!
 		if (akTarget.getCombatTarget() == kPlayer)
 			; akTarget.startCombat(caster.getCombatTarget())
-			debug.Notification("[SLP] AoE target is in combat - Pacifying " )
+			; debug.Notification("[SLP] AoE target is in combat - Pacifying " )
 			debug.trace("[SLP] AoE target is in combat - Pacifying " )
 			kPlayer.stopCombat()
 			akTarget.stopCombat()

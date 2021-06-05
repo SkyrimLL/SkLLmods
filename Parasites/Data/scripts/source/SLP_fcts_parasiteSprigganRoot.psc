@@ -100,6 +100,53 @@ Keyword Function getDeviousKeywordByString(String deviousKeyword = ""  )
 	return thisKeyword
 EndFunction
 
+Function refreshParasite(Actor kActor, String sParasite)
+
+	If (sParasite == "SprigganRootGag")
+		If (isInfectedByString( kActor,  "SprigganRootGag" )) 
+			StorageUtil.SetIntValue(kActor, "_SLP_toggleSprigganRootGag", 1)
+			equipParasiteNPCByString (kActor, "SprigganRootGag")
+
+		Else
+			StorageUtil.SetIntValue(kActor, "_SLP_toggleSprigganRootGag", 0)
+			clearParasiteNPCByString (kActor, "SprigganRootGag")
+		Endif
+
+	ElseIf (sParasite == "SprigganRootArms")
+		If (isInfectedByString( kActor,  "SprigganRootArms" )) 
+			StorageUtil.SetIntValue(kActor, "_SLP_toggleSprigganRootArms", 1)
+			equipParasiteNPCByString (kActor, "SprigganRootArms")
+
+
+		Else
+			StorageUtil.SetIntValue(kActor, "_SLP_toggleSprigganRootArms", 0)
+			clearParasiteNPCByString (kActor, "SprigganRootArms")
+		Endif
+
+	ElseIf (sParasite == "SprigganRootFeet")
+		If (isInfectedByString( kActor,  "SprigganRootFeet" )) 
+			StorageUtil.SetIntValue(kActor, "_SLP_toggleSprigganRootFeet", 1)
+			equipParasiteNPCByString (kActor, "SprigganRootFeet")
+
+
+		Else
+			StorageUtil.SetIntValue(kActor, "_SLP_toggleSprigganRootFeet", 0)
+			clearParasiteNPCByString (kActor, "SprigganRootFeet")
+		Endif
+
+	ElseIf (sParasite == "SprigganRootBody")
+		If (isInfectedByString( kActor,  "SprigganRootBody" )) 
+			StorageUtil.SetIntValue(kActor, "_SLP_toggleSprigganRootBody", 1)
+			equipParasiteNPCByString (kActor, "SprigganRootBody")
+
+		Else
+			StorageUtil.SetIntValue(kActor, "_SLP_toggleSprigganRootBody", 0)
+			clearParasiteNPCByString (kActor, "SprigganRootBody")
+		Endif
+
+	Endif
+
+EndFunction
 ;------------------------------------------------------------------------------
 Bool Function infectSprigganRoot( Actor kActor  )
  	Actor PlayerActor = Game.GetPlayer()
@@ -142,107 +189,6 @@ Function cureSprigganRootAll( Actor kActor, Bool bHarvestParasite = False   )
 	endIf
 EndFunction
 
-;------------------------------------------------------------------------------
-Bool Function infectSprigganRootGag( Actor kActor  )
- 	Actor PlayerActor = Game.GetPlayer()
-
- 	; Setting toggle back to 0 in case equip fails - the 'apply' function sets it to 1 if it succeeds
-	StorageUtil.SetIntValue(kActor, "_SLP_toggleSprigganRootGag", 0 )
-
-  	if (kActor == None)
-  		kActor = PlayerActor
-  	endIf
- 
-	If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceSprigganRootGag" )==0.0)
-		Debug.Trace("[SLP]	Parasite disabled - Aborting")
-		Return False
-	Endif
-
-	If (isInfectedByString( kActor,  "SprigganRootGag" ))
-		Debug.Trace("[SLP]	Already infected - Aborting")
-		Return False
-	Endif
-
-	If (fctDevious.ActorHasKeywordByString( kActor, "Gag"  ))
-		Debug.Trace("[SLP]	Already wearing a gag - Aborting")
-		Return False
-	Endif
-
-	SprigganFlare.Cast(kActor as ObjectReference, kActor as ObjectReference)	
-	equipParasiteNPCByString (kActor, "SprigganRootGag")
-
-	Return  true; applyFaceHuggerGag( kActor )
-EndFunction
-
-Bool Function applySprigganRootGag( Actor kActor  )
- 	Actor PlayerActor = Game.GetPlayer()
-
-
-	If !StorageUtil.HasIntValue(kActor, "_SLP_iSprigganRootGagInfections")
-			StorageUtil.SetIntValue(kActor, "_SLP_iSprigganRootGagInfections",  0)
-	EndIf
-
-	if (!(StorageUtil.GetIntValue(kActor, "_SLP_toggleSprigganRoot") == 1 ))
-		StorageUtil.SetIntValue(kActor, "_SLP_iSprigganRootInfections",  StorageUtil.GetIntValue(kActor, "_SLP_iSprigganRootInfections") + 1)
-		StorageUtil.SetIntValue(kActor, "_SLP_toggleSprigganRoot", 1 )
-
-		If (kActor == PlayerActor)
-			SprigganRootInfectedAlias.ForceRefTo(PlayerActor)
-		endIf
-	endif
-
-	StorageUtil.SetIntValue(kActor, "_SLP_toggleSprigganRootGag", 1 )
-	StorageUtil.SetIntValue(kActor, "_SLP_iSprigganRootGagDate", Game.QueryStat("Days Passed"))
-	StorageUtil.SetIntValue(kActor, "_SLP_iInfections",  StorageUtil.GetIntValue(kActor, "_SLP_iInfections") + 1)
-	StorageUtil.SetIntValue(kActor, "_SLP_iSprigganRootGagInfections",  StorageUtil.GetIntValue(kActor, "_SLP_iSprigganRootGagInfections") + 1)
-
-	If (kActor == PlayerActor)
-		_SLP_GV_numInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iInfections"))
-		; _SLP_GV_numFaceHuggerInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iSprigganRootGagInfections"))
-	endIf
-
-	; applyBaseChaurusQueenSkin()
-
-	Sound.SetInstanceVolume(WetFX.Play(PlayerActor), 1.0)
-	Utility.Wait(1.0)
-	Sound.SetInstanceVolume(CritterFX.Play(PlayerActor), 1.0)
-	Utility.Wait(1.0)
- 
-	SendModEvent("SLPSprigganRootGagInfection")
-
-	; if (!KynesBlessingQuest.GetStageDone(20)) && (kActor == PlayerActor)
-	;	KynesBlessingQuest.SetStage(20)
-	; endif
-	
-	Return True
-EndFunction
-
-Function cureSprigganRootGag( Actor kActor, Bool bHarvestParasite = False   )
- 	Actor PlayerActor = Game.GetPlayer()
- 
-  	if (kActor == None)
-  		kActor = PlayerActor
-  	endIf
-  	
-	If (isInfectedByString( kActor,  "SprigganRootGag" ))
-		StorageUtil.SetIntValue(kActor, "_SLP_toggleSprigganRootGag", 0 )
-		clearParasiteNPCByString (kActor, "SprigganRootGag")
-		; fctUtils.ApplyBodyChange( kActor, "FaceHugger", "Belly", 1.0, StorageUtil.GetFloatValue(PlayerActor, "_SLP_bellyMaxFaceHugger" ))
-
-		If (bHarvestParasite)
-		;	PlayerActor.AddItem(SLP_gagChaurusQueenInventory,1)
-		Endif
-
-		If (kActor == PlayerActor) && !(isInfectedByString( kActor,  "SprigganRootGag" ))
-		;	ChaurusQueenInfectedAlias.ForceRefTo(DummyAlias)
-		endIf
-
-
-	Else
-		; Reset variables if called after device is removed
-		StorageUtil.SetIntValue(kActor, "_SLP_toggleSprigganRootGag", 0)
-	EndIf
-EndFunction
 
 
 
@@ -251,7 +197,7 @@ Bool Function infectSprigganRootArms( Actor kActor  )
  	Actor PlayerActor = Game.GetPlayer()
 
  	; Setting toggle back to 0 in case equip fails - the 'apply' function sets it to 1 if it succeeds
-	StorageUtil.SetIntValue(kActor, "_SLP_toggleSprigganRootArms", 0 )
+	; StorageUtil.SetIntValue(kActor, "_SLP_toggleSprigganRootArms", 0 )
 
   	if (kActor == None)
   		kActor = PlayerActor
@@ -357,7 +303,7 @@ Bool Function infectSprigganRootFeet( Actor kActor  )
  	Actor PlayerActor = Game.GetPlayer()
 
  	; Setting toggle back to 0 in case equip fails - the 'apply' function sets it to 1 if it succeeds
-	StorageUtil.SetIntValue(kActor, "_SLP_toggleSprigganRootFeet", 0 )
+	; StorageUtil.SetIntValue(kActor, "_SLP_toggleSprigganRootFeet", 0 )
 
   	if (kActor == None)
   		kActor = PlayerActor
@@ -459,7 +405,7 @@ Bool Function infectSprigganRootBody( Actor kActor  )
  	Actor PlayerActor = Game.GetPlayer()
 
  	; Setting toggle back to 0 in case equip fails - the 'apply' function sets it to 1 if it succeeds
-	StorageUtil.SetIntValue(kActor, "_SLP_toggleSprigganRootBody", 0 )
+	; StorageUtil.SetIntValue(kActor, "_SLP_toggleSprigganRootBody", 0 )
 
   	if (kActor == None)
   		kActor = PlayerActor
@@ -563,6 +509,107 @@ Function cureSprigganRootBody( Actor kActor, Bool bHarvestParasite = False   )
 EndFunction
 
 
+;------------------------------------------------------------------------------
+Bool Function infectSprigganRootGag( Actor kActor  )
+ 	Actor PlayerActor = Game.GetPlayer()
+
+ 	; Setting toggle back to 0 in case equip fails - the 'apply' function sets it to 1 if it succeeds
+	; StorageUtil.SetIntValue(kActor, "_SLP_toggleSprigganRootGag", 0 )
+
+  	if (kActor == None)
+  		kActor = PlayerActor
+  	endIf
+ 
+	If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceSprigganRootGag" )==0.0)
+		Debug.Trace("[SLP]	Parasite disabled - Aborting")
+		Return False
+	Endif
+
+	If (isInfectedByString( kActor,  "SprigganRootGag" ))
+		Debug.Trace("[SLP]	Already infected - Aborting")
+		Return False
+	Endif
+
+	If (fctDevious.ActorHasKeywordByString( kActor, "Gag"  ))
+		Debug.Trace("[SLP]	Already wearing a gag - Aborting")
+		Return False
+	Endif
+
+	SprigganFlare.Cast(kActor as ObjectReference, kActor as ObjectReference)	
+	equipParasiteNPCByString (kActor, "SprigganRootGag")
+
+	Return  true; applyFaceHuggerGag( kActor )
+EndFunction
+
+Bool Function applySprigganRootGag( Actor kActor  )
+ 	Actor PlayerActor = Game.GetPlayer()
+
+
+	If !StorageUtil.HasIntValue(kActor, "_SLP_iSprigganRootGagInfections")
+			StorageUtil.SetIntValue(kActor, "_SLP_iSprigganRootGagInfections",  0)
+	EndIf
+
+	if (!(StorageUtil.GetIntValue(kActor, "_SLP_toggleSprigganRoot") == 1 ))
+		StorageUtil.SetIntValue(kActor, "_SLP_iSprigganRootInfections",  StorageUtil.GetIntValue(kActor, "_SLP_iSprigganRootInfections") + 1)
+		StorageUtil.SetIntValue(kActor, "_SLP_toggleSprigganRoot", 1 )
+
+		If (kActor == PlayerActor)
+			SprigganRootInfectedAlias.ForceRefTo(PlayerActor)
+		endIf
+	endif
+
+	StorageUtil.SetIntValue(kActor, "_SLP_toggleSprigganRootGag", 1 )
+	StorageUtil.SetIntValue(kActor, "_SLP_iSprigganRootGagDate", Game.QueryStat("Days Passed"))
+	StorageUtil.SetIntValue(kActor, "_SLP_iInfections",  StorageUtil.GetIntValue(kActor, "_SLP_iInfections") + 1)
+	StorageUtil.SetIntValue(kActor, "_SLP_iSprigganRootGagInfections",  StorageUtil.GetIntValue(kActor, "_SLP_iSprigganRootGagInfections") + 1)
+
+	If (kActor == PlayerActor)
+		_SLP_GV_numInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iInfections"))
+		; _SLP_GV_numFaceHuggerInfections.SetValue(StorageUtil.GetIntValue(kActor, "_SLP_iSprigganRootGagInfections"))
+	endIf
+
+	; applyBaseChaurusQueenSkin()
+
+	Sound.SetInstanceVolume(WetFX.Play(PlayerActor), 1.0)
+	Utility.Wait(1.0)
+	Sound.SetInstanceVolume(CritterFX.Play(PlayerActor), 1.0)
+	Utility.Wait(1.0)
+ 
+	SendModEvent("SLPSprigganRootGagInfection")
+
+	; if (!KynesBlessingQuest.GetStageDone(20)) && (kActor == PlayerActor)
+	;	KynesBlessingQuest.SetStage(20)
+	; endif
+	
+	Return True
+EndFunction
+
+Function cureSprigganRootGag( Actor kActor, Bool bHarvestParasite = False   )
+ 	Actor PlayerActor = Game.GetPlayer()
+ 
+  	if (kActor == None)
+  		kActor = PlayerActor
+  	endIf
+  	
+	If (isInfectedByString( kActor,  "SprigganRootGag" ))
+		StorageUtil.SetIntValue(kActor, "_SLP_toggleSprigganRootGag", 0 )
+		clearParasiteNPCByString (kActor, "SprigganRootGag")
+		; fctUtils.ApplyBodyChange( kActor, "FaceHugger", "Belly", 1.0, StorageUtil.GetFloatValue(PlayerActor, "_SLP_bellyMaxFaceHugger" ))
+
+		If (bHarvestParasite)
+		;	PlayerActor.AddItem(SLP_gagChaurusQueenInventory,1)
+		Endif
+
+		If (kActor == PlayerActor) && !(isInfectedByString( kActor,  "SprigganRootGag" ))
+		;	ChaurusQueenInfectedAlias.ForceRefTo(DummyAlias)
+		endIf
+
+
+	Else
+		; Reset variables if called after device is removed
+		StorageUtil.SetIntValue(kActor, "_SLP_toggleSprigganRootGag", 0)
+	EndIf
+EndFunction
 
 
 ;------------------------------------------------------------------------------

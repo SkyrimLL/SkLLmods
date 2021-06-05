@@ -59,7 +59,7 @@ Bool Function infectBarnacles( Actor kActor  )
  	Actor PlayerActor = Game.GetPlayer()
 
  	; Setting toggle back to 0 in case equip fails - the 'apply' function sets it to 1 if it succeeds
-	StorageUtil.SetIntValue(kActor, "_SLP_toggleSpiderEggBarnacles", 0 )
+	; StorageUtil.SetIntValue(kActor, "_SLP_toggleSpiderEggBarnacles", 0 )
 
   	if (kActor == None)
   		kActor = PlayerActor
@@ -149,7 +149,7 @@ EndFunction
 Function refreshParasite(Actor kActor, String sParasite)
 
 	If (sParasite == "Barnacles")
-		If (isInfectedByString( kActor,  "Barnacles" )) && (!fctDevious.ActorHasKeywordByString( kActor, "Harness"  )) && (!fctDevious.ActorHasKeywordByString( kActor, "Corset"  ))
+		If (isInfectedByString( kActor,  "Barnacles" ))  
 			StorageUtil.SetIntValue(kActor, "_SLP_toggleBarnacles", 1)
 			equipParasiteNPCByString (kActor, "Barnacles")
 

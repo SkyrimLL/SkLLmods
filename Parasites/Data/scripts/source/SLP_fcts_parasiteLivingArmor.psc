@@ -62,7 +62,7 @@ Bool Function infectLivingArmor( Actor kActor  )
  	Actor PlayerActor = Game.GetPlayer()
 
  	; Setting toggle back to 0 in case equip fails - the 'apply' function sets it to 1 if it succeeds
-	StorageUtil.SetIntValue(kActor, "_SLP_toggleLivingArmor", 0 )
+	; StorageUtil.SetIntValue(kActor, "_SLP_toggleLivingArmor", 0 )
  
   	if (kActor == None)
   		kActor = PlayerActor
@@ -152,7 +152,7 @@ EndFunction
 Function refreshParasite(Actor kActor, String sParasite)
 
 	If (sParasite == "LivingArmor")
-		If (isInfectedByString( kActor,  "LivingArmor" )) && (!fctDevious.ActorHasKeywordByString( kActor, "Harness"  )) && (!fctDevious.ActorHasKeywordByString( kActor, "Corset"  ))
+		If (isInfectedByString( kActor,  "LivingArmor" )) 
 			StorageUtil.SetIntValue(kActor, "_SLP_toggleLivingArmor", 1)
 			equipParasiteNPCByString (kActor, "LivingArmor")
 

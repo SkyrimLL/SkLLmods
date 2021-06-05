@@ -128,6 +128,8 @@ Function _maintenance()
  	StorageUtil.SetIntValue(PlayerActor, "_SLP_iLivingArmorKnown", KynesBlessingQuest.GetStageDone(70) as Int)
  	StorageUtil.SetIntValue(PlayerActor, "_SLP_iBarnaclesKnown", KynesBlessingQuest.GetStageDone(80) as Int)
 
+ 	; one time refresh of all parasites and related variables
+	refreshAllPArasites(PlayerActor)
 
 	UnregisterForAllModEvents()
 	Debug.Trace("SexLab Parasites: Reset SexLab events")
@@ -279,6 +281,9 @@ Int Function _getParasiteTickerThreshold(Int _iNextStageTicker, Int _iParasiteDu
 		; debug.notification(".")
 	endif
 
+	debug.notification(" Chance of infection: " + (100 - iThreshold) )
+
+
 	return iThreshold
 EndFunction
 
@@ -387,7 +392,7 @@ Event OnUpdate()
 			endIf
 		endif
 
-		iNextStageTicker = 0
+		iNextStageTicker = iNextStageTicker + (iNextStageTicker / 2)
 		iGameDateLastCheck = daysPassed
 
 	else
@@ -395,36 +400,25 @@ Event OnUpdate()
 		iChaurusQueenStage = StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusQueenStage")
 		iChaurusQueenDate = StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusQueenDate")
 
-		if (iChaurusQueenStage>=1) && (!(StorageUtil.GetIntValue(PlayerActor, "_SLP_toggleSprigganRoot") == 1 ) )
-			if (fctParasites.isPlayerInHeat())
-				iTickerEventFrequency = 10 - (Game.QueryStat("Days Passed") - iChaurusQueenDate)
-
-				if (iTickerEventFrequency<=0)
-					iTickerEventFrequency = 1
-				endif
-			else
-				; reduce frequency of flares if player isn't in heat
-				iTickerEventFrequency = 100
-			endif
-
+		; Enable Chaurus Queen flares only if player is not Queen and not infected by Spriggan root
+		if (iChaurusQueenStage>=1) && (iChaurusQueenStage<5) && (!(StorageUtil.GetIntValue(PlayerActor, "_SLP_toggleSprigganRoot") == 1 ) )
 			;StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusQueenDate")==0
 
-			if (Utility.RandomInt(0,100) < (iNextStageTicker / iTickerEventFrequency))
-				debug.trace("[SLP] tryParasiteNextStage")
-				debug.trace("[SLP]    iTickerEventFrequency: " + iTickerEventFrequency)
-				debug.trace("[SLP]    iNextStageTicker: " + iNextStageTicker)
-				debug.trace("[SLP]    threshold: " + (iNextStageTicker / iTickerEventFrequency))
-
-			 	if (fctParasites.tryParasiteNextStage(PlayerActor, "ChaurusQueen"))
-			 		; next stage happened - reset counter
-			 		iNextStageTicker = 0
-			 	else
-			 		; next stage didn't happen - set back counter and try again soon
-			 		iNextStageTicker = iNextStageTicker - (iNextStageTicker / 4)
-			 	endif
-
-			endif
+		 	if (fctParasites.tryParasiteNextStage(PlayerActor, "ChaurusQueen"))
+		 		; next stage happened - reset counter
+		 		iNextStageTicker = 0
+		 	else
+		 		; next stage didn't happen - set back counter and try again soon
+		 		
+		 		if (fctParasites.isPlayerInHeat())
+					iNextStageTicker = iNextStageTicker - (iNextStageTicker / 4)
+				else
+					; reduce frequency of flares if player isn't in heat
+					iNextStageTicker = iNextStageTicker - 1
+				endif
+		 	endif
 		endif
+
 
 		; Chance of Living Armor infection when swimming
 		if (PlayerActor.IsSwimming()) 
@@ -460,7 +454,7 @@ Event OnUpdate()
 				    isWeatherRainy = true
 				endIf
 
-				if ( (PlayerActor.IsSwimming() || isWeatherRainy) && (!PlayerActor.IsInCombat()) )
+				if (PlayerActor.IsSwimming() || isWeatherRainy) 
 					debug.notification("Player is wet...")
 					if (StorageUtil.GetIntValue(PlayerActor, "_SLP_lastWetDate")!= daysPassed)
 						StorageUtil.SetIntValue(PlayerActor, "_SLP_lastWetDate", daysPassed)
@@ -1858,18 +1852,35 @@ Event OnSLPRefreshParasites(String _eventName, String _args, Float _argc = 1.0, 
  	
 	Debug.Trace("[SLP] Receiving 'refresh parasites' event - Actor: " + kActor)
 
+	refreshAllPArasites(kActor)
+
+EndEvent
+
+Function refreshAllPArasites(Actor kActor)
 	; fctParasites.cureSpiderEgg(kActor,"All", bHarvestParasite)
 	; fctParasites.cureSpiderPenis(kActor,bHarvestParasite)
  	; fctParasites.cureChaurusWorm(kActor, bHarvestParasite)
  	; fctParasites.cureChaurusWormVag(kActor, bHarvestParasite) 
-	fctParasites.refreshParasite(kActor, "Barnacles")
+	fctParasites.refreshParasite(kActor, "SpiderEgg")
+	fctParasites.refreshParasite(kActor, "SpiderPenis")
+	fctParasites.refreshParasite(kActor, "ChaurusWorm")
+	fctParasites.refreshParasite(kActor, "ChaurusWormVag")
 	fctParasites.refreshParasite(kActor, "FaceHugger")
 	fctParasites.refreshParasite(kActor, "FaceHuggerGag")
 	fctParasites.refreshParasite(kActor, "TentacleMonster")
 	fctParasites.refreshParasite(kActor, "LivingArmor") 
+	fctParasites.refreshParasite(kActor, "Barnacles")
+	fctParasites.refreshParasite(kActor, "SprigganRootGag")
+	fctParasites.refreshParasite(kActor, "SprigganRootArms")
+	; fctParasites.refreshParasite(kActor, "SprigganRootFeet")
+	fctParasites.refreshParasite(kActor, "SprigganRootBody")
+	fctParasites.refreshParasite(kActor, "ChaurusQueenGag") 
+	fctParasites.refreshParasite(kActor, "ChaurusQueenVag") 
+	fctParasites.refreshParasite(kActor, "ChaurusQueenSkin") 
+	fctParasites.refreshParasite(kActor, "ChaurusQueenArmor") 
+	fctParasites.refreshParasite(kActor, "ChaurusQueenBody") 
+EndFunction
 
-
-EndEvent
 
 Event OnSLPRefreshBodyShape(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
@@ -2057,7 +2068,7 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 		PlayerActor.SendModEvent("SLHModHormone", "Female", 20.0 + Utility.RandomFloat(0.0,10.0))
 		PlayerActor.SendModEvent("SLHModHormone", "Male", -1.0 * (10.0 + Utility.RandomFloat(0.0,10.0)) )
 		PlayerActor.SendModEvent("SLHModHormone", "Metabolism", 10.0 + Utility.RandomFloat(0.0,10.0))
-		; fctParasites.clearParasiteAlias(PlayerActor, "FaceHugger" ) 
+		fctParasites.clearParasiteAlias(PlayerActor, "SprigganRoot" ) 
 	endif 
 
 

@@ -74,7 +74,7 @@ Bool Function infectFaceHugger( Actor kActor  )
  	Actor PlayerActor = Game.GetPlayer()
 
  	; Setting toggle back to 0 in case equip fails - the 'apply' function sets it to 1 if it succeeds
-	StorageUtil.SetIntValue(kActor, "_SLP_toggleFaceHugger", 0 )
+	; StorageUtil.SetIntValue(kActor, "_SLP_toggleFaceHugger", 0 )
 
   	if (kActor == None)
   		kActor = PlayerActor
@@ -166,7 +166,7 @@ Bool Function infectFaceHuggerGag( Actor kActor  )
  	Actor PlayerActor = Game.GetPlayer()
 
  	; Setting toggle back to 0 in case equip fails - the 'apply' function sets it to 1 if it succeeds
-	StorageUtil.SetIntValue(kActor, "_SLP_toggleFaceHuggerGag", 0 )
+	; StorageUtil.SetIntValue(kActor, "_SLP_toggleFaceHuggerGag", 0 )
 
   	if (kActor == None)
   		kActor = PlayerActor
@@ -257,7 +257,7 @@ EndFunction
 Function refreshParasite(Actor kActor, String sParasite)
 
 	If (sParasite == "FaceHugger")
-		If (isInfectedByString( kActor,  "FaceHugger" )) && (!fctDevious.ActorHasKeywordByString( kActor, "Belt"  ))
+		If (isInfectedByString( kActor,  "FaceHugger" ))  
 			StorageUtil.SetIntValue(kActor, "_SLP_toggleFaceHugger", 1)
 			equipParasiteNPCByString (kActor, "FaceHugger")
 
@@ -267,7 +267,7 @@ Function refreshParasite(Actor kActor, String sParasite)
 		Endif
 
 	ElseIf (sParasite == "FaceHuggerGag")
-		If (isInfectedByString( kActor,  "FaceHuggerGag" )) && (!fctDevious.ActorHasKeywordByString( kActor, "Gag"  ))
+		If (isInfectedByString( kActor,  "FaceHuggerGag" ))  
 			StorageUtil.SetIntValue(kActor, "_SLP_toggleFaceHuggerGag", 1)
 			equipParasiteNPCByString (kActor, "FaceHuggerGag")
 

@@ -79,7 +79,7 @@ Bool Function infectSpiderEgg( Actor kActor )
  	Actor PlayerActor = Game.GetPlayer()
 
  	; Setting toggle back to 0 in case equip fails - the 'apply' function sets it to 1 if it succeeds
-	StorageUtil.SetIntValue(kActor, "_SLP_toggleSpiderEgg", 0 )
+	; StorageUtil.SetIntValue(kActor, "_SLP_toggleSpiderEgg", 0 )
 
   	if (kActor == None)
   		kActor = PlayerActor
@@ -264,7 +264,7 @@ Bool Function infectSpiderPenis( Actor kActor  )
  	Actor PlayerActor = Game.GetPlayer()
 
  	; Setting toggle back to 0 in case equip fails - the 'apply' function sets it to 1 if it succeeds
-	StorageUtil.SetIntValue(kActor, "_SLP_toggleSpiderPenis", 0 )
+	; StorageUtil.SetIntValue(kActor, "_SLP_toggleSpiderPenis", 0 )
 
   	if (kActor == None)
   		kActor = PlayerActor
@@ -368,7 +368,7 @@ EndFunction
 Function refreshParasite(Actor kActor, String sParasite)
 
 	If (sParasite == "SpiderPenis")
-		If (isInfectedByString( kActor,  "SpiderPenis" )) && (!fctDevious.ActorHasKeywordByString( kActor, "PlugVaginal")) 
+		If (isInfectedByString( kActor,  "SpiderPenis" ))  
 			StorageUtil.SetIntValue(kActor, "_SLP_toggleSpiderPenis", 1)
 			equipParasiteNPCByString (kActor, "SpiderPenis")
 
@@ -378,7 +378,7 @@ Function refreshParasite(Actor kActor, String sParasite)
 		Endif
 
 	ElseIf (sParasite == "SpiderEgg")
-		If (isInfectedByString( kActor,  "SpiderEgg" )) && (!fctDevious.ActorHasKeywordByString( kActor, "PlugVaginal"  ))
+		If (isInfectedByString( kActor,  "SpiderEgg" ))  
 			StorageUtil.SetIntValue(kActor, "_SLP_toggleSpiderEgg", 1)
 			equipParasiteNPCByString (kActor, "SpiderEgg")
 

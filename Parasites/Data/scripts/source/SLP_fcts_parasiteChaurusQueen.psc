@@ -140,12 +140,69 @@ Function applyBaseChaurusQueenSkin()
 EndFunction
 
 
+Function refreshParasite(Actor kActor, String sParasite)
+
+	If (sParasite == "ChaurusQueenGag")
+		If (isInfectedByString( kActor,  "ChaurusQueenGag" )) 
+			StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenGag", 1)
+			equipParasiteNPCByString (kActor, "ChaurusQueenGag")
+
+		Else
+			StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenGag", 0)
+			clearParasiteNPCByString (kActor, "ChaurusQueenGag")
+		Endif
+
+	ElseIf (sParasite == "ChaurusQueenVag")
+		If (isInfectedByString( kActor,  "ChaurusQueenVag" )) 
+			StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenVag", 1)
+			equipParasiteNPCByString (kActor, "ChaurusQueenVag")
+
+
+		Else
+			StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenVag", 0)
+			clearParasiteNPCByString (kActor, "ChaurusQueenVag")
+		Endif
+
+	ElseIf (sParasite == "ChaurusQueenSkin")
+		If (isInfectedByString( kActor,  "ChaurusQueenSkin" )) 
+			StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenSkin", 1)
+			equipParasiteNPCByString (kActor, "ChaurusQueenSkin")
+
+
+		Else
+			StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenSkin", 0)
+			clearParasiteNPCByString (kActor, "ChaurusQueenSkin")
+		Endif
+
+	ElseIf (sParasite == "ChaurusQueenArmor")
+		If (isInfectedByString( kActor,  "ChaurusQueenArmor" )) 
+			StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenArmor", 1)
+			equipParasiteNPCByString (kActor, "ChaurusQueenArmor")
+
+		Else
+			StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenArmor", 0)
+			clearParasiteNPCByString (kActor, "ChaurusQueenArmor")
+		Endif
+
+	ElseIf (sParasite == "ChaurusQueenBody")
+		If (isInfectedByString( kActor,  "ChaurusQueenBody" )) 
+			StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenBody", 1)
+			equipParasiteNPCByString (kActor, "ChaurusQueenBody")
+
+		Else
+			StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenBody", 0)
+			clearParasiteNPCByString (kActor, "ChaurusQueenBody")
+		Endif
+
+	Endif
+
+EndFunction
 ;------------------------------------------------------------------------------
 Bool Function infectChaurusQueenVag( Actor kActor  )
  	Actor PlayerActor = Game.GetPlayer()
 
  	; Setting toggle back to 0 in case equip fails - the 'apply' function sets it to 1 if it succeeds
-	StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenVag", 0 )
+	; StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenVag", 0 )
  
   	if (kActor == None)
   		kActor = PlayerActor
@@ -253,7 +310,7 @@ Bool Function infectChaurusQueenGag( Actor kActor  )
  	Actor PlayerActor = Game.GetPlayer()
 
  	; Setting toggle back to 0 in case equip fails - the 'apply' function sets it to 1 if it succeeds
-	StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenGag", 0 )
+	; StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenGag", 0 )
 
   	if (kActor == None)
   		kActor = PlayerActor
@@ -351,7 +408,7 @@ Bool Function infectChaurusQueenSkin( Actor kActor  )
  	Actor PlayerActor = Game.GetPlayer()
 
  	; Setting toggle back to 0 in case equip fails - the 'apply' function sets it to 1 if it succeeds
-	StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenSkin", 0 )
+	; StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenSkin", 0 )
  
   	if (kActor == None)
   		kActor = PlayerActor
@@ -452,7 +509,7 @@ Bool Function infectChaurusQueenArmor( Actor kActor  )
  	Actor PlayerActor = Game.GetPlayer()
 
  	; Setting toggle back to 0 in case equip fails - the 'apply' function sets it to 1 if it succeeds
-	StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenArmor", 0 )
+	; StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenArmor", 0 )
  
   	if (kActor == None)
   		kActor = PlayerActor
@@ -560,7 +617,7 @@ Bool Function infectChaurusQueenBody( Actor kActor  )
  	Actor PlayerActor = Game.GetPlayer()
 
  	; Setting toggle back to 0 in case equip fails - the 'apply' function sets it to 1 if it succeeds
-	StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenBody", 0 )
+	; StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenBody", 0 )
  
   	if (kActor == None)
   		kActor = PlayerActor

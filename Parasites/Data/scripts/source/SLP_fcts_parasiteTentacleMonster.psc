@@ -63,7 +63,7 @@ Bool Function infectTentacleMonster( Actor kActor  )
  	Actor PlayerActor = Game.GetPlayer()
 
  	; Setting toggle back to 0 in case equip fails - the 'apply' function sets it to 1 if it succeeds
-	StorageUtil.SetIntValue(kActor, "_SLP_toggleTentacleMonster", 0 )
+	; StorageUtil.SetIntValue(kActor, "_SLP_toggleTentacleMonster", 0 )
  
   	if (kActor == None)
   		kActor = PlayerActor
@@ -160,7 +160,7 @@ EndFunction
 Function refreshParasite(Actor kActor, String sParasite)
 
 	If (sParasite == "TentacleMonster")
-		If (isInfectedByString( kActor,  "TentacleMonster" )) && (!fctDevious.ActorHasKeywordByString( kActor, "Harness"  )) && (!fctDevious.ActorHasKeywordByString( kActor, "Corset"  ))
+		If (isInfectedByString( kActor,  "TentacleMonster" )) 
 			StorageUtil.SetIntValue(kActor, "_SLP_toggleTentacleMonster", 1)
 			equipParasiteNPCByString (kActor, "TentacleMonster")
 
