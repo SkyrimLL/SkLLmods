@@ -279,7 +279,7 @@ Event OnPCStartAlicia(String _eventName, String _args, Float _argc = -1.0, Form 
 	; StorageUtil.SetStringValue(PlayerActor, "_SLH_sHairColorName", "Alicia red" ) 
 	; PlayerActor.SendModEvent("SLHRefreshColors")
 
-	PlayerActor.addtofaction(DremoraFaction) 
+	; PlayerActor.addtofaction(DremoraFaction) 
 
 	StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryLevel", 1)
 	StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryExposure", 2)
