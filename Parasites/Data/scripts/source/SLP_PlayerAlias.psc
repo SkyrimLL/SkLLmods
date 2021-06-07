@@ -281,7 +281,7 @@ Int Function _getParasiteTickerThreshold(Int _iNextStageTicker, Int _iParasiteDu
 		; debug.notification(".")
 	endif
 
-	debug.notification(" Chance of infection: " + (100 - iThreshold) )
+	; debug.notification(" Chance of infection: " + (100 - iThreshold) )
 
 
 	return iThreshold
