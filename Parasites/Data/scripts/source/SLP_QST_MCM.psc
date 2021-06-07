@@ -63,6 +63,8 @@ float		_chanceSprigganRootFeet = -1.0
 bool		_toggleSprigganRootBody = true
 float		_chanceSprigganRootBody = -1.0
 
+bool		_toggleSprigganRootDebug = false
+
 bool		_toggleChaurusQueenDebug = false
 bool		_toggleChaurusQueenVag = true
 float		_chanceChaurusQueenVag = -1.0
@@ -197,6 +199,12 @@ event OnPageReset(string a_page)
 	_toggleSprigganRootBody = StorageUtil.GetIntValue(kPlayer, "_SLP_toggleSprigganRootBody" )
 	_chanceSprigganRootBody = StorageUtil.GetFloatValue(kPlayer, "_SLP_chanceSprigganRootBody" )
 
+	if (StorageUtil.GetIntValue(kPlayer, "_SLP_toggleSprigganRoot" )==1)
+		_toggleSprigganRootDebug = true
+	else
+		_toggleSprigganRootDebug = false
+	endif
+	StorageUtil.SetIntValue(kPlayer, "_SLP_toggleSprigganRootDebug", _toggleSprigganRootDebug as Int )
 
 	_toggleChaurusQueenDebug = StorageUtil.GetIntValue(kPlayer, "_SLP_toggleChaurusQueenDebug" )
 	_toggleChaurusQueenVag = StorageUtil.GetIntValue(kPlayer, "_SLP_toggleChaurusQueenVag" )
@@ -231,22 +239,14 @@ event OnPageReset(string a_page)
 		AddSliderOptionST("STATE_FACEHUGGERGAG_CHANCE","Face Hugger (Gag)", _chanceFaceHuggerGag,"{0} %")
 		AddSliderOptionST("STATE_BARNACLES_CHANCE","Blackreach Spores (Harness)", _chanceBarnacles,"{0} %")
 
-		AddSliderOptionST("STATE_SPRIGGANROOTGAG_CHANCE","Spriggan Mask (Gag)", _chanceSprigganRootGag,"{0} %")
 		AddSliderOptionST("STATE_SPRIGGANROOTARMS_CHANCE","Spriggan Hands (Cuffs)", _chanceSprigganRootArms,"{0} %")
 		AddSliderOptionST("STATE_SPRIGGANROOTFEET_CHANCE","Spriggan Feet (Cuffs)", _chanceSprigganRootFeet,"{0} %")
 		AddSliderOptionST("STATE_SPRIGGANROOTBODY_CHANCE","Spriggan Body (Harness)", _chanceSprigganRootBody,"{0} %")
+		AddSliderOptionST("STATE_SPRIGGANROOTGAG_CHANCE","Spriggan Mask (Gag)", _chanceSprigganRootGag,"{0} %")
 
 		AddSliderOptionST("STATE_ESTRUSTENTACLES_CHANCE","Estrus Tentacles (EC+)", _chanceEstrusTentacles,"{0} %") 
 		AddSliderOptionST("STATE_ESTRUSSLIME_CHANCE","Estrus Slime (EC+)", _chanceEstrusSlime,"{0} %")
 
-		AddHeaderOption(" Factions")
-		AddTextOption("     Player in Spider Faction: " + fctUtils.CheckIfSpiderFaction(kPlayer) as Int, "", OPTION_FLAG_DISABLED)
-		AddTextOption("     Player in Chaurus Faction: " + fctUtils.CheckIfChaurusFaction(kPlayer) as Int, "", OPTION_FLAG_DISABLED)
-		AddTextOption("     Player in Spriggan Faction: " + fctUtils.CheckIfSprigganFaction(kPlayer) as Int, "", OPTION_FLAG_DISABLED)
-
-		AddHeaderOption(" Long term curses")
-		AddTextOption("     Chaurus Queen Infection: " + iChaurusQueenStage as Int, "", OPTION_FLAG_DISABLED)
-		AddTextOption("     Spriggan Infection: " + StorageUtil.GetIntValue(kPlayer, "_SLP_toggleSprigganRoot") as Int, "", OPTION_FLAG_DISABLED)
 
 		SetCursorPosition(1)
 		AddHeaderOption(" Infect/Cure")
@@ -260,10 +260,10 @@ event OnPageReset(string a_page)
 		AddToggleOptionST("STATE_FACEHUGGERGAG_TOGGLE","Infect/Cure Face Hugger", _toggleFaceHuggerGag as Float)
 		AddToggleOptionST("STATE_BARNACLES_TOGGLE","Infect/Cure Blackreach Spores", _toggleBarnacles as Float)
 
-		AddToggleOptionST("STATE_SPRIGGANROOTGAG_TOGGLE","Infect/Cure Spriggan Mask", _toggleSprigganRootGag as Float)
 		AddToggleOptionST("STATE_SPRIGGANROOTARMS_TOGGLE","Infect/Cure Spriggan Hands", _toggleSprigganRootArms as Float)
 		AddToggleOptionST("STATE_SPRIGGANROOTFEET_TOGGLE","Infect/Cure Spriggan Feet", _toggleSprigganRootFeet as Float, OPTION_FLAG_DISABLED)
 		AddToggleOptionST("STATE_SPRIGGANROOTBODY_TOGGLE","Infect/Cure Spriggan Body", _toggleSprigganRootBody as Float)
+		AddToggleOptionST("STATE_SPRIGGANROOTGAG_TOGGLE","Infect/Cure Spriggan Mask", _toggleSprigganRootGag as Float)
 
 		AddHeaderOption(" NiOverride node scales")
 		AddSliderOptionST("STATE_SPIDEREGG_BELLY","Max belly size (Spider egg)", _bellyMaxSpiderEgg,"{1}")
@@ -287,6 +287,7 @@ event OnPageReset(string a_page)
 		SetCursorFillMode(TOP_TO_BOTTOM)
 
 		AddHeaderOption(" Kyne Blessing ")
+		AddToggleOptionST("STATE_SPRIGGANROOTDEBUG_TOGGLE","Toggle Spriggan Root infection", _toggleSprigganRootDebug as Float)
 
 		AddTextOption("     Total infections: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iInfections") as Int, "", OPTION_FLAG_DISABLED)
 		AddTextOption("     Spider Egg Infections: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iSpiderEggInfections") as Int, "", OPTION_FLAG_DISABLED)
@@ -301,6 +302,15 @@ event OnPageReset(string a_page)
 		AddTextOption("     Estrus Tentacles Attacks: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iEstrusTentaclesInfections") as Int, "", OPTION_FLAG_DISABLED)
 		AddTextOption("     Estrus Eggs Infections: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iEstrusChaurusEggInfections") as Int, "", OPTION_FLAG_DISABLED)
 		AddTextOption("     Estrus Slime Infections: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iEstrusSlimeInfections") as Int, "", OPTION_FLAG_DISABLED)
+
+		AddHeaderOption(" Factions")
+		AddTextOption("     Player in Spider Faction: " + fctUtils.CheckIfSpiderFaction(kPlayer) as Int, "", OPTION_FLAG_DISABLED)
+		AddTextOption("     Player in Chaurus Faction: " + fctUtils.CheckIfChaurusFaction(kPlayer) as Int, "", OPTION_FLAG_DISABLED)
+		AddTextOption("     Player in Spriggan Faction: " + fctUtils.CheckIfSprigganFaction(kPlayer) as Int, "", OPTION_FLAG_DISABLED)
+
+		AddHeaderOption(" Long term curses")
+		AddTextOption("     Chaurus Queen Infection: " + iChaurusQueenStage as Int, "", OPTION_FLAG_DISABLED)
+		AddTextOption("     Spriggan Infection: " + StorageUtil.GetIntValue(kPlayer, "_SLP_toggleSprigganRoot") as Int, "", OPTION_FLAG_DISABLED)
 
 		SetCursorPosition(1)
 		AddHeaderOption(" Brood Maiden ")
@@ -1267,6 +1277,36 @@ state STATE_SPRIGGANROOTBODY_CHANCE ; SLIDER
 	endEvent
 endState
 
+; AddToggleOptionST("STATE_SPRIGGANROOTDEBUG_TOGGLE","Spriggan Root Debug override", _toggleSprigganRootDebug as Float, OPTION_FLAG_DISABLED)
+state STATE_SPRIGGANROOTDEBUG_TOGGLE ; TOGGLE
+	event OnSelectST() 
+		Int toggle = Math.LogicalXor( 1, StorageUtil.GetIntValue(kPlayer, "_SLP_toggleSprigganRootDebug" )   )
+		StorageUtil.SetIntValue(kPlayer, "_SLP_toggleSprigganRootDebug", toggle as Int )
+
+		If (toggle ==1)
+			Debug.MessageBox("Spriggan Root infection is Active") 
+			kPlayer.SendModEvent("SLPInfectSprigganRoot")
+		else
+			Debug.MessageBox("Spriggan Root infection is Inactive") 
+			kPlayer.SendModEvent("SLPCureSprigganRoot","All")
+
+		Endif
+
+		SetToggleOptionValueST( toggle as Bool )
+		ForcePageReset()
+	endEvent
+
+	event OnDefaultST()
+		StorageUtil.SetIntValue(kPlayer, "_SLP_toggleSprigganRootDebug", 0 )
+		SetToggleOptionValueST( true )
+		ForcePageReset()
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Manually turn the Spriggan Root infection on or off for role playing or debugging purposes.")
+	endEvent
+
+endState
 
 ; AddToggleOptionST("STATE_CHAURUSQUEENDEBUG_TOGGLE","Chaurus Queen Debug override", _toggleChaurusQueenDebug as Float, OPTION_FLAG_DISABLED)
 state STATE_CHAURUSQUEENDEBUG_TOGGLE ; TOGGLE
