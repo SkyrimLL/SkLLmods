@@ -22,28 +22,6 @@ This way, all the files you need will be extracted already.
 
 The mods in this repository are designed for Vanilla Skyrim, or Skyrim Legendary Edition (LE).
 
-For the Skyrim Special Edition (SSE) versions, head over to my [SSE Conversion discussion at Lovers Lab](https://www.loverslab.com/topic/120107-skyrimlldeepbluefrog-mods-conversion-to-sse/), or follow the links below:
-
-* [SexLab Parasites (Kyne's Blessing) SE](https://www.loverslab.com/topic/120107-skyrimlldeepbluefrog-mods-conversion-to-sse/?do=findComment&comment=3273414)
-* [SexLab Dibella Sisterhood and Sisters customization add-on SE](https://www.loverslab.com/topic/120107-skyrimlldeepbluefrog-mods-conversion-to-sse/?do=findComment&comment=3273115)
-* [SexLab Alicia Painslut SE](https://www.loverslab.com/topic/120107-skyrimlldeepbluefrog-mods-conversion-to-sse/?do=findComment&comment=3272102)
-* [SexLab Hormones SE](https://www.loverslab.com/topic/120107-skyrimlldeepbluefrog-mods-conversion-to-sse/?do=findComment&comment=3277279)
-* [SexLab Stories and Stories Devious SE](https://www.loverslab.com/topic/120107-skyrimlldeepbluefrog-mods-conversion-to-sse/?do=findComment&comment=3243073)
-* [Mind Control SE](https://www.loverslab.com/topic/120107-skyrimlldeepbluefrog-mods-conversion-to-sse/)
-
-### [Sanguine Debauchery SE](https://www.loverslab.com/topic/120107-skyrimlldeepbluefrog-mods-conversion-to-sse/?do=findComment&comment=3272102)
-* [SexLab Dialogues SE](https://www.loverslab.com/topic/120107-skyrimlldeepbluefrog-mods-conversion-to-sse/)
-
-### [Obscure Patches](https://www.loverslab.com/topic/120107-skyrimlldeepbluefrog-mods-conversion-to-sse/)
-
-* SexLabSkoomaWhoreSE_20160319.7z
-* WolfclubSE_20160319.7z
-* SexLabReleasePatchSE_20150126.7z
-* SexLabDangerousNightsSE_220160313.7z
-* SexLab Sexlife SE v1.4.2.7z
-* PuppetMasterPatchSE_201502162.7z
-* PriestsOfTERASE_20150126.7z
-* JackGaMonsterLoreSE_20150126.7z
-* SexLabWarmBodiesPatch SE v20171222.7z
+For the Skyrim Special Edition (SSE) versions, head over to my [SSE Conversion discussion at Lovers Lab](https://www.loverslab.com/topic/120107-skyrimlldeepbluefrog-mods-conversion-to-sse/).
 
 
