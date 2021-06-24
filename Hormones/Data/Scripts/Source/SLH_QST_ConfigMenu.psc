@@ -465,21 +465,21 @@ event OnPageReset(string a_page)
 		AddHeaderOption("$SLH_hHormoneLevels") 
 		; AddTextOption("      (not used before v3.0)", "", OPTION_FLAG_DISABLED) 
 
-		AddTextOption("     Metabolism: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneMetabolism") as Int, "", OPTION_FLAG_DISABLED)
-		AddTextOption("     Female: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneFemale") as Int, "", OPTION_FLAG_DISABLED)
-		AddTextOption("     Male: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneMale") as Int, "", OPTION_FLAG_DISABLED)
-		AddTextOption("     SexDrive: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneSexDrive") as Int, "", OPTION_FLAG_DISABLED)
-		AddTextOption("     Bimbo: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneBimbo") as Int, "", OPTION_FLAG_DISABLED)
-		AddTextOption("     Succubus: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneSuccubus") as Int, "", OPTION_FLAG_DISABLED)		
-		AddTextOption("     Growth: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneGrowth") as Int, "", OPTION_FLAG_DISABLED)
-		AddTextOption("     Pheromones: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormonePheromones") as Int, "", OPTION_FLAG_DISABLED)
-		AddTextOption("     Lactation: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneLactation") as Int, "", OPTION_FLAG_DISABLED)
-		AddTextOption("     Fertility: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneFertility") as Int, "", OPTION_FLAG_DISABLED)
-		AddTextOption("     Pigmentation: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormonePigmentation") as Int, "", OPTION_FLAG_DISABLED)
-		AddTextOption("     Sleep: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneSleep") as Int, "", OPTION_FLAG_DISABLED)
-		AddTextOption("     Immunity: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneImmunity") as Int, "", OPTION_FLAG_DISABLED)
-		AddTextOption("     Stress: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneStress") as Int, "", OPTION_FLAG_DISABLED)
-		AddTextOption("     Mood: " + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneMood") as Int, "", OPTION_FLAG_DISABLED)
+		AddTextOption("$     Metabolism: {" + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneMetabolism") as Int +"}", "", OPTION_FLAG_DISABLED)
+		AddTextOption("$     Female: {" + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneFemale") as Int +"}", "", OPTION_FLAG_DISABLED)
+		AddTextOption("$     Male: {" + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneMale") as Int +"}", "", OPTION_FLAG_DISABLED)
+		AddTextOption("$     SexDrive: {" + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneSexDrive") as Int +"}", "", OPTION_FLAG_DISABLED)
+		AddTextOption("$     Bimbo: {" + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneBimbo") as Int +"}", "", OPTION_FLAG_DISABLED)
+		AddTextOption("$     Succubus: {" + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneSuccubus") as Int +"}", "", OPTION_FLAG_DISABLED)		
+		AddTextOption("$     Growth: {" + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneGrowth") as Int +"}", "", OPTION_FLAG_DISABLED)
+		AddTextOption("$     Pheromones: {" + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormonePheromones") as Int +"}", "", OPTION_FLAG_DISABLED)
+		AddTextOption("$     Lactation: {" + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneLactation") as Int +"}", "", OPTION_FLAG_DISABLED)
+		AddTextOption("$     Fertility: {" + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneFertility") as Int +"}", "", OPTION_FLAG_DISABLED)
+		AddTextOption("$     Pigmentation: {" + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormonePigmentation") as Int +"}", "", OPTION_FLAG_DISABLED)
+		AddTextOption("$     Sleep: {" + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneSleep") as Int +"}", "", OPTION_FLAG_DISABLED)
+		AddTextOption("$     Immunity: {" + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneImmunity") as Int +"}", "", OPTION_FLAG_DISABLED)
+		AddTextOption("$     Stress: {" + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneStress") as Int +"}", "", OPTION_FLAG_DISABLED)
+		AddTextOption("$     Mood: {" + StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneMood") as Int +"}", "", OPTION_FLAG_DISABLED)
 
 
 
@@ -670,22 +670,22 @@ event OnPageReset(string a_page)
 		AddHeaderOption("$SLH_hPlayerStatus")
 		Int iHoursSinceLastSex = GetCurrentHourOfDay() - StorageUtil.GetIntValue(PlayerActor, "_SLH_iHourOfDaySinceLastSex") 
 
- 		AddTextOption(" Sex count today: " +  StorageUtil.GetIntValue(PlayerActor, "_SLH_iSexCountToday")   as Int, "", OPTION_FLAG_DISABLED)
- 		AddTextOption(" Last sex (hour of day): " +  StorageUtil.GetIntValue(PlayerActor, "_SLH_iHourOfDaySinceLastSex")   as Int, "", OPTION_FLAG_DISABLED)
- 		AddTextOption(" Hours since last sex: " +  iHoursSinceLastSex  as Int, "", OPTION_FLAG_DISABLED)
- 		AddTextOption(" Days since last sex: " +  StorageUtil.GetIntValue(PlayerActor, "_SLH_iDaysSinceLastSex")   as Int, "", OPTION_FLAG_DISABLED)
- 		AddTextOption(" StaminaRate = " + PlayerActor.GetActorValue("StaminaRate")  as Float, "", OPTION_FLAG_DISABLED)
- 		AddTextOption(" HealRate = " + PlayerActor.GetActorValue("HealRate")  as Float, "", OPTION_FLAG_DISABLED)
- 		AddTextOption(" MagickaRate = " + PlayerActor.GetActorValue("MagickaRate")  as Float, "", OPTION_FLAG_DISABLED)
+ 		AddTextOption("$ Sex count today: {" +  StorageUtil.GetIntValue(PlayerActor, "_SLH_iSexCountToday")   as Int +"}", "", OPTION_FLAG_DISABLED)
+ 		AddTextOption("$ Last sex (hour of day): {" +  StorageUtil.GetIntValue(PlayerActor, "_SLH_iHourOfDaySinceLastSex")   as Int +"}", "", OPTION_FLAG_DISABLED)
+ 		AddTextOption("$ Hours since last sex: {" +  iHoursSinceLastSex  as Int +"}", "", OPTION_FLAG_DISABLED)
+ 		AddTextOption("$ Days since last sex: {" +  StorageUtil.GetIntValue(PlayerActor, "_SLH_iDaysSinceLastSex")   as Int +"}", "", OPTION_FLAG_DISABLED)
+ 		AddTextOption("$ StaminaRate = {" + PlayerActor.GetActorValue("StaminaRate")  as Float +"}", "", OPTION_FLAG_DISABLED)
+ 		AddTextOption("$ HealRate = {" + PlayerActor.GetActorValue("HealRate")  as Float +"}", "", OPTION_FLAG_DISABLED)
+ 		AddTextOption("$ MagickaRate = {" + PlayerActor.GetActorValue("MagickaRate")  as Float +"}", "", OPTION_FLAG_DISABLED)
 		AddEmptyOption()
 
- 		AddTextOption(" Days as a Bimbo: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_bimboTransformGameDays")  as Int, "", OPTION_FLAG_DISABLED)
-		AddTextOption(" Cycles as a Bimbo: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_bimboTransformCycle")  as Int, "", OPTION_FLAG_DISABLED)
-		AddTextOption(" Bimbo Level: " + StorageUtil.GetIntValue(PlayerActor, "_SLH_bimboTransformLevel")  as Int, "", OPTION_FLAG_DISABLED)		
+ 		AddTextOption("$ Days as a Bimbo: {" + StorageUtil.GetIntValue(PlayerActor, "_SLH_bimboTransformGameDays")  as Int +"}", "", OPTION_FLAG_DISABLED)
+		AddTextOption("$ Cycles as a Bimbo: {" + StorageUtil.GetIntValue(PlayerActor, "_SLH_bimboTransformCycle")  as Int +"}", "", OPTION_FLAG_DISABLED)
+		AddTextOption("$ Bimbo Level: {" + StorageUtil.GetIntValue(PlayerActor, "_SLH_bimboTransformLevel")  as Int +"}", "", OPTION_FLAG_DISABLED)		
 		AddEmptyOption()
 		
-		AddTextOption(" Daedric Influence: " +  StorageUtil.GetIntValue(PlayerActor, "_SLH_iDaedricInfluence")   as Int, "", OPTION_FLAG_DISABLED)
-		AddTextOption(" Succubus Level: " +  StorageUtil.GetIntValue(PlayerActor, "_SLH_iSuccubusLevel")   as Int, "", OPTION_FLAG_DISABLED)
+		AddTextOption("$ Daedric Influence: {" +  StorageUtil.GetIntValue(PlayerActor, "_SLH_iDaedricInfluence")   as Int +"}", "", OPTION_FLAG_DISABLED)
+		AddTextOption("$ Succubus Level: {" +  StorageUtil.GetIntValue(PlayerActor, "_SLH_iSuccubusLevel")   as Int +"}", "", OPTION_FLAG_DISABLED)
 
 		if (StorageUtil.GetFormValue(PlayerActor, "_SLH_fOrigRace") !=  (pActorBase.GetRace() as Form)) 
 			AddTextOption("$SLH_xPlayerRaceWarning", "", OPTION_FLAG_DISABLED) 
@@ -2952,7 +2952,7 @@ state STATE_ENABLE_BASIC_NETIMMERSE ; TOGGLE
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Legacy Method. Using NiOverride or BodyMorphs is preferred.")
+		SetInfoText("$SLH_ENABLE_BASIC_NETIMMERSE_DESC")
 	endEvent
 
 endState
@@ -3027,7 +3027,7 @@ state STATE_ENABLE_BODYMORPHS ; TOGGLE
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Check to let Hormones use advanced BodyMorphs. Useful if you are using customized BodySlides morphs controlled by an external JSON BodyMorph file.")
+		SetInfoText("$SLH_ENABLE_BODYMORPHS_DESC")
 	endEvent
 
 endState

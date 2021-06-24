@@ -2725,6 +2725,6 @@ EndFunction
 Function debugTrace(string traceMsg)
 	if (StorageUtil.GetIntValue(none, "_SLH_debugTraceON")==1)
 		; Disabled for body shape feedback
-	;	Debug.Trace("[SLH_fctBodyShape] " + traceMsg)
+	Debug.Trace("[SLH_fctBodyShape] " + traceMsg)
 	endif
 endFunction
