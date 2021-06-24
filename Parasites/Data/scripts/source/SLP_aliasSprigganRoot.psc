@@ -66,6 +66,10 @@ Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile,
 				_SLP_SP_SprigganCallCreatures.Cast(kPlayer as ObjectReference ,  kPlayer as ObjectReference ) 
 
 			else
+				if (!(fctParasites.infectParasiteByString(kPlayer, "SprigganRoot"  )))
+					return
+				endif
+
 				If (Utility.RandomInt(0,100)>97)  
 					Debug.Trace("[SLP_aliasSprigganRoot] Cast Call Creatures spell" )
 					; Debug.Notification("The Voices scream for help." )

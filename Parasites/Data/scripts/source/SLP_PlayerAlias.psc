@@ -2037,26 +2037,20 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 	If (fctParasites.ActorHasKeywordByString(PlayerActor, "FaceHugger")) || (fctParasites.ActorHasKeywordByString(PlayerActor, "FaceHuggerGag")) || (fctParasites.ActorHasKeywordByString(PlayerActor, "ChaurusWorm"))
 		PlayerActor.SendModEvent("SLHModHormone", "Female", 10.0 + Utility.RandomFloat(0.0,10.0))
 		PlayerActor.SendModEvent("SLHModHormone", "SexDrive", 1.0 + Utility.RandomFloat(0.0,5.0))
-		fctParasites.clearParasiteAlias(PlayerActor, "FaceHugger" )
-		fctParasites.clearParasiteAlias(PlayerActor, "ChaurusWorm" )
 	endif 
-
+	
 	If ( (fctParasites.ActorHasKeywordByString(PlayerActor, "SpiderEgg")) || (fctParasites.ActorHasKeywordByString(PlayerActor, "SpiderPenis")) ) 
 		PlayerActor.SendModEvent("SLHModHormone", "SexDrive", 5.0 + Utility.RandomFloat(0.0,10.0))
-		fctParasites.clearParasiteAlias(PlayerActor, "SpiderEgg" )
-		fctParasites.clearParasiteAlias(PlayerActor, "SpiderPenis" )
-	endif 
+	endif
 
 	If (fctParasites.ActorHasKeywordByString(PlayerActor, "TentacleMonster"))
 		PlayerActor.SendModEvent("SLHModHormone", "Immunity", 1.0 * Utility.RandomFloat(0.0,10.0))
 		PlayerActor.SendModEvent("SLHModHormone", "Lactation", 10.0 + Utility.RandomFloat(0.0,10.0))
-		fctParasites.clearParasiteAlias(PlayerActor, "TentacleMonster" )
 	endif 
 
 	If (fctParasites.ActorHasKeywordByString(PlayerActor, "Barnacles"))
 		PlayerActor.SendModEvent("SLHModHormone", "Immunity", -1.0 * Utility.RandomFloat(0.0,10.0))
 		PlayerActor.SendModEvent("SLHModHormone", "Pheromones", 1.0 + Utility.RandomFloat(0.0,5.0))
-		fctParasites.clearParasiteAlias(PlayerActor, "Barnacles" )
 	endif 
 
 	If (fctParasites.ActorHasKeywordByString(PlayerActor, "ChaurusQueenVag"))
@@ -2068,9 +2062,29 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 		PlayerActor.SendModEvent("SLHModHormone", "Female", 20.0 + Utility.RandomFloat(0.0,10.0))
 		PlayerActor.SendModEvent("SLHModHormone", "Male", -1.0 * (10.0 + Utility.RandomFloat(0.0,10.0)) )
 		PlayerActor.SendModEvent("SLHModHormone", "Metabolism", 10.0 + Utility.RandomFloat(0.0,10.0))
-		fctParasites.clearParasiteAlias(PlayerActor, "SprigganRoot" ) 
 	endif 
 
+	; Clean up Quest Aliases if parasites are not equipped anymore 
+	fctParasites.clearParasiteAlias(PlayerActor, "FaceHugger" )
+	fctParasites.clearParasiteAlias(PlayerActor, "ChaurusWorm" )
+	fctParasites.clearParasiteAlias(PlayerActor, "SpiderEgg" )
+	fctParasites.clearParasiteAlias(PlayerActor, "SpiderPenis" )
+
+	If (!fctParasites.ActorHasKeywordByString(PlayerActor, "TentacleMonster"))
+		fctParasites.clearParasiteAlias(PlayerActor, "TentacleMonster" )
+	endif
+
+	If (!fctParasites.ActorHasKeywordByString(PlayerActor, "LivingArmor"))
+		fctParasites.clearParasiteAlias(PlayerActor, "LivingArmor" )
+	endif
+
+	If (!fctParasites.ActorHasKeywordByString(PlayerActor, "Barnacles"))
+		fctParasites.clearParasiteAlias(PlayerActor, "Barnacles" )
+	endif
+
+	If (!fctParasites.ActorHasKeywordByString(PlayerActor, "SprigganRoot"))
+		fctParasites.clearParasiteAlias(PlayerActor, "SprigganRoot" )
+	endif
 
 	; Bring Lastelle where she belongs if needed
 	fctParasites.resetOnSleep()
@@ -2081,6 +2095,26 @@ Event OnSleepStop(bool abInterrupted)
 
 	EndIf
 EndEvent
+ 
+
+Event OnObjectEquipped(Form akBaseObject, ObjectReference akReference)
+
+  	if akBaseObject as Ingredient
+  		Ingredient thisIngredient = akBaseObject as Ingredient
+
+    	; Debug.Notification("This actor just ate an ingredient type: " + akBaseObject.GetType())
+
+    	; Spider egg = type 30
+    	if (thisIngredient == IngredientSpiderEgg)
+    		fctParasites.tryPlayerSpiderStage()
+    		
+    	elseif (thisIngredient == IngredientChaurusWorm)
+    		fctParasites.tryPlayerChaurusStage()
+    	endif
+
+ 
+  	endIf
+endEvent
 
 Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile, bool abPowerAttack, bool abSneakAttack, bool abBashAttack, bool abHitBlocked)
 	Actor kPlayer = Game.GetPlayer()
@@ -2098,8 +2132,9 @@ Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile,
 			fctParasites.tryCharmChaurus( kTarget )
 		endif
 
-		fctParasites.tryPlayerSpriggan( kTarget )
-
+		if (StorageUtil.GetFloatValue(kPlayer, "_SLP_chanceSprigganRootArms") > 0.0 )
+			fctParasites.tryPlayerSpriggan( kTarget )
+		endif
 	EndIf
 
 EndEvent

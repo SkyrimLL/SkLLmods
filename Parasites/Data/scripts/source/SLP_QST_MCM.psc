@@ -190,14 +190,14 @@ event OnPageReset(string a_page)
 	_toggleBarnacles = StorageUtil.GetIntValue(kPlayer, "_SLP_toggleBarnacles" )
 	_chanceBarnacles = StorageUtil.GetFloatValue(kPlayer, "_SLP_chanceBarnacles" ) 
 
-	_toggleSprigganRootGag = StorageUtil.GetIntValue(kPlayer, "_SLP_toggleSprigganRootGag" )
-	_chanceSprigganRootGag = StorageUtil.GetFloatValue(kPlayer, "_SLP_chanceSprigganRootGag" )
 	_toggleSprigganRootArms = StorageUtil.GetIntValue(kPlayer, "_SLP_toggleSprigganRootArms" )
 	_chanceSprigganRootArms = StorageUtil.GetFloatValue(kPlayer, "_SLP_chanceSprigganRootArms" )
 	_toggleSprigganRootFeet = StorageUtil.GetIntValue(kPlayer, "_SLP_toggleSprigganRootFeet" )
 	_chanceSprigganRootFeet = StorageUtil.GetFloatValue(kPlayer, "_SLP_chanceSprigganRootFeet" )
 	_toggleSprigganRootBody = StorageUtil.GetIntValue(kPlayer, "_SLP_toggleSprigganRootBody" )
 	_chanceSprigganRootBody = StorageUtil.GetFloatValue(kPlayer, "_SLP_chanceSprigganRootBody" )
+	_toggleSprigganRootGag = StorageUtil.GetIntValue(kPlayer, "_SLP_toggleSprigganRootGag" )
+	_chanceSprigganRootGag = StorageUtil.GetFloatValue(kPlayer, "_SLP_chanceSprigganRootGag" )
 
 	if (StorageUtil.GetIntValue(kPlayer, "_SLP_toggleSprigganRoot" )==1)
 		_toggleSprigganRootDebug = true

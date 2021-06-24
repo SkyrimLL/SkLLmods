@@ -44,11 +44,18 @@ EndEvent
 
 Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile, bool abPowerAttack, bool abSneakAttack, bool abBashAttack, bool abHitBlocked)
 	Actor kPlayer = Game.GetPlayer()
+	Actor kAgressor = akAggressor as Actor
 
-	If (akAggressor != None)
+
+
+	If (akAggressor != None) && (kAgressor != kPlayer)
+
 		;  Debug.Trace("We were hit by " + akAggressor)
 		; Debug.Notification("." )
-
+		if (!(fctParasites.infectParasiteByString(kPlayer, "FaceHugger"  ))) && (!(fctParasites.infectParasiteByString(kPlayer, "FaceHuggerGag"  ))) 
+			return
+		endif
+		
 		If (Utility.RandomInt(0,100)>98)  
 			Debug.Trace("[SLP_aliasFaceHugger] Cure Face or Hip Hugger" )
  

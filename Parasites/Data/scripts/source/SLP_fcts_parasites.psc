@@ -1097,16 +1097,18 @@ Function tryCharmSpider(Actor Target)
 
 			_SLP_GV_numCharmSpider.Mod(1.0)
 			ParasiteSex(kPlayer, Target)			
-			
+		else
+			; Debug.Notification("[SLP] Charm Spider - Failed" )
+			Debug.Trace("[SLP] Charm Spider - Failed" )
+			Debug.Trace("[SLP]       iCharmThreshold: " + iCharmThreshold)
+			Debug.Trace("[SLP]       checkIfSpider: " + fctUtils.checkIfSpider ( Target ))
+			Debug.Trace("[SLP]       _SLP_iSpiderPheromoneON: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iSpiderPheromoneON"))
+			Debug.Trace("[SLP]       _SLH_fHormonePheromones: " + StorageUtil.GetFloatValue(kPlayer, "_SLH_fHormonePheromones"))			
 		endif
 
 	else
 		; Debug.Notification("[SLP] Charm Spider - Failed" )
 		Debug.Trace("[SLP] Charm Spider - Failed" )
-		Debug.Trace("[SLP]       iCharmThreshold: " + iCharmThreshold)
-		Debug.Trace("[SLP]       checkIfSpider: " + fctUtils.checkIfSpider ( Target ))
-		Debug.Trace("[SLP]       _SLP_iSpiderPheromoneON: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iSpiderPheromoneON"))
-		Debug.Trace("[SLP]       _SLH_fHormonePheromones: " + StorageUtil.GetFloatValue(kPlayer, "_SLH_fHormonePheromones"))
 
 	endif
 
@@ -1136,10 +1138,10 @@ Function tryCharmChaurus(Actor Target)
  	Int iChaurusQueenStage = StorageUtil.GetIntValue(kPlayer, "_SLP_iChaurusQueenStage")
  	Int iCharmThreshold = 50
 
- 	if (StorageUtil.GetIntValue(kPlayer, "_SLP_iChaurusCharmON")==1)
+ 	; if (StorageUtil.GetIntValue(kPlayer, "_SLP_iChaurusCharmON")==1)
  		; Charm is in progress - no need for more checks (needed for magic attackes)
- 		return
- 	endif
+ 	;	return
+ 	; endif
 
 	if fctUtils.checkIfChaurus ( Target )
 
@@ -1173,15 +1175,18 @@ Function tryCharmChaurus(Actor Target)
 			endif
 
 			ParasiteSex(kPlayer, Target)
+		else
+			; Debug.Notification("[SLP] Charm Chaurus - Failed" )
+			Debug.Trace("[SLP] Charm Chaurus - Failed" )
+			Debug.Trace("[SLP]       iCharmThreshold: " + iCharmThreshold)
+			Debug.Trace("[SLP]       checkIfChaurus: " + fctUtils.checkIfChaurus ( Target ))
+			Debug.Trace("[SLP]       _SLP_iChaurusPheromoneON: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iChaurusPheromoneON"))
+			Debug.Trace("[SLP]       _SLH_fHormonePheromones: " + StorageUtil.GetFloatValue(kPlayer, "_SLH_fHormonePheromones"))
 		endif
 
 	else
 		; Debug.Notification("[SLP] Charm Chaurus - Failed" )
-		; Debug.Trace("[SLP] Charm Chaurus - Failed" )
-		Debug.Trace("[SLP]       iCharmThreshold: " + iCharmThreshold)
-		Debug.Trace("[SLP]       checkIfChaurus: " + fctUtils.checkIfChaurus ( Target ))
-		Debug.Trace("[SLP]       _SLP_iChaurusPheromoneON: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iChaurusPheromoneON"))
-		Debug.Trace("[SLP]       _SLH_fHormonePheromones: " + StorageUtil.GetFloatValue(kPlayer, "_SLH_fHormonePheromones"))
+		Debug.Trace("[SLP] Charm Chaurus - Failed" )
 
 	endif
 EndFunction
@@ -1238,13 +1243,15 @@ Function tryPlayerSpriggan(Actor Target)
 			; endif
  
 			; ParasiteSex(kPlayer, Target)			
-			
+		else
+			Debug.Notification("[SLP] Spriggan Infection - Failed" )
+			Debug.Trace("[SLP] Spriggan Infection - Failed" )
+			Debug.Trace("[SLP]       iInfectThreshold: " + iInfectThreshold)
+			Debug.Trace("[SLP]       checkIfSpriggan: " + fctUtils.checkIfSpriggan ( Target )) 
+				
 		endif
 
 	else
-		Debug.Notification("[SLP] Spriggan Infection - Failed" )
-		Debug.Trace("[SLP] Spriggan Infection - Failed" )
-		Debug.Trace("[SLP]       iInfectThreshold: " + iInfectThreshold)
 		Debug.Trace("[SLP]       checkIfSpriggan: " + fctUtils.checkIfSpriggan ( Target )) 
 
 	endif

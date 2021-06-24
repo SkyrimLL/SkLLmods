@@ -170,9 +170,10 @@ Bool Function checkIfSpider ( Actor akActor )
 	Bool bIsSpider = False
 	ActorBase akActorBase = akActor.GetLeveledActorBase() as ActorBase
 	Race actorRace = akActorBase.GetRace()
+	Actor kPlayer = Game.GetPlayer()
 	; Race _SD_Race_FalmerFrozen = StorageUtil.GetFormValue(None, "_SD_Race_FalmerFrozen") as Race
 
-	if (akActor)
+	if (akActor) && (akActor != kPlayer)
 		if (StorageUtil.GetIntValue( akActor, "_SLP_iDateSpiderRaceChecked")==0)
 			StorageUtil.SetIntValue( akActor, "_SLP_iDateSpiderRaceChecked", Game.QueryStat("Days Passed"))
 
@@ -194,9 +195,10 @@ Bool Function checkIfChaurus ( Actor akActor )
 	Bool bIsChaurus = False
 	ActorBase akActorBase = akActor.GetLeveledActorBase() as ActorBase
 	Race actorRace = akActorBase.GetRace()
+	Actor kPlayer = Game.GetPlayer()
 	; Race _SD_Race_FalmerFrozen = StorageUtil.GetFormValue(None, "_SD_Race_FalmerFrozen") as Race
 
-	if (akActor)
+	if (akActor) && (akActor != kPlayer)
 		if (StorageUtil.GetIntValue( akActor, "_SLP_iDateChaurusRaceChecked")==0)
 			StorageUtil.SetIntValue( akActor, "_SLP_iDateChaurusRaceChecked", Game.QueryStat("Days Passed"))
 
@@ -217,15 +219,15 @@ Bool Function checkIfSpriggan ( Actor akActor )
 	Bool bIsSpriggan = False
 	ActorBase akActorBase = akActor.GetLeveledActorBase() as ActorBase
 	Race actorRace = akActorBase.GetRace()
-	; Race _SD_Race_FalmerFrozen = StorageUtil.GetFormValue(None, "_SD_Race_FalmerFrozen") as Race
+	Actor kPlayer = Game.GetPlayer()
 
-	if (akActor)
+	if (akActor)  && (akActor != kPlayer)
 		if (StorageUtil.GetIntValue( akActor, "_SLP_iDateSprigganRaceChecked")==0)
 			StorageUtil.SetIntValue( akActor, "_SLP_iDateSprigganRaceChecked", Game.QueryStat("Days Passed"))
 
 			Debug.Trace("[SLP]       actorRace.GetName(): " + actorRace.GetName())
 
-			bIsSpriggan = (actorRace == SprigganRace ) || (actorRace == SprigganMatronRace ) || (actorRace == SprigganEarthMotherRace ) || (actorRace == SprigganSwarmRace ) || (actorRace == SprigganBurntRace ) || (StringUtil.Find(actorRace.GetName(), "Spriggan")!= -1)
+			bIsSpriggan = ( (akActor.GetRace() == SprigganRace) || (akActor.GetRace() == SprigganMatronRace) || (akActor.GetRace() == SprigganEarthMotherRace) || (akActor.GetRace() == SprigganSwarmRace) || (akActor.GetRace() == SprigganBurntRace) || (StringUtil.Find(actorRace.GetName(), "Spriggan")!= -1) )
 
 			StorageUtil.SetIntValue( akActor, "_SD_bIsSpriggan", bIsSpriggan as Int) 
 		else
