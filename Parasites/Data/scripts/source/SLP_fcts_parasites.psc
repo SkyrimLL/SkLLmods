@@ -511,6 +511,7 @@ Keyword Function getDeviousKeywordByString(String sParasiteKeyword = ""  )
 EndFunction
 
 Function equipParasiteNPCByString(Actor kActor, String sParasiteKeyword = ""  )
+	debug.trace("[SLP] equipParasiteNPCByString: " + sParasiteKeyword)
  
 	if (sParasiteKeyword == "SpiderEgg" )  || (sParasiteKeyword == "SpiderPenis" )  
 		fctParasiteSpiderEgg.equipParasiteNPCByString(kActor,  sParasiteKeyword )
@@ -544,6 +545,7 @@ Function equipParasiteNPCByString(Actor kActor, String sParasiteKeyword = ""  )
 EndFunction
 
 Function clearParasiteNPCByString(Actor kActor, String sParasiteKeyword = ""  )
+	debug.trace("[SLP] clearParasiteNPCByString: " + sParasiteKeyword)
  
 	if (sParasiteKeyword == "SpiderEgg" )  || (sParasiteKeyword == "SpiderPenis" )  
 		fctParasiteSpiderEgg.clearParasiteNPCByString(kActor,  sParasiteKeyword )
@@ -718,6 +720,12 @@ Function clearParasiteAlias(Actor akActor, String sParasite = ""  )
 EndFunction
 
 
+
+;------------------------------------------------------------------------------
+Function forceChaurusQueenStage(Int iStage)
+	QueenOfChaurusQuest.SetStage(iStage)
+Endfunction
+
 ;------------------------------------------------------------------------------
 Bool Function tryParasiteNextStage(Actor kActor, String sParasite)
  	Actor PlayerActor = Game.GetPlayer()
@@ -727,8 +735,12 @@ Bool Function tryParasiteNextStage(Actor kActor, String sParasite)
  	Int iChaurusEggsCount = PlayerActor.GetItemCount(ChaurusEgg)
 
  	If (kActor == PlayerActor)
+ 		if (StorageUtil.GetFloatValue(PlayerActor, "_SLP_flareDelay" )==0.0)
+ 			Return bSuccess; Flares disabled - ignore
+ 		endif
+
  		If (PlayerActor.IsBleedingOut() || PlayerActor.IsDead() || PlayerActor.IsOnMount() || PlayerActor.IsFlying() || PlayerActor.IsUnconscious() || !Game.IsActivateControlsEnabled() || SexLab.IsActorActive(PlayerActor) )
- 			debug.notification("[SLP] tryParasiteNextStage failed  " )
+ 			; debug.notification("[SLP] tryParasiteNextStage failed  " )
  			debug.trace("[SLP] tryParasiteNextStage failed  " )
  			;debug.notification("[SLP]    Player is busy " )
  			debug.trace("[SLP]    Player is busy " )
@@ -743,7 +755,7 @@ Bool Function tryParasiteNextStage(Actor kActor, String sParasite)
  		Endif
 
 		If (sParasite == "SprigganRoot")
-			Debug.Notification(".." )
+			; Debug.Notification(".." )
 			If (!fctParasiteSprigganRoot.isInfectedByString( kActor,  "SprigganRootArms" )) 
 				if (Utility.RandomInt(0,100)<StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceSprigganRootArms" ))
 					debug.trace("[SLP]    Effect - add Spriggan Root Arms")

@@ -95,7 +95,7 @@ Keyword Function getDeviousKeywordByString(String deviousKeyword = ""  )
 		thisKeyword = fctDevious.getDeviousDeviceKeywordByString( deviousKeyword  )
 	endIf
 
-	debug.trace("[SLP] 		thisKeyword: " + thisKeyword)
+	; debug.trace("[SLP] 		thisKeyword: " + thisKeyword)
 
 	return thisKeyword
 EndFunction

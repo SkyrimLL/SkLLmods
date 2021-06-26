@@ -80,6 +80,7 @@ float		_bellyMaxChaurusQueen = -1.0
 float		_maxBroodSpawns = -1.0
 bool		_autoRemoveDragonWings = false
 
+float		_flareDelay = -1.0
 
 bool		_toggleRefreshAll = false
 bool		_toggleClearAll = false
@@ -220,6 +221,8 @@ event OnPageReset(string a_page)
 	_bellyMaxChaurusQueen = StorageUtil.GetFloatValue(kPlayer, "_SLP_bellyMaxChaurusQueen" )
 	_maxBroodSpawns = StorageUtil.GetIntValue(kPlayer, "_SLP_maxBroodSpawns" ) as Float
 
+	_flareDelay = StorageUtil.GetFloatValue(kPlayer, "_SLP_flareDelay" ) as Float
+
 	_togglePriestOutfits = StorageUtil.GetIntValue(none, "_SLP_togglePriestOutfits" )
 
 	Int iChaurusQueenStage = StorageUtil.GetIntValue(kPlayer, "_SLP_iChaurusQueenStage")
@@ -247,6 +250,8 @@ event OnPageReset(string a_page)
 		AddSliderOptionST("STATE_ESTRUSTENTACLES_CHANCE","Estrus Tentacles (EC+)", _chanceEstrusTentacles,"{0} %") 
 		AddSliderOptionST("STATE_ESTRUSSLIME_CHANCE","Estrus Slime (EC+)", _chanceEstrusSlime,"{0} %")
 
+		AddHeaderOption(" Events control")
+		AddSliderOptionST("STATE_FLARE_DELAY","Flare Delay", _flareDelay ,"{1}")
 
 		SetCursorPosition(1)
 		AddHeaderOption(" Infect/Cure")
@@ -289,6 +294,7 @@ event OnPageReset(string a_page)
 		AddHeaderOption(" Kyne Blessing ")
 		AddToggleOptionST("STATE_SPRIGGANROOTDEBUG_TOGGLE","Toggle Spriggan Root infection", _toggleSprigganRootDebug as Float)
 
+		AddHeaderOption(" Infections counts ")
 		AddTextOption("     Total infections: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iInfections") as Int, "", OPTION_FLAG_DISABLED)
 		AddTextOption("     Spider Egg Infections: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iSpiderEggInfections") as Int, "", OPTION_FLAG_DISABLED)
 		AddTextOption("     Anal Chaurus Worm Infections: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iChaurusWormInfections") as Int, "", OPTION_FLAG_DISABLED)
@@ -1564,7 +1570,7 @@ state STATE_MAX_BROODSPAWNS ; SLIDER
 	endEvent
 
 	event OnDefaultST()
-		StorageUtil.SetIntValue(kPlayer, "_SLP_maxBroodSpawns", 1 )
+		StorageUtil.SetIntValue(kPlayer, "_SLP_maxBroodSpawns", 10 )
 		SetSliderOptionValueST( 10.0,"{1}" )
 	endEvent
 
@@ -1591,6 +1597,32 @@ state STATE_AUTO_REMOVE_WINGS ; TOGGLE
 
 	event OnHighlightST()
 		SetInfoText("Automatically remove equipped wings when removing the Queen Body if a compatible mod is detected (unchecked means the wings will remain equipped after the Queen Body is removed).")
+	endEvent
+endState
+
+
+; AddSliderOptionST("STATE_FLARE_DELAY","Flare Frequency", _flareDelay ,"{1}")
+state STATE_FLARE_DELAY ; SLIDER
+	event OnSliderOpenST()
+		SetSliderDialogStartValue( StorageUtil.GetFloatValue(kPlayer, "_SLP_flareDelay" ) as Float)
+		SetSliderDialogDefaultValue( 30.0 )
+		SetSliderDialogRange( 0.0, 30.0 )
+		SetSliderDialogInterval( 0.1 )
+	endEvent
+
+	event OnSliderAcceptST(float value)
+		float thisValue = value 
+		StorageUtil.SetFloatValue(kPlayer, "_SLP_flareDelay", thisValue as Float )
+		SetSliderOptionValueST( thisValue,"{1}" ) 
+	endEvent
+
+	event OnDefaultST()
+		StorageUtil.SetFloatValue(kPlayer, "_SLP_flareDelay", 5 )
+		SetSliderOptionValueST( 5.0,"{1}" )
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Delays checks for 'flare' events from certain parasites (roughly in real time minutes). Use values between 0 and 1 to accelerate flares. Use 0 to turn flares off.")
 	endEvent
 endState
 
@@ -1788,6 +1820,10 @@ Function _setParasiteSettings()
 	if (_maxBroodSpawns==-1.0) || (StorageUtil.GetIntValue(kPlayer, "_SLP_maxBroodSpawns" ) == 0 )
 		StorageUtil.SetIntValue(kPlayer, "_SLP_maxBroodSpawns", 10 ) 
 		_maxBroodSpawns = 10
+	Endif
+	if (_flareDelay==-1.0) 
+		StorageUtil.SetFloatValue(kPlayer, "_SLP_flareDelay", 5.0 ) 
+		_flareDelay = 5.0
 	Endif
 
 

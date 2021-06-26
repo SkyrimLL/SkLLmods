@@ -130,8 +130,8 @@ Function applyBaseChaurusQueenSkin()
 	Float fWeight
 	Float NeckDelta
 
-	pLeveledActorBase.SetWeight(fWeightOrig)
-	pLeveledActorBase.SetSkin(_SLP_skinChaurusQueenNaked)
+	; pLeveledActorBase.SetWeight(fWeightOrig)
+	; pLeveledActorBase.SetSkin(_SLP_skinChaurusQueenNaked)
 	; fWeight = pLeveledActorBase.GetWeight()
 	; NeckDelta = (fWeightOrig / 100) - (fWeight / 100)
 	; PlayerActor.UpdateWeight(NeckDelta) ;Apply the changes.
@@ -490,7 +490,7 @@ Function cureChaurusQueenSkin( Actor kActor, Bool bHarvestParasite = False   )
 		; fctUtils.ApplyBodyChange( kActor, "ChaurusQueenSkin", "Breast", 1.0, StorageUtil.GetFloatValue(PlayerActor, "_SLP_breastMaxChaurusQueenSkin" ))
 
 		If (bHarvestParasite)
-			PlayerActor.AddItem(SLP_harnessChaurusQueenSkinInventory,1)
+		;	PlayerActor.AddItem(SLP_harnessChaurusQueenSkinInventory,1)
 		Endif
 
 		If (kActor == PlayerActor)
@@ -597,7 +597,7 @@ Function cureChaurusQueenArmor( Actor kActor, Bool bHarvestParasite = False   )
 		; fctUtils.ApplyBodyChange( kActor, "ChaurusQueenArmor", "Breast", 1.0, StorageUtil.GetFloatValue(PlayerActor, "_SLP_breastMaxChaurusQueenArmor" ))
 
 		If (bHarvestParasite)
-			PlayerActor.AddItem(SLP_harnessChaurusQueenArmorInventory,1)
+		;	PlayerActor.AddItem(SLP_harnessChaurusQueenArmorInventory,1)
 		Endif
 
 		If (kActor == PlayerActor)
@@ -769,7 +769,7 @@ Function cureChaurusQueenBody( Actor kActor, Bool bHarvestParasite = False   )
 		; fctUtils.ApplyBodyChange( kActor, "ChaurusQueenBody", "Breast", 1.0, StorageUtil.GetFloatValue(PlayerActor, "_SLP_breastMaxChaurusQueenBody" ))
 
 		If (bHarvestParasite)
-			PlayerActor.AddItem(SLP_harnessChaurusQueenBodyInventory,1)
+		;	PlayerActor.AddItem(SLP_harnessChaurusQueenBodyInventory,1)
 		Endif
 
 		If (kActor == PlayerActor)
