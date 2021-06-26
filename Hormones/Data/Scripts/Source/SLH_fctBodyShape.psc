@@ -446,6 +446,7 @@ function alterBodyAfterRest(Actor kActor)
 
 	Race kOrigRace = StorageUtil.GetFormValue(kActor, "_SLH_fOrigRace") as Race
 
+
 	If (kOrigRace != None) 
 		If (thisRace != kOrigRace)
 			debugTrace("  Race change detected - aborting")
@@ -483,14 +484,17 @@ function alterBodyAfterRest(Actor kActor)
 		fButtSwellMod = -1.0 * fButtSwellMod
 		fBellySwellMod = -1.0 * fBellySwellMod
 		fSchlongSwellMod = -1.0 * fSchlongSwellMod
+
 	elseIf (iSexCountToday < iSexActivityBuffer)
 		StorageUtil.UnsetIntValue(kActor, "_SLH_iSexActivityThresholdPlus")
 		; no body change if sex activity below buffer
+		debug.notification( "[SLP] no body change - sex activity below buffer " )
 		debugTrace("  no body change - sex activity below buffer")
 		return
 	endif
 
-	debugTrace( ">>>>> alterBodyAfterRest detected " )
+	debug.notification( "[SLP] Applying body changes " )
+	debug.Trace( ">>>>> alterBodyAfterRest detected " )
 	debugTrace( "fSwellFactor: " + fSwellFactor)
 	debugTrace( "isSlifInstalled: " + isSlifInstalled)
 	debugTrace( "_SLH_BasicNetImmerseON: " + StorageUtil.GetIntValue(none, "_SLH_BasicNetImmerseON"))
@@ -685,11 +689,16 @@ EndFunction
 function alterBodyAfterSex(Actor kActor, Bool bOral = False, Bool bVaginal = False, Bool bAnal = False)
 	if (bOral) || (bVaginal) || (bAnal)
 		fctHormones.modHormoneLevel(kActor, "Pigmentation", 1.5)
-		fctHormones.modHormoneLevel(kActor, "SexDrive", 10.0)
 		fctHormones.modHormoneLevel(kActor, "Growth", 0.5)
+		if fctUtil.isMale(kActor)
+				fctHormones.modHormoneLevel(kActor, "SexDrive", -10.0)
+		else
+				fctHormones.modHormoneLevel(kActor, "SexDrive", 5.0)
+		endif
 	endIf
 
-	alterBodyAfterRest(kActor)
+	; 2021-06-25 - disabled for now since it resets weigth and nodes / changes after sleep only
+	; alterBodyAfterRest(kActor)
 EndFunction
 
 function alterBodyByPercent(Actor kActor, String sBodyPart, Float modFactor)

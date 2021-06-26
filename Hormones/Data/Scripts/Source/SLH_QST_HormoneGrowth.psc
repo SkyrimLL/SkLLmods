@@ -410,6 +410,7 @@ function initHormones()
 	StorageUtil.SetIntValue(PlayerActor, "Puppet_SpellON", -1)
 	StorageUtil.SetIntValue(PlayerActor, "PSQ_SpellON", -1)
 
+	; On init
 	applyHormonalChanges(PlayerActor)
 
 	iOrgasmsCountToday   = 0
@@ -454,6 +455,7 @@ Event OnSleepStop(bool abInterrupted)
 	debugTrace("Player woke up at: " + Utility.GameTimeToString(Utility.GetCurrentGameTime()))
 	debugTrace("Time slept: " + fHoursSleep)
 
+	; After sleep
 	applyHormonalChanges(PlayerActor)
 
 	bShapeChangeEvent = fctBodyShape.tryTGEvent(PlayerActor,fHoursSleep)
@@ -755,6 +757,7 @@ Event OnUpdate()
 			fctColor.getColorFromSkin(PlayerActor)
 		EndIf
 
+		; After midnight
 		applyHormonalChanges(PlayerActor)
 
 		iOrgasmsCountToday   = 0
@@ -1695,14 +1698,18 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 
 		If (bOral || bVaginal || bAnal)
 			; Refreshing values in case of any external change from other mods
-			fctBodyShape.getShapeState(PlayerActor) 
+			; fctBodyShape.getShapeState(PlayerActor) 
 
 			; Update after sex disabled during testing of influence of new hormone levels
-	    	fctBodyShape.alterBodyAfterSex(PlayerActor, bOral, bVaginal, bAnal )
-	    	fctColor.alterColorAfterSex(PlayerActor )
+	    	; fctBodyShape.alterBodyAfterSex(PlayerActor, bOral, bVaginal, bAnal )
+	    	; fctColor.alterColorAfterSex(PlayerActor )
 
-			setHormonesState(PlayerActor)	
-			traceStatus()
+			; setHormonesState(PlayerActor)	
+			; traceStatus()
+					
+			; After sex
+			applyHormonalChanges(PlayerActor)
+
 
 			If !( fctUtil.isExternalChangeModActive(PlayerActor) ) && (GV_shapeUpdateAfterSex.GetVAlue() == 1)
 				fctColor.applyColorChanges(PlayerActor)
@@ -2112,6 +2119,7 @@ endFunction
 ; Hormone 3.0+ system
 ;===========================================================================
 Function applyHormonalChanges(Actor kActor)
+	debugTrace(" >>> applyHormonalChanges" )
 	fctHormones.updateActorLibido(kActor)
 	fctHormones.updateActorSwellFactor(kActor)
 
@@ -2224,6 +2232,7 @@ function resetHormonesState(Actor kActor)
 	; SLH_Libido.SetValue( fLibido )
 	StorageUtil.SetFloatValue(kActor, "_SLH_fLibido",  fLibido) 
 
+	; On reset
 	applyHormonalChanges(kActor)
 
 	iOrgasmsCountToday   = 0
@@ -2249,6 +2258,7 @@ function setHormonesState(Actor kActor)
 endFunction
 
 function setHormonesSexualState(Actor kActor)
+	Actor kPlayer = Game.GetPlayer()
  
 	StorageUtil.SetIntValue(kActor, "_SLH_iGameDateLastSex", iGameDateLastSex) 
 	StorageUtil.SetIntValue(kActor, "_SLH_iDaysSinceLastSex", iDaysSinceLastSex)
@@ -2287,7 +2297,7 @@ function setHormonesSexualState(Actor kActor)
 		StorageUtil.SetIntValue(kActor, "_SLH_iLactating", 0)
 	endIf
 
-	if 	( fctUtil.isPregnantBySoulGemOven(kActor) || fctUtil.isPregnantBySimplePregnancy(kActor) || fctUtil.isPregnantByBeeingFemale(kActor) || fctUtil.isPregnantByEstrusChaurus(kActor) || ((StorageUtil.GetIntValue(Game.GetPlayer(), "PSQ_SuccubusON") == 1) && (StorageUtil.GetIntValue(Game.GetPlayer(), "PSQ_SoulGemPregnancyON") == 1)) )
+	if 	( fctUtil.isPregnantBySoulGemOven(kActor) || fctUtil.isPregnantBySimplePregnancy(kActor) || fctUtil.isPregnantByBeeingFemale(kActor) || fctUtil.isPregnantByEstrusChaurus(kActor) || ((StorageUtil.GetIntValue(kPlayer, "PSQ_SuccubusON") == 1) && (StorageUtil.GetIntValue(kPlayer, "PSQ_SoulGemPregnancyON") == 1)) )
 		StorageUtil.SetIntValue(kActor, "_SLH_isPregnant", 1)
 		GV_isPregnant.SetValue(1)
 
@@ -2296,7 +2306,7 @@ function setHormonesSexualState(Actor kActor)
 		GV_isPregnant.SetValue(0)
 	EndIf
 
-	if 	(GV_isSuccubus.GetValue() == 1) || ((StorageUtil.GetIntValue(Game.GetPlayer(), "PSQ_SuccubusON") == 1))
+	if 	(GV_isSuccubus.GetValue() == 1) || ((StorageUtil.GetIntValue(kPlayer, "PSQ_SuccubusON") == 1))
 		StorageUtil.SetIntValue(kActor, "_SLH_isSuccubus", 1)
 	Else
 		StorageUtil.SetIntValue(kActor, "_SLH_isSuccubus", 0)
