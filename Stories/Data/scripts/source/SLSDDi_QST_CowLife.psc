@@ -783,7 +783,7 @@ Function UpdateMilkFromMachine(Actor kActor, ObjectReference akFurniture)
 		; StorageUtil.SetIntValue(kActor, "_SLH_iProlactinLevel", StorageUtil.GetIntValue(kActor, "_SLH_iProlactinLevel") + 4)	
 		fLactationHormoneMod = fLactationHormoneMod + 4.0
 
-		if (iMilkLEvel >= 10)
+		if (iMilkLevel >= 10)
 			Debug.Notification("The milker successfully produced a bottle.")
 			debugTrace(" Milk Produced: " + StorageUtil.GetIntValue(kActor, "_SLH_iMilkProduced"))
 			debugTrace(" Divine Milk Produced: " + StorageUtil.GetIntValue(kActor, "_SLH_iDivineMilkProduced"))
