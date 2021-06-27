@@ -201,7 +201,7 @@ Function clearParasiteNPC ( Actor akActor, String sParasiteString = "", Keyword 
 	Armor aRenderedDevice = none 
 	Form kForm
 
-	Debug.Trace("[SLP]clearParasiteByString - NO override detected")  
+	; Debug.Trace("[SLP] clearParasiteByString - NO override detected")  
  
 	If (kwDeviceKeyword != None)
 

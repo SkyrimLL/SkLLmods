@@ -511,7 +511,7 @@ Keyword Function getDeviousKeywordByString(String sParasiteKeyword = ""  )
 EndFunction
 
 Function equipParasiteNPCByString(Actor kActor, String sParasiteKeyword = ""  )
-	debug.trace("[SLP] equipParasiteNPCByString: " + sParasiteKeyword)
+	debugTrace("[SLP] equipParasiteNPCByString: " + sParasiteKeyword)
  
 	if (sParasiteKeyword == "SpiderEgg" )  || (sParasiteKeyword == "SpiderPenis" )  
 		fctParasiteSpiderEgg.equipParasiteNPCByString(kActor,  sParasiteKeyword )
@@ -545,7 +545,7 @@ Function equipParasiteNPCByString(Actor kActor, String sParasiteKeyword = ""  )
 EndFunction
 
 Function clearParasiteNPCByString(Actor kActor, String sParasiteKeyword = ""  )
-	debug.trace("[SLP] clearParasiteNPCByString: " + sParasiteKeyword)
+	debugTrace("[SLP] clearParasiteNPCByString: " + sParasiteKeyword)
  
 	if (sParasiteKeyword == "SpiderEgg" )  || (sParasiteKeyword == "SpiderPenis" )  
 		fctParasiteSpiderEgg.clearParasiteNPCByString(kActor,  sParasiteKeyword )
@@ -736,29 +736,32 @@ Bool Function tryParasiteNextStage(Actor kActor, String sParasite)
 
  	If (kActor == PlayerActor)
  		if (StorageUtil.GetFloatValue(PlayerActor, "_SLP_flareDelay" )==0.0)
+ 			debug.notification("[SLP] tryParasiteNextStage Flares disabled - ")
  			Return bSuccess; Flares disabled - ignore
  		endif
 
  		If (PlayerActor.IsBleedingOut() || PlayerActor.IsDead() || PlayerActor.IsOnMount() || PlayerActor.IsFlying() || PlayerActor.IsUnconscious() || !Game.IsActivateControlsEnabled() || SexLab.IsActorActive(PlayerActor) )
- 			; debug.notification("[SLP] tryParasiteNextStage failed  " )
- 			debug.trace("[SLP] tryParasiteNextStage failed  " )
+ 			debug.notification("[SLP] tryParasiteNextStage failed - " + sParasite)
+ 			debugTrace("[SLP] tryParasiteNextStage failed  " )
  			;debug.notification("[SLP]    Player is busy " )
- 			debug.trace("[SLP]    Player is busy " )
- 			debug.trace("[SLP]     IsBleedingOut: " + PlayerActor.IsBleedingOut()  )
- 			debug.trace("[SLP]     IsDead: " + PlayerActor.IsDead()  )
- 			debug.trace("[SLP]     IsOnMount: " + PlayerActor.IsOnMount()  )
- 			debug.trace("[SLP]     IsFlying: " + PlayerActor.IsFlying()  )
- 			debug.trace("[SLP]     IsUnconscious: " + PlayerActor.IsUnconscious()  )
- 			debug.trace("[SLP]     Game.IsActivateControlsEnabled: " + Game.IsActivateControlsEnabled() )
- 			debug.trace("[SLP]     SexLab.IsActorActive: " + SexLab.IsActorActive(PlayerActor) )
+ 			debugTrace("[SLP]    Player is busy " )
+ 			debugTrace("[SLP]     IsBleedingOut: " + PlayerActor.IsBleedingOut()  )
+ 			debugTrace("[SLP]     IsDead: " + PlayerActor.IsDead()  )
+ 			debugTrace("[SLP]     IsOnMount: " + PlayerActor.IsOnMount()  )
+ 			debugTrace("[SLP]     IsFlying: " + PlayerActor.IsFlying()  )
+ 			debugTrace("[SLP]     IsUnconscious: " + PlayerActor.IsUnconscious()  )
+ 			debugTrace("[SLP]     Game.IsActivateControlsEnabled: " + Game.IsActivateControlsEnabled() )
+ 			debugTrace("[SLP]     SexLab.IsActorActive: " + SexLab.IsActorActive(PlayerActor) )
 			Return bSuccess; Player is busy - try again later
  		Endif
+
+ 		debug.notification("[SLP] tryParasiteNextStage - " + sParasite)
 
 		If (sParasite == "SprigganRoot")
 			; Debug.Notification(".." )
 			If (!fctParasiteSprigganRoot.isInfectedByString( kActor,  "SprigganRootArms" )) 
 				if (Utility.RandomInt(0,100)<StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceSprigganRootArms" ))
-					debug.trace("[SLP]    Effect - add Spriggan Root Arms")
+					debugTrace("[SLP]    Effect - add Spriggan Root Arms")
 					
 					debug.MessageBox("The Spriggan spores cover your hands.") 
 	 
@@ -768,7 +771,7 @@ Bool Function tryParasiteNextStage(Actor kActor, String sParasite)
 
 			elseIf (!fctParasiteSprigganRoot.isInfectedByString( kActor,  "SprigganRootBody" )) 
 				if (Utility.RandomInt(0,100)<StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceSprigganRootBody" ))
-					debug.trace("[SLP]    Effect - add Spriggan Root Body")
+					debugTrace("[SLP]    Effect - add Spriggan Root Body")
 					
 					debug.MessageBox("The Spriggan spores spread to your body.") 
 	 
@@ -780,7 +783,7 @@ Bool Function tryParasiteNextStage(Actor kActor, String sParasite)
 
 			; elseIf (!fctParasiteChaurusQueen.isInfectedByString( kActor,  "SprigganRootFeet" )) 
 			;	if (Utility.RandomInt(0,100)<StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceSprigganRootFeet" ))
-			;		debug.trace("[SLP]    Effect - add Spriggan Root Feet")
+			;		debugTrace("[SLP]    Effect - add Spriggan Root Feet")
 			;		
 			;		debug.MessageBox("The Spriggan spores extend to your feet.") 
 	 		;
@@ -790,7 +793,7 @@ Bool Function tryParasiteNextStage(Actor kActor, String sParasite)
 
 			elseIf (!fctParasiteSprigganRoot.isInfectedByString( kActor,  "SprigganRootGag" )) 
 				if (Utility.RandomInt(0,100)<StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceSprigganRootGag" ))
-					debug.trace("[SLP]    Effect - add Spriggan Root Gag")
+					debugTrace("[SLP]    Effect - add Spriggan Root Gag")
 					
 					debug.MessageBox("The spores shape your face into a Spriggan mask.") 
 	 
@@ -800,7 +803,7 @@ Bool Function tryParasiteNextStage(Actor kActor, String sParasite)
 
 			elseIf (fctParasiteSprigganRoot.isInfectedByString( kActor,  "SprigganRootGag" )) 
 				if (Utility.RandomInt(0,100)<StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceSprigganRootGag" ))
-					debug.trace("[SLP]    Effect - add Spriggan Root Gag")
+					debugTrace("[SLP]    Effect - add Spriggan Root Gag")
 					
 					debug.MessageBox("The spores take a toll on your body.") 
 	 
@@ -819,14 +822,14 @@ Bool Function tryParasiteNextStage(Actor kActor, String sParasite)
 
 		Elseif (sParasite == "ChaurusQueen") && (QueenOfChaurusQuest.GetStageDone(290) && (!QueenOfChaurusQuest.GetStageDone(400)) )
 			Int itriggerNextStageChaurusQueen = StorageUtil.GetIntValue(kActor, "_SLP_triggerNextStageChaurusQueen") +  (iChaurusQueenStage * 10)
-			debug.trace("[SLP]    itriggerNextStageChaurusQueen = " + itriggerNextStageChaurusQueen)
+			debugTrace("[SLP]    itriggerNextStageChaurusQueen = " + itriggerNextStageChaurusQueen)
 
 			if (Utility.RandomInt(0,100) < itriggerNextStageChaurusQueen) 
 				; INCUBATION 
 				If (fctParasiteBarnacles.isInfectedByString( kActor,  "Barnacles" ))
 					; SeedFlare.RemoteCast(kActor as ObjectReference, kActor,kActor as ObjectReference)		
 					SeedFlare.Cast(kActor as ObjectReference, kActor as ObjectReference)	
-					debug.trace("[SLP]    Effect - cure Barnacles")
+					debugTrace("[SLP]    Effect - cure Barnacles")
 					debug.Notification("The Seed inside you flushes the barnacles away from your skin.")
 					fctParasiteBarnacles.cureBarnacles( kActor  )
 					bSuccess = True
@@ -834,7 +837,7 @@ Bool Function tryParasiteNextStage(Actor kActor, String sParasite)
 				endif 
 
 				If (!fctParasiteChaurusQueen.isInfectedByString( kActor,  "ChaurusQueenVag" )) && (Utility.RandomInt(0,100)<60)
-					debug.trace("[SLP]    Effect - add Chaurus Queen Vag")
+					debugTrace("[SLP]    Effect - add Chaurus Queen Vag")
 					if (iChaurusQueenStage==1)
 						; First time: stage = 1
 						debug.MessageBox("The Seed stirs through your womb and extends a tentacle between your legs.")
@@ -846,7 +849,7 @@ Bool Function tryParasiteNextStage(Actor kActor, String sParasite)
 					bSuccess = True
 					
 				elseIf (fctParasiteChaurusQueen.isInfectedByString( kActor,  "ChaurusQueenVag" )) && (Utility.RandomInt(0,100)<40)
-					debug.trace("[SLP]    Effect - cure Chaurus Queen Vag")
+					debugTrace("[SLP]    Effect - cure Chaurus Queen Vag")
 					debug.Notification("The tentacle receeds to the Seed inside your womb.")
 					fctParasiteChaurusQueen.cureChaurusQueenVag( kActor  )
 					bSuccess = True
@@ -854,7 +857,7 @@ Bool Function tryParasiteNextStage(Actor kActor, String sParasite)
 				endif 
 				
 				If (!fctParasiteChaurusQueen.isInfectedByString( kActor,  "ChaurusQueenSkin" )) && (Utility.RandomInt(0,100)<80) && (iChaurusQueenStage>=2)
-					debug.trace("[SLP]    Effect - add Chaurus Queen Skin")
+					debugTrace("[SLP]    Effect - add Chaurus Queen Skin")
 					if (iChaurusQueenStage==2)
 						; First time: stage = 2
 						debug.MessageBox("The Seed flares up through your skin and your breasts.")
@@ -866,14 +869,14 @@ Bool Function tryParasiteNextStage(Actor kActor, String sParasite)
 					bSuccess = True
 					
 				elseIf (fctParasiteChaurusQueen.isInfectedByString( kActor,  "ChaurusQueenSkin" )) && (Utility.RandomInt(0,100)<40)
-					debug.trace("[SLP]    Effect - cure Chaurus Queen Skin")
+					debugTrace("[SLP]    Effect - cure Chaurus Queen Skin")
 					debug.Notification("The feelers in your breasts receed inside.")
 					fctParasiteChaurusQueen.cureChaurusQueenSkin( kActor  )
 					bSuccess = True
 					
 				else
 					SeedFlare.Cast(kActor as ObjectReference, kActor as ObjectReference)	
-					debug.trace("[SLP]    Effect - cramps")
+					debugTrace("[SLP]    Effect - cramps")
 					debug.Notification("Sudden cramps flare up inside you.")
 					bSuccess = True
 
@@ -897,8 +900,8 @@ Bool Function tryParasiteNextStage(Actor kActor, String sParasite)
 
 				StorageUtil.SetIntValue(kActor, "_SLP_triggerNextStageChaurusQueen", iChaurusQueenStage * 10)
 			else
- 				debug.trace("[SLP] tryParasiteNextStage failed  " )
- 				debug.trace("[SLP]    Bad luck - try again later : " + itriggerNextStageChaurusQueen)
+ 				debugTrace("[SLP] tryParasiteNextStage failed  " )
+ 				debugTrace("[SLP]    Bad luck - try again later : " + itriggerNextStageChaurusQueen)
 
 				itriggerNextStageChaurusQueen = itriggerNextStageChaurusQueen +  (iChaurusQueenStage * 10)
 				StorageUtil.SetIntValue(kActor, "_SLP_triggerNextStageChaurusQueen",itriggerNextStageChaurusQueen)
@@ -1111,16 +1114,16 @@ Function tryCharmSpider(Actor Target)
 			ParasiteSex(kPlayer, Target)			
 		else
 			; Debug.Notification("[SLP] Charm Spider - Failed" )
-			Debug.Trace("[SLP] Charm Spider - Failed" )
-			Debug.Trace("[SLP]       iCharmThreshold: " + iCharmThreshold)
-			Debug.Trace("[SLP]       checkIfSpider: " + fctUtils.checkIfSpider ( Target ))
-			Debug.Trace("[SLP]       _SLP_iSpiderPheromoneON: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iSpiderPheromoneON"))
-			Debug.Trace("[SLP]       _SLH_fHormonePheromones: " + StorageUtil.GetFloatValue(kPlayer, "_SLH_fHormonePheromones"))			
+			debugTrace("[SLP] Charm Spider - Failed" )
+			debugTrace("[SLP]       iCharmThreshold: " + iCharmThreshold)
+			debugTrace("[SLP]       checkIfSpider: " + fctUtils.checkIfSpider ( Target ))
+			debugTrace("[SLP]       _SLP_iSpiderPheromoneON: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iSpiderPheromoneON"))
+			debugTrace("[SLP]       _SLH_fHormonePheromones: " + StorageUtil.GetFloatValue(kPlayer, "_SLH_fHormonePheromones"))			
 		endif
 
 	else
 		; Debug.Notification("[SLP] Charm Spider - Failed" )
-		Debug.Trace("[SLP] Charm Spider - Failed" )
+		debugTrace("[SLP] Charm Spider - Failed" )
 
 	endif
 
@@ -1189,16 +1192,16 @@ Function tryCharmChaurus(Actor Target)
 			ParasiteSex(kPlayer, Target)
 		else
 			; Debug.Notification("[SLP] Charm Chaurus - Failed" )
-			Debug.Trace("[SLP] Charm Chaurus - Failed" )
-			Debug.Trace("[SLP]       iCharmThreshold: " + iCharmThreshold)
-			Debug.Trace("[SLP]       checkIfChaurus: " + fctUtils.checkIfChaurus ( Target ))
-			Debug.Trace("[SLP]       _SLP_iChaurusPheromoneON: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iChaurusPheromoneON"))
-			Debug.Trace("[SLP]       _SLH_fHormonePheromones: " + StorageUtil.GetFloatValue(kPlayer, "_SLH_fHormonePheromones"))
+			debugTrace("[SLP] Charm Chaurus - Failed" )
+			debugTrace("[SLP]       iCharmThreshold: " + iCharmThreshold)
+			debugTrace("[SLP]       checkIfChaurus: " + fctUtils.checkIfChaurus ( Target ))
+			debugTrace("[SLP]       _SLP_iChaurusPheromoneON: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iChaurusPheromoneON"))
+			debugTrace("[SLP]       _SLH_fHormonePheromones: " + StorageUtil.GetFloatValue(kPlayer, "_SLH_fHormonePheromones"))
 		endif
 
 	else
 		; Debug.Notification("[SLP] Charm Chaurus - Failed" )
-		Debug.Trace("[SLP] Charm Chaurus - Failed" )
+		debugTrace("[SLP] Charm Chaurus - Failed" )
 
 	endif
 EndFunction
@@ -1257,14 +1260,14 @@ Function tryPlayerSpriggan(Actor Target)
 			; ParasiteSex(kPlayer, Target)			
 		else
 			Debug.Notification("[SLP] Spriggan Infection - Failed" )
-			Debug.Trace("[SLP] Spriggan Infection - Failed" )
-			Debug.Trace("[SLP]       iInfectThreshold: " + iInfectThreshold)
-			Debug.Trace("[SLP]       checkIfSpriggan: " + fctUtils.checkIfSpriggan ( Target )) 
+			debugTrace("[SLP] Spriggan Infection - Failed" )
+			debugTrace("[SLP]       iInfectThreshold: " + iInfectThreshold)
+			debugTrace("[SLP]       checkIfSpriggan: " + fctUtils.checkIfSpriggan ( Target )) 
 				
 		endif
 
 	else
-		Debug.Trace("[SLP]       checkIfSpriggan: " + fctUtils.checkIfSpriggan ( Target )) 
+		debugTrace("[SLP]       checkIfSpriggan: " + fctUtils.checkIfSpriggan ( Target )) 
 
 	endif
 
@@ -1275,6 +1278,11 @@ Bool Function tryPlayerLivingArmor()
 	Float	fChanceLivingArmor = StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceLivingArmor")
 
 	If (!fctParasiteLivingArmor.ActorHasKeywordByString(PlayerActor, "Belt")) && (!fctParasiteLivingArmor.ActorHasKeywordByString(PlayerActor, "Plug"))
+
+		if (!fctOutfits.isActorNaked(PlayerActor))
+			fChanceLivingArmor = (fChanceLivingArmor / 5)
+		endif
+
 		if (Utility.RandomInt(1,100)<= (fChanceLivingArmor as Int) )
 			; PlayerActor.SendModEvent("SLPInfectChaurusWorm")
 			if (fctParasiteLivingArmor.infectLivingArmor( PlayerActor ))
@@ -1340,7 +1348,7 @@ Function resetOnSleep()
 	if (QueenOfChaurusQuest.GetStageDone(30)) && (!QueenOfChaurusQuest.GetStageDone(65))
 		Actor kLastelle = LastelleRef as Actor
 
-		debug.trace("[SLP] Lastelle came back while you were sleeping...")
+		debugTrace("[SLP] Lastelle came back while you were sleeping...")
 		LastelleRef.moveto(LastelleCampOutside)
 		kLastelle.EvaluatePackage()
 	endif
@@ -1350,7 +1358,7 @@ Function resetOnSleep()
 Endfunction
 ;------------------------------------------------------------------------------
 Function refreshParasite(Actor kActor, String sParasite)
-	debug.trace("[SLP] Refreshing parasite - " + sParasite)
+	debugTrace("[SLP] Refreshing parasite - " + sParasite)
 
 	if (sParasite == "SpiderEgg" )  || (sParasite == "SpiderPenis" )  
 		fctParasiteSpiderEgg.refreshParasite( kActor, sParasite )
@@ -1422,14 +1430,22 @@ Function maintenance()
  	Actor PlayerActor= Game.GetPlayer() as Actor
  	ActorBase pActorBase = PlayerActor.GetActorBase()
 
-	if (!fctUtils.isNiOInstalled)
-		fctUtils.isNiOInstalled = fctUtils.CheckXPMSERequirements(PlayerActor, pActorBase.GetSex())
-	EndIf
+	Bool isNiOInstalled =  fctUtils.CheckXPMSERequirements(PlayerActor, fctUtils.isFemale(PlayerActor))
+	debugTrace("  NiOverride detection: " + isNiOInstalled)
+	StorageUtil.SetIntValue(none, "_SLH_NiNodeOverrideON", isNiOInstalled as Int)
 
-	fctUtils.isSlifInstalled = Game.GetModbyName("SexLab Inflation Framework.esp") != 255
+	Bool isSlifInstalled = Game.GetModbyName("SexLab Inflation Framework.esp") != 255
+	StorageUtil.SetIntValue(none, "_SLH_SlifON", isSlifInstalled as Int)
 
 	If (!StorageUtil.HasIntValue(none, "_SLP_iSexLabParasites"))
 		StorageUtil.SetIntValue(none, "_SLP_iSexLabParasites", 1)
 		fctUtils._resetParasiteSettings()
 	EndIf
 EndFunction
+
+
+Function debugTrace(string traceMsg)
+	; if (StorageUtil.GetIntValue(none, "_SLP_debugTraceON")==1)
+		debug.Trace("[SLP_fcts_parasites]" + traceMsg)
+	; endif
+endFunction

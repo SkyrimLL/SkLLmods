@@ -73,17 +73,17 @@ EndFunction
 
 ;------------------------------------------------------------------------------
 Function ApplyBodyChange(Actor kActor, String sParasite, String sBodyPart, Float fValue=1.0, Float fValueMax=1.0)
-  	ActorBase pActorBase = kActor.GetActorBase()
+  ActorBase pActorBase = kActor.GetActorBase()
  	Actor PlayerActor = Game.GetPlayer()
-  	String NiOString = "SLP_" + sParasite
+  String NiOString = "SLP_" + sParasite
 
-	if ( isNiOInstalled  )  
+	if ( StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON") == 1  )  
 
 		Debug.Trace("[SLP]Receiving body change: " + sBodyPart)
 		Debug.Trace("[SLP] 	Node string: " + sParasite)
 		Debug.Trace("[SLP] 	Max node: " + fValueMax)
 
- 		if (!isSlifInstalled)
+ 		if ( StorageUtil.GetIntValue(none, "_SLH_SlifON") == 0  )
 			if (fValue < 1.0)
 				fValue = 1.0     ; NiO node is reset with value of 1.0 - not 0.0!
 			Endif		
@@ -116,7 +116,7 @@ Function ApplyBodyChange(Actor kActor, String sParasite, String sBodyPart, Float
 				Debug.Trace("[SLP]    Applying breast change: " + NiOString)
 				Debug.Trace("[SLP]    Value: " + fValue)
 
-				if (isSlifInstalled)
+				if ( StorageUtil.GetIntValue(none, "_SLH_SlifON") == 1  )  
 					SLIF_inflateMax(kActor, "slif_breast", fValue, fValueMax, NiOString)
 				else
 					XPMSELib.SetNodeScale(kActor, true, NINODE_LEFT_BREAST, fValue, NiOString)
@@ -127,7 +127,7 @@ Function ApplyBodyChange(Actor kActor, String sParasite, String sBodyPart, Float
 				Debug.Trace("[SLP]    Applying belly change: " + NiOString)
 				Debug.Trace("[SLP]    Value: " + fValue)
 
-				if (isSlifInstalled)
+				if ( StorageUtil.GetIntValue(none, "_SLH_SlifON") == 1  )  
 					SLIF_inflateMax(kActor, "slif_belly", fValue, fValueMax, NiOString)
 				else
 					XPMSELib.SetNodeScale(kActor, true, NINODE_BELLY, fValue, NiOString)
@@ -138,7 +138,7 @@ Function ApplyBodyChange(Actor kActor, String sParasite, String sBodyPart, Float
 				Debug.Trace("[SLP]    Applying butt change: " + NiOString)
 				Debug.Trace("[SLP]    Value: " + fValue)
 
-				if (isSlifInstalled)
+				if ( StorageUtil.GetIntValue(none, "_SLH_SlifON") == 1  )  
 					SLIF_inflateMax(kActor, "slif_butt", fValue, fValueMax, NiOString)
 				else
 					XPMSELib.SetNodeScale(kActor, pActorBase.GetSex(), NINODE_LEFT_BUTT, fValue, NiOString)
@@ -150,7 +150,7 @@ Function ApplyBodyChange(Actor kActor, String sParasite, String sBodyPart, Float
 				Debug.Trace("[SLP]    Applying schlong change: " + NiOString)
 				Debug.Trace("[SLP]    Value: " + fValue)
 
-				if (isSlifInstalled)
+				if ( StorageUtil.GetIntValue(none, "_SLH_SlifON") == 1  )  
 					SLIF_inflateMax(kActor, "slif_schlong", fValue, fValueMax, NiOString)
 				else
 					XPMSELib.SetNodeScale(kActor, pActorBase.GetSex(), NINODE_SCHLONG, fValue, NiOString)
