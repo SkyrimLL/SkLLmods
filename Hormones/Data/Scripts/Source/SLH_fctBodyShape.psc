@@ -408,7 +408,6 @@ function alterBodyAfterRest(Actor kActor)
 	Int iSuccubus
 	Float fNodeMax
 	Bool bExternalChangeModActive = fctUtil.isExternalChangeModActive(kActor)
-	Float fLibido = StorageUtil.GetFloatValue(kActor, "_SLH_fLibido")
 	Int iSexActivityBuffer = StorageUtil.GetIntValue(kActor, "_SLH_iSexActivityBuffer")
 	Int iSexActivityThreshold = StorageUtil.GetIntValue(kActor, "_SLH_iSexActivityThreshold")
 	Int iSexActivityThresholdPlus = StorageUtil.GetIntValue(kActor, "_SLH_iSexActivityThresholdPlus")
@@ -457,7 +456,7 @@ function alterBodyAfterRest(Actor kActor)
 	EndIf
 
 	fGameTime       = Utility.GetCurrentGameTime()
-	
+
 	iSexCountToday = StorageUtil.GetIntValue(kActor, "_SLH_iSexCountToday") 
 	iGameDateLastSex = StorageUtil.GetIntValue(kActor, "_SLH_iGameDateLastSex") 
 
@@ -483,18 +482,18 @@ function alterBodyAfterRest(Actor kActor)
 		fBreastSwellMod = -1.0 * fBreastSwellMod
 		fButtSwellMod = -1.0 * fButtSwellMod
 		fBellySwellMod = -1.0 * fBellySwellMod
-		fSchlongSwellMod = -1.0 * fSchlongSwellMod
+		fSchlongSwellMod = -1.0 * fSchlongSwellMod 
 
 	elseIf (iSexCountToday < iSexActivityBuffer)
 		StorageUtil.UnsetIntValue(kActor, "_SLH_iSexActivityThresholdPlus")
 		; no body change if sex activity below buffer
-		debug.notification( "[SLP] no body change - sex activity below buffer " )
-		debugTrace("  no body change - sex activity below buffer")
+		; debug.notification( "[SLP] no body change - sex activity below buffer " )
+		; debugTrace("  no body change - sex activity below buffer")
 		return
 	endif
 
 	debug.notification( "[SLP] Applying body changes " )
-	debug.Trace( ">>>>> alterBodyAfterRest detected " )
+	debugTrace( ">>>>> alterBodyAfterRest detected " )
 	debugTrace( "fSwellFactor: " + fSwellFactor)
 	debugTrace( "isSlifInstalled: " + isSlifInstalled)
 	debugTrace( "_SLH_BasicNetImmerseON: " + StorageUtil.GetIntValue(none, "_SLH_BasicNetImmerseON"))
@@ -707,7 +706,6 @@ function alterBodyByPercent(Actor kActor, String sBodyPart, Float modFactor)
 	Race thisRace = pActorBase.GetRace()
 	Float fNodeMax
 	Bool bExternalChangeModActive = fctUtil.isExternalChangeModActive(kActor)
-	Float fLibido = StorageUtil.GetFloatValue(kActor, "_SLH_fLibido")
 	Float fBreastSwellMod    = StorageUtil.GetFloatValue(kActor, "_SLH_fBreastSwellMod")
 	Float fButtSwellMod      = StorageUtil.GetFloatValue(kActor, "_SLH_fButtSwellMod")
 	Float fBellySwellMod      = StorageUtil.GetFloatValue(kActor, "_SLH_fBellySwellMod")
@@ -2734,6 +2732,6 @@ EndFunction
 Function debugTrace(string traceMsg)
 	if (StorageUtil.GetIntValue(none, "_SLH_debugTraceON")==1)
 		; Disabled for body shape feedback
-	Debug.Trace("[SLH_fctBodyShape] " + traceMsg)
+		; Debug.Trace("[SLH_fctBodyShape] " + traceMsg)
 	endif
 endFunction

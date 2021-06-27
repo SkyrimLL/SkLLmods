@@ -828,15 +828,19 @@ Event OnUpdate()
 						Debug.Notification("I love the taste of cum on my lips.")
 					EndIf
 				EndIf
-				
-				If ( StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneLactation") > 80.0) 
-					Debug.Notification("My boobies need to be milked so bad!")
-				ElseIf (StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneLactation") > 60.0) 
-					Debug.Notification("My boobies are so full and bouncy!")
-				ElseIf ( StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneLactation") > 50.0)
-					Debug.Notification("My titties are moist and tingling.")
-				EndIf
-	
+
+				If ( StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneLactationMod") != 0.0) 
+					If (StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkLevel") > 50)
+						If (StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkLevel") > 80) 
+							Debug.Notification("My titties are dripping!")
+						ElseIf (StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkLevel") > 60) 
+							Debug.Notification("My boobies are so swollen with milk!")
+						Else
+							Debug.Notification("My titties are moist and tingling.")
+						EndIf
+					EndIf
+				endif
+
 			else
 				; Third person thought
 				If (iVaginalCountToday > 0) 
@@ -866,15 +870,18 @@ Event OnUpdate()
 						Debug.Notification("Saltiness still coats your lips.")
 					EndIf
 				EndIf
-				If (StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkLevel") > 5)
-					If (StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkLevel") > 8) 
-						Debug.Notification("Your tits are dripping with milk and ache for release.")
-					ElseIf (StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkLevel") > 6) 
-						Debug.Notification("Your breasts are swollen with milk.")
-					Else
-						Debug.Notification("Your nipples are moist and tingling.")
+
+				If ( StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneLactationMod") != 0.0) 
+					If (StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkLevel") > 50)
+						If (StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkLevel") > 80) 
+							Debug.Notification("Your tits are dripping with milk and ache for release.")
+						ElseIf (StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkLevel") > 60) 
+							Debug.Notification("Your breasts are swollen with milk.")
+						Else
+							Debug.Notification("Your nipples are moist and tingling.")
+						EndIf
 					EndIf
-				EndIf
+				endif
 			endIf
 			
 			NextAllowed = 0.0 ;  GameDaysPassed.GetValue() + DaysUntilNextAllowed
@@ -2574,6 +2581,8 @@ function traceStatus()
 	debugTrace("  Chaurus Breeder: " + fctUtil.isPregnantByEstrusChaurus(PlayerActor))
 
 	debugTrace("  Orgasms today: " + iOrgasmsCountToday + " - Total: " + iOrgasmsCountAll)
+	debugTrace("  NiO detected: " + StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON"))
+	debugTrace("  SLIF detected: " + StorageUtil.GetIntValue(none, "_SLH_SlifON"))
 
 	fctBodyShape.traceShapeStatus(PlayerActor)
 

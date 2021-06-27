@@ -354,38 +354,61 @@ function manageSexLabAroused(Actor kActor, int aiModRank = -1)
 		Return
 	endIf
 	
-	Float Libido = StorageUtil.GetFloatValue(kActor, "_SLH_fLibido" ) 
-	Float fAbsLibido = Math.abs(Libido)
-	Float fArousalRateMod = StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneSexDrive" ) / 11.0 ; between 0 and 9.0
+	Float fLibido = StorageUtil.GetFloatValue(kActor, "_SLH_fLibido" )  
+	Float fSexDrive = StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneSexDrive" ) / 11.0 ; between 0 and 9.0
+	Float fArousalRateMod 
+		
+	If (GV_allowExhibitionist.GetValue() == 1)
+		slaUtil.SetActorExhibitionist(kActor, False)
+	endif
 	
-	If (Libido > 0)
+	; Base arousal modifier - reduced if no sex for a while
+	; Libido an accumulation of sex drive hormones over time - regular sex means high libido / infrequent sex means low libido
+	If (fLibido > 0)
+		fArousalRateMod = fMin( fMax( fSexDrive , 0.1), 5.0)
+
+		; Exhibitionist state is easier if player is in bimbo, succubus or pregnant state
 		If (GV_allowExhibitionist.GetValue() == 1) && ((StorageUtil.GetIntValue(kActor, "_SLH_isPregnant") == 1) || (StorageUtil.GetIntValue(kActor, "_SLH_iBimbo") == 1) || (StorageUtil.GetIntValue(kActor, "_SLH_isSuccubus") == 1))
-			If (fAbsLibido >= 50)
+			If (fSexDrive >= 50)
 				slaUtil.SetActorExhibitionist(kActor, True)
-			Else
-				slaUtil.SetActorExhibitionist(kActor, False)
+			EndIf
+		else
+			If (fSexDrive >= 80)
+				slaUtil.SetActorExhibitionist(kActor, True)
 			EndIf
 		EndIf
+	else
+		fArousalRateMod = fMin( fMax( fSexDrive , 0.1), 1.0)
+
 	EndIf
 
+	; Special arousal rates for bimbo, succubus and pregnant states
 	if (StorageUtil.GetIntValue(kActor, "_SLH_isSuccubus") == 1)
-		fArousalRateMod = fMin( fMax( fArousalRateMod , 2.5), 9.0)
+		fArousalRateMod = fMin( fMax( fSexDrive , 2.5), 9.0)
 	EndIf
 
 	if (StorageUtil.GetIntValue(kActor, "_SLH_isPregnant") == 1)
-		fArousalRateMod = fMin( fMax( fArousalRateMod * 1.2, 1.1), 9.0)
+		fArousalRateMod = fMin( fMax( fSexDrive * 1.2, 1.1), 3.0)
 	EndIf
 
 	if ( StorageUtil.GetIntValue(kActor, "_SLH_isDrugged") == 1)
-		fArousalRateMod = fMin( fMax( fArousalRateMod * 1.5, 1.1), 9.0)
+		fArousalRateMod = fMin( fMax( fSexDrive * 1.5, 1.1), 2.0)
 	EndIf
 
 	if (StorageUtil.GetIntValue(kActor, "_SLH_iBimbo") == 1) && ((GV_isGagEquipped.GetValue()==1) || (GV_isPlugEquipped.GetValue()==1))
-		fArousalRateMod = fMin( fMax( fArousalRateMod * 4.0, 1.1), 9.0)
+		fArousalRateMod = fMin( fMax( fSexDrive * 4.0, 1.1), 5.0)
+
 	Elseif (StorageUtil.GetIntValue(kActor, "_SLH_iBimbo") == 1)
-		fArousalRateMod = fMin( fMax( fArousalRateMod * 2.0 , 1.1), 9.0)
+		fArousalRateMod = fMin( fMax( fSexDrive * 2.0 , 1.1), 5.0)
 	EndIf
 
+	; Arousal modifier is modulated by Libido 
+	fArousalRateMod = fArousalRateMod * (fLibido / 100.0)
+
+	Debug.Notification("[SLH] UpdateActorExposureRate:" + fArousalRateMod)
+	Debug.Trace("[SLH] >>> UpdateActorExposureRate:" + fArousalRateMod)
+	Debug.Trace("[SLH] >>> 		fLibido:" + fLibido)
+	Debug.Trace("[SLH] >>> 		SexDrive:" + StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneSexDrive" ))
 
 	slaUtil.UpdateActorExposureRate(kActor, fArousalRateMod)
 
