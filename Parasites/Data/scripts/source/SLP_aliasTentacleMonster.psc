@@ -56,7 +56,8 @@ Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile,
 		Cell akAggressorCell = akAggressor.GetParentCell()
 
 		If (!akAggressorCell.IsInterior())
-			if (!(fctParasites.infectParasiteByString(kPlayer, "TentacleArmor"  )))
+			if (!(fctParasites.isInfectedByString(kPlayer, "TentacleArmor"  )))
+				Debug.Trace("[SLP_aliasTentacleMonster] Defense failed - not infected" )
 				return
 			endif
 

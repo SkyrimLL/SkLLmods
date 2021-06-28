@@ -8,6 +8,8 @@ SLP_fcts_utils Property fctUtils  Auto
 
 Spell Property crSprigganCallCreatures Auto
 Spell Property _SLP_SP_SprigganCallCreatures Auto
+Spell Property _SLP_SP_SprigganSwarm Auto
+Spell Property Oakflesh Auto
 
 
 Event OnCombatStateChanged(Actor akTarget, int aeCombatState)
@@ -53,20 +55,21 @@ Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile,
 
 	If (akAggressor != None)
 		;  Debug.Trace("We were hit by " + akAggressor)
-		; Debug.Notification("." )
+		; Debug.Notification("::" )
 
 		Cell akAggressorCell = akAggressor.GetParentCell()
 
 		If (!akAggressorCell.IsInterior()) && (kAgressor != kPlayer)
 			if (fctUtils.CheckIfSprigganFaction( kAgressor ))
 				; Debug.Notification("[SLP_aliasSprigganRoot] Spriggan friendly hit - Stop combat" )
-				; Debug.Trace("[SLP_aliasSprigganRoot]  Spriggan friendly hit - Stop combat" )
+				Debug.Trace("[SLP_aliasSprigganRoot]  Spriggan friendly hit - Stop combat" )
 
 				; SendModEvent("da_PacifyNearbyEnemies") 
 				_SLP_SP_SprigganCallCreatures.Cast(kPlayer as ObjectReference ,  kPlayer as ObjectReference ) 
 
 			else
-				if (!(fctParasites.infectParasiteByString(kPlayer, "SprigganRoot"  )))
+				if (!(fctParasites.isInfectedByString(kPlayer, "SprigganRoot"  )))
+					Debug.Trace("[SLP_aliasSprigganRoot] Defense failed - not infected" )
 					return
 				endif
 
@@ -75,10 +78,15 @@ Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile,
 					; Debug.Notification("The Voices scream for help." )
 					_SLP_SP_SprigganCallCreatures.Cast(kPlayer as ObjectReference ,  kPlayer as ObjectReference ) 
 
-				elseIf (Utility.RandomInt(0,100)>94)  
+				elseIf (Utility.RandomInt(0,100)>80)  
+					; Debug.Trace("[SLP_aliasSprigganRoot] Cast Tentacle attack spell" )
+					Debug.Notification("The roots harden around you" )
+					_SLP_SP_SprigganSwarm.Cast(kPlayer as ObjectReference ,  kAgressor as ObjectReference ) 
+
+				elseIf (Utility.RandomInt(0,100)>50)  
 					Debug.Trace("[SLP_aliasSprigganRoot] Cast Tentacle attack spell" )
-					; Debug.Notification("The Voices extend their reach to your aggressor." )
-					; fctParasites.infectEstrusTentacles( akAggressor as Actor )
+					Debug.Notification("The roots harden around you" )
+					Oakflesh.Cast(kPlayer as ObjectReference ,  kPlayer as ObjectReference ) 
 
 				endif
 			endif

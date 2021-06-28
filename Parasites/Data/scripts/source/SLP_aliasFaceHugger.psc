@@ -52,7 +52,8 @@ Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile,
 
 		;  Debug.Trace("We were hit by " + akAggressor)
 		; Debug.Notification("." )
-		if (!(fctParasites.infectParasiteByString(kPlayer, "FaceHugger"  ))) && (!(fctParasites.infectParasiteByString(kPlayer, "FaceHuggerGag"  ))) 
+		if (!(fctParasites.isInfectedByString(kPlayer, "FaceHugger"  ))) && (!(fctParasites.isInfectedByString(kPlayer, "FaceHuggerGag"  ))) 
+			Debug.Trace("[SLP_aliasFaceHugger] Defense failed - not infected" )
 			return
 		endif
 		
@@ -63,7 +64,7 @@ Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile,
 				Debug.Notification("The creature releases its grip around your hips under the violence of the attack." ) 
  				fctParasites.cureParasiteByString(kPlayer, "FaceHugger")
 
-			elseif (!fctParasites.isInfectedByString( kPlayer,  "FaceHuggerGag" ))
+			elseif (fctParasites.isInfectedByString( kPlayer,  "FaceHuggerGag" ))
 				Debug.Notification("The creature releases its grip around your face under the violence of the attack." )
  				fctParasites.cureParasiteByString(kPlayer, "FaceHuggerGag")
 			endif			

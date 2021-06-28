@@ -53,7 +53,8 @@ Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile,
 	If (akAggressor != None) && (kAgressor != kPlayer)
 		;  Debug.Trace("We were hit by " + akAggressor)
 		; Debug.Notification("." )
-		if (!(fctParasites.infectParasiteByString(kPlayer, "Barnacles"  )))
+		if (!(fctParasites.isInfectedByString(kPlayer, "Barnacles"  )))
+			Debug.Trace("[SLP_aliasBarnacles] Defense failed - not infected" )
 			return
 		endif
 

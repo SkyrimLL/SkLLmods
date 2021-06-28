@@ -55,7 +55,8 @@ Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile,
 	If (akAggressor != None) && (kAgressor != kPlayer)
 		;  Debug.Trace("We were hit by " + akAggressor)
 		; Debug.Notification("." )
-		if (!(fctParasites.infectParasiteByString(kPlayer, "LivingArmor"  )))
+		if (!(fctParasites.isInfectedByString(kPlayer, "LivingArmor"  )))
+			Debug.Trace("[SLP_aliasLivingArmor] Defense failed - not infected" )
 			return
 		endif
 
