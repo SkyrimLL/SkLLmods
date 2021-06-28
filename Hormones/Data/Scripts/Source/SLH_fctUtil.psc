@@ -405,7 +405,7 @@ function manageSexLabAroused(Actor kActor, int aiModRank = -1)
 	; Arousal modifier is modulated by Libido 
 	fArousalRateMod = fArousalRateMod * (fLibido / 100.0)
 
-	Debug.Notification("[SLH] UpdateActorExposureRate:" + fArousalRateMod)
+	; Debug.Notification("[SLH] UpdateActorExposureRate:" + fArousalRateMod)
 	Debug.Trace("[SLH] >>> UpdateActorExposureRate:" + fArousalRateMod)
 	Debug.Trace("[SLH] >>> 		fLibido:" + fLibido)
 	Debug.Trace("[SLH] >>> 		SexDrive:" + StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneSexDrive" ))

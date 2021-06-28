@@ -492,7 +492,7 @@ function alterBodyAfterRest(Actor kActor)
 		return
 	endif
 
-	debug.notification( "[SLP] Applying body changes " )
+	; debug.notification( "[SLP] Applying body changes " )
 	debugTrace( ">>>>> alterBodyAfterRest detected " )
 	debugTrace( "fSwellFactor: " + fSwellFactor)
 	debugTrace( "isSlifInstalled: " + isSlifInstalled)
