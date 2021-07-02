@@ -741,7 +741,7 @@ Bool Function tryParasiteNextStage(Actor kActor, String sParasite)
  		endif
 
  		If (PlayerActor.IsBleedingOut() || PlayerActor.IsDead() || PlayerActor.IsOnMount() || PlayerActor.IsFlying() || PlayerActor.IsUnconscious() || !Game.IsActivateControlsEnabled() || SexLab.IsActorActive(PlayerActor) )
- 			debug.notification("[SLP] tryParasiteNextStage failed - " + sParasite)
+ 			; debug.notification("[SLP] tryParasiteNextStage failed - " + sParasite)
  			debugTrace("[SLP] tryParasiteNextStage failed  " )
  			;debug.notification("[SLP]    Player is busy " )
  			debugTrace("[SLP]    Player is busy " )
@@ -805,7 +805,7 @@ Bool Function tryParasiteNextStage(Actor kActor, String sParasite)
 				if (Utility.RandomInt(0,100)<StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceSprigganRootGag" ))
 					debugTrace("[SLP]    Effect - add Spriggan Root Gag")
 					
-					debug.MessageBox("The spores take a toll on your body.") 
+					debug.MessageBox("The roots take a toll on your body.") 
 	 
 					Int iSprigganSkinColor = Math.LeftShift(255, 24) + Math.LeftShift(196, 16) + Math.LeftShift(238, 8) + 218
 					StorageUtil.SetIntValue(PlayerActor, "_SLH_iSkinColor", iSprigganSkinColor ) 

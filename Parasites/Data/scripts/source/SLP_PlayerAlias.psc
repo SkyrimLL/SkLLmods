@@ -476,7 +476,7 @@ Event OnUpdate()
 				endIf
 
 				if (PlayerActor.IsSwimming() || isWeatherRainy) 
-					debug.notification("Player is wet...")
+					; debug.notification("Player is wet...")
 					if (StorageUtil.GetIntValue(PlayerActor, "_SLP_lastWetDate")!= daysPassed)
 						StorageUtil.SetIntValue(PlayerActor, "_SLP_lastWetDate", daysPassed)
 					endif
