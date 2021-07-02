@@ -714,7 +714,7 @@ Event OnUpdate()
 	ElseIf (iDaysSinceLastCheck > 0) || (fRefreshAfterSleep > 0.02)
 		; cooldown hormone levels naturally after sleep
 		if (fRefreshAfterSleep>0.0)
-			Debug.Notification("[SLH] Hormones cooldown hours: " + (fHoursSleep as Int))
+			Debug.Trace("[SLH] Hormones cooldown hours: " + (fHoursSleep as Int))
 			fctHormones.cooldownHormoneLevels(PlayerActor, fHoursSleep)
 			; Set base arousal to SexDrive value
 			fctUtil.updateSexLabArousedExposure(PlayerActor, (fctHormones.getHormoneLevelsRacialAdjusted(PlayerActor, "SexDrive") as Int))

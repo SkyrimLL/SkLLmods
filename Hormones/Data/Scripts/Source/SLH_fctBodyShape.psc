@@ -1321,8 +1321,11 @@ function shaveHair ( Actor kActor)
 			; YPS Fashion override if detected
 			; See - http://www.loverslab.com/topic/56627-immersive-hair-growth-and-styling-yps-devious-immersive-fashion-v5/
 			debugTrace("       -> YPS Fashion override")
-			SendModEvent("yps-HaircutEvent", "", 2) ; shaved - bald
-			StorageUtil.SetIntValue(kActor, "_SLH_iShavedHead", 1)
+
+			if StorageUtil.GetIntValue(none, "YpsCurrentHairLengthStage") > 2
+				SendModEvent("yps-HaircutEvent", "", 2) ; shaved - bald
+				StorageUtil.SetIntValue(kActor, "_SLH_iShavedHead", 1)
+			endif
 
 		elseIf (StorageUtil.GetIntValue(kActor, "_SLH_iUseHairLoss") == 1)
 			Int Hair = pLeveledActorBase.GetNumHeadParts()
