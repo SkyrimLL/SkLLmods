@@ -50,7 +50,7 @@ Event OnEffectStart(Actor Target, Actor Caster)
 				fctParasites.cureParasiteByString(Caster, "LivingArmor")
 			
  			elseif (fctParasites.isInfectedByString( Caster,  "SprigganRootBody" )) 
-				debug.MessageBox("The poisonous potion turn the spores into ash.")
+				debug.MessageBox("The poisonous potion turn the husks into ash.")
 				fctParasites.cureParasiteByString(Caster, "SprigganRootBody")
 			
  			elseif (fctParasites.isInfectedByString( Caster,  "Barnacles" )) 
@@ -74,7 +74,7 @@ Event OnEffectStart(Actor Target, Actor Caster)
 
 			
  			if (fctParasites.isInfectedByString( Caster,  "SprigganRootArms" )) || (fctParasites.isInfectedByString( Caster,  "SprigganRootFeet" )) 
-				debug.MessageBox("The poisonous potion turn the spores into ash.")
+				debug.MessageBox("The poisonous potion turn the husks into ash.")
 				fctParasites.cureParasiteByString(Caster, "SprigganRootArms")
 				fctParasites.cureParasiteByString(Caster, "SprigganRootFeet")
 			endif
@@ -92,7 +92,7 @@ Event OnEffectStart(Actor Target, Actor Caster)
 				fctParasites.cureParasiteByString(Caster, "ChaurusWormVag")  
 
  			elseif (fctParasites.isInfectedByString( Caster,  "SprigganRootGag" ))  
-				debug.MessageBox("The poisonous potion turn the spores into ash.")
+				debug.MessageBox("The poisonous potion turn the husks into ash.")
 				fctParasites.cureParasiteByString(Caster, "SprigganRootGag") 
 
 			endif 
@@ -102,7 +102,7 @@ Event OnEffectStart(Actor Target, Actor Caster)
 		endif
 	else 
 		debug.Trace("[SLP] SLP_MEF_ParasiteRepellent - Caster is not the player.")
-		debug.Notification("[SLP] SLP_MEF_ParasiteRepellent - Caster is not the player. ")
+		; debug.Notification("[SLP] SLP_MEF_ParasiteRepellent - Caster is not the player. ")
  	endif
 
 EndEvent

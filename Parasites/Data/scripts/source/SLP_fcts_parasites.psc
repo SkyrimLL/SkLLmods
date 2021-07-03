@@ -755,7 +755,7 @@ Bool Function tryParasiteNextStage(Actor kActor, String sParasite)
 			Return bSuccess; Player is busy - try again later
  		Endif
 
- 		debug.notification("[SLP] tryParasiteNextStage - " + sParasite)
+ 		debug.trace("[SLP] tryParasiteNextStage - " + sParasite)
 
 		If (sParasite == "SprigganRoot")
 			; Debug.Notification(".." )
@@ -803,9 +803,9 @@ Bool Function tryParasiteNextStage(Actor kActor, String sParasite)
 
 			elseIf (fctParasiteSprigganRoot.isInfectedByString( kActor,  "SprigganRootGag" )) 
 				if (Utility.RandomInt(0,100)<StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceSprigganRootGag" ))
-					debugTrace("[SLP]    Effect - add Spriggan Root Gag")
+					debugTrace("[SLP]    Effect - Spriggan Root effect")
 					
-					debug.MessageBox("The roots take a toll on your body.") 
+					debug.notification("The roots take a toll on your body.") 
 	 
 					Int iSprigganSkinColor = Math.LeftShift(255, 24) + Math.LeftShift(196, 16) + Math.LeftShift(238, 8) + 218
 					StorageUtil.SetIntValue(PlayerActor, "_SLH_iSkinColor", iSprigganSkinColor ) 

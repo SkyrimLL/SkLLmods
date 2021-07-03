@@ -275,10 +275,15 @@ Int Function _getParasiteTickerThreshold(Actor kActor, Int _iNextStageTicker, In
 	Float fThrottle = (_iNextStageTicker as Float) / 10.0
 	Float flareDelay = StorageUtil.GetFloatValue(kActor, "_SLP_flareDelay" ) as Float
 
+	; Limit contribution of parasite duration to only 50 points to prevent rapid fire from long exposure
+	if (_iParasiteDuration>5)
+		_iParasiteDuration = 5
+	endif
+
 	; when flareDelay = 1.0
 	; threshold below 100 after 200 ticks (+1 tick for 2 real time seconds - 400 s - about 6 minutes)
 	; threshold below 100 immediately 5 days after infection
-	fThreshold = (100.0 + (100.0 - ( (_iNextStageTicker as Float) / 2.0)) - ((_iParasiteDuration as Float) * 20.0) ) * flareDelay
+	fThreshold = (100.0 + (100.0 - ( (_iNextStageTicker as Float) / 2.0)) - ((_iParasiteDuration as Float) * 10.0) ) * flareDelay
 
 	if ( ((fThrottle as Int) * 10) == _iNextStageTicker)
 		; debug.notification(".")
@@ -484,6 +489,7 @@ Event OnUpdate()
 					iParasiteDuration = daysPassed - StorageUtil.GetIntValue(PlayerActor, "_SLP_iSprigganRootArmsDate")
 					If (Utility.RandomInt(0,100) > _getParasiteTickerThreshold(PlayerActor, iNextStageTicker, iParasiteDuration, "SprigganRoot") )
 						if (fctParasites.tryParasiteNextStage(PlayerActor, "SprigganRoot"))
+							Debug.Notification("[SLP] Next stage ticker RESET!")
 							iNextStageTicker = 0
 						Endif
 					endif
