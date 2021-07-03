@@ -176,8 +176,14 @@ Event OnUpdate()
 	RegisterForSingleUpdate(10)
 EndEvent
 
+; Back up event if Hormones is not installed
 Event OnModHormoneEvent(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
+
+ 	If (StorageUtil.GetIntValue(none, "_SLH_iHormones") == 1)
+ 		; Safety - disable if Hormones is activated and this mod event remains
+ 		return
+ 	endif
 
  	if (kActor == None)
  		kActor = Game.GetPlayer()
@@ -199,6 +205,10 @@ Event OnModHormoneEvent(String _eventName, String _args, Float _argc = 1.0, Form
 	endif
 
 	StorageUtil.SetFloatValue( kActor , "_SLH_fHormone" + _args, fHormoneLevel)
+
+	; Force lactation modifier to 1.0 for compatibility
+	StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneLactationMod", 1.0) 
+
 
 EndEvent
 

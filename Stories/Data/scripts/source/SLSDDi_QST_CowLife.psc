@@ -550,10 +550,12 @@ Function UpdateMilkAfterSex(Actor kActor)
 
 		debugTrace(" Milk level increase from manual stimulation")
 		; Hormones compatibility
-		if (kActor == kPlayer)
-			Debug.Notification("Your breasts are tingling from a small rush of milk.")
-		else
-			Debug.Notification("The cow's breasts are tingling from a small rush of milk.")
+		If ( StorageUtil.GetFloatValue(kPlayer, "_SLH_fHormoneLactationMod") != 0.0) 		
+			if (kActor == kPlayer)
+				Debug.Notification("Your breasts are tingling from a small rush of milk.")
+			else
+				Debug.Notification("The cow's breasts are tingling from a small rush of milk.")
+			endif
 		endif
 
 		if (StorageUtil.GetIntValue(kActor, "_SLH_isPregnant") == 1)
