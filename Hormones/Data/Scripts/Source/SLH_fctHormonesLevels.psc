@@ -226,10 +226,10 @@ function modHormoneLevel(Actor kActor, String sHormoneLevel, Float fModValue)
 	Float fHormoneLevel  = StorageUtil.GetFloatValue(kActor, "_SLH_fHormone" + sHormoneLevel)
 	Float fRacialModifier = StorageUtil.GetFloatValue(kActor, "_SLH_fHormone" + sHormoneLevel + "Mod")
 
-	If (fRacialModifier == 0)
+	; If (fRacialModifier == 0)
 		; fRacialModifier = 1.
-		setHormoneLevelsRacialMod( kActor)
-	endif
+	;	setHormoneLevelsRacialMod( kActor)
+	; endif
 
 	; Racial adjustment of mod value
 	fModValue = fModValue * fRacialModifier
@@ -248,10 +248,10 @@ function modHormoneLevelPercent(Actor kActor, String sHormoneLevel, Float fModVa
 	Float fHormoneLevel  = StorageUtil.GetFloatValue(kActor, "_SLH_fHormone" + sHormoneLevel)
 	Float fRacialModifier = StorageUtil.GetFloatValue(kActor, "_SLH_fHormone" + sHormoneLevel + "Mod")
 
-	If (fRacialModifier == 0)
+	;If (fRacialModifier == 0)
 		; fRacialModifier = 1.
-		setHormoneLevelsRacialMod( kActor)
-	endif
+	;	setHormoneLevelsRacialMod( kActor)
+	;endif
 	
 	; Racial adjustment of mod value
 	fModValue = fModValue * fRacialModifier

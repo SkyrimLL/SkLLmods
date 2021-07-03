@@ -1734,6 +1734,10 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 			; SLH_Libido.SetValue( fLibido )
 			StorageUtil.SetFloatValue(PlayerActor, "_SLH_fLibido",  fLibido)
 			debugTrace("  Set Libido to " + fLibido )	  
+
+			fctUtil.bimboForcedThoughts(PlayerActor, "That feels good doesn't it?", "Rub your mind away...")
+		else
+			fctUtil.bimboForcedThoughts(PlayerActor, "Good girl.", "I'm a good girl!")
 	    EndIf
 
 	    ; Chance of rape if sex in public 

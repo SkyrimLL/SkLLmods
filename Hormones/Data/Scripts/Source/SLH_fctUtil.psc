@@ -474,6 +474,49 @@ function tryRandomBimboThoughts(String sTag)
 endfunction
 
 
+function bimboForcedThoughts(actor bimbo, String sFirstPersonMessage, String sThirdPersonMessage)
+	Int rollMessage 
+	Int rollFirstPerson 
+	String bimboMessage = ""
+	Float fHormoneBimbo = StorageUtil.GetFloatValue(bimbo, "_SLH_fHormoneBimbo" ) 	
+	Float fHormoneMetabolism = StorageUtil.GetFloatValue(bimbo, "_SLH_fHormoneMetabolism" ) 
+
+	rollMessage = Utility.RandomInt(0,140)
+	rollFirstPerson = Utility.RandomInt(0,100)
+
+	;wait a little to show the messages, because on ragdoll the hud is hidden
+	; Utility.Wait(2.0)
+
+	If (StorageUtil.GetIntValue(bimbo, "_SLH_iShowStatus")==0)
+		Return
+	Endif
+
+	; Under 50.0, no effect
+	if (fHormoneBimbo<50.0)
+		Return
+	Endif
+
+	SLH_Control.playRandomSound(bimbo)
+
+	; Under 80.0, only play bimbo giggle
+	if (fHormoneBimbo<80.0)
+		Return
+	Endif
+
+	; Debug.Notification("[SLH] Bimbo First Person Roll: " + rollFirstPerson)
+	; Debug.Notification("[SLH] Bimbo First Person: " + (StorageUtil.GetFloatValue(bimbo, "_SLH_fHormoneBimbo") as Int))
+
+	If (rollFirstPerson <= (StorageUtil.GetFloatValue(bimbo, "_SLH_fHormoneBimbo") as Int))
+		bimboMessage = sFirstPersonMessage
+	else
+		bimboMessage = sThirdPersonMessage
+	endIf
+
+	Debug.Notification(bimboMessage) ;temp messages
+
+endfunction
+
+
 function bimboRandomThoughts(actor bimbo)
 	Int rollMessage 
 	Int rollFirstPerson 
