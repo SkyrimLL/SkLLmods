@@ -147,15 +147,27 @@ Function cureBarnacles( Actor kActor, Bool bHarvestParasite = False   )
 EndFunction
 
 Function refreshParasite(Actor kActor, String sParasite)
+ 	Actor PlayerActor = Game.GetPlayer()
 
 	If (sParasite == "Barnacles")
 		If (isInfectedByString( kActor,  "Barnacles" ))  
 			StorageUtil.SetIntValue(kActor, "_SLP_toggleBarnacles", 1)
 			equipParasiteNPCByString (kActor, "Barnacles")
 
+			If (kActor == PlayerActor) 
+				; Debug.Notification("[SLP]	Spriggan Alias attached")
+				Debug.Trace("[SLP]	Barnacles Alias attached")
+				BarnaclesInfectedAlias.ForceRefTo(PlayerActor)
+			endIf
 		Else
 			StorageUtil.SetIntValue(kActor, "_SLP_toggleBarnacles", 0)
 			clearParasiteNPCByString (kActor, "Barnacles")
+
+			If (kActor == PlayerActor) 
+				; Debug.Notification("[SLP]	Spriggan Alias attached")
+				Debug.Trace("[SLP]	Barnacles Alias cleared")
+				BarnaclesInfectedAlias.ForceRefTo(DummyAlias)	
+			endif		
 		Endif
 	Endif
 

@@ -165,6 +165,12 @@ Function refreshParasite(Actor kActor, String sParasite)
 		Else
 			StorageUtil.SetIntValue(kActor, "_SLP_toggleLivingArmor", 0)
 			clearParasiteNPCByString (kActor, "LivingArmor")
+
+			If (kActor == PlayerActor) 
+				; Debug.Notification("[SLP]	Spriggan Alias attached")
+				Debug.Trace("[SLP]	LivingArmor Alias cleared")
+				LivingArmorInfectedAlias.ForceRefTo(DummyAlias)	
+			endif		
 		Endif
 
 	Endif

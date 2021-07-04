@@ -173,6 +173,12 @@ Function refreshParasite(Actor kActor, String sParasite)
 		Else
 			StorageUtil.SetIntValue(kActor, "_SLP_toggleTentacleMonster", 0)
 			clearParasiteNPCByString (kActor, "TentacleMonster")
+
+			If (kActor == PlayerActor) 
+				; Debug.Notification("[SLP]	Spriggan Alias attached")
+				Debug.Trace("[SLP]	TentacleMonster Alias cleared")
+				TentacleMonsterInfectedAlias.ForceRefTo(DummyAlias)	
+			endif		
 		Endif
 
 	Endif

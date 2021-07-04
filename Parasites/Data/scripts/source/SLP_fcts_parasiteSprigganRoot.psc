@@ -151,6 +151,11 @@ Function refreshParasite(Actor kActor, String sParasite)
 		; Debug.Notification("[SLP]	Spriggan Alias attached")
 		Debug.Trace("[SLP]	Spriggan Alias attached")
 		SprigganRootInfectedAlias.ForceRefTo(PlayerActor)
+		
+	elseIf (kActor == PlayerActor) && (isInfectedByString(  kActor, "SprigganRoot"  ))
+		; Debug.Notification("[SLP]	Spriggan Alias attached")
+		Debug.Trace("[SLP]	Spriggan Alias cleared")
+		SprigganRootInfectedAlias.ForceRefTo(DummyAlias)
 	endIf
 EndFunction
 ;------------------------------------------------------------------------------
