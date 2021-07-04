@@ -13,6 +13,8 @@ Spell Property CallSpawns Auto
 SPELL Property SeedSpawnSpider Auto
 SPELL Property SeedSpawnChaurus Auto
 
+Sound Property CritterFX  Auto
+
 Event OnCombatStateChanged(Actor akTarget, int aeCombatState)
 	Actor kPlayer= Game.GetPlayer() as Actor
 
@@ -53,17 +55,21 @@ EndEvent
 Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile, bool abPowerAttack, bool abSneakAttack, bool abBashAttack, bool abHitBlocked)
 	Actor kPlayer = Game.GetPlayer()
 	Actor kAgressor = akAggressor as Actor
+	Int iRandomNum = Utility.RandomInt(0,100)
 
 	If (akAggressor != None) && (kAgressor != kPlayer)
 		;  Debug.Trace("We were hit by " + akAggressor)
 		; Debug.Notification("." )
 
-		If (Utility.RandomInt(0,100)>97) && (kPlayer.HasSpell( CallSpawns )) 
+		Sound.SetInstanceVolume(CritterFX.Play(kPlayer), 1.0)
+		Utility.Wait(1.0)
+
+		If (iRandomNum>97) && (kPlayer.HasSpell( CallSpawns )) 
 			Debug.Trace("[SLP_aliasChaurusQueen] Call chaurus spawns" )
 			Debug.Notification("The Seed calls your brood for help." )
 			CallSpawns.Cast(kPlayer as ObjectReference  , kPlayer as ObjectReference ) 
 
-		elseIf (Utility.RandomInt(0,100)>94) && (kPlayer.HasSpell( CallSpawns )) 
+		elseIf (iRandomNum>94) && (kPlayer.HasSpell( CallSpawns )) 
 			Debug.Trace("[SLP_aliasChaurusQueen] Call chaurus spawns" )
 			Debug.Notification("The Seed calls your brood for help." )
 
@@ -74,7 +80,7 @@ Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile,
 				SeedSpawnSpider.Cast(kPlayer as ObjectReference  , kPlayer as ObjectReference ) 
 			endif
 
-		elseIf (Utility.RandomInt(0,100)>92) && (kPlayer.HasSpell( ChaurusMask )) 
+		elseIf (iRandomNum>92) && (kPlayer.HasSpell( ChaurusMask )) 
 			Debug.Trace("[SLP_aliasChaurusQueen] Cast Chaurus Body spell" )
 
 			; if (!fctParasites.isInfectedByString( kPlayer,  "ChaurusQueenBody" ))
@@ -86,7 +92,7 @@ Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile,
 				ChaurusMask.Cast(kPlayer as ObjectReference , kPlayer as ObjectReference ) 
 			endif
 			
-		elseIf (Utility.RandomInt(0,100)>88) && (kPlayer.HasSpell( ChaurusMask )) 
+		elseIf (iRandomNum>88) && (kPlayer.HasSpell( ChaurusMask )) 
 			Debug.Trace("[SLP_aliasChaurusQueen] Cast Chaurus Armor spell" )
 
 			; if (!fctParasites.isInfectedByString( kPlayer,  "ChaurusQueenArmor" ))

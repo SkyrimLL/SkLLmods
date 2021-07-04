@@ -101,6 +101,7 @@ Keyword Function getDeviousKeywordByString(String deviousKeyword = ""  )
 EndFunction
 
 Function refreshParasite(Actor kActor, String sParasite)
+ 	Actor PlayerActor = Game.GetPlayer()
 
 	If (sParasite == "SprigganRootGag")
 		If (isInfectedByString( kActor,  "SprigganRootGag" )) 
@@ -146,6 +147,11 @@ Function refreshParasite(Actor kActor, String sParasite)
 
 	Endif
 
+	If (kActor == PlayerActor) && (isInfectedByString(  kActor, "SprigganRoot"  ))
+		; Debug.Notification("[SLP]	Spriggan Alias attached")
+		Debug.Trace("[SLP]	Spriggan Alias attached")
+		SprigganRootInfectedAlias.ForceRefTo(PlayerActor)
+	endIf
 EndFunction
 ;------------------------------------------------------------------------------
 Bool Function infectSprigganRoot( Actor kActor  )
@@ -156,7 +162,7 @@ Bool Function infectSprigganRoot( Actor kActor  )
 
  	isInfected = infectSprigganRootArms(  kActor  )
 
-	if (iChaurusQueenStage>=1) && (isInfected)
+	if (iChaurusQueenStage>=1) && (isInfectedByString(  kActor, "SprigganRoot"  ))
 		PlayerActor.SendModEvent("SLPCureChaurusQueenGag")
 		PlayerActor.SendModEvent("SLPCureChaurusQueenSkin")
 		PlayerActor.SendModEvent("SLPCureChaurusQueenArmor")
@@ -182,6 +188,7 @@ Function cureSprigganRootAll( Actor kActor, Bool bHarvestParasite = False   )
 	cureSprigganRootBody(  kActor  )
 	cureSprigganRootGag(  kActor  )
 
+	utility.wait(2.0)
 
 	If (kActor == PlayerActor) && !(isInfectedByString( kActor,  "SprigganRootGag" )) && !(isInfectedByString( kActor,  "SprigganRootArms" )) && !(isInfectedByString( kActor,  "SprigganRootFeet" )) && !(isInfectedByString( kActor,  "SprigganRootBody" ))
 		SprigganRootInfectedAlias.ForceRefTo(DummyAlias)
@@ -232,13 +239,13 @@ Bool Function applySprigganRootArms( Actor kActor  )
 	EndIf
 
 	if (!(StorageUtil.GetIntValue(kActor, "_SLP_toggleSprigganRoot") == 1 ))
-		Debug.Notification("[SLP]	Spriggan Infection started")
+		; Debug.Notification("[SLP]	Spriggan Infection started")
 		Debug.Trace("[SLP]	Spriggan Infection started")
 		StorageUtil.SetIntValue(kActor, "_SLP_iSprigganRootInfections",  StorageUtil.GetIntValue(kActor, "_SLP_iSprigganRootInfections") + 1)
 		StorageUtil.SetIntValue(kActor, "_SLP_toggleSprigganRoot", 1 )
 
 		If (kActor == PlayerActor)
-			Debug.Notification("[SLP]	Spriggan Alias attached")
+			; Debug.Notification("[SLP]	Spriggan Alias attached")
 			Debug.Trace("[SLP]	Spriggan Alias attached")
 			SprigganRootInfectedAlias.ForceRefTo(PlayerActor)
 		endIf

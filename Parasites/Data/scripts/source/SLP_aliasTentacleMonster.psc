@@ -7,6 +7,7 @@ SLP_fcts_parasites Property fctParasites  Auto
 
 Spell Property crSprigganCallCreatures Auto
 
+Sound Property CritterFX  Auto
 
 Event OnCombatStateChanged(Actor akTarget, int aeCombatState)
 	Actor kPlayer= Game.GetPlayer() as Actor
@@ -48,6 +49,7 @@ EndEvent
 Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile, bool abPowerAttack, bool abSneakAttack, bool abBashAttack, bool abHitBlocked)
 	Actor kPlayer = Game.GetPlayer()
 	Actor kAgressor = akAggressor as Actor
+	Int iRandomNum = Utility.RandomInt(0,100)
 
 	If (akAggressor != None) && (kAgressor != kPlayer)
 		;  Debug.Trace("We were hit by " + akAggressor)
@@ -61,12 +63,15 @@ Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile,
 				return
 			endif
 
-			If (Utility.RandomInt(0,100)>97)  
+			Sound.SetInstanceVolume(CritterFX.Play(kPlayer), 1.0)
+			Utility.Wait(1.0)
+
+			If (iRandomNum>97)  
 				Debug.Trace("[SLP_aliasTentacleMonster] Cast Call Creatures spell" )
 				Debug.Notification("The Voices scream for help." )
 				crSprigganCallCreatures.RemoteCast(kPlayer as ObjectReference , kPlayer , akAggressor ) 
 
-			elseIf (Utility.RandomInt(0,100)>94)  
+			elseIf (iRandomNum>94)  
 				Debug.Trace("[SLP_aliasTentacleMonster] Cast Tentacle attack spell" )
 				Debug.Notification("The Voices extend their reach to your aggressor." ) 
 				fctParasites.infectParasiteByString(akAggressor as Actor , "EstrusTentacles")

@@ -158,12 +158,18 @@ Function cureTentacleMonster( Actor kActor, Bool bHarvestParasite = False   )
 EndFunction
 
 Function refreshParasite(Actor kActor, String sParasite)
+ 	Actor PlayerActor = Game.GetPlayer()
 
 	If (sParasite == "TentacleMonster")
 		If (isInfectedByString( kActor,  "TentacleMonster" )) 
 			StorageUtil.SetIntValue(kActor, "_SLP_toggleTentacleMonster", 1)
 			equipParasiteNPCByString (kActor, "TentacleMonster")
 
+			If (kActor == PlayerActor) 
+				; Debug.Notification("[SLP]	Spriggan Alias attached")
+				Debug.Trace("[SLP]	TentacleMonster Alias attached")
+				TentacleMonsterInfectedAlias.ForceRefTo(PlayerActor)
+			endIf
 		Else
 			StorageUtil.SetIntValue(kActor, "_SLP_toggleTentacleMonster", 0)
 			clearParasiteNPCByString (kActor, "TentacleMonster")

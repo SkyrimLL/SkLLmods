@@ -5,6 +5,9 @@ Scriptname SLP_aliasFaceHugger extends ReferenceAlias
 
 SLP_fcts_parasites Property fctParasites  Auto
 
+Sound Property CritterFX  Auto
+
+
 Event OnCombatStateChanged(Actor akTarget, int aeCombatState)
 	Actor kPlayer= Game.GetPlayer() as Actor
 
@@ -56,7 +59,10 @@ Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile,
 			Debug.Trace("[SLP_aliasFaceHugger] Defense failed - not infected" )
 			return
 		endif
-		
+
+		Sound.SetInstanceVolume(CritterFX.Play(kPlayer), 1.0)
+		Utility.Wait(1.0)
+
 		If (Utility.RandomInt(0,100)>98)  
 			Debug.Trace("[SLP_aliasFaceHugger] Cure Face or Hip Hugger" )
  

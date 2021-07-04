@@ -289,7 +289,7 @@ Int Function _getParasiteTickerThreshold(Actor kActor, Int _iNextStageTicker, In
 		; debug.notification(".")
 		; debug.notification("[SLP] Check parasite event: " + sParasite )
 		; debug.notification("[SLP] Chance of parasite event: " + ((100.0 - fThreshold) as Int) )
-		debug.trace("[SLP] Check parasite event: " + sParasite + "Chance of trigger: " + ((100.0 - fThreshold) as Int) )
+		debug.trace("[SLP] Check parasite event: " + sParasite + " - Chance of trigger: " + ((100.0 - fThreshold) as Int) )
 		debug.trace("[SLP]     _iNextStageTicker: " + _iNextStageTicker)
 		debug.trace("[SLP]     _iParasiteDuration: " + _iParasiteDuration)
 		debug.trace("[SLP]     fThreshold: " + fThreshold)
@@ -408,7 +408,7 @@ Event OnUpdate()
 		endif
 
 		; Enable Chaurus Queen flares only if player is not Queen and not infected by Spriggan root
-		if (iChaurusQueenStage>=1) && (iChaurusQueenStage<5) && (!(StorageUtil.GetIntValue(PlayerActor, "_SLP_toggleSprigganRoot") == 1 ) )
+		if (iChaurusQueenStage>=1) && (iChaurusQueenStage<5)  
 			;StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusQueenDate")==0
 			iParasiteDuration = daysPassed - StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusQueenDate")
 			If (Utility.RandomInt(0,100) > _getParasiteTickerThreshold(PlayerActor, iNextStageTicker, iParasiteDuration, "ChaurusQueen") )
@@ -425,7 +425,7 @@ Event OnUpdate()
 		iChaurusQueenDate = StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusQueenDate")
 
 		; Enable Chaurus Queen flares only if player is not Queen and not infected by Spriggan root
-		if (iChaurusQueenStage>=1) && (iChaurusQueenStage<5) && (!(StorageUtil.GetIntValue(PlayerActor, "_SLP_toggleSprigganRoot") == 1 ) )
+		if (iChaurusQueenStage>=1) && (iChaurusQueenStage<5)
 			;StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusQueenDate")==0
 			iParasiteDuration = daysPassed - StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusQueenDate")
 			If (Utility.RandomInt(0,100) > _getParasiteTickerThreshold(PlayerActor, iNextStageTicker, iParasiteDuration, "ChaurusQueen") )
@@ -474,7 +474,8 @@ Event OnUpdate()
 		if (iNextStageTicker>0)
 
 			; Chance of Spriggan Root growth when player is wet
-			if (fctParasites.isInfectedByString( PlayerActor,  "SprigganRoot" ))
+			; Spriggan growth is stopped by Seed Stone
+			if (fctParasites.isInfectedByString( PlayerActor,  "SprigganRoot" )) 
 				Weather currentWeather = Weather.GetCurrentWeather()
 				if (currentWeather.GetClassification() == 2)
 				    isWeatherRainy = true
@@ -489,7 +490,7 @@ Event OnUpdate()
 					iParasiteDuration = daysPassed - StorageUtil.GetIntValue(PlayerActor, "_SLP_iSprigganRootArmsDate")
 					If (Utility.RandomInt(0,100) > _getParasiteTickerThreshold(PlayerActor, iNextStageTicker, iParasiteDuration, "SprigganRoot") )
 						if (fctParasites.tryParasiteNextStage(PlayerActor, "SprigganRoot"))
-							Debug.Notification("[SLP] Next stage ticker RESET!")
+							; Debug.Notification("[SLP] Next stage ticker RESET!")
 							iNextStageTicker = 0
 						Endif
 					endif
@@ -2102,21 +2103,21 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 	fctParasites.clearParasiteAlias(PlayerActor, "SpiderEgg" )
 	fctParasites.clearParasiteAlias(PlayerActor, "SpiderPenis" )
 
-	If (!fctParasites.ActorHasKeywordByString(PlayerActor, "TentacleMonster"))
-		fctParasites.clearParasiteAlias(PlayerActor, "TentacleMonster" )
-	endif
+	; If (!fctParasites.ActorHasKeywordByString(PlayerActor, "TentacleMonster"))
+	;	fctParasites.clearParasiteAlias(PlayerActor, "TentacleMonster" )
+	; endif
 
-	If (!fctParasites.ActorHasKeywordByString(PlayerActor, "LivingArmor"))
-		fctParasites.clearParasiteAlias(PlayerActor, "LivingArmor" )
-	endif
+	; If (!fctParasites.ActorHasKeywordByString(PlayerActor, "LivingArmor"))
+	;	fctParasites.clearParasiteAlias(PlayerActor, "LivingArmor" )
+	; endif
 
-	If (!fctParasites.ActorHasKeywordByString(PlayerActor, "Barnacles"))
-		fctParasites.clearParasiteAlias(PlayerActor, "Barnacles" )
-	endif
+	; If (!fctParasites.ActorHasKeywordByString(PlayerActor, "Barnacles"))
+	;	fctParasites.clearParasiteAlias(PlayerActor, "Barnacles" )
+	; endif
 
-	If (!fctParasites.ActorHasKeywordByString(PlayerActor, "SprigganRoot"))
-		fctParasites.clearParasiteAlias(PlayerActor, "SprigganRoot" )
-	endif
+	; If (!fctParasites.ActorHasKeywordByString(PlayerActor, "SprigganRoot"))
+	;	fctParasites.clearParasiteAlias(PlayerActor, "SprigganRoot" )
+	; endif
 
 	; Bring Lastelle where she belongs if needed
 	fctParasites.resetOnSleep()

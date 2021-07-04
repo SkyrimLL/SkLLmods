@@ -700,20 +700,20 @@ Function clearParasiteAlias(Actor akActor, String sParasite = ""  )
 	elseif (sParasite == "ChaurusQueenBody" )  
 		;
 		
-	elseif (sParasite == "TentacleMonster" )  
-		TentacleMonsterInfectedAlias.ForceRefTo(DummyAlias)
+	; elseif (sParasite == "TentacleMonster" )  
+	;	TentacleMonsterInfectedAlias.ForceRefTo(DummyAlias)
 		
-	elseif (sParasite == "LivingArmor" )  
-		LivingArmorInfectedAlias.ForceRefTo(DummyAlias)
+	;  elseif (sParasite == "LivingArmor" )  
+	;	LivingArmorInfectedAlias.ForceRefTo(DummyAlias)
 		
-	elseif (sParasite == "FaceHugger" )  || (sParasite == "HipHugger" )  || (sParasite == "FaceHuggerGag" )  
-		FaceHuggerInfectedAlias.ForceRefTo(DummyAlias)
+	; elseif (sParasite == "FaceHugger" )  || (sParasite == "HipHugger" )  || (sParasite == "FaceHuggerGag" )  
+	;	FaceHuggerInfectedAlias.ForceRefTo(DummyAlias)
 		
-	elseif (sParasite == "Barnacles" )  
-		BarnaclesInfectedAlias.ForceRefTo(DummyAlias)
+	; elseif (sParasite == "Barnacles" )  
+	; 	BarnaclesInfectedAlias.ForceRefTo(DummyAlias)
 		
-	elseif (sParasite == "SprigganRoot" ) ||  (sParasite == "SprigganRootGag" ) || (sParasite == "SprigganRootArms" )  || (sParasite == "SprigganRootFeet" )  || (sParasite == "SprigganRootBody" )  
-		SprigganRootInfectedAlias.ForceRefTo(DummyAlias)
+	; elseif (sParasite == "SprigganRoot" ) ||  (sParasite == "SprigganRootGag" ) || (sParasite == "SprigganRootArms" )  || (sParasite == "SprigganRootFeet" )  || (sParasite == "SprigganRootBody" )  
+	;	SprigganRootInfectedAlias.ForceRefTo(DummyAlias)
 
 	endif
 
@@ -757,7 +757,8 @@ Bool Function tryParasiteNextStage(Actor kActor, String sParasite)
 
  		debug.trace("[SLP] tryParasiteNextStage - " + sParasite)
 
-		If (sParasite == "SprigganRoot")
+		If (sParasite == "SprigganRoot") && (iChaurusQueenStage<1)
+			; Spriggan growth is stopped by Seed Stone
 			; Debug.Notification(".." )
 			If (!fctParasiteSprigganRoot.isInfectedByString( kActor,  "SprigganRootArms" )) 
 				if (Utility.RandomInt(0,100)<StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceSprigganRootArms" ))
@@ -820,7 +821,8 @@ Bool Function tryParasiteNextStage(Actor kActor, String sParasite)
 				endif
 			endif 
 
-		Elseif (sParasite == "ChaurusQueen") && (QueenOfChaurusQuest.GetStageDone(290) && (!QueenOfChaurusQuest.GetStageDone(400)) )
+		Elseif (sParasite == "ChaurusQueen") 
+
 			Int itriggerNextStageChaurusQueen = StorageUtil.GetIntValue(kActor, "_SLP_triggerNextStageChaurusQueen") +  (iChaurusQueenStage * 10)
 			debugTrace("[SLP]    itriggerNextStageChaurusQueen = " + itriggerNextStageChaurusQueen)
 
@@ -836,50 +838,66 @@ Bool Function tryParasiteNextStage(Actor kActor, String sParasite)
 
 				endif 
 
-				If (!fctParasiteChaurusQueen.isInfectedByString( kActor,  "ChaurusQueenVag" )) && (Utility.RandomInt(0,100)<60)
-					debugTrace("[SLP]    Effect - add Chaurus Queen Vag")
-					if (iChaurusQueenStage==1)
-						; First time: stage = 1
-						debug.MessageBox("The Seed stirs through your womb and extends a tentacle between your legs.")
-					else
-						; Stage >= 2
-						debug.Notification("The Seed stirs through your womb and extends a tentacle between your legs.")
-					endif
-					fctParasiteChaurusQueen.infectChaurusQueenVag( kActor  ) 
-					bSuccess = True
-					
-				elseIf (fctParasiteChaurusQueen.isInfectedByString( kActor,  "ChaurusQueenVag" )) && (Utility.RandomInt(0,100)<40)
-					debugTrace("[SLP]    Effect - cure Chaurus Queen Vag")
-					debug.Notification("The tentacle receeds to the Seed inside your womb.")
-					fctParasiteChaurusQueen.cureChaurusQueenVag( kActor  )
-					bSuccess = True
+				if (isInfectedByString( PlayerActor,  "SprigganRoot" )) && (iChaurusQueenStage>=1)
 
-				endif 
-				
-				If (!fctParasiteChaurusQueen.isInfectedByString( kActor,  "ChaurusQueenSkin" )) && (Utility.RandomInt(0,100)<80) && (iChaurusQueenStage>=2)
-					debugTrace("[SLP]    Effect - add Chaurus Queen Skin")
-					if (iChaurusQueenStage==2)
-						; First time: stage = 2
-						debug.MessageBox("The Seed flares up through your skin and your breasts.")
-					else
-						; Stage >= 3
-						debug.Notification("The Seed flares up through your skin and your breasts.")
-					endif
-					fctParasiteChaurusQueen.infectChaurusQueenSkin( kActor  )
-					bSuccess = True
-					
-				elseIf (fctParasiteChaurusQueen.isInfectedByString( kActor,  "ChaurusQueenSkin" )) && (Utility.RandomInt(0,100)<40)
-					debugTrace("[SLP]    Effect - cure Chaurus Queen Skin")
-					debug.Notification("The feelers in your breasts receed inside.")
-					fctParasiteChaurusQueen.cureChaurusQueenSkin( kActor  )
-					bSuccess = True
-					
-				else
-					SeedFlare.Cast(kActor as ObjectReference, kActor as ObjectReference)	
-					debugTrace("[SLP]    Effect - cramps")
-					debug.Notification("Sudden cramps flare up inside you.")
-					bSuccess = True
+					If (kActor == PlayerActor) && ( (isInfectedByString( kActor,  "SprigganRootGag" )) || (isInfectedByString( kActor,  "SprigganRootArms" )) || (isInfectedByString( kActor,  "SprigganRootFeet" )) || (isInfectedByString( kActor,  "SprigganRootBody" )) )
 
+						fctParasiteSprigganRoot.cureSprigganRootArms(  kActor  )
+						fctParasiteSprigganRoot.cureSprigganRootFeet(  kActor  )
+						fctParasiteSprigganRoot.cureSprigganRootBody(  kActor  )
+						fctParasiteSprigganRoot.cureSprigganRootGag(  kActor  )
+
+						debug.messagebox("The Seed churns inside you as the Spriggan husks crumble and fall off your skin.")
+					endif
+
+				endif
+
+				if (QueenOfChaurusQuest.GetStageDone(290) && (!QueenOfChaurusQuest.GetStageDone(400)) )
+					If (!fctParasiteChaurusQueen.isInfectedByString( kActor,  "ChaurusQueenVag" )) && (Utility.RandomInt(0,100)<60)
+						debugTrace("[SLP]    Effect - add Chaurus Queen Vag")
+						if (iChaurusQueenStage==1)
+							; First time: stage = 1
+							debug.MessageBox("The Seed stirs through your womb and extends a tentacle between your legs.")
+						else
+							; Stage >= 2
+							debug.Notification("The Seed stirs through your womb and extends a tentacle between your legs.")
+						endif
+						fctParasiteChaurusQueen.infectChaurusQueenVag( kActor  ) 
+						bSuccess = True
+						
+					elseIf (fctParasiteChaurusQueen.isInfectedByString( kActor,  "ChaurusQueenVag" )) && (Utility.RandomInt(0,100)<40)
+						debugTrace("[SLP]    Effect - cure Chaurus Queen Vag")
+						debug.Notification("The tentacle receeds to the Seed inside your womb.")
+						fctParasiteChaurusQueen.cureChaurusQueenVag( kActor  )
+						bSuccess = True
+
+					endif 
+					
+					If (!fctParasiteChaurusQueen.isInfectedByString( kActor,  "ChaurusQueenSkin" )) && (Utility.RandomInt(0,100)<80) && (iChaurusQueenStage>=2)
+						debugTrace("[SLP]    Effect - add Chaurus Queen Skin")
+						if (iChaurusQueenStage==2)
+							; First time: stage = 2
+							debug.MessageBox("The Seed flares up through your skin and your breasts.")
+						else
+							; Stage >= 3
+							debug.Notification("The Seed flares up through your skin and your breasts.")
+						endif
+						fctParasiteChaurusQueen.infectChaurusQueenSkin( kActor  )
+						bSuccess = True
+						
+					elseIf (fctParasiteChaurusQueen.isInfectedByString( kActor,  "ChaurusQueenSkin" )) && (Utility.RandomInt(0,100)<40)
+						debugTrace("[SLP]    Effect - cure Chaurus Queen Skin")
+						debug.Notification("The feelers in your breasts receed inside.")
+						fctParasiteChaurusQueen.cureChaurusQueenSkin( kActor  )
+						bSuccess = True
+						
+					else
+						SeedFlare.Cast(kActor as ObjectReference, kActor as ObjectReference)	
+						debugTrace("[SLP]    Effect - cramps")
+						debug.Notification("Sudden cramps flare up inside you.")
+						bSuccess = True
+
+					endif
 				endif
 
 				; check if player reached the Spider stage of the Chaurus Queen tranformation

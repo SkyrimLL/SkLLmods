@@ -150,12 +150,18 @@ Function cureLivingArmor( Actor kActor, Bool bHarvestParasite = False   )
 EndFunction
 
 Function refreshParasite(Actor kActor, String sParasite)
+ 	Actor PlayerActor = Game.GetPlayer()
 
 	If (sParasite == "LivingArmor")
 		If (isInfectedByString( kActor,  "LivingArmor" )) 
 			StorageUtil.SetIntValue(kActor, "_SLP_toggleLivingArmor", 1)
 			equipParasiteNPCByString (kActor, "LivingArmor")
 
+			If (kActor == PlayerActor) 
+				; Debug.Notification("[SLP]	Spriggan Alias attached")
+				Debug.Trace("[SLP]	LivingArmor Alias attached")
+				LivingArmorInfectedAlias.ForceRefTo(PlayerActor)
+			endIf
 		Else
 			StorageUtil.SetIntValue(kActor, "_SLP_toggleLivingArmor", 0)
 			clearParasiteNPCByString (kActor, "LivingArmor")

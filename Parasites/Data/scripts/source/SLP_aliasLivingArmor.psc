@@ -11,6 +11,8 @@ Spell Property DA02PoisonCloakDmg Auto
 Spell Property MassParalysis Auto
 Spell Property SchockCloak Auto
 
+Sound Property CritterFX  Auto
+
 Event OnCombatStateChanged(Actor akTarget, int aeCombatState)
 	Actor kPlayer= Game.GetPlayer() as Actor
 
@@ -51,6 +53,7 @@ EndEvent
 Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile, bool abPowerAttack, bool abSneakAttack, bool abBashAttack, bool abHitBlocked)
 	Actor kPlayer = Game.GetPlayer()
 	Actor kAgressor = akAggressor as Actor
+	Int iRandomNum = Utility.RandomInt(0,100)
 
 	If (akAggressor != None) && (kAgressor != kPlayer)
 		;  Debug.Trace("We were hit by " + akAggressor)
@@ -60,12 +63,15 @@ Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile,
 			return
 		endif
 
-		If (Utility.RandomInt(0,100)>97)  
+		Sound.SetInstanceVolume(CritterFX.Play(kPlayer), 1.0)
+		Utility.Wait(1.0)
+
+		If (iRandomNum>97)  
 			Debug.Trace("[SLP_aliasLivingArmor] Cast stone flesh" )
 			Debug.Notification("The creature wraps you with a protective layer of slime." )
 			StoneFlesh.Cast(kPlayer as ObjectReference , kPlayer as ObjectReference ) 
 
-		elseIf (Utility.RandomInt(0,100)>90)  
+		elseIf (iRandomNum>90)  
 			Debug.Trace("[SLP_aliasLivingArmor] Cast Poison cloak" )
 			Debug.Notification("The creature releases a surge of electricity." )
 			SchockCloak.Cast(kPlayer as ObjectReference , kPlayer as ObjectReference ) 

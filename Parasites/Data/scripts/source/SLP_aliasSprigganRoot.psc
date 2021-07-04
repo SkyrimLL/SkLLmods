@@ -9,8 +9,12 @@ SLP_fcts_utils Property fctUtils  Auto
 Spell Property crSprigganCallCreatures Auto
 Spell Property _SLP_SP_SprigganCallCreatures Auto
 Spell Property _SLP_SP_SprigganSwarm Auto
+Spell Property _SLP_SP_SprigganAttack Auto
+SPELL Property _SLP_SP_SprigganDefenseCloak  Auto  
+
 Spell Property Oakflesh Auto
 
+Sound Property CritterFX  Auto
 
 Event OnCombatStateChanged(Actor akTarget, int aeCombatState)
 	Actor kPlayer= Game.GetPlayer() as Actor
@@ -52,17 +56,22 @@ EndEvent
 Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile, bool abPowerAttack, bool abSneakAttack, bool abBashAttack, bool abHitBlocked)
 	Actor kPlayer = Game.GetPlayer()
 	Actor kAgressor = akAggressor as Actor
+	Int iRandomNum = Utility.RandomInt(0,100)
 
 	If (akAggressor != None)
 		;  Debug.Trace("We were hit by " + akAggressor)
-		; Debug.Notification("::" )
 
 		Cell akAggressorCell = akAggressor.GetParentCell()
 
 		If (!akAggressorCell.IsInterior()) && (kAgressor != kPlayer)
+			; Debug.Notification(":SPRIGGAN HIT:" )
+
 			if (fctUtils.CheckIfSprigganFaction( kAgressor ))
 				; Debug.Notification("[SLP_aliasSprigganRoot] Spriggan friendly hit - Stop combat" )
 				Debug.Trace("[SLP_aliasSprigganRoot]  Spriggan friendly hit - Stop combat" )
+
+				Sound.SetInstanceVolume(CritterFX.Play(kPlayer), 1.0)
+				Utility.Wait(1.0)
 
 				; SendModEvent("da_PacifyNearbyEnemies") 
 				_SLP_SP_SprigganCallCreatures.Cast(kPlayer as ObjectReference ,  kPlayer as ObjectReference ) 
@@ -73,20 +82,26 @@ Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile,
 					return
 				endif
 
-				If (Utility.RandomInt(0,100)>97)  
+				Sound.SetInstanceVolume(CritterFX.Play(kPlayer), 1.0)
+				Utility.Wait(1.0)
+
+				If (iRandomNum>97)  
 					Debug.Trace("[SLP_aliasSprigganRoot] Cast Call Creatures spell" )
-					; Debug.Notification("The Voices scream for help." )
+					Debug.Notification("The roots call out for help." )
 					_SLP_SP_SprigganCallCreatures.Cast(kPlayer as ObjectReference ,  kPlayer as ObjectReference ) 
 
-				elseIf (Utility.RandomInt(0,100)>80)  
+				elseIf (iRandomNum>80)  
 					; Debug.Trace("[SLP_aliasSprigganRoot] Cast Tentacle attack spell" )
-					Debug.Notification("The roots harden around you" )
-					_SLP_SP_SprigganSwarm.Cast(kPlayer as ObjectReference ,  kAgressor as ObjectReference ) 
+					Debug.Notification("The roots unleashes needles to protect you" )
+					_SLP_SP_SprigganDefenseCloak.Cast(kPlayer as ObjectReference ,  kAgressor as ObjectReference ) 
 
-				elseIf (Utility.RandomInt(0,100)>50)  
+				elseIf (iRandomNum>50)  
 					Debug.Trace("[SLP_aliasSprigganRoot] Cast Tentacle attack spell" )
 					Debug.Notification("The roots harden around you" )
 					Oakflesh.Cast(kPlayer as ObjectReference ,  kPlayer as ObjectReference ) 
+
+				else 
+					Debug.trace("[SLP_aliasSprigganRoot] No protection - better luck next time" )
 
 				endif
 			endif
@@ -94,5 +109,6 @@ Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile,
 	EndIf
 
 EndEvent
+
 
 

@@ -141,6 +141,7 @@ EndFunction
 
 
 Function refreshParasite(Actor kActor, String sParasite)
+ 	Actor PlayerActor = Game.GetPlayer()
 
 	If (sParasite == "ChaurusQueenGag")
 		If (isInfectedByString( kActor,  "ChaurusQueenGag" )) 
@@ -179,6 +180,11 @@ Function refreshParasite(Actor kActor, String sParasite)
 			StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenArmor", 1)
 			equipParasiteNPCByString (kActor, "ChaurusQueenArmor")
 
+			If (kActor == PlayerActor) && QueenOfChaurusQuest.GetStageDone(400)
+				; Debug.Notification("[SLP]	Spriggan Alias attached")
+				Debug.Trace("[SLP]	ChaurusQueen Alias attached")
+				ChaurusQueenInfectedAlias.ForceRefTo(PlayerActor)
+			endIf
 		Else
 			StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenArmor", 0)
 			clearParasiteNPCByString (kActor, "ChaurusQueenArmor")
@@ -189,12 +195,19 @@ Function refreshParasite(Actor kActor, String sParasite)
 			StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenBody", 1)
 			equipParasiteNPCByString (kActor, "ChaurusQueenBody")
 
+			If (kActor == PlayerActor) && QueenOfChaurusQuest.GetStageDone(400)
+				; Debug.Notification("[SLP]	Spriggan Alias attached")
+				Debug.Trace("[SLP]	ChaurusQueen Alias attached")
+				ChaurusQueenInfectedAlias.ForceRefTo(PlayerActor)
+			endIf
 		Else
 			StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenBody", 0)
 			clearParasiteNPCByString (kActor, "ChaurusQueenBody")
 		Endif
 
 	Endif
+
+
 
 EndFunction
 ;------------------------------------------------------------------------------
