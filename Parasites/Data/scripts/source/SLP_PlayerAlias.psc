@@ -82,7 +82,7 @@ Function _maintenance()
 	Int iVersionNumber = StorageUtil.GetIntValue(none, "_SLP_iParasitesVersion")	
 	
 	If (iVersionNumber != iCurrentVersionNumber)
-		Debug.Notification("[SLH] Upgrading Parasites to " + iCurrentVersionNumber)
+		Debug.Notification("[SLP] Upgrading Parasites to " + iCurrentVersionNumber)
 
 		If (iVersionNumber <= 20210531)
 			StorageUtil.SetIntValue(PlayerActor, "_SLP_toggleSprigganRootGag", 0 )
@@ -432,15 +432,6 @@ Event OnUpdate()
 			 	if (fctParasites.tryParasiteNextStage(PlayerActor, "ChaurusQueen"))
 			 		; next stage happened - reset counter
 			 		iNextStageTicker = 0
-			 	else
-			 		; next stage didn't happen - set back counter and try again soon
-			 		
-			 		if (fctParasites.isPlayerInHeat())
-						iNextStageTicker = iNextStageTicker - (iNextStageTicker / 4)
-					else
-						; reduce frequency of flares if player isn't in heat
-						iNextStageTicker = iNextStageTicker - 1
-					endif
 			 	endif
 			 endif
 		endif
@@ -2139,13 +2130,13 @@ Event OnObjectEquipped(Form akBaseObject, ObjectReference akReference)
 
     	; Spider egg = type 30
     	if (thisIngredient == IngredientSpiderEgg)
-    		Debug.Notification("This actor just ate a spider egg")
-    		fctParasites.forceChaurusQueenStage(320)
+    		; Debug.Notification("This actor just ate a spider egg")
+    		fctParasites.forceChaurusQueenStage(310, 320)
     		fctParasites.tryPlayerSpiderStage()
 
     	elseif (thisIngredient == IngredientChaurusEgg)
-    		Debug.Notification("This actor just ate a chaurus egg")
-    		fctParasites.forceChaurusQueenStage(350)
+    		; Debug.Notification("This actor just ate a chaurus egg")
+    		fctParasites.forceChaurusQueenStage(340,350)
     		fctParasites.tryPlayerChaurusStage()
     	endif
 

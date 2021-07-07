@@ -310,9 +310,9 @@ event OnPageReset(string a_page)
 		AddTextOption("     Estrus Slime Infections: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iEstrusSlimeInfections") as Int, "", OPTION_FLAG_DISABLED)
 
 		AddHeaderOption(" Factions")
-		AddTextOption("     Player in Spider Faction: " + fctUtils.CheckIfSpiderFaction(kPlayer) as Int, "", OPTION_FLAG_DISABLED)
-		AddTextOption("     Player in Chaurus Faction: " + fctUtils.CheckIfChaurusFaction(kPlayer) as Int, "", OPTION_FLAG_DISABLED)
-		AddTextOption("     Player in Spriggan Faction: " + fctUtils.CheckIfSprigganFaction(kPlayer) as Int, "", OPTION_FLAG_DISABLED)
+		AddTextOption("     Player in Spider Faction: " + fctUtils.checkIfFriendlyFaction( kPlayer, "Spider" ) as Int, "", OPTION_FLAG_DISABLED)
+		AddTextOption("     Player in Chaurus Faction: " + fctUtils.checkIfFriendlyFaction( kPlayer, "Chaurus" ) as Int, "", OPTION_FLAG_DISABLED)
+		AddTextOption("     Player in Spriggan Faction: " + fctUtils.checkIfFriendlyFaction( kPlayer, "Spriggan" ) as Int, "", OPTION_FLAG_DISABLED)
 
 		AddHeaderOption(" Long term curses")
 		AddTextOption("     Chaurus Queen Infection: " + iChaurusQueenStage as Int, "", OPTION_FLAG_DISABLED)

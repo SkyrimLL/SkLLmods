@@ -380,6 +380,8 @@ Function cureParasiteByString(Actor kActor, String sParasiteKeyword = "", Bool b
 		fctParasiteSprigganRoot.cureSprigganRootBody(kActor)
 	EndIf
 
+	utility.wait(1.0)
+
 EndFunction
 
 Bool Function ActorHasKeywordByString(actor akActor, String sParasiteKeyword = "")
@@ -579,46 +581,58 @@ Function clearParasiteNPCByString(Actor kActor, String sParasiteKeyword = ""  )
 EndFunction
 
 Function applyHiddenParasiteEffect(Actor akActor, String sParasite = ""  )
+	Actor kPlayer = Game.GetPlayer()
+	Float fMaxNodeValue
  
 	if (sParasite == "SpiderEgg" )  
-		fctUtils.ApplyBodyChange( akActor, sParasite, "Belly", 2.0, 2.0 )
+		fMaxNodeValue = StorageUtil.GetFloatValue(kPlayer, "_SLP_bellyMaxSpiderEgg" )
+		fctUtils.ApplyBodyChange( akActor, sParasite, "Belly", 2.0, fMaxNodeValue )
 
 	elseif (sParasite == "SpiderPenis" )  
 		; ApplyBodyChange( akActor, sParasite, "Belly", 2.0, 2.0 )
 
 	elseif (sParasite == "ChaurusWorm" )  
-		fctUtils.ApplyBodyChange( akActor, sParasite, "Butt", 2.0, 2.0 )
+		fMaxNodeValue = StorageUtil.GetFloatValue(kPlayer, "_SLP_buttMaxChaurusWorm" )
+		fctUtils.ApplyBodyChange( akActor, sParasite, "Butt", 2.0, fMaxNodeValue )
 		
 	elseif (sParasite == "ChaurusWormVag" )  
-		fctUtils.ApplyBodyChange( akActor, sParasite, "Belly", 2.0, 2.0 )
+		fMaxNodeValue = StorageUtil.GetFloatValue(kPlayer, "_SLP_bellyMaxChaurusWormVag" )
+		fctUtils.ApplyBodyChange( akActor, sParasite, "Belly", 2.0, fMaxNodeValue )
 		
 	elseif (sParasite == "ChaurusQueenGag" )  
 		; ApplyBodyChange( akActor, sParasite, "Belly", 2.0, 2.0 )
 		
 	elseif (sParasite == "ChaurusQueenVag" )  
-		fctUtils.ApplyBodyChange( akActor, sParasite, "Belly", 2.0, 2.0 )
+		fMaxNodeValue = StorageUtil.GetFloatValue(kPlayer, "_SLP_bellyMaxChaurusQueen" ) 
+		fctUtils.ApplyBodyChange( akActor, sParasite, "Belly", 2.0, fMaxNodeValue)
 		
 	elseif (sParasite == "ChaurusQueenSkin" )  
-		fctUtils.ApplyBodyChange( akActor, sParasite, "Breast", 2.0, 2.0 )
+		; fctUtils.ApplyBodyChange( akActor, sParasite, "Breast", 2.0, 2.0 )
 		
 	elseif (sParasite == "ChaurusQueenArmor" )  
-		fctUtils.ApplyBodyChange( akActor, sParasite, "Breast", 2.0, 2.0 )
+		; fctUtils.ApplyBodyChange( akActor, sParasite, "Breast", 2.0, 2.0 )
 		
 	elseif (sParasite == "ChaurusQueenBody" )  
-		fctUtils.ApplyBodyChange( akActor, sParasite, "Breast", 2.0, 2.0 )
-		fctUtils.ApplyBodyChange( akActor, sParasite, "Belly", 2.0, 2.0 )
+		; fctUtils.ApplyBodyChange( akActor, sParasite, "Breast", 2.0, 2.0 )
+
+		fMaxNodeValue = StorageUtil.GetFloatValue(kPlayer, "_SLP_bellyMaxChaurusQueen" ) 
+		fctUtils.ApplyBodyChange( akActor, sParasite, "Belly", 2.0, fMaxNodeValue)
 		
 	elseif (sParasite == "TentacleMonster" )  
-		fctUtils.ApplyBodyChange( akActor, sParasite, "Belly", 2.0, 2.0 )
+		fMaxNodeValue = StorageUtil.GetFloatValue(kPlayer, "_SLP_breastMaxTentacleMonster" )
+		fctUtils.ApplyBodyChange( akActor, sParasite, "Belly", 2.0, fMaxNodeValue )
 		
 	elseif (sParasite == "LivingArmor" )  
-		fctUtils.ApplyBodyChange( akActor, sParasite, "Belly", 2.0, 2.0 )
+		fMaxNodeValue = StorageUtil.GetFloatValue(kPlayer, "_SLP_breastMaxLivingArmor" )
+		fctUtils.ApplyBodyChange( akActor, sParasite, "Belly", 2.0, fMaxNodeValue )
 		
 	elseif (sParasite == "FaceHugger" ) || (sParasite == "HipHugger" ) 
-		; ApplyBodyChange( akActor, sParasite, "Belly", 2.0, 2.0 )
+		fMaxNodeValue = StorageUtil.GetFloatValue(kPlayer, "_SLP_bellyMaxFaceHugger"  )
+		fctUtils.ApplyBodyChange( akActor, sParasite, "Belly", 2.0, fMaxNodeValue )
 		
 	elseif (sParasite == "FaceHuggerGag" )  
-		; ApplyBodyChange( akActor, sParasite, "Belly", 2.0, 2.0 )
+		fMaxNodeValue = StorageUtil.GetFloatValue(kPlayer, "_SLP_bellyMaxFaceHugger"  )
+		fctUtils.ApplyBodyChange( akActor, sParasite, "Belly", 2.0, fMaxNodeValue )
 		
 	elseif (sParasite == "Barnacles" )  
 		; ApplyBodyChange( akActor, sParasite, "Belly", 2.0, 2.0 )
@@ -722,8 +736,10 @@ EndFunction
 
 
 ;------------------------------------------------------------------------------
-Function forceChaurusQueenStage(Int iStage)
-	QueenOfChaurusQuest.SetStage(iStage)
+Function forceChaurusQueenStage(Int iStageDone,Int iStage)
+	if (QueenOfChaurusQuest.GetStageDone(iStageDone)) && (!(QueenOfChaurusQuest.GetStageDone(iStage)))
+		QueenOfChaurusQuest.SetStage(iStage)
+	endif
 Endfunction
 
 ;------------------------------------------------------------------------------
@@ -823,7 +839,10 @@ Bool Function tryParasiteNextStage(Actor kActor, String sParasite)
 
 		Elseif (sParasite == "ChaurusQueen") 
 
-			Int itriggerNextStageChaurusQueen = StorageUtil.GetIntValue(kActor, "_SLP_triggerNextStageChaurusQueen") +  (iChaurusQueenStage * 10)
+			Int itriggerNextStageChaurusQueen = StorageUtil.GetIntValue(kActor, "_SLP_triggerNextStageChaurusQueen")
+			if (itriggerNextStageChaurusQueen<20)
+				itriggerNextStageChaurusQueen = 20
+			endif
 			debugTrace("[SLP]    itriggerNextStageChaurusQueen = " + itriggerNextStageChaurusQueen)
 
 			if (Utility.RandomInt(0,100) < itriggerNextStageChaurusQueen) 
@@ -848,6 +867,7 @@ Bool Function tryParasiteNextStage(Actor kActor, String sParasite)
 						fctParasiteSprigganRoot.cureSprigganRootGag(  kActor  )
 
 						debug.messagebox("The Seed churns inside you as the Spriggan husks crumble and fall off your skin.")
+						bSuccess = True
 					endif
 
 				endif
@@ -914,16 +934,13 @@ Bool Function tryParasiteNextStage(Actor kActor, String sParasite)
 				 	
 				endif
 
-				; HEAT
-
-				StorageUtil.SetIntValue(kActor, "_SLP_triggerNextStageChaurusQueen", iChaurusQueenStage * 10)
 			else
  				debugTrace("[SLP] tryParasiteNextStage failed  " )
  				debugTrace("[SLP]    Bad luck - try again later : " + itriggerNextStageChaurusQueen)
-
-				itriggerNextStageChaurusQueen = itriggerNextStageChaurusQueen +  (iChaurusQueenStage * 10)
-				StorageUtil.SetIntValue(kActor, "_SLP_triggerNextStageChaurusQueen",itriggerNextStageChaurusQueen)
 			endif
+
+			; HEAT
+			StorageUtil.SetIntValue(kActor, "_SLP_triggerNextStageChaurusQueen", 20 + (iChaurusQueenStage * 10) )
 
 		ElseIf (sParasite == "SpiderPenis")  
 			Debug.MessageBox("The remains of the spider penis finally slide out of you.")
@@ -1116,12 +1133,9 @@ Function tryCharmSpider(Actor Target)
 			StorageUtil.SetIntValue(kPlayer, "_SLP_iSpiderCharmON", 1)
 			Utility.Wait(1.0)
 
-		 	if (iChaurusQueenStage>=3) && (!kPlayer.HasSpell( SeedSpiderBreeding ))
-		 		kPlayer.AddSpell( SeedTrack )
-		 		kPlayer.AddSpell( SeedCalm )
-		 		kPlayer.AddSpell( SeedSpiderBreeding )
-		 		debug.messagebox("The Seed reacts strongly to the influence of the Spider pheromones and inflames your senses. As the pincers spread your vagina into a gaping hole for the spider to mate with, you feel your mind expand to new possibilities.")
-			endif
+		 	; if (iChaurusQueenStage>=3) && (!kPlayer.HasSpell( SeedSpiderBreeding ))
+		 	;	debug.messagebox("The Seed reacts strongly to the influence of the Spider pheromones and inflames your senses. As the pincers spread your vagina into a gaping hole for the spider to mate with, you feel your mind expand to new possibilities.")
+			; endif
 
 			if (QueenOfChaurusQuest.GetStageDone(310)) && (!QueenOfChaurusQuest.GetStageDone(320)) 
 				QueenOfChaurusQuest.SetStage(320)
@@ -1154,6 +1168,9 @@ Function tryPlayerSpiderStage()
 	if (iChaurusQueenStage>=3) && (QueenOfChaurusQuest.GetStageDone(320))  
 		if (!PlayerActor.HasSpell( SeedSpawnSpider ))
 	 		PlayerActor.AddSpell( SeedSpawnSpider ) 
+	 		PlayerActor.AddSpell( SeedTrack )
+	 		PlayerActor.AddSpell( SeedCalm )
+	 		PlayerActor.AddSpell( SeedSpiderBreeding )
 	 		PlayerActor.AddItem(SmallSpiderEgg,5)
 	 		SeedSpawnSpider.Cast(PlayerActor as ObjectReference, PlayerActor as ObjectReference)
 
@@ -1193,14 +1210,11 @@ Function tryCharmChaurus(Actor Target)
 			StorageUtil.SetIntValue(kPlayer, "_SLP_iChaurusCharmON", 1)
 			Utility.Wait(1.0)
 
-			if (QueenOfChaurusQuest.GetStageDone(330)) 
-			 	if (iChaurusQueenStage==3) && (!kPlayer.HasSpell( SeedChaurusBreeding ))
-			 		kPlayer.AddSpell( SeedTrack )
-			 		kPlayer.AddSpell( SeedCalm )
-			 		kPlayer.AddSpell( SeedChaurusBreeding )
-			 		debug.messagebox("The Seed blooms inside you from the influence of the Chaurus pheromones. The pincers extend a hungry mouth for the chaurus to mate with, making your skin tingles with power and giving you a new understanding of the Chaurus biology.")
-				endif
-			endif
+			;if (QueenOfChaurusQuest.GetStageDone(330)) 
+			 	; if (iChaurusQueenStage==3) && (!kPlayer.HasSpell( SeedChaurusBreeding ))
+			 	;	debug.messagebox("The Seed blooms inside you from the influence of the Chaurus pheromones. The pincers extend a hungry mouth for the chaurus to mate with, making your skin tingles with power and giving you a new understanding of the Chaurus biology.")
+				; endif
+			;endif
 
 			if (QueenOfChaurusQuest.GetStageDone(340)) && (!QueenOfChaurusQuest.GetStageDone(350)) 
 				QueenOfChaurusQuest.SetStage(350)
@@ -1230,8 +1244,13 @@ Function tryPlayerChaurusStage()
 
 	if (iChaurusQueenStage>=3) && (QueenOfChaurusQuest.GetStageDone(350))
 		if (!PlayerActor.HasSpell( SeedSpawnChaurus ))
+	 		PlayerActor.AddSpell( SeedTrack )
+	 		PlayerActor.AddSpell( SeedCalm )
+	 		PlayerActor.AddSpell( SeedChaurusBreeding )
 	 		PlayerActor.AddSpell( SeedSpawnChaurus ) 
 	 		PlayerActor.AddItem(ChaurusEgg,5)
+
+	 		utility.wait(1.0)
 
 	 		SeedSpawnChaurus.Cast(PlayerActor as ObjectReference, PlayerActor as ObjectReference)
 	 			

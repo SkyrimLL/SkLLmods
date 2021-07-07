@@ -64,6 +64,10 @@ Event OnEffectStart(Actor Target, Actor Caster)
 
 
 		if (!kPlayer.HasSpell( ChaurusArmor ))
+			if (StorageUtil.GetIntValue(kPlayer, "_SLP_iChaurusQueenStage")<4)
+				StorageUtil.SetIntValue(kPlayer, "_SLP_iChaurusQueenStage",  4)
+			endif
+			
 			kPlayer.RemoveItem(ChaurusEgg, iChaurusSpawnCount)
 	 		kPlayer.AddSpell( ChaurusArmor ) 
 	 		kPlayer.AddSpell( ChaurusMask ) 
@@ -71,7 +75,7 @@ Event OnEffectStart(Actor Target, Actor Caster)
 	 		; fctParasites.infectChaurusQueenArmor( kPlayer  )
 	 		; fctParasites.infectChaurusQueenGag( kPlayer  )
 	 		ChaurusArmor.Cast(kPlayer as ObjectReference, kPlayer as ObjectReference)	
-			ChaurusMask.Cast(kPlayer as ObjectReference, kPlayer as ObjectReference)	
+			; ChaurusMask.Cast(kPlayer as ObjectReference, kPlayer as ObjectReference)	
 
 			Debug.messagebox("In a flash, the Seed ingests material from the egg and spreads it around your skin into a thin protective layer of mucus and chitin.") 
 

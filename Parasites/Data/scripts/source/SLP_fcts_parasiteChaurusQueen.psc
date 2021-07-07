@@ -130,11 +130,11 @@ Function applyBaseChaurusQueenSkin()
 	Float fWeight
 	Float NeckDelta
 
-	; pLeveledActorBase.SetWeight(fWeightOrig)
-	; pLeveledActorBase.SetSkin(_SLP_skinChaurusQueenNaked)
-	; fWeight = pLeveledActorBase.GetWeight()
-	; NeckDelta = (fWeightOrig / 100) - (fWeight / 100)
-	; PlayerActor.UpdateWeight(NeckDelta) ;Apply the changes.
+	pLeveledActorBase.SetWeight(fWeightOrig)
+	pLeveledActorBase.SetSkin(_SLP_skinChaurusQueenNaked)
+	fWeight = pLeveledActorBase.GetWeight()
+	NeckDelta = (fWeightOrig / 100) - (fWeight / 100)
+	PlayerActor.UpdateWeight(NeckDelta) ;Apply the changes.
 
 
 EndFunction
@@ -180,14 +180,20 @@ Function refreshParasite(Actor kActor, String sParasite)
 			StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenArmor", 1)
 			equipParasiteNPCByString (kActor, "ChaurusQueenArmor")
 
-			If (kActor == PlayerActor) && QueenOfChaurusQuest.GetStageDone(400)
+			If (kActor == PlayerActor) && QueenOfChaurusQuest.GetStageDone(350)
 				; Debug.Notification("[SLP]	Spriggan Alias attached")
 				Debug.Trace("[SLP]	ChaurusQueen Alias attached")
 				ChaurusQueenInfectedAlias.ForceRefTo(PlayerActor)
+				fctUtils.addToFriendlyFaction( PlayerActor, "Chaurus" )
 			endIf
 		Else
 			StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenArmor", 0)
 			clearParasiteNPCByString (kActor, "ChaurusQueenArmor")
+
+			if (!(isInfectedByString( kActor,  "ChaurusQueenBody" )) )
+				ChaurusQueenInfectedAlias.ForceRefTo(DummyAlias)
+				fctUtils.removeFromFriendlyFaction( PlayerActor, "Chaurus" )
+			endif
 		Endif
 
 	ElseIf (sParasite == "ChaurusQueenBody")
@@ -199,10 +205,16 @@ Function refreshParasite(Actor kActor, String sParasite)
 				; Debug.Notification("[SLP]	Spriggan Alias attached")
 				Debug.Trace("[SLP]	ChaurusQueen Alias attached")
 				ChaurusQueenInfectedAlias.ForceRefTo(PlayerActor)
+				fctUtils.addToFriendlyFaction( PlayerActor, "Chaurus" )
 			endIf
 		Else
 			StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenBody", 0)
 			clearParasiteNPCByString (kActor, "ChaurusQueenBody")
+
+			if (!(isInfectedByString( kActor,  "ChaurusQueenArmor" )) )
+				ChaurusQueenInfectedAlias.ForceRefTo(DummyAlias)
+				fctUtils.removeFromFriendlyFaction( PlayerActor, "Chaurus" )
+			endif
 		Endif
 
 	Endif
@@ -380,9 +392,9 @@ Bool Function applyChaurusQueenGag( Actor kActor  )
  
 	SendModEvent("SLPChaurusQueenGagInfection")
 
-	; if (!KynesBlessingQuest.GetStageDone(20)) && (kActor == PlayerActor)
-	;	KynesBlessingQuest.SetStage(20)
-	; endif
+	if (!QueenOfChaurusQuest.GetStageDone(350)) && (kActor == PlayerActor)
+		QueenOfChaurusQuest.SetStage(350)
+	endif
 	
 	Return True
 EndFunction
@@ -433,7 +445,7 @@ Bool Function infectChaurusQueenSkin( Actor kActor  )
 	Endif 
 
 	If ( (fctDevious.ActorHasKeywordByString( kActor, "Harness"  )) || (fctDevious.ActorHasKeywordByString( kActor, "Bra"  )))
-		Debug.Trace("[SLP]	Already wearing a harness- Aborting")
+		Debug.Trace("[SLP]	Already wearing a harness - Aborting")
 		Return False
 	Endif
 
@@ -502,13 +514,13 @@ Function cureChaurusQueenSkin( Actor kActor, Bool bHarvestParasite = False   )
 		clearParasiteNPCByString (kActor, "ChaurusQueenSkin")
 		; fctUtils.ApplyBodyChange( kActor, "ChaurusQueenSkin", "Breast", 1.0, StorageUtil.GetFloatValue(PlayerActor, "_SLP_breastMaxChaurusQueenSkin" ))
 
-		If (bHarvestParasite)
+		; If (bHarvestParasite)
 		;	PlayerActor.AddItem(SLP_harnessChaurusQueenSkinInventory,1)
-		Endif
+		; Endif
 
-		If (kActor == PlayerActor)
+		; If (kActor == PlayerActor)
 		;	ChaurusQueenInfectedAlias.ForceRefTo(DummyAlias)
-		endIf
+		; endIf
 
 	Else
 		; Reset variables if called after device is removed
@@ -558,8 +570,10 @@ Bool Function applyChaurusQueenArmor( Actor kActor  )
 		if (QueenOfChaurusQuest.GetStageDone(395)) && (!QueenOfChaurusQuest.GetStageDone(400)) 
 			; Do nothing - Queen privileges are suspended
 			ChaurusQueenInfectedAlias.ForceRefTo(DummyAlias)
+			fctUtils.removeFromFriendlyFaction( PlayerActor, "Chaurus" )
 		else
 			ChaurusQueenInfectedAlias.ForceRefTo(PlayerActor)
+			fctUtils.addToFriendlyFaction( PlayerActor, "Chaurus" )
 		endif
 	endIf
 
@@ -590,9 +604,9 @@ Bool Function applyChaurusQueenArmor( Actor kActor  )
 
 	SendModEvent("SLPChaurusQueenArmorInfection")
 
-	; if (!KynesBlessingQuest.GetStageDone(20)) && (kActor == PlayerActor)
-	; 	KynesBlessingQuest.SetStage(20)
-	; endif
+	if (!QueenOfChaurusQuest.GetStageDone(350)) && (kActor == PlayerActor)
+		QueenOfChaurusQuest.SetStage(350)
+	endif
 	
 	Return True
 EndFunction
@@ -615,6 +629,7 @@ Function cureChaurusQueenArmor( Actor kActor, Bool bHarvestParasite = False   )
 
 		If (kActor == PlayerActor)
 			ChaurusQueenInfectedAlias.ForceRefTo(DummyAlias)
+			fctUtils.removeFromFriendlyFaction( PlayerActor, "Chaurus" )
 		endIf
 
 	Else
@@ -667,8 +682,10 @@ Bool Function applyChaurusQueenBody( Actor kActor  )
 		if (QueenOfChaurusQuest.GetStageDone(395)) && (!QueenOfChaurusQuest.GetStageDone(400)) 
 			; Do nothing - Queen privileges are suspended
 			ChaurusQueenInfectedAlias.ForceRefTo(DummyAlias)
+			fctUtils.removeFromFriendlyFaction( PlayerActor, "Chaurus" )
 		else
 			ChaurusQueenInfectedAlias.ForceRefTo(PlayerActor)
+			fctUtils.addToFriendlyFaction( PlayerActor, "Chaurus" )
 		endif
 	endIf
 
@@ -728,9 +745,9 @@ Bool Function applyChaurusQueenBody( Actor kActor  )
  
 	SendModEvent("SLPChaurusQueenBodyInfection")
 
-	; if (!KynesBlessingQuest.GetStageDone(20)) && (kActor == PlayerActor)
-	;	KynesBlessingQuest.SetStage(20)
-	; endif
+	if (!QueenOfChaurusQuest.GetStageDone(400)) && (kActor == PlayerActor)
+		QueenOfChaurusQuest.SetStage(400)
+	endif
 	
 	Return True
 EndFunction
@@ -787,6 +804,7 @@ Function cureChaurusQueenBody( Actor kActor, Bool bHarvestParasite = False   )
 
 		If (kActor == PlayerActor)
 			ChaurusQueenInfectedAlias.ForceRefTo(DummyAlias)
+			fctUtils.removeFromFriendlyFaction( PlayerActor, "Chaurus" )
 		endIf
 
 	Else

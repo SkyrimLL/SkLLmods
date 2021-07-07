@@ -25,6 +25,10 @@ Event OnEffectStart(Actor Target, Actor Caster)
 	 			fctParasites.cureParasiteByString(kPlayer,  "FaceHuggerGag")
 	 		endif
 
+ 	 		if (fctParasites.isInfectedByString( kPlayer,  "SprigganRootGag" ))
+	 			fctParasites.cureParasiteByString(kPlayer,  "SprigganRootGag")
+	 		endif
+
 			fctParasites.infectParasiteByString(kPlayer,  "ChaurusQueenGag")
 		else
 			Debug.notification("Without at least one chaurus egg near you, the spell has no effect.") 

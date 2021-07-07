@@ -13,6 +13,8 @@ Sound.SetInstanceVolume(KyneFX.Play(kPlayer), 1.0)
 BlizzardEffect.Cast(kPlayer  as ObjectReference, kPlayer  as ObjectReference)
 
 kPlayer.SendModEvent("SLPCureSprigganRoot", "All")
+
+KynesBlessingQuest.SetStage(99)
 ;END CODE
 EndFunction
 ;END FRAGMENT

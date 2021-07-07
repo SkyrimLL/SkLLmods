@@ -16,6 +16,7 @@ if (fctParasites.isInfectedByString(kPlayer, "SprigganRoot"  ))
 
    kPlayer.SendModEvent("SLPCureSprigganRoot", "All")
 
+   KynesBlessingQuest.SetStage(99)
 endif
 ;END CODE
 EndFunction

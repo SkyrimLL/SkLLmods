@@ -66,7 +66,7 @@ Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile,
 		If (!akAggressorCell.IsInterior()) && (kAgressor != kPlayer)
 			; Debug.Notification(":SPRIGGAN HIT:" )
 
-			if (fctUtils.CheckIfSprigganFaction( kAgressor ))
+			if (fctUtils.checkIfFriendlyFaction( kAgressor, "Spriggan" ))
 				; Debug.Notification("[SLP_aliasSprigganRoot] Spriggan friendly hit - Stop combat" )
 				Debug.Trace("[SLP_aliasSprigganRoot]  Spriggan friendly hit - Stop combat" )
 

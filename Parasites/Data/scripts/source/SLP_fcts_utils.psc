@@ -5,6 +5,9 @@ Import SKSE
 zadLibs Property libs Auto
 SexLabFrameWork Property SexLab Auto
 
+Faction Property _SLP_ChaurusFriendlyFaction  Auto
+Faction Property _SLP_SpiderFriendlyFaction  Auto
+Faction Property _SLP_SprigganFriendlyFaction  Auto
 Faction Property ChaurusFaction  Auto
 Faction Property SpiderFaction  Auto
 Faction Property SprigganFaction  Auto
@@ -238,16 +241,51 @@ Bool Function checkIfSpriggan ( Actor akActor )
 	Return bIsSpriggan
 EndFunction
 
-Bool Function checkIfSpiderFaction ( Actor akActor )
-	return akActor.IsInFaction(SpiderFaction)
+Bool Function checkIfFriendlyFaction ( Actor akActor, String sFaction )
+		Bool bSuccess = False
+		
+		if (sFaction == "Spider")
+			bSuccess = akActor.IsInFaction(_SLP_SpiderFriendlyFaction)
+
+		elseif (sFaction == "Chaurus")
+			bSuccess = akActor.IsInFaction(_SLP_ChaurusFriendlyFaction)
+
+		elseif (sFaction == "Spriggan")
+			bSuccess = akActor.IsInFaction(_SLP_SprigganFriendlyFaction)
+
+		endif
+
+		return bSuccess
 EndFunction
 
-Bool Function checkIfChaurusFaction ( Actor akActor )
-	return akActor.IsInFaction(ChaurusFaction)
+Function addToFriendlyFaction ( Actor akActor, String sFaction )
+	
+		if (sFaction == "Spider")
+			akActor.AddToFaction(_SLP_SpiderFriendlyFaction)
+
+		elseif (sFaction == "Chaurus")
+			akActor.AddToFaction(_SLP_ChaurusFriendlyFaction)
+
+		elseif (sFaction == "Spriggan")
+			akActor.AddToFaction(_SLP_SprigganFriendlyFaction)
+
+		endif
+
 EndFunction
 
-Bool Function checkIfSprigganFaction ( Actor akActor )
-	return akActor.IsInFaction(SprigganFaction)
+Function removeFromFriendlyFaction ( Actor akActor, String sFaction )
+	
+		if (sFaction == "Spider")
+			akActor.RemoveFromFaction(_SLP_SpiderFriendlyFaction)
+
+		elseif (sFaction == "Chaurus")
+			akActor.RemoveFromFaction(_SLP_ChaurusFriendlyFaction)
+
+		elseif (sFaction == "Spriggan")
+			akActor.RemoveFromFaction(_SLP_SprigganFriendlyFaction)
+
+		endif
+
 EndFunction
 
 
