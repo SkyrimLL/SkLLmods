@@ -601,9 +601,9 @@ event OnPageReset(string a_page)
     		; AddToggleOptionST("STATE_ENABLE_NODE_UPDATE","$SLH_sENABLE_NODE_UPDATE", _enableNiNodeUpdate as Float)
 		; AddToggleOptionST("STATE_ENABLE_NODE_UPDATE","Enable QueueNodeUpdate", StorageUtil.GetIntValue(none, "_SLH_NiNodeUpdateON") as Float )
 
-		AddHeaderOption(" Shape change method ")
- 		AddTextOption(" Pick one", "", OPTION_FLAG_DISABLED)
-		AddToggleOptionST("STATE_ENABLE_BASIC_NETIMMERSE","Enable Basic NetImmerse", StorageUtil.GetIntValue(none, "_SLH_BasicNetImmerseON") as Float)
+		AddHeaderOption("$SLH_hShapeChangeMethod")
+ 		AddTextOption("$SLH_hShapeChangePickOne", "", OPTION_FLAG_DISABLED)
+		AddToggleOptionST("STATE_ENABLE_BASIC_NETIMMERSE","$SLH_bENABLE_BASIC_NETIMMERSE", StorageUtil.GetIntValue(none, "_SLH_BasicNetImmerseON") as Float)
 		AddToggleOptionST("STATE_ENABLE_SLIF_OVERRIDE","$SLH_bENABLE_SLIF_OVERRIDE", StorageUtil.GetIntValue(none, "_SLH_SLIFOverrideON") as Float)
 		AddToggleOptionST("STATE_ENABLE_NODE_OVERRIDE","$SLH_bENABLE_NODE_OVERRIDE", StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON") as Float)
 		AddToggleOptionST("STATE_ENABLE_BODYMORPHS","Enable BodyMorphs", StorageUtil.GetIntValue(none, "_SLH_BodyMorphsON") as Float)
@@ -642,6 +642,14 @@ event OnPageReset(string a_page)
 		SetCursorFillMode(TOP_TO_BOTTOM)
 
 		AddHeaderOption("$SLH_hStatus")
+
+		If (StorageUtil.GetIntValue(none, "_SLH_iHormonesSleepInit")==0)
+			; Mod Init safety - sleep first
+			AddTextOption("Hormones is inactive (sleep first)", "", OPTION_FLAG_DISABLED)
+		Else
+			AddTextOption("Hormones is ACTIVE", "")
+		Endif
+
 		AddToggleOptionST("STATE_SELF_SPELLS","$SLH_bSELF_SPELLS", _allowSelfSpells as Float)
 		AddToggleOptionST("STATE_SHOW_STATUS","$SLH_bSHOW_STATUS", _showStatus as Bool)
 
