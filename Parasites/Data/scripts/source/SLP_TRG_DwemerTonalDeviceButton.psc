@@ -3,6 +3,7 @@ Scriptname SLP_TRG_DwemerTonalDeviceButton extends ObjectReference
 Quest Property QueenOfChaurusQuest  Auto 
 
 SLP_fcts_parasites Property fctParasites  Auto
+SLP_fcts_utils Property fctUtils  Auto
 
 SPELL Property UnrelentingForceSpell Auto
 
@@ -20,6 +21,7 @@ Actor Property ChaurusQueenDragon Auto
 Quest Property dunBlackreachDragonQST  Auto  
 
 Event OnActivate(ObjectReference akActionRef) 
+    Actor kPlayer = Game.GetPlayer()
 
 	if (QueenOfChaurusQuest.GetStageDone(390)==1) && (StorageUtil.GetIntValue(none, "_SLP_toggleTonalKey")==1)
     	Debug.Notification("[The button blinks rapidly]")
@@ -48,9 +50,14 @@ Event OnActivate(ObjectReference akActionRef)
 
     	DwemerTonalDeviceEffectsRef.disable()
 
-        ChaurusQueenInfectedAlias.ForceRefTo(DummyAlias)
 
         QueenOfChaurusQuest.SetStage(395)
+
+        ChaurusQueenInfectedAlias.ForceRefTo(DummyAlias)
+        fctUtils.removeFromFriendlyFaction( kPlayer, "Chaurus" )
+
+        ChaurusQueenDragon.StartCombat(kPlayer)
+
 
         Debug.MessageBox("The energy pulse from the device echoes through the caves. Before closing the Rift, the device briefly expands the doorway between world and lets the Queen go free. There can be only one Queen of the Chaurus. As long as you live, you will be a threat to the rightful Queen.")
 
