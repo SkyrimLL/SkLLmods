@@ -287,7 +287,7 @@ Event OnPCStartAlicia(String _eventName, String _args, Float _argc = -1.0, Form 
 
 	SendModEvent("_SLS_PlayerAlicia")
 
-	Debug.MessageBox("You wake up in a strange place. The last thing you remember are drinks, banter and singing in... a tavern maybe? This is so confusing. Is this a dream? or something else?")
+	Debug.MessageBox("You wake up in a strange place. You knew there was something off about the three stangers and their Honningbrew mead. The last thing you remember are drinks, banter, singing and drunken sex? This is so confusing. Is this a dream? or something else?")
 
 EndEvent
 

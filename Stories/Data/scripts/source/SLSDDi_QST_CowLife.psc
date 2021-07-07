@@ -652,10 +652,13 @@ Function UpdateMilkAfterOrgasm(Actor kActor, Int iMilkDateOffset)
 			endif
 
 		else
-			if (kActor == kPlayer)
-				Debug.Notification("Milk spills all over your chest.")
-			else
-				Debug.Notification("Milk spills all over her chest.")
+			; Hormones compatibility
+			If ( StorageUtil.GetFloatValue(kPlayer, "_SLH_fHormoneLactationMod") != 0.0) 		
+				if (kActor == kPlayer)
+					Debug.Notification("Milk spills all over your chest.")
+				else
+					Debug.Notification("Milk spills all over her chest.")
+				endif
 			endif
 
 			; SexLab.AddCum(kActor,False,True,False)
