@@ -931,7 +931,17 @@ Bool Function tryParasiteNextStage(Actor kActor, String sParasite)
 				 	elseif (iChaurusEggsCount>0)
 				 		fctParasiteEstrus.triggerEstrusChaurusBirth(  kActor, "ChaurusEgg", iChaurusEggsCount  )
 				 	endif
-				 	
+ 
+					Int iChaurusSkinColor = Math.LeftShift(255, 24) + Math.LeftShift(119, 16) + Math.LeftShift(193, 8) + 230
+					StorageUtil.SetIntValue(PlayerActor, "_SLH_iSkinColor", iChaurusSkinColor ) 
+					; StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast", 0.8 ) 
+					; StorageUtil.SetFloatValue(PlayerActor, "_SLH_fWeight", 20.0 ) 
+					StorageUtil.SetIntValue(PlayerActor, "_SLH_iForcedHairLoss", 1)
+					PlayerActor.SendModEvent("SLHShaveHead")
+					PlayerActor.SendModEvent("SLHRefresh")
+					PlayerActor.SendModEvent("SLHRefreshColors")
+
+					bSuccess = True
 				endif
 
 			else

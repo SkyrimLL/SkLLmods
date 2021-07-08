@@ -516,7 +516,6 @@ endState
 state STATE_CHAURUSWORM_TOGGLE ; TOGGLE
 	event OnSelectST() 
 		Int toggle = Math.LogicalXor( 1, StorageUtil.GetIntValue(kPlayer, "_SLP_toggleChaurusWorm" )   )
-		StorageUtil.SetIntValue(kPlayer, "_SLP_toggleChaurusWorm", toggle as Int )
 
 		If (toggle ==1)
 			Debug.MessageBox("Infecting player with Chaurus Worm")
@@ -620,7 +619,6 @@ endState
 state STATE_CHAURUSWORMVAG_TOGGLE ; TOGGLE
 	event OnSelectST() 
 		Int toggle = Math.LogicalXor( 1, StorageUtil.GetIntValue(kPlayer, "_SLP_toggleChaurusWormVag" )   )
-		StorageUtil.SetIntValue(kPlayer, "_SLP_toggleChaurusWormVag", toggle as Int )
 
 		If (toggle ==1)
 			Debug.MessageBox("Infecting player with vaginal Chaurus Worm")
@@ -1379,7 +1377,6 @@ endState
 state STATE_CHAURUSQUEENVAG_TOGGLE ; TOGGLE
 	event OnSelectST() 
 		Int toggle = Math.LogicalXor( 1, StorageUtil.GetIntValue(kPlayer, "_SLP_toggleChaurusQueenVag" )   )
-		StorageUtil.SetIntValue(kPlayer, "_SLP_toggleChaurusQueenVag", toggle as Int )
 
 		If (toggle ==1)
 			Debug.MessageBox("Infecting player with vaginal Chaurus Queen")
@@ -1409,7 +1406,6 @@ endState
 state STATE_CHAURUSQUEENGAG_TOGGLE ; TOGGLE
 	event OnSelectST() 
 		Int toggle = Math.LogicalXor( 1, StorageUtil.GetIntValue(kPlayer, "_SLP_toggleChaurusQueenGag" )   )
-		StorageUtil.SetIntValue(kPlayer, "_SLP_toggleChaurusQueenGag", toggle as Int )
 
 		If (toggle ==1)
 			Debug.MessageBox("Infecting player with Chaurus Queen mask")
@@ -1439,7 +1435,6 @@ endState
 state STATE_CHAURUSQUEENSKIN_TOGGLE ; TOGGLE
 	event OnSelectST() 
 		Int toggle = Math.LogicalXor( 1, StorageUtil.GetIntValue(kPlayer, "_SLP_toggleChaurusQueenSkin" )   )
-		StorageUtil.SetIntValue(kPlayer, "_SLP_toggleChaurusQueenSkin", toggle as Int )
 
 		If (toggle ==1)
 			Debug.MessageBox("Infecting player with Chaurus Queen Skin")
@@ -1470,7 +1465,6 @@ endState
 state STATE_CHAURUSQUEENARMOR_TOGGLE ; TOGGLE
 	event OnSelectST() 
 		Int toggle = Math.LogicalXor( 1, StorageUtil.GetIntValue(kPlayer, "_SLP_toggleChaurusQueenArmor" )   )
-		StorageUtil.SetIntValue(kPlayer, "_SLP_toggleChaurusQueenArmor", toggle as Int )
 
 		If (toggle ==1)
 			Debug.MessageBox("Infecting player with Chaurus Queen Armor")
@@ -1500,7 +1494,6 @@ endState
 state STATE_CHAURUSQUEENBODY_TOGGLE ; TOGGLE
 	event OnSelectST() 
 		Int toggle = Math.LogicalXor( 1, StorageUtil.GetIntValue(kPlayer, "_SLP_toggleChaurusQueenBody" )   )
-		StorageUtil.SetIntValue(kPlayer, "_SLP_toggleChaurusQueenBody", toggle as Int )
 
 		If (toggle ==1)
 			Debug.MessageBox("Infecting player with Chaurus Queen Body")

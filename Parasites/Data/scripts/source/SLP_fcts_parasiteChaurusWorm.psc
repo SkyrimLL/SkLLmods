@@ -298,12 +298,15 @@ Bool Function isInfectedByString( Actor akActor,  String sParasite  )
 	; By order of complexity
 
 	if (akActor && sParasite && (StorageUtil.GetIntValue(akActor, "_SLP_toggle" + sParasite)==1) )
+		; debug.trace("[SLP] isInfectedByString: checking storageUtil [_SLP_toggle" + sParasite +"] : " + (StorageUtil.GetIntValue(akActor, "_SLP_toggle" + sParasite)) )
 		isInfected = True
 
 	elseif (akActor && sParasite && (StorageUtil.GetIntValue(akActor, "_SLP_iHiddenParasite_" + sParasite)==1) )
+		; debug.trace("[SLP] isInfectedByString: checking storageUtil [_SLP_iHiddenParasite_" + sParasite +"] : " + (StorageUtil.GetIntValue(akActor, "_SLP_iHiddenParasite_" + sParasite)) )
 		isInfected = True
 
 	elseif (akActor && sParasite && akActor.WornHasKeyword(getDeviousKeywordByString(sParasite)) )
+		; debug.trace("[SLP] isInfectedByString: worn keyword: " + akActor.WornHasKeyword(getDeviousKeywordByString(sParasite)) )
 		isInfected = True
 	Endif
 

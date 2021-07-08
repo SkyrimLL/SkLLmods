@@ -13,6 +13,7 @@ Spell Property _SLP_SP_SprigganAttack Auto
 SPELL Property _SLP_SP_SprigganDefenseCloak  Auto  
 
 Spell Property Oakflesh Auto
+SPELL Property _SLP_SP_SprigganRootArmor  Auto  
 
 Sound Property CritterFX  Auto
 
@@ -86,19 +87,19 @@ Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile,
 				Utility.Wait(1.0)
 
 				If (iRandomNum>97)  
-					Debug.Trace("[SLP_aliasSprigganRoot] Cast Call Creatures spell" )
+					; Debug.Trace("[SLP_aliasSprigganRoot] Cast Call Creatures spell" )
 					Debug.Notification("The roots call out for help." )
 					_SLP_SP_SprigganCallCreatures.Cast(kPlayer as ObjectReference ,  kPlayer as ObjectReference ) 
 
 				elseIf (iRandomNum>80)  
 					; Debug.Trace("[SLP_aliasSprigganRoot] Cast Tentacle attack spell" )
-					Debug.Notification("The roots unleashes needles to protect you" )
+					Debug.Notification("The roots unleash needles to protect you" )
 					_SLP_SP_SprigganDefenseCloak.Cast(kPlayer as ObjectReference ,  kAgressor as ObjectReference ) 
 
 				elseIf (iRandomNum>50)  
-					Debug.Trace("[SLP_aliasSprigganRoot] Cast Tentacle attack spell" )
+					; Debug.Trace("[SLP_aliasSprigganRoot] Cast Spriggan Root Armor spell" )
 					Debug.Notification("The roots harden around you" )
-					Oakflesh.Cast(kPlayer as ObjectReference ,  kPlayer as ObjectReference ) 
+					_SLP_SP_SprigganRootArmor.Cast(kPlayer as ObjectReference ,  kPlayer as ObjectReference ) 
 
 				else 
 					Debug.trace("[SLP_aliasSprigganRoot] No protection - better luck next time" )
@@ -109,6 +110,7 @@ Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile,
 	EndIf
 
 EndEvent
+
 
 
 

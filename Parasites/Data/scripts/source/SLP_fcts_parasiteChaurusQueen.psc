@@ -158,7 +158,6 @@ Function refreshParasite(Actor kActor, String sParasite)
 			StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenVag", 1)
 			equipParasiteNPCByString (kActor, "ChaurusQueenVag")
 
-
 		Else
 			StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenVag", 0)
 			clearParasiteNPCByString (kActor, "ChaurusQueenVag")

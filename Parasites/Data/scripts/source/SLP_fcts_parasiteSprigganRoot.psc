@@ -30,6 +30,7 @@ ReferenceAlias Property SprigganRootInfectedAlias  Auto
 ObjectReference Property DummyAlias  Auto  
 
 SPELL Property SprigganFlare Auto
+SPELL Property _SLP_SP_SprigganRootArmor Auto
 
 Sound Property CritterFX  Auto
 Sound Property WetFX  Auto
@@ -230,7 +231,7 @@ Bool Function infectSprigganRootArms( Actor kActor  )
 		Return False
 	Endif
 
-	SprigganFlare.Cast(kActor as ObjectReference, kActor as ObjectReference)	
+	_SLP_SP_SprigganRootArmor.Cast(kActor as ObjectReference, kActor as ObjectReference)	
 	equipParasiteNPCByString (kActor, "SprigganRootArms")
 
 	Return  true; applyFaceHuggerGag( kActor )
@@ -336,7 +337,7 @@ Bool Function infectSprigganRootFeet( Actor kActor  )
 		Return False
 	Endif
 
-	SprigganFlare.Cast(kActor as ObjectReference, kActor as ObjectReference)	
+	_SLP_SP_SprigganRootArmor.Cast(kActor as ObjectReference, kActor as ObjectReference)	
 	equipParasiteNPCByString (kActor, "SprigganRootFeet")
 
 	Return  true; applyFaceHuggerGag( kActor )
@@ -438,7 +439,7 @@ Bool Function infectSprigganRootBody( Actor kActor  )
 		Return False
 	Endif
 
-	SprigganFlare.Cast(kActor as ObjectReference, kActor as ObjectReference)	
+	_SLP_SP_SprigganRootArmor.Cast(kActor as ObjectReference, kActor as ObjectReference)	
 	equipParasiteNPCByString (kActor, "SprigganRootBody")
 
 	Return  true; applyFaceHuggerGag( kActor )
@@ -547,7 +548,7 @@ Bool Function infectSprigganRootGag( Actor kActor  )
 		Return False
 	Endif
 
-	SprigganFlare.Cast(kActor as ObjectReference, kActor as ObjectReference)	
+	_SLP_SP_SprigganRootArmor.Cast(kActor as ObjectReference, kActor as ObjectReference)	
 	equipParasiteNPCByString (kActor, "SprigganRootGag")
 
 	Return  true; applyFaceHuggerGag( kActor )

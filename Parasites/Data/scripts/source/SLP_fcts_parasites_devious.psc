@@ -175,7 +175,7 @@ Function equipParasiteNPC ( Actor akActor, String sParasiteString = "", Keyword 
 	If (kwDeviceKeyword != None)
 
 		if !akActor.WornHasKeyword(kwDeviceKeyword)
-			Debug.Trace("[SLP]equipParasiteByString: " + sParasiteString)  
+			Debug.Trace("[SLP] equipParasiteByString: " + sParasiteString)  
 			Debug.Trace("[SLP]		keyword: " + kwDeviceKeyword)  
 
 
@@ -187,11 +187,11 @@ Function equipParasiteNPC ( Actor akActor, String sParasiteString = "", Keyword 
 
  
 		else
-			Debug.Trace("[SLP]player is already wearing: " + sParasiteString)  
+			Debug.Trace("[SLP] player is already wearing: " + sParasiteString)  
 		endIf
 
 	else
-		Debug.Trace("[SLP]unknown device to equip " )  
+		Debug.Trace("[SLP] unknown device to equip " )  
 
 	endif
 EndFunction
@@ -208,8 +208,8 @@ Function clearParasiteNPC ( Actor akActor, String sParasiteString = "", Keyword 
 		if akActor.WornHasKeyword(kwDeviceKeyword)
 			; RemoveDevice(actor akActor, armor deviceInventory, armor deviceRendered, keyword zad_DeviousDevice, bool destroyDevice=false, bool skipEvents=false, bool skipMutex=false)
 
-			Debug.Trace("[SLP]clearing device string: " + sParasiteString)  
-			Debug.Trace("[SLP]clearing device keyword: " + kwDeviceKeyword)  
+			Debug.Trace("[SLP] clearing device string: " + sParasiteString)  
+			Debug.Trace("[SLP] clearing device keyword: " + kwDeviceKeyword)  
   
 			aRenderedDevice = libs.GetRenderedDevice(aWornDevice) as Armor ; getParasiteRenderedByKeyword(kwDeviceKeyword) 
 
@@ -223,11 +223,11 @@ Function clearParasiteNPC ( Actor akActor, String sParasiteString = "", Keyword 
   
 
 		else
-			Debug.Trace("[SLP]player is not wearing: " + sParasiteString)  
+			Debug.Trace("[SLP] player is not wearing: " + sParasiteString)  
 		endIf
 
 	else
-		Debug.Trace("[SLP]unknown device to clear " )  
+		Debug.Trace("[SLP] unknown device to clear " )  
 
 	endif
 EndFunction
@@ -237,7 +237,7 @@ Bool Function equipParasiteDD ( Actor akActor, Armor ddArmorInventory, Armor ddA
 	Keyword kwWornKeyword
 	Bool bDeviceEquipSuccess = False
 
-	libs.Log("[SLP]equipParasite " )
+	libs.Log("[SLP] equipParasite " )
 
 	if (ddArmorKeyword != None)
 		if (!akActor.WornHasKeyword(ddArmorKeyword))
@@ -248,7 +248,7 @@ Bool Function equipParasiteDD ( Actor akActor, Armor ddArmorInventory, Armor ddA
 			libs.Log("[SLP]  	skipped - device already equipped " )
 		EndIf
 	Else
-		Debug.Notification("[SLP]equipParasite - bad keyword " )
+		Debug.Notification("[SLP] equipParasite - bad keyword " )
 	endIf
 
 	return bDeviceEquipSuccess
@@ -260,9 +260,9 @@ Bool Function clearParasiteDD ( Actor akActor, Armor ddArmorInventory, Armor ddA
 	Bool bDeviceRemoveSuccess = False
 
 	If (bDestroy)
-		libs.Log("[SLP]clearParasite - destroy: " + ddArmorKeyword )
+		libs.Log("[SLP] clearParasite - destroy: " + ddArmorKeyword )
 	Else
-		libs.Log("[SLP]clearParasite - remove: " + ddArmorKeyword  )
+		libs.Log("[SLP] clearParasite - remove: " + ddArmorKeyword  )
 	endIf
 
 	; RemoveDevice(actor akActor, armor deviceInventory, armor deviceRendered, keyword zad_DeviousDevice, bool destroyDevice=false, bool skipEvents=false, bool skipMutex=false)
