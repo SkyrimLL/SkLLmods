@@ -604,8 +604,8 @@ Event OnSexLabEnd(int threadID, bool HasPlayer)
 			fChanceChaurusWormVag = fChanceChaurusWormVag + 50.0
 			fChanceSpiderPenis = 0.0
 			fChanceSpiderEgg = fChanceSpiderEgg + 50.0
-			debug.Notification("The tentacle retracts inside you.")
-			fctParasites.cureParasiteByString(PlayerActor, "ChaurusQueenVag")
+			; debug.Notification("The tentacle retracts inside you.")
+			; fctParasites.cureParasiteByString(PlayerActor, "ChaurusQueenVag")
 
 		ElseIf (fctParasites.isInfectedByString(PlayerActor, "ChaurusQueenSkin"))
 			; Player is more receptive if the breast feelers are extended

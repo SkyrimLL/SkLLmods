@@ -20,6 +20,9 @@ SPELL Property ChaurusMask Auto
 Spell Property CallSpawns Auto
 Spell Property DismissSpawns Auto
 
+SPELL Property ChaurusBlade Auto
+SPELL Property ChaurusClaw Auto
+
 
 Event OnEffectStart(Actor Target, Actor Caster)
 	Actor kPlayer = Game.GetPlayer()
@@ -40,6 +43,8 @@ Event OnEffectStart(Actor Target, Actor Caster)
 
 	kPlayer.AddSpell( CallSpawns ) 
 	kPlayer.AddSpell( DismissSpawns ) 
+	kPlayer.AddSpell( ChaurusBlade ) 
+	kPlayer.AddSpell( ChaurusClaw ) 
 
 
 	If (StorageUtil.GetIntValue(none, "_SLS_isEstrusChaurusON") ==  1) 

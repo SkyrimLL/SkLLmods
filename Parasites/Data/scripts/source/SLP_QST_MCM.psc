@@ -377,6 +377,9 @@ event OnPageReset(string a_page)
 			AddTextOption("     Animated Wings Ultimate detected", "", OPTION_FLAG_DISABLED)
 		endif
 
+		AddTextOption("     Spider Eggs: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iSpiderEggCount" ) as Int, "", OPTION_FLAG_DISABLED)
+		AddTextOption("     Chaurus Eggs: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iChaurusEggCount" ) as Int, "", OPTION_FLAG_DISABLED)
+
 	endIf
 endEvent
 

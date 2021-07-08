@@ -43,12 +43,12 @@ Bool Function infectEstrusTentacles( Actor kActor  )
   	endIf
  
 	If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceEstrusTentacles" )==0.0)
-		Debug.Trace("[SLP]	Parasite disabled - Aborting")
+		Debug.Trace("[SLP]	infectEstrusTentacles - Parasite disabled - Aborting")
 		Return False
 	Endif
 
 	If (!fctUtils.isFemale( kActor))
-		Debug.Trace("[SLP]	Actor is not female - Aborting")
+		Debug.Trace("[SLP]	infectEstrusTentacles - Actor is not female - Aborting")
 		Return False
 	Endif
 	
@@ -63,7 +63,7 @@ Bool Function infectEstrusTentacles( Actor kActor  )
 				Debug.MessageBox("The ground shakes as slimy tentacles shoot up.")
 			endif
 	Else
-		Debug.Trace("[SLP]Estrust Tentacles / Tentacle Monster infection failed")
+		Debug.Trace("[SLP] Estrust Tentacles / Tentacle Monster infection failed")
 		Debug.Trace("[SLP]  Vaginal Plug: " + fctDevious.ActorHasKeywordByString(kActor,  "PlugVaginal")) 
 		Debug.Trace("[SLP]  Harness: " + fctDevious.ActorHasKeywordByString(kActor,  "Harness")) 
 		Debug.Trace("[SLP]  Chance infection: " + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceTentacleMonster" ))
@@ -80,9 +80,13 @@ Bool Function infectEstrusTentacles( Actor kActor  )
 	    ModEvent.Pushint(ECTrap, 500)           ; Int  Alarm radius in units (0 to disable) 
 	    ModEvent.PushBool(ECTrap, true)         ; Bool Use EC (basic) crowd control on hostiles 
 	    ModEvent.Send(ECtrap)
+
+		Debug.Trace("[SLP] Estrus Chaurus Tentacles infection sent")
 	else
 		triggerFuroTub( PlayerActor, "")
 
+
+		Debug.Trace("[SLP] Estrus Chaurus Tentacles infection failed")
 	endif
 
 	Return applyEstrusTentacles( kActor  )
@@ -129,12 +133,12 @@ Bool Function infectEstrusSlime( Actor kActor  )
   	endIf
  
 	If (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceEstrusSlime" )==0.0)
-		Debug.Trace("[SLP]	Parasite disabled - Aborting")
+		Debug.Trace("[SLP]	infectEstrusSlime - Parasite disabled - Aborting")
 		Return False
 	Endif
 
 	If (!fctUtils.isFemale( kActor))
-		Debug.Trace("[SLP]	Actor is not female - Aborting")
+		Debug.Trace("[SLP]	infectEstrusSlime - Actor is not female - Aborting")
 		Return False
 	Endif
 	
@@ -148,7 +152,7 @@ Bool Function infectEstrusSlime( Actor kActor  )
 				Debug.MessageBox("What looked like creepy clusters suddenly extends tentacles around.")
 			endif
 	Else
-		Debug.Trace("[SLP]Estrust Slime infection failed")
+		Debug.Trace("[SLP] Estrust Slime infection failed")
 		Debug.Trace("[SLP]  Harness: " + fctDevious.ActorHasKeywordByString(kActor,  "Harness")) 
 		Debug.Trace("[SLP]  Chance infection: " + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceLivingArmor" ))
 	EndIf
@@ -164,9 +168,12 @@ Bool Function infectEstrusSlime( Actor kActor  )
 	    ModEvent.Pushint(ECTrap, 500)           ; Int  Alarm radius in units (0 to disable) 
 	    ModEvent.PushBool(ECTrap, true)         ; Bool Use EC (basic) crowd control on hostiles 
 	    ModEvent.Send(ECtrap)
+
+		Debug.Trace("[SLP] Estrus Slime infection sent")
 	else
 		triggerFuroTub( PlayerActor, "")
 
+		Debug.Trace("[SLP] Estrus Slime infection failed")
 	endif
 
 	Return applyEstrusSlime( kActor  )
@@ -215,7 +222,7 @@ Bool Function infectEstrusChaurusEgg( Actor kActor )
   	endIf
 
 	If (!fctUtils.isFemale( kActor))
-		Debug.Trace("[SLP]	Actor is not female - Aborting")
+		Debug.Trace("[SLP]	infectEstrusChaurusEgg - Actor is not female - Aborting")
 		Return False
 	Endif
 
@@ -235,8 +242,10 @@ Bool Function infectEstrusChaurusEgg( Actor kActor )
 	    ModEvent.Pushint(ECTrap, 500)           ; Int  Alarm radius in units (0 to disable) 
 	    ModEvent.PushBool(ECTrap, true)         ; Bool Use EC (basic) crowd control on hostiles 
 	    ModEvent.Send(ECtrap)
+
+		Debug.Trace("[SLP] Estrus Chaurus Egg infection sent")
 	Else
-		Debug.Trace("[SLP]Estrus Chaurus Egg infection failed")
+		Debug.Trace("[SLP] Estrus Chaurus Egg infection failed")
 		triggerFuroTub( PlayerActor, "")
 	endif
 
@@ -253,7 +262,7 @@ Bool Function infectEstrusChaurusEggSilent( Actor kActor )
   	endIf
 
 	If (!fctUtils.isFemale( kActor))
-		Debug.Trace("[SLP]	Actor is not female - Aborting")
+		Debug.Trace("[SLP]	infectEstrusChaurusEggSilent - Actor is not female - Aborting")
 		Return False
 	Endif
 
@@ -273,8 +282,10 @@ Bool Function infectEstrusChaurusEggSilent( Actor kActor )
 	    ModEvent.Pushint(ECTrap, 500)           ; Int  Alarm radius in units (0 to disable) 
 	    ModEvent.PushBool(ECTrap, true)         ; Bool Use EC (basic) crowd control on hostiles 
 	    ModEvent.Send(ECtrap)
+
+		Debug.Trace("[SLP] Estrus Chaurus Silent Egg infection sent")
 	Else
-		Debug.Trace("[SLP]Estrus Chaurus Egg infection failed")
+		Debug.Trace("[SLP] Estrus Chaurus Silent Egg infection failed")
 		triggerFuroTub( PlayerActor, "")
 	endif
 

@@ -40,6 +40,15 @@ Event OnEffectStart(Actor Target, Actor Caster)
 	 			fctParasites.cureParasiteByString(kPlayer, "Barnacles")
 	 		endif
 
+
+	 		if (fctParasites.isInfectedByString( kPlayer,  "SprigganRootArms" )) 
+	 			fctParasites.cureParasiteByString(kPlayer, "SprigganRootArms")
+	 		endif
+
+	 		if (fctParasites.isInfectedByString( kPlayer,  "SprigganRootBody" )) 
+	 			fctParasites.cureParasiteByString(kPlayer, "SprigganRootBody")
+	 		endif
+	 		
 	 		if (fctParasites.isInfectedByString( kPlayer,  "ChaurusQueenSkin" ))
 	 			fctParasites.cureParasiteByString(kPlayer, "ChaurusQueenSkin")
 	 		endif
