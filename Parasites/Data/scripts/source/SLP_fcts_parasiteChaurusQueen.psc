@@ -930,22 +930,26 @@ EndFunction
 
 ;------------------------------------------------------------------------------
 Function extendChaurusWeapon(Actor kActor, String sBladeType)
-	if (sBladeType == "ChaurusBlade") && (!kActor.WornHasKeyword((_SLP_ParasiteChaurusBlade)))
+	if (sBladeType == "ChaurusBlade") ; && (!kActor.WornHasKeyword((_SLP_ParasiteChaurusBlade)))
+		debug.trace("[SLP] SLP_fcts_parasiteChaurusQueen extendChaurusWeapon - ChaurusBlade")
 		ChaurusBlade.Cast(kActor as ObjectReference , kActor as ObjectReference ) 
 		StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenWeapon", 1)
 		
-	elseif (sBladeType == "ChaurusClaw") && (!kActor.WornHasKeyword((_SLP_ParasiteChaurusClaw)))
+	elseif (sBladeType == "ChaurusClaw") ; && (!kActor.WornHasKeyword((_SLP_ParasiteChaurusClaw)))
+		debug.trace("[SLP] SLP_fcts_parasiteChaurusQueen extendChaurusWeapon - ChaurusClaw")
 		ChaurusClaw.Cast(kActor as ObjectReference , kActor as ObjectReference ) 
 		StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenWeapon", 1)
 	endif
 EndFunction
 
 Function retractChaurusWeapon(Actor kActor, String sBladeType)
-	if (sBladeType == "ChaurusBlade") && (kActor.WornHasKeyword((_SLP_ParasiteChaurusBlade)))
+	if (sBladeType == "ChaurusBlade") ; && (kActor.WornHasKeyword((_SLP_ParasiteChaurusBlade)))
+		debug.trace("[SLP] SLP_fcts_parasiteChaurusQueen retractChaurusWeapon - ChaurusBlade")
 		kActor.DispelSpell(ChaurusBlade) 
 		StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenWeapon", 0)
 
-	elseif (sBladeType == "ChaurusClaw") && (!kActor.WornHasKeyword((_SLP_ParasiteChaurusClaw)))
+	elseif (sBladeType == "ChaurusClaw") ; && (!kActor.WornHasKeyword((_SLP_ParasiteChaurusClaw)))
+		debug.trace("[SLP] SLP_fcts_parasiteChaurusQueen retractChaurusWeapon - ChaurusClaw")
 		kActor.DispelSpell(ChaurusClaw) 
 		StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenWeapon", 0)
 	endif

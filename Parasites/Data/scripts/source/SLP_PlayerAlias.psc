@@ -447,7 +447,7 @@ Event OnUpdate()
 				elseIf (fctParasites.isInfectedByString( PlayerActor,  "ChaurusQueenBody" ))
 					fctParasites.extendChaurusWeapon( PlayerActor,  "ChaurusClaw") 
 				endif
-			elseif  (StorageUtil.GetIntValue(PlayerActor, "_SLP_toggleChaurusQueenWeapon")== 0)
+			elseif  (!PlayerActor.IsInCombat()) && (StorageUtil.GetIntValue(PlayerActor, "_SLP_toggleChaurusQueenWeapon")== 1)
 				If (fctParasites.isInfectedByString( PlayerActor,  "ChaurusQueenArmor" ))
 					fctParasites.retractChaurusWeapon( PlayerActor,  "ChaurusBlade")
 					
