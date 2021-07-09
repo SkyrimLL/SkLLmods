@@ -377,6 +377,7 @@ event OnPageReset(string a_page)
 			AddTextOption("     Animated Wings Ultimate detected", "", OPTION_FLAG_DISABLED)
 		endif
 
+		AddTextOption("     Chaurus Queen Weapons equipped: " + StorageUtil.GetIntValue(kPlayer, "_SLP_toggleChaurusQueenWeapon") as Int, "", OPTION_FLAG_DISABLED)
 		AddTextOption("     Spider Eggs: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iSpiderEggCount" ) as Int, "", OPTION_FLAG_DISABLED)
 		AddTextOption("     Chaurus Eggs: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iChaurusEggCount" ) as Int, "", OPTION_FLAG_DISABLED)
 

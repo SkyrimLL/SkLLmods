@@ -1471,7 +1471,13 @@ Function getRandomChaurusEggs(Actor kActor, int iMinEggs = 0, int iMaxEggs = 20 
 	fctParasiteChaurusQueen.getRandomChaurusEggs(kActor, iMinEggs , iMaxEggs )
 EndFunction
  
+Function extendChaurusWeapon(Actor kActor, String sBladeType)
+	fctParasiteChaurusQueen.extendChaurusWeapon( kActor,  sBladeType)
+EndFunction
 
+Function retractChaurusWeapon(Actor kActor, String sBladeType)
+	fctParasiteChaurusQueen.retractChaurusWeapon( kActor,  sBladeType)
+EndFunction
 ; -------------------------------------------------------
 Function maintenance()
  	Actor PlayerActor= Game.GetPlayer() as Actor

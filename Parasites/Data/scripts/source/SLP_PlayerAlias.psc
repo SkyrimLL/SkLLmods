@@ -427,7 +427,7 @@ Event OnUpdate()
 		iChaurusQueenDate = StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusQueenDate")
 
 		; Enable Chaurus Queen flares only if player is not Queen and not infected by Spriggan root
-		if (iChaurusQueenStage>=1) && (iChaurusQueenStage<5)
+		if (iChaurusQueenStage>=1) && (iChaurusQueenStage<=5)
 			;StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusQueenDate")==0
 			iParasiteDuration = daysPassed - StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusQueenDate")
 			If (Utility.RandomInt(0,100) > _getParasiteTickerThreshold(PlayerActor, iNextStageTicker, iParasiteDuration, "ChaurusQueen") )
@@ -436,6 +436,25 @@ Event OnUpdate()
 			 		iNextStageTicker = 0
 			 	endif
 			 endif
+		endif
+
+		If (iChaurusQueenStage>=5) 
+			; player is Queen and in combat, apply or remove claws automatically
+			if (PlayerActor.IsInCombat()) && (StorageUtil.GetIntValue(PlayerActor, "_SLP_toggleChaurusQueenWeapon")== 0)
+				If (fctParasites.isInfectedByString( PlayerActor,  "ChaurusQueenArmor" ))
+					fctParasites.extendChaurusWeapon( PlayerActor,  "ChaurusBlade") 
+					
+				elseIf (fctParasites.isInfectedByString( PlayerActor,  "ChaurusQueenBody" ))
+					fctParasites.extendChaurusWeapon( PlayerActor,  "ChaurusClaw") 
+				endif
+			elseif  (StorageUtil.GetIntValue(PlayerActor, "_SLP_toggleChaurusQueenWeapon")== 0)
+				If (fctParasites.isInfectedByString( PlayerActor,  "ChaurusQueenArmor" ))
+					fctParasites.retractChaurusWeapon( PlayerActor,  "ChaurusBlade")
+					
+				elseIf (fctParasites.isInfectedByString( PlayerActor,  "ChaurusQueenBody" ))
+					fctParasites.retractChaurusWeapon( PlayerActor,  "ChaurusClaw")
+				endif
+			Endif
 		endif
 
 

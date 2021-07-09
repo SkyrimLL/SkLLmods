@@ -14,6 +14,8 @@ Keyword Property _SLP_ParasiteChaurusQueenSkin Auto
 Keyword Property _SLP_ParasiteChaurusQueenArmor Auto  
 Keyword Property _SLP_ParasiteChaurusQueenBody Auto  
 Keyword Property _SLP_ParasiteChaurusQueenVag Auto  
+Keyword Property _SLP_ParasiteChaurusBlade Auto  
+Keyword Property _SLP_ParasiteChaurusClaw Auto  
 
 GlobalVariable Property _SLP_GV_numInfections  Auto 
 
@@ -42,6 +44,9 @@ Sound Property WetFX  Auto
 Sound Property SummonSoundFX  Auto
 
 SPELL Property SeedFlare Auto
+SPELL Property ChaurusBlade Auto
+SPELL Property ChaurusClaw Auto
+
 
 Ingredient  Property SmallSpiderEgg Auto
 Ingredient Property ChaurusEgg  Auto  
@@ -922,6 +927,29 @@ Function getRandomChaurusEggs(Actor kActor, int iMinEggs = 0, int iMaxEggs = 20 
 EndFunction
 
 
+
+;------------------------------------------------------------------------------
+Function extendChaurusWeapon(Actor kActor, String sBladeType)
+	if (sBladeType == "ChaurusBlade") && (!kActor.WornHasKeyword((_SLP_ParasiteChaurusBlade)))
+		ChaurusBlade.Cast(kActor as ObjectReference , kActor as ObjectReference ) 
+		StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenWeapon", 1)
+		
+	elseif (sBladeType == "ChaurusClaw") && (!kActor.WornHasKeyword((_SLP_ParasiteChaurusClaw)))
+		ChaurusClaw.Cast(kActor as ObjectReference , kActor as ObjectReference ) 
+		StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenWeapon", 1)
+	endif
+EndFunction
+
+Function retractChaurusWeapon(Actor kActor, String sBladeType)
+	if (sBladeType == "ChaurusBlade") && (kActor.WornHasKeyword((_SLP_ParasiteChaurusBlade)))
+		kActor.DispelSpell(ChaurusBlade) 
+		StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenWeapon", 0)
+
+	elseif (sBladeType == "ChaurusClaw") && (!kActor.WornHasKeyword((_SLP_ParasiteChaurusClaw)))
+		kActor.DispelSpell(ChaurusClaw) 
+		StorageUtil.SetIntValue(kActor, "_SLP_toggleChaurusQueenWeapon", 0)
+	endif
+EndFunction
 
 ;------------------------------------------------------------------------------
 Bool Function isInfectedByString( Actor akActor,  String sParasite  )
