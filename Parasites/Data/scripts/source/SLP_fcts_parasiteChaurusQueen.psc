@@ -135,12 +135,13 @@ Function applyBaseChaurusQueenSkin()
 	Float fWeight
 	Float NeckDelta
 
-	pLeveledActorBase.SetWeight(fWeightOrig)
-	pLeveledActorBase.SetSkin(_SLP_skinChaurusQueenNaked)
-	fWeight = pLeveledActorBase.GetWeight()
-	NeckDelta = (fWeightOrig / 100) - (fWeight / 100)
-	PlayerActor.UpdateWeight(NeckDelta) ;Apply the changes.
-
+	if (StorageUtil.GetIntValue(PlayerActor, "_SLP_toggleChaurusQueenBaseSkin" )==1)
+		pLeveledActorBase.SetWeight(fWeightOrig)
+		pLeveledActorBase.SetSkin(_SLP_skinChaurusQueenNaked)
+		fWeight = pLeveledActorBase.GetWeight()
+		NeckDelta = (fWeightOrig / 100) - (fWeight / 100)
+		PlayerActor.UpdateWeight(NeckDelta) ;Apply the changes.
+	endif
 
 EndFunction
 

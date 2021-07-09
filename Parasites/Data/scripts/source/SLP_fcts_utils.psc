@@ -351,6 +351,8 @@ endFunction
 
 ;------------------------------------------------------------------------------
 Function FalmerBlue(Actor kActor, Actor kTarget)
+	Actor PlayerActor = Game.GetPlayer()
+
 	If (StorageUtil.GetIntValue(none, "_SLH_iHormones")==1)
 		Int iFalmerSkinColor = Math.LeftShift(255, 24) + Math.LeftShift(100, 16) + Math.LeftShift(200, 8) + 255
 		Float breastMod = 0.05
@@ -364,15 +366,19 @@ Function FalmerBlue(Actor kActor, Actor kTarget)
 				Debug.MessageBox("Glowing fluids spread from the Falmer's skin across yours like quicksilver, making your nipples stiffen and tingle painfully with poisonous throbs. ")
 				breastMod = 0.5
 				weightMod = 15.0
-				StorageUtil.SetIntValue(none, "_SLH_iForcedHairLoss", 1)
-				kTarget.SendModEvent("SLHShaveHead")
+				if (StorageUtil.GetIntValue(PlayerActor, "_SLP_toggleHairloss" )==1)
+					StorageUtil.SetIntValue(none, "_SLH_iForcedHairLoss", 1)
+					kTarget.SendModEvent("SLHShaveHead")
+				endif
 
 			ElseIf (randomNum>60)
 				Debug.MessageBox("The purpose of the glowing substance is clear to you now, fattening you up for breeding and turning you into an irresistible beacon for the Falmers and their pets.")
 				breastMod = 0.25
 				weightMod = 10.0
-				StorageUtil.SetIntValue(none, "_SLH_iForcedHairLoss", 1)
-				kTarget.SendModEvent("SLHShaveHead")
+				if (StorageUtil.GetIntValue(PlayerActor, "_SLP_toggleHairloss" )==1)
+					StorageUtil.SetIntValue(none, "_SLH_iForcedHairLoss", 1)
+					kTarget.SendModEvent("SLHShaveHead")
+				endif
 
 			ElseIf (randomNum>40)
 				Debug.Notification("Your skin burns under glowing droplets.")
@@ -388,11 +394,13 @@ Function FalmerBlue(Actor kActor, Actor kTarget)
 
 		EndIf
 
-		StorageUtil.SetIntValue(kTarget, "_SLH_iSkinColor", iFalmerSkinColor ) 
-		StorageUtil.SetFloatValue(kTarget, "_SLH_fBreast", StorageUtil.GetFloatValue(kTarget, "_SLH_fBreast" ) + breastMod ) 
-		StorageUtil.SetFloatValue(kTarget, "_SLH_fWeight", StorageUtil.GetFloatValue(kTarget, "_SLH_fWeight" ) + weightMod ) 
-		kTarget.SendModEvent("SLHRefresh")
-		kTarget.SendModEvent("SLHRefreshColors")
+		if (StorageUtil.GetIntValue(PlayerActor, "_SLP_toggleSkinColorChanges" )==1)
+			StorageUtil.SetIntValue(kTarget, "_SLH_iSkinColor", iFalmerSkinColor ) 
+			StorageUtil.SetFloatValue(kTarget, "_SLH_fBreast", StorageUtil.GetFloatValue(kTarget, "_SLH_fBreast" ) + breastMod ) 
+			StorageUtil.SetFloatValue(kTarget, "_SLH_fWeight", StorageUtil.GetFloatValue(kTarget, "_SLH_fWeight" ) + weightMod ) 
+			kTarget.SendModEvent("SLHRefresh")
+			kTarget.SendModEvent("SLHRefreshColors")
+		endif
 
 
 		if (Utility.RandomInt(0,100)>90)

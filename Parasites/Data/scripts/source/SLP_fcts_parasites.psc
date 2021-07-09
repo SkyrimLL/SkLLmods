@@ -823,16 +823,20 @@ Bool Function tryParasiteNextStage(Actor kActor, String sParasite)
 					debugTrace("[SLP]    Effect - Spriggan Root effect")
 					
 					debug.notification("The roots take a toll on your body.") 
-	 
-					Int iSprigganSkinColor = Math.LeftShift(255, 24) + Math.LeftShift(196, 16) + Math.LeftShift(238, 8) + 218
-					StorageUtil.SetIntValue(PlayerActor, "_SLH_iSkinColor", iSprigganSkinColor ) 
-					StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast", 0.8 ) 
-					StorageUtil.SetFloatValue(PlayerActor, "_SLH_fWeight", 20.0 ) 
-					StorageUtil.SetIntValue(PlayerActor, "_SLH_iForcedHairLoss", 1)
-					PlayerActor.SendModEvent("SLHShaveHead")
-					PlayerActor.SendModEvent("SLHRefresh")
-					PlayerActor.SendModEvent("SLHRefreshColors")
+	 	
+	 				if (StorageUtil.GetIntValue(PlayerActor, "_SLP_toggleSkinColorChanges" )==1)
+						Int iSprigganSkinColor = Math.LeftShift(255, 24) + Math.LeftShift(196, 16) + Math.LeftShift(238, 8) + 218
+						StorageUtil.SetIntValue(PlayerActor, "_SLH_iSkinColor", iSprigganSkinColor ) 
+						StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast", 0.8 ) 
+						StorageUtil.SetFloatValue(PlayerActor, "_SLH_fWeight", 20.0 ) 
+						PlayerActor.SendModEvent("SLHRefresh")
+						PlayerActor.SendModEvent("SLHRefreshColors")
+					endif
 
+					if (StorageUtil.GetIntValue(PlayerActor, "_SLP_toggleHairloss" )==1)
+						StorageUtil.SetIntValue(PlayerActor, "_SLH_iForcedHairLoss", 1)
+						PlayerActor.SendModEvent("SLHShaveHead")
+					endif
 					bSuccess = True
 				endif
 			endif 
@@ -924,22 +928,38 @@ Bool Function tryParasiteNextStage(Actor kActor, String sParasite)
 				tryPlayerSpiderStage()
 
 				; producing new eggs as a queen - revisit later
-				; decrease chance of eggs with number of days since last sex with chaurus
-				if (iChaurusQueenStage>=3) && (QueenOfChaurusQuest.GetStageDone(400)) && (Utility.RandomInt(0,100)<10)
-				 	if (iChaurusEggsCount>5)
-				 		fctParasiteEstrus.triggerEstrusChaurusBirth(  kActor, "ChaurusEgg", 5  )
-				 	elseif (iChaurusEggsCount>0)
-				 		fctParasiteEstrus.triggerEstrusChaurusBirth(  kActor, "ChaurusEgg", iChaurusEggsCount  )
-				 	endif
- 
-					Int iChaurusSkinColor = Math.LeftShift(255, 24) + Math.LeftShift(119, 16) + Math.LeftShift(193, 8) + 230
-					StorageUtil.SetIntValue(PlayerActor, "_SLH_iSkinColor", iChaurusSkinColor ) 
-					; StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast", 0.8 ) 
-					; StorageUtil.SetFloatValue(PlayerActor, "_SLH_fWeight", 20.0 ) 
-					StorageUtil.SetIntValue(PlayerActor, "_SLH_iForcedHairLoss", 1)
-					PlayerActor.SendModEvent("SLHShaveHead")
-					PlayerActor.SendModEvent("SLHRefresh")
-					PlayerActor.SendModEvent("SLHRefreshColors")
+				Int iNumChaurusEggs = StorageUtil.GetIntValue(kActor, "_SLP_iChaurusEggCount" )
+
+				if (iChaurusQueenStage>=5) && (iNumChaurusEggs>=50) && (Utility.RandomInt(0,100)> (100 - iNumChaurusEggs) )
+
+					Debug.Notification("Your womb releases a new cluster of Chaurus eggs.")
+
+					Debug.SendAnimationEvent(kActor, "bleedOutStart")
+		            utility.wait(4)
+		            Debug.SendAnimationEvent(kActor, "IdleForceDefaultState")
+
+				 	kActor.AddItem(ChaurusEgg, (iNumChaurusEggs))
+				 	StorageUtil.SetIntValue(kActor, "_SLP_iChaurusEggCount", 0 )
+	
+				 	; if (iChaurusEggsCount>5)
+				 	;	fctParasiteEstrus.triggerEstrusChaurusBirth(  kActor, "ChaurusEgg", 5  )
+				 	; elseif (iChaurusEggsCount>0)
+				 	;	fctParasiteEstrus.triggerEstrusChaurusBirth(  kActor, "ChaurusEgg", iChaurusEggsCount  )
+				 	; endif
+
+ 				elseif (Utility.RandomInt(0,100)>= 60)
+
+ 					if (StorageUtil.GetIntValue(PlayerActor, "_SLP_toggleSkinColorChanges" )==1)
+						Int iChaurusSkinColor = Math.LeftShift(255, 24) + Math.LeftShift(119, 16) + Math.LeftShift(193, 8) + 230
+						StorageUtil.SetIntValue(PlayerActor, "_SLH_iSkinColor", iChaurusSkinColor ) 
+						PlayerActor.SendModEvent("SLHRefresh")
+						PlayerActor.SendModEvent("SLHRefreshColors")
+					endif
+
+					if (StorageUtil.GetIntValue(PlayerActor, "_SLP_toggleHairloss" )==1)
+						StorageUtil.SetIntValue(PlayerActor, "_SLH_iForcedHairLoss", 1)
+						PlayerActor.SendModEvent("SLHShaveHead")
+					endif
 
 					bSuccess = True
 				endif

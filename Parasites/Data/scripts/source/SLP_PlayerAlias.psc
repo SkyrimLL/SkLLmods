@@ -78,7 +78,7 @@ Function _maintenance()
  	ActorBase pActorBase = PlayerActor.GetActorBase()
  	iChaurusQueenStage = StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusQueenStage")
 
-	Int iCurrentVersionNumber = 20210630
+	Int iCurrentVersionNumber = 20210709
 	Int iVersionNumber = StorageUtil.GetIntValue(none, "_SLP_iParasitesVersion")	
 	
 	If (iVersionNumber != iCurrentVersionNumber)
@@ -97,6 +97,12 @@ Function _maintenance()
 		If (iVersionNumber <= 20210630) 
 			StorageUtil.SetFloatValue(PlayerActor, "_SLP_flareDelay", 1.0 )
 		endif 
+		If (iVersionNumber <= 20210709) 
+			StorageUtil.SetIntValue(PlayerActor, "_SLP_toggleSkinColorChanges", 1 )
+			StorageUtil.SetIntValue(PlayerActor, "_SLP_toggleHairloss", 1 )
+			StorageUtil.SetIntValue(PlayerActor, "_SLP_toggleChaurusQueenBaseSkin", 1 )
+			StorageUtil.SetIntValue(PlayerActor, "_SLP_toggleChaurusQueenInfectNPCs", 1 )
+		endif
 		StorageUtil.SetIntValue(none, "_SLP_iParasitesVersion", iCurrentVersionNumber)	
 	Endif
 
@@ -604,6 +610,8 @@ Event OnSexLabEnd(int threadID, bool HasPlayer)
 	Float fChanceSpiderEgg
 	Float fChanceChaurusEgg
 	Actor kSexPartner
+	Int iNumChaurusEggs = StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusEggCount" )
+	Int iNumSpiderEggs = StorageUtil.GetIntValue(PlayerActor, "_SLP_iSpiderEggCount" )
 
 	Actor[] actors = controller.Positions
 
@@ -643,6 +651,12 @@ Event OnSexLabEnd(int threadID, bool HasPlayer)
 
 		if animation.HasTag("Chaurus")
 			; check if player reached the Chaurus stage of the Chaurus Queen tranformation
+			if (iChaurusQueenStage>=5)
+				Debug.Notification("You skin turns fluids into eggs deep inside you.")
+				StorageUtil.SetIntValue(PlayerActor, "_SLP_iChaurusEggCount", iNumChaurusEggs + (Utility.RandomInt(10,30) ) )
+
+			endif
+
 			fctParasites.tryPlayerChaurusStage()
 
 			If (!fctParasites.ActorHasKeywordByString(PlayerActor, "Belt")) && (!fctParasites.ActorHasKeywordByString(PlayerActor, "PlugAnal"))
@@ -662,31 +676,15 @@ Event OnSexLabEnd(int threadID, bool HasPlayer)
 				Endif
 			EndIf
 
-			if (iChaurusQueenStage>=5)
-				; Int iInventoryChaurusEggs = PlayerActor.GetItemCount(IngredientChaurusEgg)
-				Int iNumChaurusEggs = StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusEggCount" )
-				Int iSexLabCumLayers = SexLab.CountCum(PlayerActor,  Vaginal = true,  Oral = true,  Anal = true)
-
-				if (iSexLabCumLayers>0)
-					Debug.Notification("You skin turns cum into eggs deep inside you.")
-					StorageUtil.SetIntValue(PlayerActor, "_SLP_iChaurusEggCount", iNumChaurusEggs + (iSexLabCumLayers*5) )
-				endif
-
-				if (iNumChaurusEggs>=50) && (Utility.RandomInt(0,100)> (100 - iNumChaurusEggs) )
-					Debug.Notification("Your womb releases a new cluster of Chaurus eggs.")
-
-					Debug.SendAnimationEvent(PlayerActor, "bleedOutStart")
-		            utility.wait(4)
-		            Debug.SendAnimationEvent(PlayerActor, "IdleForceDefaultState")
-
-				 	PlayerActor.AddItem(IngredientChaurusEgg, (iNumChaurusEggs))
-				 	StorageUtil.SetIntValue(PlayerActor, "_SLP_iChaurusEggCount", 0 )
-				endif
-			endif
-
 		elseif animation.HasTag("Spider")
 			If (!fctParasites.ActorHasKeywordByString(PlayerActor, "Belt")) && (!fctParasites.ActorHasKeywordByString(PlayerActor, "PlugVaginal"))
 				fctParasites.tryPlayerSpiderStage()
+
+				if (iChaurusQueenStage>=5)
+					Debug.Notification("You skin turns fluids into eggs deep inside you.")
+					StorageUtil.SetIntValue(PlayerActor, "_SLP_iSpiderEggCount", iNumSpiderEggs + (Utility.RandomInt(5,15) ) )
+
+				endif
 
 				if (Utility.RandomInt(1,100)<= (fChanceSpiderPenis as Int) )
 					if (fctParasites.infectParasiteByString(PlayerActor, "SpiderPenis"))
@@ -703,13 +701,24 @@ Event OnSexLabEnd(int threadID, bool HasPlayer)
 				endif
 			EndIf
 
+		elseif (!animation.HasTag("Masturbation")) && (!animation.HasTag("Solo") )
+
+			if (iChaurusQueenStage>=5)
+				; Int iInventoryChaurusEggs = PlayerActor.GetItemCount(IngredientChaurusEgg)
+				Int iSexLabCumLayers = SexLab.CountCum(PlayerActor,  Vaginal = true,  Oral = true,  Anal = true)
+
+				Debug.Notification("You skin turns fluids into eggs deep inside you.")
+				StorageUtil.SetIntValue(PlayerActor, "_SLP_iChaurusEggCount", iNumChaurusEggs + ((iSexLabCumLayers + 1)*5) )
+
+			endif
+
 		EndIf
 	Endif
 
 	int idx = 0
 	while idx < actors.Length
-		if (actors[idx] != PlayerActor) && (actors[idx].IsInFaction(PlayerFollowerFaction))
-			Debug.Trace("[SLP] Checking follower for parasites")
+		if (actors[idx] != PlayerActor) ; && (actors[idx].IsInFaction(PlayerFollowerFaction))
+			; Debug.Trace("[SLP] Checking follower for parasites")
 			if animation.HasTag("Chaurus")
 				If (!fctParasites.ActorHasKeywordByString(actors[idx], "Belt")) && (!fctParasites.ActorHasKeywordByString(actors[idx], "PlugAnal"))
 					if (Utility.RandomInt(1,100)< (StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceChaurusWorm" ) as Int) )
@@ -734,20 +743,20 @@ Event OnSexLabEnd(int threadID, bool HasPlayer)
 				EndIf
 
 			EndIf
-		else
-			if (iChaurusQueenStage>=5)
+
+			if (iChaurusQueenStage>=5) && (StorageUtil.GetIntValue(PlayerActor, "_SLP_toggleChaurusQueenInfectNPCs" )==1)
 				If HasPlayer && (!animation.HasTag("Chaurus")) && (!animation.HasTag("Spider")) && ( (fctParasites.ActorHasKeywordByString(PlayerActor, "ChaurusQueenVag")) || (fctParasites.ActorHasKeywordByString(PlayerActor, "ChaurusQueenArmor")) || (fctParasites.ActorHasKeywordByString(PlayerActor, "ChaurusQueenBody")) )
 					Int iRandumNum = Utility.RandomInt(0,100)
 
-					if (iRandumNum > 90) && isFemale(actors[idx])
+					if (iRandumNum > 95) && isFemale(actors[idx])
 						debug.notification("You push chaurus eggs inside her.")
 						fctParasites.infectParasiteByString(actors[idx], "ChaurusEggSilent")
 
-					elseif (iRandumNum > 60) && fctParasites.ActorHasKeywordByString(PlayerActor, "ChaurusQueenArmor")  && isFemale(actors[idx])
+					elseif (iRandumNum > 90) && fctParasites.ActorHasKeywordByString(PlayerActor, "ChaurusQueenArmor")  && isFemale(actors[idx])
 						debug.notification("You push spider eggs inside her.")
 						fctParasites.infectParasiteByString(actors[idx], "SpiderEgg")	
 
-					elseif (iRandumNum > 30)
+					elseif (iRandumNum > 80)
 						if (isFemale(actors[idx]))
 							debug.notification("A chaurus worm crawls inside her.")
 						else

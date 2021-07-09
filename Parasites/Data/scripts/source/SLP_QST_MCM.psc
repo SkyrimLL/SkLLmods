@@ -1,5 +1,11 @@
 Scriptname SLP_QST_MCM extends SKI_ConfigBase  
 
+; SCRIPT VERSION ----------------------------------------------------------------------------------
+
+int function GetVersion()
+	return 2021 ; Default version
+endFunction
+
 SLP_fcts_parasites Property fctParasites  Auto
 SLP_fcts_utils Property fctUtils  Auto
 
@@ -65,6 +71,11 @@ float		_chanceSprigganRootBody = -1.0
 
 bool		_toggleSprigganRootDebug = false
 
+bool		_toggleSkinColorChanges = true
+bool		_toggleHairloss = true
+bool		_toggleChaurusQueenBaseSkin = true
+bool		_toggleChaurusQueenInfectNPCs = true
+
 bool		_toggleChaurusQueenDebug = false
 bool		_toggleChaurusQueenVag = true
 float		_chanceChaurusQueenVag = -1.0
@@ -104,18 +115,18 @@ endEvent
 event OnVersionUpdate(int a_version)
 	{Called when a version update of this script has been detected}
 
-	; Version 2 specific updating code
-	if (a_version >= 2 && CurrentVersion < 2)
-	;	Debug.Trace(self + ": Updating script to version 2")
-	;	_color = Utility.RandomInt(0x000000, 0xFFFFFF) ; Set a random color
-	endIf
-
-	; Version 3 specific updating code
-	if (a_version >= 3 && CurrentVersion < 3)
-	;	Debug.Trace(self + ": Updating script to version 3")
-	;	_myKey = Input.GetMappedKey("Jump")
+	; Version 4 specific updating code
+	if (a_version >= 2021 && CurrentVersion < 2021) 
+		Debug.Trace(self + ": Updating script to version 2021")
+		Pages = new string[5]
+		Pages[0] = "Triggers"
+		Pages[1] = "Quests" 
+		Pages[2] = "Chaurus Queen" 
+		Pages[3] = "Body Changes"
+		Pages[4] = "Debug"
 	endIf
 endEvent
+ 
 
 
 ; EVENTS ------------------------------------------------------------------------------------------
@@ -123,6 +134,18 @@ endEvent
 ; @implements SKI_ConfigBase
 event OnPageReset(string a_page)
 	{Called when a new page is selected, including the initial empty page}
+
+	; workaround to force a refresh for first version change
+	Debug.Notification("[SLP] Updating MCM to version 2021")
+	Debug.Trace(self + ": Updating script to version 2021")
+	Debug.Trace(self + ": CurrentVersion = " + CurrentVersion)
+	Pages = new string[5]
+	Pages[0] = "Triggers"
+	Pages[1] = "Quests" 
+	Pages[2] = "Chaurus Queen" 
+	Pages[3] = "Body Changes"
+	Pages[4] = "Debug"
+
 
 	; Load custom logo in DDS format
 	if (a_page == "")
@@ -147,7 +170,7 @@ event OnPageReset(string a_page)
 		StorageUtil.SetIntValue(none, "_SLP_initMCM", 1 )
 	EndIf
 
-	StorageUtil.SetIntValue(none, "_SLP_versionMCM", 20210528 )
+	StorageUtil.SetIntValue(none, "_SLP_versionMCM", 20210703 )
 
  	; If (StorageUtil.GetIntValue(none, "_SLP_versionMCM" ) == 0) || (_resetTrigger<0.0)
  		_setParasiteSettings()
@@ -207,6 +230,11 @@ event OnPageReset(string a_page)
 	endif
 	StorageUtil.SetIntValue(kPlayer, "_SLP_toggleSprigganRootDebug", _toggleSprigganRootDebug as Int )
 
+	_toggleSkinColorChanges  = StorageUtil.GetIntValue(kPlayer, "_SLP_toggleSkinColorChanges" )
+	_toggleHairloss  = StorageUtil.GetIntValue(kPlayer, "_SLP_toggleHairloss" )
+	_toggleChaurusQueenBaseSkin  = StorageUtil.GetIntValue(kPlayer, "_SLP_toggleChaurusQueenBaseSkin" )
+	_toggleChaurusQueenInfectNPCs  = StorageUtil.GetIntValue(kPlayer, "_SLP_toggleChaurusQueenInfectNPCs" )
+
 	_toggleChaurusQueenDebug = StorageUtil.GetIntValue(kPlayer, "_SLP_toggleChaurusQueenDebug" )
 	_toggleChaurusQueenVag = StorageUtil.GetIntValue(kPlayer, "_SLP_toggleChaurusQueenVag" )
 	_chanceChaurusQueenVag = StorageUtil.GetFloatValue(kPlayer, "_SLP_chanceChaurusQueenVag" )
@@ -227,7 +255,7 @@ event OnPageReset(string a_page)
 
 	Int iChaurusQueenStage = StorageUtil.GetIntValue(kPlayer, "_SLP_iChaurusQueenStage")
 
-	If (a_page == "Parasites")
+	If (a_page == "Triggers")
 
 		SetCursorFillMode(TOP_TO_BOTTOM)
 
@@ -265,36 +293,19 @@ event OnPageReset(string a_page)
 		AddToggleOptionST("STATE_FACEHUGGERGAG_TOGGLE","Infect/Cure Face Hugger", _toggleFaceHuggerGag as Float)
 		AddToggleOptionST("STATE_BARNACLES_TOGGLE","Infect/Cure Blackreach Spores", _toggleBarnacles as Float)
 
+		AddHeaderOption(" Spriggan Curse")
+		AddToggleOptionST("STATE_SPRIGGANROOTDEBUG_TOGGLE","Toggle Spriggan Root infection", _toggleSprigganRootDebug as Float)
 		AddToggleOptionST("STATE_SPRIGGANROOTARMS_TOGGLE","Infect/Cure Spriggan Hands", _toggleSprigganRootArms as Float)
 		AddToggleOptionST("STATE_SPRIGGANROOTFEET_TOGGLE","Infect/Cure Spriggan Feet", _toggleSprigganRootFeet as Float, OPTION_FLAG_DISABLED)
 		AddToggleOptionST("STATE_SPRIGGANROOTBODY_TOGGLE","Infect/Cure Spriggan Body", _toggleSprigganRootBody as Float)
 		AddToggleOptionST("STATE_SPRIGGANROOTGAG_TOGGLE","Infect/Cure Spriggan Mask", _toggleSprigganRootGag as Float)
 
-		AddHeaderOption(" NiOverride node scales")
-		AddSliderOptionST("STATE_SPIDEREGG_BELLY","Max belly size (Spider egg)", _bellyMaxSpiderEgg,"{1}")
-		AddSliderOptionST("STATE_CHAURUSWORMVAG_BELLY","Max belly size (Vaginal chaurus worm)", _bellyMaxChaurusWormVag,"{1}")
-		AddSliderOptionST("STATE_FACEHUGGER_BELLY","Max belly size (Face Hugger)", _bellyMaxFaceHugger,"{1}")
-		AddSliderOptionST("STATE_TENTACLEMONSTER_BREAST","Max breast size (Tentacle monster)", _breastMaxTentacleMonster,"{1}")
-		AddSliderOptionST("STATE_LIVINGARMOR_BREAST","Max breast size (Living Armor)", _breastMaxLivingArmor,"{1}")
-		AddSliderOptionST("STATE_CHAURUSWORM_BUTT","Max butt size (Chaurus worm)", _buttMaxChaurusWorm,"{1}")
-
-		AddHeaderOption(" Maintenance ")
-		AddToggleOptionST("STATE_REFRESH_ALL","Refresh all equipped parasites", _toggleRefreshAll as Float)
-		AddToggleOptionST("STATE_CLEAR_ALL","Clear all parasites", _toggleClearAll as Float)
-
-		AddHeaderOption(" ")
-		AddToggleOptionST("STATE_OUTFITS_TOGGLE","Custom Priest Outfits", _togglePriestOutfits as Float)
-		AddToggleOptionST("STATE_REGISTER_EVENTS","Register custom device events", _registerEventsToggle as Float)
-		AddToggleOptionST("STATE_RESET","Reset changes", _resetToggle as Float)
-	
 
 	ElseIf (a_page == "Quests")
 		SetCursorFillMode(TOP_TO_BOTTOM)
 
 		AddHeaderOption(" Kyne Blessing ")
-		AddToggleOptionST("STATE_SPRIGGANROOTDEBUG_TOGGLE","Toggle Spriggan Root infection", _toggleSprigganRootDebug as Float)
 
-		AddHeaderOption(" Infections counts ")
 		AddTextOption("     Total infections: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iInfections") as Int, "", OPTION_FLAG_DISABLED)
 		AddTextOption("     Spider Egg Infections: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iSpiderEggInfections") as Int, "", OPTION_FLAG_DISABLED)
 		AddTextOption("     Anal Chaurus Worm Infections: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iChaurusWormInfections") as Int, "", OPTION_FLAG_DISABLED)
@@ -309,20 +320,21 @@ event OnPageReset(string a_page)
 		AddTextOption("     Estrus Eggs Infections: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iEstrusChaurusEggInfections") as Int, "", OPTION_FLAG_DISABLED)
 		AddTextOption("     Estrus Slime Infections: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iEstrusSlimeInfections") as Int, "", OPTION_FLAG_DISABLED)
 
-		AddHeaderOption(" Factions")
-		AddTextOption("     Player in Spider Faction: " + fctUtils.checkIfFriendlyFaction( kPlayer, "Spider" ) as Int, "", OPTION_FLAG_DISABLED)
-		AddTextOption("     Player in Chaurus Faction: " + fctUtils.checkIfFriendlyFaction( kPlayer, "Chaurus" ) as Int, "", OPTION_FLAG_DISABLED)
-		AddTextOption("     Player in Spriggan Faction: " + fctUtils.checkIfFriendlyFaction( kPlayer, "Spriggan" ) as Int, "", OPTION_FLAG_DISABLED)
+		SetCursorPosition(1)
+		AddHeaderOption(" Brood Maiden ")
+		AddTextOption("     Lastelle Eggs: " + _SLP_GV_numChaurusEggsLastelle.GetValue() as Int, "", OPTION_FLAG_DISABLED)
 
 		AddHeaderOption(" Long term curses")
 		AddTextOption("     Chaurus Queen Infection: " + iChaurusQueenStage as Int, "", OPTION_FLAG_DISABLED)
 		AddTextOption("     Spriggan Infection: " + StorageUtil.GetIntValue(kPlayer, "_SLP_toggleSprigganRoot") as Int, "", OPTION_FLAG_DISABLED)
 
-		SetCursorPosition(1)
-		AddHeaderOption(" Brood Maiden ")
-		AddTextOption("     Lastelle Eggs: " + _SLP_GV_numChaurusEggsLastelle.GetValue() as Int, "", OPTION_FLAG_DISABLED)
 
-		AddHeaderOption(" Chaurus Queen ")
+
+
+	ElseIf (a_page == "Chaurus Queen")
+		SetCursorFillMode(TOP_TO_BOTTOM)
+
+		AddHeaderOption(" Triggers ")
 		if (iChaurusQueenStage==0)
 			AddToggleOptionST("STATE_CHAURUSQUEENDEBUG_TOGGLE","Unlock Chaurus Queen items", _toggleChaurusQueenDebug as Float)
 		else
@@ -330,10 +342,8 @@ event OnPageReset(string a_page)
 		endif
 		
 		if (_toggleChaurusQueenDebug) || (iChaurusQueenStage>0)
-			AddSliderOptionST("STATE_CHAURUSQUEEN_BELLY","Max belly size (Chaurus Queen)", _bellyMaxChaurusQueen,"{1}")
 			AddToggleOptionST("STATE_CHAURUSQUEENVAG_TOGGLE","Infect/Cure Vaginal Chaurus Queen", _toggleChaurusQueenVag as Float)
 		else
-			AddSliderOptionST("STATE_CHAURUSQUEEN_BELLY","Max belly size (Chaurus Queen)", _bellyMaxChaurusQueen,"{1}", OPTION_FLAG_DISABLED)
 			AddToggleOptionST("STATE_CHAURUSQUEENVAG_TOGGLE","Infect/Cure Vaginal Chaurus Queen", _toggleChaurusQueenVag as Float, OPTION_FLAG_DISABLED)
 		endif
 
@@ -351,19 +361,18 @@ event OnPageReset(string a_page)
 			AddToggleOptionST("STATE_CHAURUSQUEENARMOR_TOGGLE","Infect/Cure Chaurus Queen Armor", _toggleChaurusQueenArmor as Float, OPTION_FLAG_DISABLED)
 		endif
 
-
 		if (_toggleChaurusQueenDebug) || (iChaurusQueenStage>=5)
 			AddToggleOptionST("STATE_CHAURUSQUEENBODY_TOGGLE","Infect/Cure Chaurus Queen Full Body", _toggleChaurusQueenBody as Float)
-			AddSliderOptionST("STATE_MAX_BROODSPAWNS","Brood size", _maxBroodSpawns ,"{1}")
-			AddToggleOptionST("STATE_AUTO_REMOVE_WINGS","Auto Remove Wings", _autoRemoveDragonWings as Float)
 		else
 			AddToggleOptionST("STATE_CHAURUSQUEENBODY_TOGGLE","Infect/Cure Chaurus Queen Full Body", _toggleChaurusQueenBody as Float, OPTION_FLAG_DISABLED)
-			AddSliderOptionST("STATE_MAX_BROODSPAWNS","Brood size", _maxBroodSpawns ,"{1}", OPTION_FLAG_DISABLED)
-			AddToggleOptionST("STATE_AUTO_REMOVE_WINGS","Auto Remove Wings", _autoRemoveDragonWings as Float, OPTION_FLAG_DISABLED)
 		endif
 
-		AddTextOption("     Chaurus Queen Stage: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iChaurusQueenStage") as Int, "", OPTION_FLAG_DISABLED)
-		AddTextOption("     Days since start: " + (Game.QueryStat("Days Passed") - StorageUtil.GetIntValue(kPlayer, "_SLP_iChaurusQueenDate")) as Int, "", OPTION_FLAG_DISABLED)
+		AddHeaderOption(" Wings")
+		if (_toggleChaurusQueenDebug) || (iChaurusQueenStage>=5)
+			AddToggleOptionST("STATE_AUTO_REMOVE_WINGS","Auto Remove Wings", _autoRemoveDragonWings as Float)
+		else
+			AddToggleOptionST("STATE_AUTO_REMOVE_WINGS","Auto Remove Wings", _autoRemoveDragonWings as Float, OPTION_FLAG_DISABLED)
+		endif
 
 		if (StorageUtil.GetIntValue(none, "_SLP_isAnimatedDragonWings") ==  1) 
 			AddTextOption("     Animated Dragon Wings detected", "", OPTION_FLAG_DISABLED)
@@ -377,10 +386,84 @@ event OnPageReset(string a_page)
 			AddTextOption("     Animated Wings Ultimate detected", "", OPTION_FLAG_DISABLED)
 		endif
 
+		SetCursorPosition(1)
+		AddHeaderOption(" Options")
+		if (_toggleChaurusQueenDebug) || (iChaurusQueenStage>=5)
+			AddSliderOptionST("STATE_MAX_BROODSPAWNS","Brood size", _maxBroodSpawns ,"{1}")
+			AddToggleOptionST("STATE_CHAURUSQUEENBASESKIN_TOGGLE","Enable Base Skin replacement", _toggleChaurusQueenBaseSkin as Float)
+			AddToggleOptionST("STATE_CHAURUSQUEEN_INFECTION_TOGGLE","Chaurus Queen infects NPCs", _toggleChaurusQueenInfectNPCs as Float)
+		else
+			AddSliderOptionST("STATE_MAX_BROODSPAWNS","Brood size", _maxBroodSpawns ,"{1}", OPTION_FLAG_DISABLED)
+			AddToggleOptionST("STATE_CHAURUSQUEENBASESKIN_TOGGLE","Enable Base Skin replacement", _toggleChaurusQueenBaseSkin as Float, OPTION_FLAG_DISABLED)
+			AddToggleOptionST("STATE_CHAURUSQUEEN_INFECTION_TOGGLE","Chaurus Queen infects NPCs", _toggleChaurusQueenInfectNPCs as Float, OPTION_FLAG_DISABLED)
+		endif
+
+		AddHeaderOption(" Status")
+		AddTextOption("     Chaurus Queen Stage: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iChaurusQueenStage") as Int, "", OPTION_FLAG_DISABLED)
+		AddTextOption("     Days since start: " + (Game.QueryStat("Days Passed") - StorageUtil.GetIntValue(kPlayer, "_SLP_iChaurusQueenDate")) as Int, "", OPTION_FLAG_DISABLED)
+
 		AddTextOption("     Chaurus Queen Weapons equipped: " + StorageUtil.GetIntValue(kPlayer, "_SLP_toggleChaurusQueenWeapon") as Int, "", OPTION_FLAG_DISABLED)
 		AddTextOption("     Spider Eggs: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iSpiderEggCount" ) as Int, "", OPTION_FLAG_DISABLED)
 		AddTextOption("     Chaurus Eggs: " + StorageUtil.GetIntValue(kPlayer, "_SLP_iChaurusEggCount" ) as Int, "", OPTION_FLAG_DISABLED)
 
+	ElseIf (a_page == "Body Changes")
+		SetCursorFillMode(TOP_TO_BOTTOM)
+
+		AddHeaderOption(" NiOverride node scales")
+		AddHeaderOption(" Breast")
+		AddSliderOptionST("STATE_TENTACLEMONSTER_BREAST","Max breast size (Tentacle monster)", _breastMaxTentacleMonster,"{1}")
+		AddSliderOptionST("STATE_LIVINGARMOR_BREAST","Max breast size (Living Armor)", _breastMaxLivingArmor,"{1}")
+
+		AddHeaderOption(" Belly")
+		AddSliderOptionST("STATE_SPIDEREGG_BELLY","Max belly size (Spider egg)", _bellyMaxSpiderEgg,"{1}")
+		AddSliderOptionST("STATE_CHAURUSWORMVAG_BELLY","Max belly size (Vaginal chaurus worm)", _bellyMaxChaurusWormVag,"{1}")
+		AddSliderOptionST("STATE_FACEHUGGER_BELLY","Max belly size (Face Hugger)", _bellyMaxFaceHugger,"{1}")
+		AddSliderOptionST("STATE_CHAURUSQUEEN_BELLY","Max belly size (Chaurus Queen)", _bellyMaxChaurusQueen,"{1}")
+
+		AddHeaderOption(" Butt")
+		AddSliderOptionST("STATE_CHAURUSWORM_BUTT","Max butt size (Chaurus worm)", _buttMaxChaurusWorm,"{1}")
+
+		SetCursorPosition(1)
+
+		if (StorageUtil.GetIntValue(none, "_SLH_iHormones") == 1)
+			AddTextOption("     SexLab Hormones deteted", "", OPTION_FLAG_DISABLED)
+		else
+			AddTextOption("     Install SexLab Hormones to enable these options", "", OPTION_FLAG_DISABLED)
+		endif
+		
+		AddHeaderOption(" Skin")
+		if (StorageUtil.GetIntValue(none, "_SLH_iHormones") == 1)
+			AddToggleOptionST("STATE_SKINCOLOR_CHANGES_TOGGLE","Enable Skin Color changes", _toggleSkinColorChanges as Float)
+		else
+			AddToggleOptionST("STATE_SKINCOLOR_CHANGES_TOGGLE","Enable Skin Color changes", _toggleSkinColorChanges as Float, OPTION_FLAG_DISABLED)
+		endif
+
+		AddHeaderOption(" Hair")
+		if (StorageUtil.GetIntValue(none, "_SLH_iHormones") == 1)
+			AddToggleOptionST("STATE_HAIRLOSS_CHANGES_TOGGLE","Enable Hairloss", _toggleHairloss as Float)
+		else
+			AddToggleOptionST("STATE_HAIRLOSS_CHANGES_TOGGLE","Enable Hairloss", _toggleHairloss as Float, OPTION_FLAG_DISABLED)
+		endif
+	ElseIf (a_page == "Debug")
+		SetCursorFillMode(TOP_TO_BOTTOM)
+
+		AddHeaderOption(" Factions")
+		AddTextOption("     Player in Spider Faction: " + fctUtils.checkIfFriendlyFaction( kPlayer, "Spider" ) as Int, "", OPTION_FLAG_DISABLED)
+		AddTextOption("     Player in Chaurus Faction: " + fctUtils.checkIfFriendlyFaction( kPlayer, "Chaurus" ) as Int, "", OPTION_FLAG_DISABLED)
+		AddTextOption("     Player in Spriggan Faction: " + fctUtils.checkIfFriendlyFaction( kPlayer, "Spriggan" ) as Int, "", OPTION_FLAG_DISABLED)
+
+
+		SetCursorPosition(1)
+		AddHeaderOption(" Maintenance ")
+		AddToggleOptionST("STATE_REFRESH_ALL","Refresh all equipped parasites", _toggleRefreshAll as Float)
+		AddToggleOptionST("STATE_CLEAR_ALL","Clear all parasites", _toggleClearAll as Float)
+
+		AddHeaderOption(" ")
+		AddToggleOptionST("STATE_OUTFITS_TOGGLE","Custom Priest Outfits", _togglePriestOutfits as Float)
+		AddToggleOptionST("STATE_REGISTER_EVENTS","Register custom device events", _registerEventsToggle as Float)
+
+		AddHeaderOption(" ")
+		AddToggleOptionST("STATE_RESET","Reset changes", _resetToggle as Float)
 	endIf
 endEvent
 
@@ -1621,6 +1704,94 @@ state STATE_FLARE_DELAY ; SLIDER
 	event OnHighlightST()
 		SetInfoText("Delays checks for 'flare' events from certain parasites (roughly in real time minutes). Use values between 0 and 1 to accelerate flares. Use 0 to turn flares off.")
 	endEvent
+endState
+
+; AddToggleOptionST("STATE_SKINCOLOR_CHANGES_TOGGLE","Enable Skin Color changes", _toggleSkinColorChanges as Float)
+state STATE_SKINCOLOR_CHANGES_TOGGLE ; TOGGLE
+	event OnSelectST() 
+		Int toggle = Math.LogicalXor( 1, StorageUtil.GetIntValue(kPlayer, "_SLP_toggleSkinColorChanges" )   )
+		StorageUtil.SetIntValue(kPlayer, "_SLP_toggleSkinColorChanges", toggle as Int )
+
+		SetToggleOptionValueST( toggle as Bool )
+		ForcePageReset()
+	endEvent
+
+	event OnDefaultST()
+		StorageUtil.SetIntValue(kPlayer, "_SLP_toggleSkinColorChanges", 1 )
+		SetToggleOptionValueST( true )
+		ForcePageReset()
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Enable skin color changes for the Spriggan and Chaurus Queen infections (If Hormones is installed)")
+	endEvent
+
+endState
+
+; AddToggleOptionST("STATE_HAIRLOSS_CHANGES_TOGGLE","Enable Hairloss", _toggleHairloss as Float)
+state STATE_HAIRLOSS_CHANGES_TOGGLE ; TOGGLE
+	event OnSelectST() 
+		Int toggle = Math.LogicalXor( 1, StorageUtil.GetIntValue(kPlayer, "_SLP_toggleHairloss" )   )
+		StorageUtil.SetIntValue(kPlayer, "_SLP_toggleHairloss", toggle as Int )
+
+		SetToggleOptionValueST( toggle as Bool )
+		ForcePageReset()
+	endEvent
+
+	event OnDefaultST()
+		StorageUtil.SetIntValue(kPlayer, "_SLP_toggleHairloss", 1 )
+		SetToggleOptionValueST( true )
+		ForcePageReset()
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Enable hairloss effect for the Spriggan and Chaurus Queen infections (If Hormones is installed)")
+	endEvent
+
+endState
+
+; AddToggleOptionST("STATE_CHAURUSQUEENBASESKIN_TOGGLE","Enable Base Skin replacement", _toggleChaurusQueenBaseSkin as Float)
+state STATE_CHAURUSQUEENBASESKIN_TOGGLE ; TOGGLE
+	event OnSelectST() 
+		Int toggle = Math.LogicalXor( 1, StorageUtil.GetIntValue(kPlayer, "_SLP_toggleChaurusQueenBaseSkin" )   )
+		StorageUtil.SetIntValue(kPlayer, "_SLP_toggleChaurusQueenBaseSkin", toggle as Int )
+
+		SetToggleOptionValueST( toggle as Bool )
+		ForcePageReset()
+	endEvent
+
+	event OnDefaultST()
+		StorageUtil.SetIntValue(kPlayer, "_SLP_toggleChaurusQueenBaseSkin", 1 )
+		SetToggleOptionValueST( true )
+		ForcePageReset()
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Enable base skin mesh replacement for the Chaurus Queen (with chest feelers retracted)")
+	endEvent
+
+endState
+
+; AddToggleOptionST("STATE_CHAURUSQUEEN_INFECTION_TOGGLE","Chaurus Queen infects NPCs", _toggleChaurusQueenInfectNPCs as Float)
+state STATE_CHAURUSQUEEN_INFECTION_TOGGLE ; TOGGLE
+	event OnSelectST() 
+		Int toggle = Math.LogicalXor( 1, StorageUtil.GetIntValue(kPlayer, "_SLP_toggleChaurusQueenInfectNPCs" )   )
+		StorageUtil.SetIntValue(kPlayer, "_SLP_toggleChaurusQueenInfectNPCs", toggle as Int )
+
+		SetToggleOptionValueST( toggle as Bool )
+		ForcePageReset()
+	endEvent
+
+	event OnDefaultST()
+		StorageUtil.SetIntValue(kPlayer, "_SLP_toggleChaurusQueenInfectNPCs", 1 )
+		SetToggleOptionValueST( true )
+		ForcePageReset()
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Allows the Chaurus Queen to infect NPCs through sex.")
+	endEvent
+
 endState
 
 
