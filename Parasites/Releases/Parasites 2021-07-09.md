@@ -1,5 +1,6 @@
 ### RELEASE NOTES for milestone [Parasites 2021-07-09](https://github.com/SkyrimLL/SkLLmods/milestone/102?closed=1) 
 **Enhancements:** 
+- [Move Queen variable settings into stage 289 of main quest](https://github.com/SkyrimLL/SkLLmods/issues/1224)
 - [Add MCM checkbox to disable Chaurus Queen base skin](https://github.com/SkyrimLL/SkLLmods/issues/1221)
 - [Add MCM checkbox to control chance of infection of NPC (disable with 0)](https://github.com/SkyrimLL/SkLLmods/issues/1220)
 - [Add MCM checkbox to disable hairloss (spriggan/queen)](https://github.com/SkyrimLL/SkLLmods/issues/1219)
@@ -21,10 +22,14 @@
 - [Enable Chaurus Queen level 4 in case of synchronization issues between clearing devices and adding armor](https://github.com/SkyrimLL/SkLLmods/issues/1200)
 - [Disable open mouth when wearing Chaurus Queen mask](https://github.com/SkyrimLL/SkLLmods/issues/1199)
 - [Disable 'About Lastelle' for Lami once final chapter is engaged (Stage 230)](https://github.com/SkyrimLL/SkLLmods/issues/1194)
+- [Move code about Kyne blessing and Sanctuary scenes to quest stage to allow manual override](https://github.com/SkyrimLL/SkLLmods/issues/1035)
+- [Move code about Sanctuary cleansing to quest stage to allow manual override (new stage 254 as workaround)](https://github.com/SkyrimLL/SkLLmods/issues/1034)
 - [Add events to infect NPCs](https://github.com/SkyrimLL/SkLLmods/issues/1028)
 - [Add quest stage to force player to use the Chaurus Seed Spawn spell before talking to the Elder Roots](https://github.com/SkyrimLL/SkLLmods/issues/1019)
 
 **Bug Fixes:** 
+- [The Quest stages to learn the parasite repellent recipe are wrong](https://github.com/SkyrimLL/SkLLmods/issues/1223)
+- [Dwemer sensors have missing textures](https://github.com/SkyrimLL/SkLLmods/issues/1222)
 - [After manual check in MCM, the queen mask can be equipped manually but it is not visible until you run a full refresh of parasites](https://github.com/SkyrimLL/SkLLmods/issues/1210)
 - [After manual check in MCM, the spider penis is equipped but the menu checkbox is not set](https://github.com/SkyrimLL/SkLLmods/issues/1209)
 - [After manual check in MCM, chaurus worms do not appear anymore](https://github.com/SkyrimLL/SkLLmods/issues/1208)
