@@ -270,16 +270,16 @@ event OnPageReset(string a_page)
 		AddSliderOptionST("STATE_FACEHUGGERGAG_CHANCE","Face Hugger (Gag)", _chanceFaceHuggerGag,"{0} %")
 		AddSliderOptionST("STATE_BARNACLES_CHANCE","Blackreach Spores (Harness)", _chanceBarnacles,"{0} %")
 
+		AddHeaderOption(" Spriggan Curse")
 		AddSliderOptionST("STATE_SPRIGGANROOTARMS_CHANCE","Spriggan Hands (Cuffs)", _chanceSprigganRootArms,"{0} %")
 		AddSliderOptionST("STATE_SPRIGGANROOTFEET_CHANCE","Spriggan Feet (Cuffs)", _chanceSprigganRootFeet,"{0} %")
 		AddSliderOptionST("STATE_SPRIGGANROOTBODY_CHANCE","Spriggan Body (Harness)", _chanceSprigganRootBody,"{0} %")
 		AddSliderOptionST("STATE_SPRIGGANROOTGAG_CHANCE","Spriggan Mask (Gag)", _chanceSprigganRootGag,"{0} %")
 
+		AddHeaderOption(" Estrus Chaurus compatibility")
 		AddSliderOptionST("STATE_ESTRUSTENTACLES_CHANCE","Estrus Tentacles (EC+)", _chanceEstrusTentacles,"{0} %") 
 		AddSliderOptionST("STATE_ESTRUSSLIME_CHANCE","Estrus Slime (EC+)", _chanceEstrusSlime,"{0} %")
 
-		AddHeaderOption(" Events control")
-		AddSliderOptionST("STATE_FLARE_DELAY","Flare Delay", _flareDelay ,"{1}")
 
 		SetCursorPosition(1)
 		AddHeaderOption(" Infect/Cure")
@@ -292,13 +292,16 @@ event OnPageReset(string a_page)
 		AddToggleOptionST("STATE_FACEHUGGER_TOGGLE","Infect/Cure Hip Hugger", _toggleFaceHugger as Float)
 		AddToggleOptionST("STATE_FACEHUGGERGAG_TOGGLE","Infect/Cure Face Hugger", _toggleFaceHuggerGag as Float)
 		AddToggleOptionST("STATE_BARNACLES_TOGGLE","Infect/Cure Blackreach Spores", _toggleBarnacles as Float)
-
 		AddHeaderOption(" Spriggan Curse")
 		AddToggleOptionST("STATE_SPRIGGANROOTDEBUG_TOGGLE","Toggle Spriggan Root infection", _toggleSprigganRootDebug as Float)
 		AddToggleOptionST("STATE_SPRIGGANROOTARMS_TOGGLE","Infect/Cure Spriggan Hands", _toggleSprigganRootArms as Float)
 		AddToggleOptionST("STATE_SPRIGGANROOTFEET_TOGGLE","Infect/Cure Spriggan Feet", _toggleSprigganRootFeet as Float, OPTION_FLAG_DISABLED)
 		AddToggleOptionST("STATE_SPRIGGANROOTBODY_TOGGLE","Infect/Cure Spriggan Body", _toggleSprigganRootBody as Float)
 		AddToggleOptionST("STATE_SPRIGGANROOTGAG_TOGGLE","Infect/Cure Spriggan Mask", _toggleSprigganRootGag as Float)
+
+		AddHeaderOption(" Events control")
+		AddSliderOptionST("STATE_FLARE_DELAY","Flare Delay", _flareDelay ,"{1}")
+		AddToggleOptionST("STATE_CHAURUSQUEEN_INFECTION_TOGGLE","Sex can infect NPCs", _toggleChaurusQueenInfectNPCs as Float)
 
 
 	ElseIf (a_page == "Quests")
@@ -391,11 +394,9 @@ event OnPageReset(string a_page)
 		if (_toggleChaurusQueenDebug) || (iChaurusQueenStage>=5)
 			AddSliderOptionST("STATE_MAX_BROODSPAWNS","Brood size", _maxBroodSpawns ,"{1}")
 			AddToggleOptionST("STATE_CHAURUSQUEENBASESKIN_TOGGLE","Enable Base Skin replacement", _toggleChaurusQueenBaseSkin as Float)
-			AddToggleOptionST("STATE_CHAURUSQUEEN_INFECTION_TOGGLE","Chaurus Queen infects NPCs", _toggleChaurusQueenInfectNPCs as Float)
 		else
 			AddSliderOptionST("STATE_MAX_BROODSPAWNS","Brood size", _maxBroodSpawns ,"{1}", OPTION_FLAG_DISABLED)
 			AddToggleOptionST("STATE_CHAURUSQUEENBASESKIN_TOGGLE","Enable Base Skin replacement", _toggleChaurusQueenBaseSkin as Float, OPTION_FLAG_DISABLED)
-			AddToggleOptionST("STATE_CHAURUSQUEEN_INFECTION_TOGGLE","Chaurus Queen infects NPCs", _toggleChaurusQueenInfectNPCs as Float, OPTION_FLAG_DISABLED)
 		endif
 
 		AddHeaderOption(" Status")
@@ -430,7 +431,7 @@ event OnPageReset(string a_page)
 		else
 			AddTextOption("     Install SexLab Hormones to enable these options", "", OPTION_FLAG_DISABLED)
 		endif
-		
+
 		AddHeaderOption(" Skin")
 		if (StorageUtil.GetIntValue(none, "_SLH_iHormones") == 1)
 			AddToggleOptionST("STATE_SKINCOLOR_CHANGES_TOGGLE","Enable Skin Color changes", _toggleSkinColorChanges as Float)
@@ -1789,7 +1790,7 @@ state STATE_CHAURUSQUEEN_INFECTION_TOGGLE ; TOGGLE
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Allows the Chaurus Queen to infect NPCs through sex.")
+		SetInfoText("Allows parasite infections to spread to NPCs through sex.")
 	endEvent
 
 endState

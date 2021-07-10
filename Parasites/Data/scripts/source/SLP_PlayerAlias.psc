@@ -847,84 +847,85 @@ Function _doOrgasm(int threadID, Actor kActor)
 		fctParasites.cureParasiteByString( kActor, "ChaurusWormVag")
 	EndIf
 
+ 	if (StorageUtil.GetIntValue(PlayerActor, "_SLP_toggleChaurusQueenInfectNPCs" )==1)
+		If (fctParasites.isInfectedByString(kActor, "TentacleMonster" )) && (Utility.RandomInt(1,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceTentacleMonster" ) / 4)) 
 
-	If (fctParasites.isInfectedByString(kActor, "TentacleMonster" )) && (Utility.RandomInt(1,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceTentacleMonster" ) / 4)) 
+			if (kActor == PlayerActor)
+				Debug.MessageBox("The creature slides around your partner.")
+				
+			else
+				Debug.Notification("The creature slides around another host.")
+			endif
 
-		if (kActor == PlayerActor)
-			Debug.MessageBox("The creature slides around your partner.")
-			
-		else
-			Debug.Notification("The creature slides around another host.")
-		endif
+			; NPC is infected -> send parasite to NPC, including player
+			_transferParasiteAfterSex( threadID, kActor, "TentacleMonster", true)
 
-		; NPC is infected -> send parasite to NPC, including player
-		_transferParasiteAfterSex( threadID, kActor, "TentacleMonster", true)
+		EndIf
 
-	EndIf
+		If (fctParasites.isInfectedByString(kActor, "LivingArmor" )) && (Utility.RandomInt(1,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "LivingArmor" ) / 5)) 
 
-	If (fctParasites.isInfectedByString(kActor, "LivingArmor" )) && (Utility.RandomInt(1,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "LivingArmor" ) / 5)) 
+			if (kActor == PlayerActor)
+				Debug.MessageBox("The creature slides around your partner.")
+			else
+				Debug.Notification("The creature slides around another host.")
+			endif
 
-		if (kActor == PlayerActor)
-			Debug.MessageBox("The creature slides around your partner.")
-		else
-			Debug.Notification("The creature slides around another host.")
-		endif
+			; NPC is infected -> send parasite to NPC, including player
+			_transferParasiteAfterSex( threadID, kActor, "LivingArmor", true)
 
-		; NPC is infected -> send parasite to NPC, including player
-		_transferParasiteAfterSex( threadID, kActor, "LivingArmor", true)
+		EndIf
 
-	EndIf
+		If (fctParasites.isInfectedByString(kActor, "FaceHugger" )) && (Utility.RandomInt(1,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "FaceHugger" ) / 5)) 
 
-	If (fctParasites.isInfectedByString(kActor, "FaceHugger" )) && (Utility.RandomInt(1,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "FaceHugger" ) / 5)) 
+			if (kActor == PlayerActor)
+				Debug.MessageBox("The creature slides around your partner.")
+			else
+				Debug.Notification("The creature slides around another host.")
+			endif
 
-		if (kActor == PlayerActor)
-			Debug.MessageBox("The creature slides around your partner.")
-		else
-			Debug.Notification("The creature slides around another host.")
-		endif
+			; NPC is infected -> send parasite to NPC, including player
+			_transferParasiteAfterSex( threadID, kActor, "FaceHugger", true)
 
-		; NPC is infected -> send parasite to NPC, including player
-		_transferParasiteAfterSex( threadID, kActor, "FaceHugger", true)
+		EndIf
 
-	EndIf
+		If (fctParasites.isInfectedByString(kActor, "FaceHuggerGag" )) && (Utility.RandomInt(1,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "FaceHuggerGag" ) / 5)) 
 
-	If (fctParasites.isInfectedByString(kActor, "FaceHuggerGag" )) && (Utility.RandomInt(1,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "FaceHuggerGag" ) / 5)) 
+			if (kActor == PlayerActor)
+				Debug.MessageBox("The creature slides around your partner.")
+			else
+				Debug.Notification("The creature slides around another host.")
+			endif
 
-		if (kActor == PlayerActor)
-			Debug.MessageBox("The creature slides around your partner.")
-		else
-			Debug.Notification("The creature slides around another host.")
-		endif
+			; NPC is infected -> send parasite to NPC, including player
+			_transferParasiteAfterSex( threadID, kActor, "FaceHuggerGag", true)
 
-		; NPC is infected -> send parasite to NPC, including player
-		_transferParasiteAfterSex( threadID, kActor, "FaceHuggerGag", true)
+		EndIf
 
-	EndIf
+		If (fctParasites.isInfectedByString(kActor, "Barnacles" )) && (Utility.RandomInt(1,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "Barnacles" ) / 5)) 
 
-	If (fctParasites.isInfectedByString(kActor, "Barnacles" )) && (Utility.RandomInt(1,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "Barnacles" ) / 5)) 
+			if (kActor == PlayerActor)
+				Debug.MessageBox("The spores spread to a new host.")
+			else
+				Debug.Notification("The spores spread to a new host.")
+			endif
 
-		if (kActor == PlayerActor)
-			Debug.MessageBox("The spores spread to a nhew host.")
-		else
-			Debug.Notification("The spores spread to a nhew host.")
-		endif
+			; NPC is infected -> send parasite to NPC, including player
+			_transferParasiteAfterSex( threadID, kActor, "Barnacles", false)
 
-		; NPC is infected -> send parasite to NPC, including player
-		_transferParasiteAfterSex( threadID, kActor, "Barnacles", false)
+		EndIf
 
-	EndIf
+		If (fctParasites.isInfectedByString(kActor, "SprigganRoot" )) && (Utility.RandomInt(1,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "SprigganRoot" ) / 5)) 
 
-	If (fctParasites.isInfectedByString(kActor, "SprigganRoot" )) && (Utility.RandomInt(1,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "SprigganRoot" ) / 5)) 
+			if (kActor == PlayerActor)
+				Debug.MessageBox("The spores spread to a new host.")
+			else
+				Debug.Notification("The spores spread to a new host.")
+			endif
 
-		if (kActor == PlayerActor)
-			Debug.MessageBox("The spores spread to a nhew host.")
-		else
-			Debug.Notification("The spores spread to a nhew host.")
-		endif
+			; NPC is infected -> send parasite to NPC, including player
+			_transferParasiteAfterSex( threadID, kActor, "SprigganRootArms", false)
 
-		; NPC is infected -> send parasite to NPC, including player
-		_transferParasiteAfterSex( threadID, kActor, "SprigganRootArms", false)
-
+		EndIf
 	EndIf
 
 endfunction
