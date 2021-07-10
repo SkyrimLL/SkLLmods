@@ -11,11 +11,7 @@ akPlayer.removeitem(_SLP_MotherSeed, 1)
 akPlayer.removeitem(NirnrootRed, 1)
 akPlayer.removeitem(GlowingMushroom, 1)
 
-SLP_WhiterunSanctuaryFollower.ForceRefTo(akSpeaker as ObjectReference)
-
 self.getowningquest().setstage(285)
-
-DanicaSanctuaryAltar.Start()
 ;END CODE
 EndFunction
 ;END FRAGMENT

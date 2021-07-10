@@ -2295,7 +2295,7 @@ Event OnObjectEquipped(Form akBaseObject, ObjectReference akReference)
 
   	if akBaseObject as Ingredient
   		Ingredient thisIngredient = akBaseObject as Ingredient
-
+  		; eating
     	; Debug.Notification("This actor just ate an ingredient type: " + akBaseObject.GetType())
 
     	; Spider egg = type 30

@@ -48,12 +48,6 @@ _SLP_WhiterunSanctuaryPlayerAltarEffect.Enable()
 
 kDanicaPurespring.EvaluatePackage()
 
-StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceChaurusQueenVag", 100.0 )
-StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceChaurusQueenGag", 100.0 )
-StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceChaurusQueenSkin", 100.0 )
-StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceChaurusQueenArmor", 100.0 )
-StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceChaurusQueenBody", 100.0 )
-
 MUSCombatBoss.Add()
 
 kPlayer.SendModEvent("SLPCureBarnacles")
@@ -83,9 +77,6 @@ Utility.Wait(2)
 
 	Utility.Wait(2)
 
-
-	StorageUtil.SetIntValue(kPlayer, "_SLP_iChaurusQueenStage",  1)
-	StorageUtil.SetIntValue(kPlayer, "_SLP_iChaurusQueenDate", Game.QueryStat("Days Passed"))
 	_SLP_QueenOfChaurusQuest.SetStage(289)
 ;END CODE
 EndFunction
