@@ -44,7 +44,10 @@ Event OnEffectStart(Actor Target, Actor Caster)
 	kPlayer.AddSpell( CallSpawns ) 
 	kPlayer.AddSpell( DismissSpawns ) 
 	kPlayer.AddSpell( ChaurusBlade ) 
-	kPlayer.AddSpell( ChaurusClaw ) 
+
+	if (iChaurusQueenStage>=5)
+		kPlayer.AddSpell( ChaurusClaw ) 
+	endif
 
 
 	If (StorageUtil.GetIntValue(none, "_SLS_isEstrusChaurusON") ==  1) 

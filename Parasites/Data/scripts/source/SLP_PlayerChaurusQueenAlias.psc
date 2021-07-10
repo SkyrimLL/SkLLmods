@@ -139,21 +139,33 @@ Event OnPlayerChaurusQueen(String _eventName, String _args, Float _argc = -1.0, 
 
 	; FalmerSlaver.sendModEvent("PCSubEnslave")
 	PlayerActor.MoveTo(SLP_PlayerChaurusQueenStartMarker)
-	PlayerActor.RemoveAllItems(akTransferTo = SLP_PlayerChaurusQueenStorage, abKeepOwnership = True)
 
 	PlayerActor.SendModEvent("SLPInfectChaurusWorm")
+	PlayerActor.SendModEvent("SLPInfectEstrusChaurusEgg")
 
 	Debug.Notification("The tingling in your nipples is driving you mad.")
 
+	PlayerActor.SendModEvent("SLHModHormone", "Lactation", 80.0 )
+	StorageUtil.SetIntValue(PlayerActor, "_SLH_iMilkLevel", 90)
 	StorageUtil.SetIntValue(PlayerActor, "_SLH_iSkinColor", iFalmerSkinColor ) 
-	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast", StorageUtil.GetFloatValue(PlayerActor, "_SLH_fBreast" ) + breastMod ) 
-	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fWeight", StorageUtil.GetFloatValue(PlayerActor, "_SLH_fWeight" ) + weightMod ) 
+	; StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast", 3.0 ) 
+	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fWeight", 100.0 ) 
+	StorageUtil.SetIntValue(PlayerActor, "_SLH_iForcedHairLoss", 1)
+	PlayerActor.SendModEvent("SLHShaveHead")
 	PlayerActor.SendModEvent("SLHRefresh")
 	PlayerActor.SendModEvent("SLHRefreshColors")
+
+
+	utility.wait(1.0)
+	PlayerActor.RemoveAllItems(akTransferTo = SLP_PlayerChaurusQueenStorage, abKeepOwnership = True)
+
+	utility.wait(1.0)
 
 	SLP_PlayerChaurusQueenSlaver.SendModEvent("PCSubEnslave")
 
 	SLP_PlayerChaurusQueenQuest.SetStage(10)
+	SLP_PlayerChaurusQueenQuest.SetStage(90)
+
 
 EndEvent
 
