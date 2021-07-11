@@ -140,7 +140,6 @@ Event OnPlayerChaurusQueen(String _eventName, String _args, Float _argc = -1.0, 
 	; FalmerSlaver.sendModEvent("PCSubEnslave")
 	PlayerActor.MoveTo(SLP_PlayerChaurusQueenStartMarker)
 
-	; PlayerActor.SendModEvent("SLPInfectChaurusWorm")
 
 	Debug.Notification("The tingling in your nipples is driving you mad.")
 
@@ -166,8 +165,9 @@ Event OnPlayerChaurusQueen(String _eventName, String _args, Float _argc = -1.0, 
 	SLP_PlayerChaurusQueenQuest.SetStage(90)
 
 	PlayerActor.SendModEvent("SLPInfectEstrusChaurusEgg")
-	PlayerActor.SendModEvent("SLPInfectChaurusQueenVag")
+	; PlayerActor.SendModEvent("SLPInfectChaurusQueenVag")
 	PlayerActor.SendModEvent("SLPInfectChaurusQueenSkin")
+	PlayerActor.SendModEvent("SLPInfectChaurusWorm")
 	StorageUtil.SetFloatValue(PlayerActor, "_SLP_flareDelay", 0.9 ) ; accelerate flares by default to simulate long term exposure
 
 EndEvent

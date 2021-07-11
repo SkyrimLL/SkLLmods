@@ -288,13 +288,13 @@ Int Function _getParasiteTickerThreshold(Actor kActor, Int _iNextStageTicker, In
 
 	; when flareDelay = 1.0
 	; threshold below 100 after 200 ticks (+1 tick for 2 real time seconds - 400 s - about 6 minutes)
-	; threshold below 100 immediately 5 days after infection
-	fThreshold = (100.0 + (100.0 - ( (_iNextStageTicker as Float) / 2.0)) - ((_iParasiteDuration as Float) * 10.0) ) * flareDelay
+	; threshold below 100 immediately 3 days after infection
+	fThreshold = 100.0 + (100.0 - ( ( ( (_iNextStageTicker as Float) / 2.0) - ((_iParasiteDuration as Float) * 2.0) )  * flareDelay ) )
 
 	if ( ((fThrottle as Int) * 10) == _iNextStageTicker)
 		; debug.notification(".")
-		; debug.notification("[SLP] Check parasite event: " + sParasite )
-		; debug.notification("[SLP] Chance of parasite event: " + ((100.0 - fThreshold) as Int) )
+		debug.notification("[SLP] Check parasite event: " + sParasite )
+		debug.notification("[SLP] Chance of parasite event: " + ((100.0 - fThreshold) as Int) )
 		debug.trace("[SLP] Check parasite event: " + sParasite + " - Chance of trigger: " + ((100.0 - fThreshold) as Int) )
 		debug.trace("[SLP]     _iNextStageTicker: " + _iNextStageTicker)
 		debug.trace("[SLP]     _iParasiteDuration: " + _iParasiteDuration)

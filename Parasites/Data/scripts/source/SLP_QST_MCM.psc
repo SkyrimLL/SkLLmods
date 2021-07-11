@@ -1986,11 +1986,11 @@ Function _setParasiteSettings()
 		StorageUtil.SetIntValue(kPlayer, "_SLP_toggleChaurusQueenBody", 0 )
 		StorageUtil.SetFloatValue(kPlayer, "_SLP_chanceChaurusQueenBody", 100.0 ) 
 	Endif 
-	if (_maxBroodSpawns==-1.0) || (StorageUtil.GetIntValue(kPlayer, "_SLP_maxBroodSpawns" ) == 0 )
+	if (_maxBroodSpawns==-1.0) && (StorageUtil.GetIntValue(kPlayer, "_SLP_maxBroodSpawns" ) == 0 )
 		StorageUtil.SetIntValue(kPlayer, "_SLP_maxBroodSpawns", 10 ) 
 		_maxBroodSpawns = 10
 	Endif
-	if (_flareDelay==-1.0) 
+	if (_flareDelay==-1.0) && (StorageUtil.GetIntValue(kPlayer, "_SLP_flareDelay" ) == 0 )
 		StorageUtil.SetFloatValue(kPlayer, "_SLP_flareDelay", 5.0 ) 
 		_flareDelay = 5.0
 	Endif

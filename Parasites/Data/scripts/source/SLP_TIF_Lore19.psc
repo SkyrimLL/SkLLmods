@@ -6,6 +6,7 @@ Scriptname SLP_TIF_Lore19 Extends TopicInfo Hidden
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
+QueenOfChaurusQuest.SetObjectiveDisplayed(10, false)
 QueenOfChaurusQuest.SetObjectiveDisplayed(19)
 QueenOfChaurusQuest.SetStage(95)
 ;END CODE

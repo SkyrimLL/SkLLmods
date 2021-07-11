@@ -275,7 +275,7 @@ Bool Function infectSpiderPenis( Actor kActor  )
 		Return False
 	Endif
 
-	If (isInfectedByString( kActor,  "SpiderPenis" ))
+	If (isInfectedByString( kActor,  "SpiderPenis" )) || (isInfectedByString( kActor,  "ChaurusQueenVag" )) || (isInfectedByString( kActor,  "ChaurusWormVag" )) || (isInfectedByString( kActor,  "SpiderEggs" ))
 		Debug.Trace("[SLP]	Already infected - Aborting")
 		Return False
 	Endif

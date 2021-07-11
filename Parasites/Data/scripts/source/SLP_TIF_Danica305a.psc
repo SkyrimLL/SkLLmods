@@ -8,7 +8,9 @@ Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
 akSpeaker.SendModEvent("SLPSexCure","Sex")
 
+self.getowningquest().SetObjectiveDisplayed(10,false)
 self.getowningquest().SetObjectiveDisplayed(19,false)
+self.getowningquest().SetObjectiveDisplayed(295,false)
 self.getowningquest().setstage(305)
 ;END CODE
 EndFunction
