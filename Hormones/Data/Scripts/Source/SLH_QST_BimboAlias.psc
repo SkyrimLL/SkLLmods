@@ -936,6 +936,8 @@ function bimboDailyProgressiveTransformation(int transformationDays, Int transfo
 	Int iBimboHairColor = StorageUtil.GetIntValue(BimboActor, "_SLH_iBimboHairColor"); 0xCABFB1
 	isBimboPermanent = StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformLocked") as Bool
 
+	StorageUtil.SetIntValue(none, "yps_SilentMode", 1)
+
 	if (StorageUtil.GetIntValue(BimboActor, "_SD_iAliciaHair") == 1)
 		iBimboHairColor = StorageUtil.GetIntValue(BimboActor, "_SLH_iSuccubusHairColor")
 		StorageUtil.SetStringValue(BimboActor, "_SLH_sHairColorName", "Pink")
@@ -1200,6 +1202,9 @@ function bimboDailyProgressiveTransformation(int transformationDays, Int transfo
 			fctPolymorph.bimboFinalON(BimboActor)
 		endif
 	EndIf
+
+	StorageUtil.SetIntValue(none, "yps_SilentMode", 0)
+
 	;IDEAS
 	;- some kind of sex need? or leave it for other mods?
 	;- the bad end should be better: an fx should play, trigger as masturbation too
@@ -1235,7 +1240,11 @@ Function SetHairLength(Int hairLength)
 		endif
 
 		if StorageUtil.GetIntValue(none, "YpsCurrentHairLengthStage") < hairLength
+			StorageUtil.SetIntValue(none, "yps_SilentMode", 1)
 			SendModEvent("yps-SetHaircutEvent", "", hairLength)
+
+			Utility.Wait(1.0)
+			StorageUtil.SetIntValue(none, "yps_SilentMode", 0)
 		endif
 	EndIf
 EndFunction

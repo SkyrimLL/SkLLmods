@@ -1323,8 +1323,11 @@ function shaveHair ( Actor kActor)
 			debugTrace("       -> YPS Fashion override")
 
 			if StorageUtil.GetIntValue(none, "YpsCurrentHairLengthStage") > 2
+				StorageUtil.SetIntValue(none, "yps_SilentMode", 1)
 				SendModEvent("yps-HaircutEvent", "", 2) ; shaved - bald
 				StorageUtil.SetIntValue(kActor, "_SLH_iShavedHead", 1)
+				utility.wait(1.0)
+				StorageUtil.SetIntValue(none, "yps_SilentMode", 0)
 			endif
 
 		elseIf (StorageUtil.GetIntValue(kActor, "_SLH_iUseHairLoss") == 1)
