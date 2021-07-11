@@ -412,24 +412,28 @@ Event OnPCStartChaurusQueen(String _eventName, String _args, Float _argc = -1.0,
 	StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryLevel", 1)
 	StorageUtil.SetIntValue(PlayerActor, "_SD_iSlaveryExposure", 10)
 
-	Int iFalmerSkinColor = Math.LeftShift(255, 24) + Math.LeftShift(100, 16) + Math.LeftShift(200, 8) + 255
-	Float breastMod = 1.0
-	Float weightMod = 0.0
+	if (StorageUtil.GetIntValue(none, "_SLP_iSexLabParasites") == 0) && (StorageUtil.GetIntValue(none, "_SLH_iHormones")== 1)
+		; Fallback set up if Parasites isn't enabled and hormones is
+		; Physical changes are also set in SLP_PlayerChaurusQueenAlias.psc script from Parasites 
+		Int iFalmerSkinColor = Math.LeftShift(255, 24) + Math.LeftShift(100, 16) + Math.LeftShift(200, 8) + 255
+		Float breastMod = 1.0
+		Float weightMod = 0.0
 
-	StorageUtil.SetIntValue(PlayerActor, "_SLH_iSkinColor", iFalmerSkinColor ) 
-	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast", 3.0 ) 
-	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fWeight", 100.0 ) 
-	StorageUtil.SetIntValue(PlayerActor, "_SLH_iForcedHairLoss", 1)
-	PlayerActor.SendModEvent("SLHShaveHead")
-	PlayerActor.SendModEvent("SLHRefresh")
-	PlayerActor.SendModEvent("SLHRefreshColors")
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iSkinColor", iFalmerSkinColor ) 
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast", 3.0 ) 
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fWeight", 100.0 ) 
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iForcedHairLoss", 1)
+		PlayerActor.SendModEvent("SLHShaveHead")
+		PlayerActor.SendModEvent("SLHRefresh")
+		PlayerActor.SendModEvent("SLHRefreshColors")
 
-	PlayerActor.SendModEvent("SLHModHormone", "Lactation", 50.0 )
-	StorageUtil.SetIntValue(PlayerActor, "_SLH_iMilkLevel", 80)
+		PlayerActor.SendModEvent("SLHModHormone", "Lactation", 50.0 )
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iMilkLevel", 80)
+	endif
 
 	SendModEvent("_SLP_PlayerChaurusQueen")
 
-	Debug.MessageBox("Repeated exposure to the Falmer's foul touch changed your body. Your growing breasts and pale blue skin make your purpose clear... you are theirs to breed.")
+	Debug.MessageBox("Repeated exposure to the Falmer's foul touch changed your body. Your growing breasts and pale blue skin make your purpose clear... you are theirs to breed. A few days ago, they force fed you a substance that made you numb and they took you to an altar where they implanted a strange star shaped stone inside you. Since then, your body has been changing. You must escape before it is too late.")
 EndEvent
 
 Event OnPCStartBroodMaiden(String _eventName, String _args, Float _argc = -1.0, Form _sender)

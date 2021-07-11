@@ -99,7 +99,7 @@ Event OnPlayerChaurusQueen(String _eventName, String _args, Float _argc = -1.0, 
 
 	; FalmerSlaver.sendModEvent("PCSubEnslave")
 
-	PlayerActor.SendModEvent("SLPInfectChaurusWorm")
+	; PlayerActor.SendModEvent("SLPInfectChaurusWorm")
 
 	SLS_PlayerChaurusQueenQuest.SetStage(10)
 
