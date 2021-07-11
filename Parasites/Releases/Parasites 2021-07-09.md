@@ -29,6 +29,8 @@
 - [Add quest stage to force player to use the Chaurus Seed Spawn spell before talking to the Elder Roots](https://github.com/SkyrimLL/SkLLmods/issues/1019)
 
 **Bug Fixes:** 
+- [Chaurus powers are not granted after stage 340 if player has sex with chaurus without using pheromones](https://github.com/SkyrimLL/SkLLmods/issues/1228)
+- [Spider powers are not granted after stage 310 if player has sex with spider without using pheromones](https://github.com/SkyrimLL/SkLLmods/issues/1227)
 - [The Quest stages to learn the parasite repellent recipe are wrong](https://github.com/SkyrimLL/SkLLmods/issues/1223)
 - [Dwemer sensors have missing textures](https://github.com/SkyrimLL/SkLLmods/issues/1222)
 - [After manual check in MCM, the queen mask can be equipped manually but it is not visible until you run a full refresh of parasites](https://github.com/SkyrimLL/SkLLmods/issues/1210)

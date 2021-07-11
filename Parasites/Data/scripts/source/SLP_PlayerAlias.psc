@@ -654,6 +654,9 @@ Event OnSexLabEnd(int threadID, bool HasPlayer)
 			if (iChaurusQueenStage>=5)
 				Debug.Notification("You skin turns fluids into eggs deep inside you.")
 				StorageUtil.SetIntValue(PlayerActor, "_SLP_iChaurusEggCount", iNumChaurusEggs + (Utility.RandomInt(10,30) ) )
+			elseif (iChaurusQueenStage>=2)
+				fctParasites.forceChaurusQueenStage(340,350)
+	    		fctParasites.tryPlayerChaurusStage()
 
 			endif
 
@@ -683,7 +686,9 @@ Event OnSexLabEnd(int threadID, bool HasPlayer)
 				if (iChaurusQueenStage>=5)
 					Debug.Notification("You skin turns fluids into eggs deep inside you.")
 					StorageUtil.SetIntValue(PlayerActor, "_SLP_iSpiderEggCount", iNumSpiderEggs + (Utility.RandomInt(5,15) ) )
-
+				elseif (iChaurusQueenStage>=2)
+					fctParasites.forceChaurusQueenStage(310, 320)
+					fctParasites.tryPlayerSpiderStage()
 				endif
 
 				if (Utility.RandomInt(1,100)<= (fChanceSpiderPenis as Int) )
