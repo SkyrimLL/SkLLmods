@@ -1206,8 +1206,8 @@ Function tryPlayerSpiderStage()
 
 	 		debug.messagebox("The Seed throbs deep inside you and forces the now fertilized eggs out of your womb. In a sudden flash of understanding, you realize you hold power over your newly spawned eggs.")
 	 		debug.messagebox("(Use the 'SEED SPAWN SPIDER' power to transmute spider eggs from your inventory.)")
+			; fctParasiteSpiderEgg.cureSpiderEgg( PlayerActor, false )
 	 	endif
-		fctParasiteSpiderEgg.cureSpiderEgg( PlayerActor, false )
 	 	; triggerEstrusChaurusBirth(  PlayerActor, "SpiderEgg", RandomInt(5,15)  )
 
 	endif
