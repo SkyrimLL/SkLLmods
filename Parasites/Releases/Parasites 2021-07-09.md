@@ -1,5 +1,6 @@
 ### RELEASE NOTES for milestone [Parasites 2021-07-09](https://github.com/SkyrimLL/SkLLmods/milestone/102?closed=1) 
 **Enhancements:** 
+- [Update Chaurus Queen player start to skip after the ritual](https://github.com/SkyrimLL/SkLLmods/issues/1226)
 - [Move Queen variable settings into stage 289 of main quest](https://github.com/SkyrimLL/SkLLmods/issues/1224)
 - [Add MCM checkbox to disable Chaurus Queen base skin](https://github.com/SkyrimLL/SkLLmods/issues/1221)
 - [Add MCM checkbox to control chance of infection of NPC (disable with 0)](https://github.com/SkyrimLL/SkLLmods/issues/1220)
