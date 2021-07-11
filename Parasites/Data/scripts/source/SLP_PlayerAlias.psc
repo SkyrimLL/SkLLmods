@@ -586,15 +586,37 @@ EndEvent
 
 
 Event OnSexLabStart(int threadID, bool HasPlayer)
+	Actor PlayerActor= PlayerAlias.GetReference() as Actor
+	ActorBase pActorBase = PlayerActor.GetActorBase()
+	sslThreadController controller = SexLab.GetController(threadID)
+	sslBaseAnimation animation = controller.Animation
+
 	If HasPlayer
-		Actor PlayerActor= PlayerAlias.GetReference() as Actor
+
 		If (fctParasites.isInfectedByString( PlayerActor,  "SpiderEgg" ))
 			slaUtil.UpdateActorExposure(PlayerActor, 2, "Aroused from sex while carrying spider eggs.")
+
 		ElseIf (fctParasites.isInfectedByString( PlayerActor,  "SpiderPenis" ))
 			slaUtil.UpdateActorExposure(PlayerActor, 5, "Aroused from sex while carrying spider eggs.")
+
 		ElseIf (fctParasites.isInfectedByString( PlayerActor,  "ChaurusWorm" )) || (fctParasites.isInfectedByString( PlayerActor,  "ChaurusWormVag" ))
 			slaUtil.UpdateActorExposure(PlayerActor, 10, "Aroused from sex while carrying chaurus worm.")
 		Endif
+
+		if animation.HasTag("Chaurus")
+			if (iChaurusQueenStage>=3)
+				fctParasites.forceChaurusQueenStage(340,350)
+			endif
+
+			fctParasites.tryPlayerChaurusStage()
+
+		elseif animation.HasTag("Spider")
+			if (iChaurusQueenStage>=3)
+				fctParasites.forceChaurusQueenStage(310, 320)
+			endif
+
+			fctParasites.tryPlayerSpiderStage()
+		endif
 	endif
 EndEvent
 
@@ -654,13 +676,12 @@ Event OnSexLabEnd(int threadID, bool HasPlayer)
 			if (iChaurusQueenStage>=5)
 				Debug.Notification("You skin turns fluids into eggs deep inside you.")
 				StorageUtil.SetIntValue(PlayerActor, "_SLP_iChaurusEggCount", iNumChaurusEggs + (Utility.RandomInt(10,30) ) )
-			elseif (iChaurusQueenStage>=2)
-				fctParasites.forceChaurusQueenStage(340,350)
-	    		fctParasites.tryPlayerChaurusStage()
 
+			elseif (iChaurusQueenStage>=2)
+			;	fctParasites.forceChaurusQueenStage(340,350)
 			endif
 
-			fctParasites.tryPlayerChaurusStage()
+			; fctParasites.tryPlayerChaurusStage()
 
 			If (!fctParasites.ActorHasKeywordByString(PlayerActor, "Belt")) && (!fctParasites.ActorHasKeywordByString(PlayerActor, "PlugAnal"))
 				if (Utility.RandomInt(1,100)<= (fChanceChaurusWorm as Int) )
@@ -680,16 +701,17 @@ Event OnSexLabEnd(int threadID, bool HasPlayer)
 			EndIf
 
 		elseif animation.HasTag("Spider")
-			If (!fctParasites.ActorHasKeywordByString(PlayerActor, "Belt")) && (!fctParasites.ActorHasKeywordByString(PlayerActor, "PlugVaginal"))
-				fctParasites.tryPlayerSpiderStage()
+			if (iChaurusQueenStage>=5)
+				Debug.Notification("You skin turns fluids into eggs deep inside you.")
+				StorageUtil.SetIntValue(PlayerActor, "_SLP_iSpiderEggCount", iNumSpiderEggs + (Utility.RandomInt(5,15) ) )
 
-				if (iChaurusQueenStage>=5)
-					Debug.Notification("You skin turns fluids into eggs deep inside you.")
-					StorageUtil.SetIntValue(PlayerActor, "_SLP_iSpiderEggCount", iNumSpiderEggs + (Utility.RandomInt(5,15) ) )
-				elseif (iChaurusQueenStage>=2)
-					fctParasites.forceChaurusQueenStage(310, 320)
-					fctParasites.tryPlayerSpiderStage()
-				endif
+			elseif (iChaurusQueenStage>=2)
+			;	fctParasites.forceChaurusQueenStage(310, 320)
+			endif
+				
+			; fctParasites.tryPlayerSpiderStage()
+
+			If (!fctParasites.ActorHasKeywordByString(PlayerActor, "Belt")) && (!fctParasites.ActorHasKeywordByString(PlayerActor, "PlugVaginal"))
 
 				if (Utility.RandomInt(1,100)<= (fChanceSpiderPenis as Int) )
 					if (fctParasites.infectParasiteByString(PlayerActor, "SpiderPenis"))
