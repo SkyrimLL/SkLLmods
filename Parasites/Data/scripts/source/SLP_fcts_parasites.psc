@@ -1292,7 +1292,7 @@ Function tryPlayerChaurusStage()
 	endif
 
 
-	if (StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusQueenStage")>=5)
+	if (iChaurusQueenStage>=5)
 		fctParasiteChaurusQueen.getRandomChaurusEggs(PlayerActor, 0, 20)
 	endif
 EndFunction

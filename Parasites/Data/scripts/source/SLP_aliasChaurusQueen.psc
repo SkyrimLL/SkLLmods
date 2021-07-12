@@ -63,13 +63,15 @@ Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile,
 		elseIf (iRandomNum>60) && (fctParasites.isInfectedByString( kPlayer,  "ChaurusQueenArmor" )) && (StorageUtil.GetIntValue(kPlayer, "_SLP_toggleChaurusQueenWeapon")==0)
 			Debug.Trace("[SLP_aliasChaurusQueen] Cast Chaurus Blade spell" )
 
-			ChaurusBlade.Cast(kPlayer as ObjectReference , kPlayer as ObjectReference ) 
+			; ChaurusBlade.Cast(kPlayer as ObjectReference , kPlayer as ObjectReference ) 
+			fctParasites.extendChaurusWeapon( kPlayer,  "ChaurusBlade") 
 
 			
 		elseIf (iRandomNum>60) && (fctParasites.isInfectedByString( kPlayer,  "ChaurusQueenBody" )) && (StorageUtil.GetIntValue(kPlayer, "_SLP_toggleChaurusQueenWeapon")==0)
 			Debug.Trace("[SLP_aliasChaurusQueen] Cast Chaurus Claw spell" )
 
-			ChaurusClaw.Cast(kPlayer as ObjectReference , kPlayer as ObjectReference ) 
+			; ChaurusClaw.Cast(kPlayer as ObjectReference , kPlayer as ObjectReference ) 
+			fctParasites.extendChaurusWeapon( kPlayer,  "ChaurusClaw") 
 			
 		endif
 	EndIf

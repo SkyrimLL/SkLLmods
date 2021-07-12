@@ -294,8 +294,8 @@ Int Function _getParasiteTickerThreshold(Actor kActor, Int _iNextStageTicker, In
 		fThreshold = 100.0 + (100.0 - ( ( ((_iNextStageTicker as Float) * 1.0) + ((_iParasiteDuration as Float) * 4.0) ) / flareDelay ) )
 		if ( ((fThrottle as Int) * 10) == _iNextStageTicker)
 			; debug.notification(".")
-			debug.notification("[SLP] Check parasite event: " + sParasite )
-			debug.notification("[SLP] Chance of parasite event: " + ((100.0 - fThreshold) as Int) )
+			; debug.notification("[SLP] Check parasite event: " + sParasite )
+			; debug.notification("[SLP] Chance of parasite event: " + ((100.0 - fThreshold) as Int) )
 			debug.trace("[SLP] Check parasite event: " + sParasite + " - Chance of trigger: " + ((100.0 - fThreshold) as Int) )
 			debug.trace("[SLP]     _iNextStageTicker: " + _iNextStageTicker)
 			debug.trace("[SLP]     _iParasiteDuration: " + _iParasiteDuration)
@@ -2325,26 +2325,30 @@ EndEvent
  
 
 Event OnObjectEquipped(Form akBaseObject, ObjectReference akReference)
+	Actor PlayerActor = Game.getPlayer()
+	iChaurusQueenStage = StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusQueenStage")
 
-  	if akBaseObject as Ingredient
-  		Ingredient thisIngredient = akBaseObject as Ingredient
-  		; eating
-    	; Debug.Notification("This actor just ate an ingredient type: " + akBaseObject.GetType())
+	if (iChaurusQueenStage>=3)
+	  	if akBaseObject as Ingredient
+	  		Ingredient thisIngredient = akBaseObject as Ingredient
+	  		; eating
+	    	; Debug.Notification("This actor just ate an ingredient type: " + akBaseObject.GetType())
 
-    	; Spider egg = type 30
-    	if (thisIngredient == IngredientSpiderEgg) || (StringUtil.Find(akBaseObject.GetName(), "Spider Egg")>=0)
-    		; Debug.Notification("This actor just ate a spider egg")
-    		fctParasites.forceChaurusQueenStage(310, 320)
-    		fctParasites.tryPlayerSpiderStage()
+	    	; Spider egg = type 30
 
-    	elseif (thisIngredient == IngredientChaurusEgg) || (StringUtil.Find(akBaseObject.GetName(), "Chaurus Egg")>=0)
-    		; Debug.Notification("This actor just ate a chaurus egg")
-    		fctParasites.forceChaurusQueenStage(340,350)
-    		fctParasites.tryPlayerChaurusStage()
-    	endif
+	    	if (thisIngredient == IngredientSpiderEgg) || (StringUtil.Find(akBaseObject.GetName(), "Spider Egg")>=0)
+	    		; Debug.Notification("This actor just ate a spider egg")
+	    		fctParasites.forceChaurusQueenStage(310, 320)
+	    		fctParasites.tryPlayerSpiderStage()
 
- 
-  	endIf
+	    	elseif (thisIngredient == IngredientChaurusEgg) || (StringUtil.Find(akBaseObject.GetName(), "Chaurus Egg")>=0)
+	    		; Debug.Notification("This actor just ate a chaurus egg")
+	    		fctParasites.forceChaurusQueenStage(340,350)
+	    		fctParasites.tryPlayerChaurusStage()
+	    	endif
+
+	    endif
+	endIf
 endEvent
 
 Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile, bool abPowerAttack, bool abSneakAttack, bool abBashAttack, bool abHitBlocked)
