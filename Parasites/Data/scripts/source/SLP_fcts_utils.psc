@@ -80,91 +80,91 @@ Function ApplyBodyChange(Actor kActor, String sParasite, String sBodyPart, Float
  	Actor PlayerActor = Game.GetPlayer()
   String NiOString = "SLP_" + sParasite
 
-	if ( StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON") == 1  )  
+	  
+	Debug.Trace("[SLP]Receiving body change: " + sBodyPart)
+	Debug.Trace("[SLP] 	Node string: " + sParasite)
+	Debug.Trace("[SLP] 	Max node: " + fValueMax)
 
-		Debug.Trace("[SLP]Receiving body change: " + sBodyPart)
-		Debug.Trace("[SLP] 	Node string: " + sParasite)
-		Debug.Trace("[SLP] 	Max node: " + fValueMax)
+	if ( StorageUtil.GetIntValue(none, "_SLH_SlifON") == 0  )
+		if (fValue < 1.0)
+			fValue = 1.0     ; NiO node is reset with value of 1.0 - not 0.0!
+		Endif		
 
- 		if ( StorageUtil.GetIntValue(none, "_SLH_SlifON") == 0  )
-			if (fValue < 1.0)
-				fValue = 1.0     ; NiO node is reset with value of 1.0 - not 0.0!
-			Endif		
-
-			if (fValue > fValueMax)
-				fValue = fValueMax
-			Endif
+		if (fValue > fValueMax)
+			fValue = fValueMax
 		Endif
+	Endif
 
-		If (StorageUtil.GetIntValue(none, "_SLH_iHormones")!=1) && (kActor == PlayerActor)
+	; Defer to Hormones if available
+	If (StorageUtil.GetIntValue(none, "_SLH_iHormones")==1) && (kActor == PlayerActor)
 
-			if ( sBodyPart == "Breast"  )
-				StorageUtil.SetFloatValue(kActor, "_SLH_fBreast", fValue )  
+		if ( sBodyPart == "Breast"  )
+			StorageUtil.SetFloatValue(kActor, "_SLH_fBreast", fValue )  
 
-			elseif ( sBodyPart == "Belly"  )
-				StorageUtil.SetFloatValue(kActor, "_SLH_fBelly", fValue )  
+		elseif ( sBodyPart == "Belly"  )
+			StorageUtil.SetFloatValue(kActor, "_SLH_fBelly", fValue )  
 
-			elseif ( sBodyPart == "Butt"  )
-				StorageUtil.SetFloatValue(kActor, "_SLH_fButt", fValue )
-				  
-			elseif ( sBodyPart == "Schlong"  )
-				StorageUtil.SetFloatValue(kActor, "_SLH_fSchlong", fValue )  
-			endif
-
-			kActor.SendModEvent("SLHRefresh")
-
-		else
-
-			if (( sBodyPart == "Breast"  ) && (pActorBase.GetSex()==1)) ; Female change
-				Debug.Trace("[SLP]    Applying breast change: " + NiOString)
-				Debug.Trace("[SLP]    Value: " + fValue)
-
-				if ( StorageUtil.GetIntValue(none, "_SLH_SlifON") == 1  )  
-					SLIF_inflateMax(kActor, "slif_breast", fValue, fValueMax, NiOString)
-				else
-					XPMSELib.SetNodeScale(kActor, true, NINODE_LEFT_BREAST, fValue, NiOString)
-					XPMSELib.SetNodeScale(kActor, true, NINODE_RIGHT_BREAST, fValue, NiOString)
-				Endif
-
-			Elseif (( sBodyPart == "Belly"  ) && (pActorBase.GetSex()==1)) ; Female change
-				Debug.Trace("[SLP]    Applying belly change: " + NiOString)
-				Debug.Trace("[SLP]    Value: " + fValue)
-
-				if ( StorageUtil.GetIntValue(none, "_SLH_SlifON") == 1  )  
-					SLIF_inflateMax(kActor, "slif_belly", fValue, fValueMax, NiOString)
-				else
-					XPMSELib.SetNodeScale(kActor, true, NINODE_BELLY, fValue, NiOString)
-				Endif
-
-
-			Elseif (( sBodyPart == "Butt"  )) 
-				Debug.Trace("[SLP]    Applying butt change: " + NiOString)
-				Debug.Trace("[SLP]    Value: " + fValue)
-
-				if ( StorageUtil.GetIntValue(none, "_SLH_SlifON") == 1  )  
-					SLIF_inflateMax(kActor, "slif_butt", fValue, fValueMax, NiOString)
-				else
-					XPMSELib.SetNodeScale(kActor, pActorBase.GetSex(), NINODE_LEFT_BUTT, fValue, NiOString)
-					XPMSELib.SetNodeScale(kActor, pActorBase.GetSex(), NINODE_RIGHT_BUTT, fValue, NiOString)
-				Endif
-
-
-			Elseif (( sBodyPart == "Schlong"  ) ) 
-				Debug.Trace("[SLP]    Applying schlong change: " + NiOString)
-				Debug.Trace("[SLP]    Value: " + fValue)
-
-				if ( StorageUtil.GetIntValue(none, "_SLH_SlifON") == 1  )  
-					SLIF_inflateMax(kActor, "slif_schlong", fValue, fValueMax, NiOString)
-				else
-					XPMSELib.SetNodeScale(kActor, pActorBase.GetSex(), NINODE_SCHLONG, fValue, NiOString)
-				Endif
-
-			Endif
+		elseif ( sBodyPart == "Butt"  )
+			StorageUtil.SetFloatValue(kActor, "_SLH_fButt", fValue )
+			  
+		elseif ( sBodyPart == "Schlong"  )
+			StorageUtil.SetFloatValue(kActor, "_SLH_fSchlong", fValue )  
 		endif
-	Else
-		; Debug.Notification("[SLP]Receiving body change: NiO not installed")
 
-	EndIf
+		kActor.SendModEvent("SLHRefresh")
+
+	else
+
+		if (( sBodyPart == "Breast"  ) && (pActorBase.GetSex()==1)) ; Female change
+			Debug.Trace("[SLP]    Applying breast change: " + NiOString)
+			Debug.Trace("[SLP]    Value: " + fValue)
+
+			if ( StorageUtil.GetIntValue(none, "_SLH_SlifON") == 1  )  
+				SLIF_inflateMax(kActor, "slif_breast", fValue, fValueMax, NiOString)
+
+			elseif ( StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON") == 1  )
+				XPMSELib.SetNodeScale(kActor, true, NINODE_LEFT_BREAST, fValue, NiOString)
+				XPMSELib.SetNodeScale(kActor, true, NINODE_RIGHT_BREAST, fValue, NiOString)
+			Endif
+
+		Elseif (( sBodyPart == "Belly"  ) && (pActorBase.GetSex()==1)) ; Female change
+			Debug.Trace("[SLP]    Applying belly change: " + NiOString)
+			Debug.Trace("[SLP]    Value: " + fValue)
+
+			if ( StorageUtil.GetIntValue(none, "_SLH_SlifON") == 1  )  
+				SLIF_inflateMax(kActor, "slif_belly", fValue, fValueMax, NiOString)
+
+			elseif ( StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON") == 1  )
+				XPMSELib.SetNodeScale(kActor, true, NINODE_BELLY, fValue, NiOString)
+			Endif
+
+
+		Elseif (( sBodyPart == "Butt"  )) 
+			Debug.Trace("[SLP]    Applying butt change: " + NiOString)
+			Debug.Trace("[SLP]    Value: " + fValue)
+
+			if ( StorageUtil.GetIntValue(none, "_SLH_SlifON") == 1  )  
+				SLIF_inflateMax(kActor, "slif_butt", fValue, fValueMax, NiOString)
+
+			elseif ( StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON") == 1  )
+				XPMSELib.SetNodeScale(kActor, pActorBase.GetSex(), NINODE_LEFT_BUTT, fValue, NiOString)
+				XPMSELib.SetNodeScale(kActor, pActorBase.GetSex(), NINODE_RIGHT_BUTT, fValue, NiOString)
+			Endif
+
+
+		Elseif (( sBodyPart == "Schlong"  ) ) 
+			Debug.Trace("[SLP]    Applying schlong change: " + NiOString)
+			Debug.Trace("[SLP]    Value: " + fValue)
+
+			if ( StorageUtil.GetIntValue(none, "_SLH_SlifON") == 1  )  
+				SLIF_inflateMax(kActor, "slif_schlong", fValue, fValueMax, NiOString)
+
+			elseif ( StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON") == 1  )
+				XPMSELib.SetNodeScale(kActor, pActorBase.GetSex(), NINODE_SCHLONG, fValue, NiOString)
+			Endif
+
+		Endif
+	endif
 
 EndFunction
 

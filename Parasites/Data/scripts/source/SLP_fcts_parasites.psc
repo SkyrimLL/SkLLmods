@@ -1510,6 +1510,7 @@ Function maintenance()
 	StorageUtil.SetIntValue(none, "_SLH_NiNodeOverrideON", isNiOInstalled as Int)
 
 	Bool isSlifInstalled = Game.GetModbyName("SexLab Inflation Framework.esp") != 255
+	debugTrace("  SLIF detection: " + isSlifInstalled)
 	StorageUtil.SetIntValue(none, "_SLH_SlifON", isSlifInstalled as Int)
 
 	If (!StorageUtil.HasIntValue(none, "_SLP_iSexLabParasites"))

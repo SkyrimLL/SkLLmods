@@ -453,6 +453,9 @@ event OnPageReset(string a_page)
 		AddTextOption("     Player in Chaurus Faction: " + fctUtils.checkIfFriendlyFaction( kPlayer, "Chaurus" ) as Int, "", OPTION_FLAG_DISABLED)
 		AddTextOption("     Player in Spriggan Faction: " + fctUtils.checkIfFriendlyFaction( kPlayer, "Spriggan" ) as Int, "", OPTION_FLAG_DISABLED)
 
+		AddHeaderOption(" Body scale frameworks")
+		AddTextOption("    NiNodeOverride: " + StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON") as Int, "", OPTION_FLAG_DISABLED)
+		AddTextOption("     SexLab Inflation Framework: " + StorageUtil.GetIntValue(none, "_SLH_SlifON")  as Int, "", OPTION_FLAG_DISABLED)
 
 		SetCursorPosition(1)
 		AddHeaderOption(" Maintenance ")
