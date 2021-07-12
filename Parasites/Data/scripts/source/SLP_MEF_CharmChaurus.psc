@@ -7,7 +7,7 @@ Event OnEffectStart(Actor Target, Actor Caster)
 
 	; Debug.Notification("Chaurus pheromones ON")
  	StorageUtil.SetIntValue(kPlayer, "_SLP_iChaurusPheromoneON", 1)
- 	kPlayer.AddToFaction(ChaurusFaction)
+ 	; kPlayer.AddToFaction(ChaurusFaction)
 
 EndEvent
 

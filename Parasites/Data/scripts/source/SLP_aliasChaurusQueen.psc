@@ -31,12 +31,13 @@ Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile,
 		Sound.SetInstanceVolume(CritterFX.Play(kPlayer), 1.0)
 		Utility.Wait(1.0)
 
-		If (iRandomNum>95) && (kPlayer.HasSpell( CallSpawns )) 
-			Debug.Trace("[SLP_aliasChaurusQueen] Call chaurus spawns" )
-			Debug.Notification("The Seed calls your brood for help." )
-			CallSpawns.Cast(kPlayer as ObjectReference  , kPlayer as ObjectReference ) 
+		; If (iRandomNum>95) && (kPlayer.HasSpell( CallSpawns )) 
+		;	Debug.Trace("[SLP_aliasChaurusQueen] Call chaurus spawns" )
+		;	Debug.Notification("The Seed calls your brood for help." )
+		;	CallSpawns.Cast(kPlayer as ObjectReference  , kPlayer as ObjectReference ) 
 
-		elseIf (iRandomNum>90) && (kPlayer.HasSpell( CallSpawns )) 
+		;else
+		If (iRandomNum>90) && (kPlayer.HasSpell( CallSpawns )) 
 			Debug.Trace("[SLP_aliasChaurusQueen] Seed spawns" )
 			Debug.Notification("The Seed consumes eggs to protect you." )
 

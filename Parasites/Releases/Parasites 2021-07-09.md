@@ -1,5 +1,9 @@
 ### RELEASE NOTES for milestone [Parasites 2021-07-09](https://github.com/SkyrimLL/SkLLmods/milestone/102?closed=1) 
 **Enhancements:** 
+- [Reduce duration of chaurus blade and claw to 5 minutes to minimize stacking issues](https://github.com/SkyrimLL/SkLLmods/issues/1234)
+- [Player should be able to ingest Parasitic Chaurus Egg from Estrus Chaurus to gain chaurus powers](https://github.com/SkyrimLL/SkLLmods/issues/1233)
+- [Prevent stacking of bound chaurus blade / claw effects](https://github.com/SkyrimLL/SkLLmods/issues/1231)
+- [Reduce delays of random parasites flares](https://github.com/SkyrimLL/SkLLmods/issues/1230)
 - [Update Chaurus Queen player start to skip after the ritual](https://github.com/SkyrimLL/SkLLmods/issues/1226)
 - [Move Queen variable settings into stage 289 of main quest](https://github.com/SkyrimLL/SkLLmods/issues/1224)
 - [Add MCM checkbox to disable Chaurus Queen base skin](https://github.com/SkyrimLL/SkLLmods/issues/1221)
@@ -29,6 +33,8 @@
 - [Add quest stage to force player to use the Chaurus Seed Spawn spell before talking to the Elder Roots](https://github.com/SkyrimLL/SkLLmods/issues/1019)
 
 **Bug Fixes:** 
+- [Seed Calm spell isn't working anymore](https://github.com/SkyrimLL/SkLLmods/issues/1235)
+- [Spider and chaurus pheromones are still not working](https://github.com/SkyrimLL/SkLLmods/issues/1232)
 - [Chaurus powers are not granted after stage 340 if player has sex with chaurus without using pheromones](https://github.com/SkyrimLL/SkLLmods/issues/1228)
 - [Spider powers are not granted after stage 310 if player has sex with spider without using pheromones](https://github.com/SkyrimLL/SkLLmods/issues/1227)
 - [The Quest stages to learn the parasite repellent recipe are wrong](https://github.com/SkyrimLL/SkLLmods/issues/1223)

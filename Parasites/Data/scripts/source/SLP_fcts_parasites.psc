@@ -40,6 +40,8 @@ GlobalVariable Property _SLP_GV_numCharmChaurus Auto
 GlobalVariable Property _SLP_GV_numCharmSpider Auto
 
 Faction Property PlayerFollowerFaction Auto
+Faction Property SpiderFaction Auto
+Faction Property ChaurusFaction Auto
 
 SPELL Property SeedFlare Auto
 SPELL Property SeedSpawnSpider Auto
@@ -1156,7 +1158,7 @@ Function tryCharmSpider(Actor Target)
 		If (Utility.RandomInt(0,100)<=iCharmThreshold)  
 			; Debug.Notification("[SLP] Charm Spider" )
 		    ;   Debug.Messagebox(" Spider Pheromone charm spell started") 
-		 	; kPlayer.AddToFaction(SpiderFaction)
+		 	kPlayer.AddToFaction(SpiderFaction)
 		    Target.StopCombat()   
 		    ; Target.SetPlayerTeammate(true )
 			SpiderFollowerAlias.ForceRefTo(Target as objectReference)
@@ -1231,7 +1233,7 @@ Function tryCharmChaurus(Actor Target)
 		If (Utility.RandomInt(0,100)<=iCharmThreshold)   
 			; Debug.Notification("[SLP] Charm Chaurus" )
 		    ; Debug.Messagebox(" Chaurus Pheromone charm spell started")    
-		 	; kPlayer.AddToFaction(ChaurusFaction)
+		 	kPlayer.AddToFaction(ChaurusFaction)
 		    Target.StopCombat()   
 		    ; Target.SetPlayerTeammate(true )
 			ChaurusFollowerAlias.ForceRefTo(Target as objectReference)

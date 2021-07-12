@@ -11,7 +11,10 @@ Event OnTriggerEnter(ObjectReference akActionRef)
 		LeftHandWeapon = akPlayer.GetEquippedWeapon(1)
 
      		; Debug.Notification("Player walking through - Eggs: " + eggsCount)
-     		if (QueenOfChaurusQuest.GetStageDone(250)==0)
+     		if (QueenOfChaurusQuest.GetStageDone(330)==1)
+     			KyneSanctuaryDoor.Lock(false, true)
+
+     		elseif (QueenOfChaurusQuest.GetStageDone(250)==0)
      			KyneSanctuaryDoor.Lock()
      		else
 				if ((RightHandWeapon as Weapon) != Nettlebane) && ((LeftHandWeapon as Weapon) != Nettlebane) && (QueenOfChaurusQuest.GetStageDone(255)==0)

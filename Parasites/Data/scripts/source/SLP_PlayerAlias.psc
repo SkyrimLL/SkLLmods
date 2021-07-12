@@ -289,18 +289,24 @@ Int Function _getParasiteTickerThreshold(Actor kActor, Int _iNextStageTicker, In
 	; when flareDelay = 1.0
 	; threshold below 100 after 200 ticks (+1 tick for 2 real time seconds - 400 s - about 6 minutes)
 	; threshold below 100 immediately 3 days after infection
-	fThreshold = 100.0 + (100.0 - ( ( ( (_iNextStageTicker as Float) / 2.0) - ((_iParasiteDuration as Float) * 2.0) )  * flareDelay ) )
 
-	if ( ((fThrottle as Int) * 10) == _iNextStageTicker)
-		; debug.notification(".")
-		debug.notification("[SLP] Check parasite event: " + sParasite )
-		debug.notification("[SLP] Chance of parasite event: " + ((100.0 - fThreshold) as Int) )
-		debug.trace("[SLP] Check parasite event: " + sParasite + " - Chance of trigger: " + ((100.0 - fThreshold) as Int) )
-		debug.trace("[SLP]     _iNextStageTicker: " + _iNextStageTicker)
-		debug.trace("[SLP]     _iParasiteDuration: " + _iParasiteDuration)
-		debug.trace("[SLP]     fThreshold: " + fThreshold)
+	if (flareDelay > 0)
+		fThreshold = 100.0 + (100.0 - ( ( ((_iNextStageTicker as Float) * 1.0) + ((_iParasiteDuration as Float) * 4.0) ) / flareDelay ) )
+		if ( ((fThrottle as Int) * 10) == _iNextStageTicker)
+			; debug.notification(".")
+			debug.notification("[SLP] Check parasite event: " + sParasite )
+			debug.notification("[SLP] Chance of parasite event: " + ((100.0 - fThreshold) as Int) )
+			debug.trace("[SLP] Check parasite event: " + sParasite + " - Chance of trigger: " + ((100.0 - fThreshold) as Int) )
+			debug.trace("[SLP]     _iNextStageTicker: " + _iNextStageTicker)
+			debug.trace("[SLP]     _iParasiteDuration: " + _iParasiteDuration)
+			debug.trace("[SLP]     flareDelay: " + flareDelay)
+			debug.trace("[SLP]     fThreshold: " + fThreshold)
+		else
+			; debug.notification(".")
+		endif
 	else
-		; debug.notification(".")
+		; make sure threshold is never reached when delay = 0 -> no flares
+		fThreshold = 999
 	endif
 
 
@@ -2326,12 +2332,12 @@ Event OnObjectEquipped(Form akBaseObject, ObjectReference akReference)
     	; Debug.Notification("This actor just ate an ingredient type: " + akBaseObject.GetType())
 
     	; Spider egg = type 30
-    	if (thisIngredient == IngredientSpiderEgg)
+    	if (thisIngredient == IngredientSpiderEgg) || (StringUtil.Find(akBaseObject.GetName(), "Spider Egg")>=0)
     		; Debug.Notification("This actor just ate a spider egg")
     		fctParasites.forceChaurusQueenStage(310, 320)
     		fctParasites.tryPlayerSpiderStage()
 
-    	elseif (thisIngredient == IngredientChaurusEgg)
+    	elseif (thisIngredient == IngredientChaurusEgg) || (StringUtil.Find(akBaseObject.GetName(), "Chaurus Egg")>=0)
     		; Debug.Notification("This actor just ate a chaurus egg")
     		fctParasites.forceChaurusQueenStage(340,350)
     		fctParasites.tryPlayerChaurusStage()
