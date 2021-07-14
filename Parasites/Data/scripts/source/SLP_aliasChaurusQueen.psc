@@ -31,17 +31,17 @@ Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile,
 		Sound.SetInstanceVolume(CritterFX.Play(kPlayer), 1.0)
 		Utility.Wait(1.0)
 
-		; If (iRandomNum>95) && (kPlayer.HasSpell( CallSpawns )) 
+		If (iRandomNum>999) && (kPlayer.HasSpell( CallSpawns ))   ; DISABLED FOR NOW - Will add again once there is a MCM
 		;	Debug.Trace("[SLP_aliasChaurusQueen] Call chaurus spawns" )
 		;	Debug.Notification("The Seed calls your brood for help." )
 		;	CallSpawns.Cast(kPlayer as ObjectReference  , kPlayer as ObjectReference ) 
 
-		;else
-		If (iRandomNum>90) && (kPlayer.HasSpell( CallSpawns )) 
+		elseif (iRandomNum>95) && (kPlayer.HasSpell( CallSpawns )) 
+			; option for spawns during combat
 			Debug.Trace("[SLP_aliasChaurusQueen] Seed spawns" )
 			Debug.Notification("The Seed consumes eggs to protect you." )
 
-			if (kPlayer.HasSpell( SeedSpawnChaurus ))
+			if (iRandomNum>999) && (kPlayer.HasSpell( SeedSpawnChaurus ))  ; DISABLED FOR NOW - Will add again once there is a MCM 
 				SeedSpawnChaurus.Cast(kPlayer as ObjectReference  , kPlayer as ObjectReference ) 
 
 			elseif (kPlayer.HasSpell( SeedSpawnSpider ))
