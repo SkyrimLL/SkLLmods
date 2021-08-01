@@ -716,21 +716,21 @@ Bool Function applyChaurusQueenBody( Actor kActor  )
 
 	if (StorageUtil.GetIntValue(none, "_SLP_AnimatedWingsEquipped")==0)
 		if (StorageUtil.GetIntValue(none, "_SLP_isAnimatedWingsUltimate")==1) 
-			DragonWingsPotion = StorageUtil.GetFormValue(none, "_SLS_getAnimatedWingsUltimatePotion") as Potion
+			DragonWingsPotion = StorageUtil.GetFormValue(none, "_SLP_getWingsPotion") as Potion
 			debug.trace("[SLP]   Real Flying Potion: " + DragonWingsPotion)
 			PlayerActorRef.AddItem(DragonWingsPotion, 1, true)
 			PlayerActor.EquipItem(DragonWingsPotion,abPreventRemoval = false, abSilent = true)
 			StorageUtil.SetIntValue(none, "_SLP_AnimatedWingsEquipped", 1 )
 			
 		elseif (StorageUtil.GetIntValue(none, "_SLP_isRealFlying")==1) 
-			DragonWingsPotion = StorageUtil.GetFormValue(none, "_SLS_getRealFlyingPotion") as Potion
+			DragonWingsPotion = StorageUtil.GetFormValue(none, "_SLP_getWingsPotion") as Potion
 			debug.trace("[SLP]   Real Flying Potion: " + DragonWingsPotion)
 			PlayerActorRef.AddItem(DragonWingsPotion, 1, true)
 			PlayerActor.EquipItem(DragonWingsPotion,abPreventRemoval = false, abSilent = true)
 			StorageUtil.SetIntValue(none, "_SLP_AnimatedWingsEquipped", 1 )
 			
 		elseif (StorageUtil.GetIntValue(none, "_SLP_isAnimatedDragonWings")==1) 
-			DragonWingsPotion = StorageUtil.GetFormValue(none, "_SLS_getDragonWingsPotion") as Potion
+			DragonWingsPotion = StorageUtil.GetFormValue(none, "_SLP_getWingsPotion") as Potion
 			debug.trace("[SLP]   Dragon Wings Friendly Potion: " + DragonWingsPotion)
 			PlayerActorRef.AddItem(DragonWingsPotion, 1, true)
 			PlayerActor.EquipItem(DragonWingsPotion,abPreventRemoval = false, abSilent = true)
@@ -776,21 +776,21 @@ Function cureChaurusQueenBody( Actor kActor, Bool bHarvestParasite = False   )
 			debug.trace("[SLP]   Removing Animated Wings " )
 
 			if (StorageUtil.GetIntValue(none, "_SLP_isAnimatedWingsUltimate")==1)
-				DragonWingsCurePotion = StorageUtil.GetFormValue(none, "_SLS_getAnimatedWingsUltimateCurePotion") as Potion
+				DragonWingsCurePotion = StorageUtil.GetFormValue(none, "_SLP_getWingsCurePotion") as Potion
 				debug.trace("[SLP]   Real Flying Cure Potion: " + DragonWingsCurePotion)
 				PlayerActorRef.AddItem(DragonWingsCurePotion, 1, true)
 				PlayerActor.EquipItem(DragonWingsCurePotion,abPreventRemoval = false, abSilent = true)
 				StorageUtil.SetIntValue(none, "_SLP_AnimatedWingsEquipped", 0 )
 				
 			elseif (StorageUtil.GetIntValue(none, "_SLP_isRealFlying")==1)
-				DragonWingsCurePotion = StorageUtil.GetFormValue(none, "_SLS_getRealFlyingCurePotion") as Potion
+				DragonWingsCurePotion = StorageUtil.GetFormValue(none, "_SLP_getWingsCurePotion") as Potion
 				debug.trace("[SLP]   Real Flying Cure Potion: " + DragonWingsCurePotion)
 				PlayerActorRef.AddItem(DragonWingsCurePotion, 1, true)
 				PlayerActor.EquipItem(DragonWingsCurePotion,abPreventRemoval = false, abSilent = true)
 				StorageUtil.SetIntValue(none, "_SLP_AnimatedWingsEquipped", 0 )
 				
 			elseif (StorageUtil.GetIntValue(none, "_SLP_isAnimatedDragonWings")==1) 
-				DragonWingsCurePotion = StorageUtil.GetFormValue(none, "_SLS_getDragonWingsDispelPotion"  ) as Potion
+				DragonWingsCurePotion = StorageUtil.GetFormValue(none, "_SLP_getWingsCurePotion"  ) as Potion
 				debug.trace("[SLP]   Dragon Wings Cure Potion: " + DragonWingsCurePotion)
 				PlayerActorRef.AddItem(DragonWingsCurePotion, 1, true)
 				PlayerActor.EquipItem(DragonWingsCurePotion,abPreventRemoval = false, abSilent = true)

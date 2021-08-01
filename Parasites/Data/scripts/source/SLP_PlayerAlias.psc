@@ -251,24 +251,24 @@ Function _maintenance()
 			StorageUtil.SetIntValue(none, "_SLP_isAnimatedDragonWings",  1) 
 			debug.trace("[SLP] 		Friendly Wings Potion: " + Game.GetFormFromFile(0x0000388B, modName))
 			debug.trace("[SLP] 		Dispel Wings Potion: " + Game.GetFormFromFile(0x000022F5, modName))
-			StorageUtil.SetFormValue(none, "_SLS_getDragonWingsPotion",  Game.GetFormFromFile(0x0000388B, modName))  
-			StorageUtil.SetFormValue(none, "_SLS_getDragonWingsCurePotion",  Game.GetFormFromFile(0x000022F5, modName))  
+			StorageUtil.SetFormValue(none, "_SLP_getWingsPotion",  Game.GetFormFromFile(0x0000388B, modName))  
+			StorageUtil.SetFormValue(none, "_SLP_getWingsCurePotion",  Game.GetFormFromFile(0x000022F5, modName))  
 
 		elseif modName == "Real Flying.esp"
 			debug.trace("[SLP] 'Real Flying.esp' detected")
 			StorageUtil.SetIntValue(none, "_SLP_isRealFlying",  1) 
 			debug.trace("[SLP] 		Real Flying Potion: " + Game.GetFormFromFile(0x00000D65, modName))
 			debug.trace("[SLP] 		Real Flying Cure Potion: " + Game.GetFormFromFile(0x000022F2, modName))
-			StorageUtil.SetFormValue(none, "_SLS_getRealFlyingPotion",  Game.GetFormFromFile(0x00000D65, modName))  
-			StorageUtil.SetFormValue(none, "_SLS_getRealFlyingCurePotion",  Game.GetFormFromFile(0x000022F2, modName))  
+			StorageUtil.SetFormValue(none, "_SLP_getWingsPotion",  Game.GetFormFromFile(0x00000D65, modName))  
+			StorageUtil.SetFormValue(none, "_SLP_getWingsCurePotion",  Game.GetFormFromFile(0x000022F2, modName))  
 
 		elseif modName == "Animated Wings Ultimate.esp"
 			debug.trace("[SLP] 'Animated Wings Ultimate.esp' detected")
 			StorageUtil.SetIntValue(none, "_SLP_isAnimatedWingsUltimate",  1) 
 			debug.trace("[SLP] 		Animated Wings Ultimate Potion: " + Game.GetFormFromFile(0x00000CA2, modName))
 			debug.trace("[SLP] 		Animated Wings Ultimate Cure Potion: " + Game.GetFormFromFile(0x00000B21, modName))
-			StorageUtil.SetFormValue(none, "_SLS_getAnimatedWingsUltimatePotion",  Game.GetFormFromFile(0x00000CA2, modName))  
-			StorageUtil.SetFormValue(none, "_SLS_getAnimatedWingsUltimateCurePotion",  Game.GetFormFromFile(0x00000B21, modName))  
+			StorageUtil.SetFormValue(none, "_SLP_getWingsPotion",  Game.GetFormFromFile(0x00000CA2, modName))  
+			StorageUtil.SetFormValue(none, "_SLP_getWingsCurePotion",  Game.GetFormFromFile(0x00000B21, modName))  
 		endif
 	endWhile
 
