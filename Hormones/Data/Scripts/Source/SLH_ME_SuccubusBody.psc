@@ -1,13 +1,14 @@
 Scriptname SLH_ME_SuccubusBody extends activemagiceffect  
 
 Armor Property BoundSuccubusBody Auto
-
+Keyword Property SuccubusBodyKeyword Auto
 
 Event OnEffectStart(Actor ckTarget, Actor ckCaster)
+	Actor PlayerActor = Game.GetPlayer()
 	; debug.notification("[SLH]   SLH_ME_SuccubusBody -  OnEffectStart" )
 
 	; if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iSuccubusLevel") >=4)
-	if (StorageUtil.GetIntValue(none, "_SLH_SuccubusBodyEquipped") == 0 )
+	if (StorageUtil.GetIntValue(none, "_SLH_SuccubusBodyEquipped") == 0 ) && (!PlayerActor.WornHasKeyword(SuccubusBodyKeyword) )
 		; debug.notification("[SLH]   EQUIP body" )
 		equipBody()
 	else
@@ -66,14 +67,37 @@ Function equipBody()
 		endif
 	endif
 
-	StorageUtil.SetIntValue(none, "_SLH_SuccubusBodyEquipped", 1 )
+	; wash player automatically if Bathing in Skyrim is on (remove dirt)'
+	Int WashActor = ModEvent.Create("BiS_WashActor")
+	if (WashActor)
+		Debug.notification("[SLH] Washing Succubus")
+		ModEvent.PushForm(WashActor, (PlayerActor as Form))
+		ModEvent.PushBool(WashActor, false) ; animate
+		ModEvent.PushBool(WashActor, true) ; full clean
+		ModEvent.PushBool(WashActor, false) ; soap
+		ModEvent.Send(WashActor)
+	else
+		Debug.notification("[SLH] Washing Succubus - FAILED")
+
+    endIf
+
+	Utility.Wait(0.2)
+	; Check to play nice with Devious Devices
+	if (PlayerActor.WornHasKeyword(SuccubusBodyKeyword) )
+		; Equip was successful
+		StorageUtil.SetIntValue(none, "_SLH_SuccubusBodyEquipped", 1 )
+	endif
+
 Endfunction
 
 Function removeBody()
 	Actor PlayerActor = Game.GetPlayer()
 	ObjectReference PlayerActorRef = Game.GetPlayer() as ObjectReference
 
-	PlayerActor.UnequipItem(BoundSuccubusBody, true)
+	; Check to play nice with Devious Devices
+	if (PlayerActor.WornHasKeyword(SuccubusBodyKeyword) )
+		PlayerActor.UnequipItem(BoundSuccubusBody, true)
+	endif
  
 	debug.trace("[SLH]   Checking for Animated Wings " )
 	debug.trace("[SLH]      _SLP_autoRemoveWings: " + StorageUtil.GetIntValue(none, "_SLP_autoRemoveWings" ))
@@ -107,6 +131,6 @@ Function removeBody()
 			
 		endif
 	endif
- 
+
 	StorageUtil.SetIntValue(none, "_SLH_SuccubusBodyEquipped", 0 )
 Endfunction
