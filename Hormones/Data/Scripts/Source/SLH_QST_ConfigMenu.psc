@@ -239,6 +239,8 @@ float 		_bellySetValue 			= 1.0
 float 		_buttSetValue 			= 1.0
 float 		_schlongSetValue		= 1.0
 
+bool		_autoRemoveDragonWings = false
+
 bool 		_refreshToggle 			= false
 bool 		_resetHormonesToggle 	= false
 bool 		_resetColorsToggle 		= false
@@ -615,6 +617,25 @@ event OnPageReset(string a_page)
 
 		AddHeaderOption("$SLH_hSuccubusCurse")
 		AddToggleOptionST("STATE_SUCCUBUS","$SLH_bSUCCUBUS", _allowSuccubus as Float)
+ 
+		AddHeaderOption(" Wings")
+		if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iSuccubusLevel") >=4)
+			AddToggleOptionST("STATE_AUTO_REMOVE_WINGS","Auto Remove Wings", _autoRemoveDragonWings as Float)
+		else
+			AddToggleOptionST("STATE_AUTO_REMOVE_WINGS","Auto Remove Wings", _autoRemoveDragonWings as Float, OPTION_FLAG_DISABLED)
+		endif
+
+		if (StorageUtil.GetIntValue(none, "_SLP_isAnimatedDragonWings") ==  1) 
+			AddTextOption("     Animated Dragon Wings detected", "", OPTION_FLAG_DISABLED)
+		endif
+
+		if (StorageUtil.GetIntValue(none, "_SLP_isRealFlying") ==  1) 
+			AddTextOption("     Real Flying detected", "", OPTION_FLAG_DISABLED)
+		endif
+
+		if (StorageUtil.GetIntValue(none, "_SLP_isAnimatedWingsUltimate") ==  1) 
+			AddTextOption("     Animated Wings Ultimate detected", "", OPTION_FLAG_DISABLED)
+		endif
 
 		AddHeaderOption("$SLH_hSexChangeCurse")
 		AddToggleOptionST("STATE_SEX_CHANGE","$SLH_bSEX_CHANGE", _allowHRT as Float)
@@ -2752,6 +2773,29 @@ state STATE_EXHIBITIONIST ; TOGGLE
 		SetInfoText("$SLH_bEXHIBITIONIST_DESC")
 	endEvent
 endState
+
+
+; AddToggleOptionST("STATE_AUTO_REMOVE_WINGS","Clear equiped wings", _autoRemoveDragonWings, OPTION_FLAG_DISABLED)
+state STATE_AUTO_REMOVE_WINGS ; TOGGLE
+	event OnSelectST() 
+		Int toggle = Math.LogicalXor( 1,  StorageUtil.GetIntValue(none, "_SLP_autoRemoveWings" )  )  
+		_autoRemoveDragonWings = toggle
+		StorageUtil.SetIntValue(none, "_SLP_autoRemoveWings", _autoRemoveDragonWings as Int )
+		SetToggleOptionValueST( toggle as Bool ) 
+		ForcePageReset()
+	endEvent
+
+	event OnDefaultST()
+		StorageUtil.SetIntValue(none, "_SLP_autoRemoveWings", 0 )
+		SetToggleOptionValueST( false )
+		ForcePageReset()
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Automatically remove equipped wings when removing the Queen Body if a compatible mod is detected (unchecked means the wings will remain equipped after the Queen Body is removed).")
+	endEvent
+endState
+
 ; AddToggleOptionST("STATE_SELF_SPELLS","Allow Self Spells", _allowSelfSpells)
 state STATE_SELF_SPELLS ; TOGGLE
 	event OnSelectST()

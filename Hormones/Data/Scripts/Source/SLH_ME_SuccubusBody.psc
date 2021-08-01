@@ -1,0 +1,112 @@
+Scriptname SLH_ME_SuccubusBody extends activemagiceffect  
+
+Armor Property BoundSuccubusBody Auto
+
+
+Event OnEffectStart(Actor ckTarget, Actor ckCaster)
+	; debug.notification("[SLH]   SLH_ME_SuccubusBody -  OnEffectStart" )
+
+	; if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iSuccubusLevel") >=4)
+	if (StorageUtil.GetIntValue(none, "_SLH_SuccubusBodyEquipped") == 0 )
+		; debug.notification("[SLH]   EQUIP body" )
+		equipBody()
+	else
+		; debug.notification("[SLH]   REMOVE body" )
+		removeBody()
+	endif
+
+	; endif
+
+EndEvent
+
+Event OnEffectFinish(Actor ckTarget, Actor ckCaster)
+	; debug.notification("[SLH]   SLH_ME_SuccubusBody -  OnEffectFinish" )
+
+	; removeBody()
+EndEvent
+
+Function equipBody()
+	Actor PlayerActor = Game.GetPlayer()
+	ObjectReference PlayerActorRef = Game.GetPlayer() as ObjectReference
+
+	Utility.Wait(0.2)
+	PlayerActor.EquipItem(BoundSuccubusBody, true, true)
+
+	if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iSuccubusLevel") >=5)
+
+	 	Potion DragonWingsPotion = None 
+
+		debug.trace("[SLH]   Checking for Animated Wings " )
+		debug.trace("[SLH]      _SLP_autoRemoveWings: " + StorageUtil.GetIntValue(none, "_SLP_autoRemoveWings" ))
+		debug.trace("[SLH]      _SLP_AnimatedWingsEquipped: " + StorageUtil.GetIntValue(none, "_SLP_AnimatedWingsEquipped" ))
+
+		if (StorageUtil.GetIntValue(none, "_SLP_AnimatedWingsEquipped")==0)
+			if (StorageUtil.GetIntValue(none, "_SLP_isAnimatedWingsUltimate")==1) 
+				DragonWingsPotion = StorageUtil.GetFormValue(none, "_SLH_getWingsPotion") as Potion
+				debug.trace("[SLH]   Real Flying Potion: " + DragonWingsPotion)
+				PlayerActorRef.AddItem(DragonWingsPotion, 1, true)
+				PlayerActor.EquipItem(DragonWingsPotion,abPreventRemoval = false, abSilent = true)
+				StorageUtil.SetIntValue(none, "_SLP_AnimatedWingsEquipped", 1 )
+				
+			elseif (StorageUtil.GetIntValue(none, "_SLP_isRealFlying")==1) 
+				DragonWingsPotion = StorageUtil.GetFormValue(none, "_SLH_getWingsPotion") as Potion
+				debug.trace("[SLH]   Real Flying Potion: " + DragonWingsPotion)
+				PlayerActorRef.AddItem(DragonWingsPotion, 1, true)
+				PlayerActor.EquipItem(DragonWingsPotion,abPreventRemoval = false, abSilent = true)
+				StorageUtil.SetIntValue(none, "_SLP_AnimatedWingsEquipped", 1 )
+				
+			elseif (StorageUtil.GetIntValue(none, "_SLP_isAnimatedDragonWings")==1) 
+				DragonWingsPotion = StorageUtil.GetFormValue(none, "_SLH_getWingsPotion") as Potion
+				debug.trace("[SLH]   Dragon Wings Friendly Potion: " + DragonWingsPotion)
+				PlayerActorRef.AddItem(DragonWingsPotion, 1, true)
+				PlayerActor.EquipItem(DragonWingsPotion,abPreventRemoval = false, abSilent = true)
+				StorageUtil.SetIntValue(none, "_SLP_AnimatedWingsEquipped", 1 )
+				
+			endif
+		endif
+	endif
+
+	StorageUtil.SetIntValue(none, "_SLH_SuccubusBodyEquipped", 1 )
+Endfunction
+
+Function removeBody()
+	Actor PlayerActor = Game.GetPlayer()
+	ObjectReference PlayerActorRef = Game.GetPlayer() as ObjectReference
+
+	PlayerActor.UnequipItem(BoundSuccubusBody, true)
+ 
+	debug.trace("[SLH]   Checking for Animated Wings " )
+	debug.trace("[SLH]      _SLP_autoRemoveWings: " + StorageUtil.GetIntValue(none, "_SLP_autoRemoveWings" ))
+	debug.trace("[SLH]      _SLP_AnimatedWingsEquipped: " + StorageUtil.GetIntValue(none, "_SLP_AnimatedWingsEquipped" ))
+
+	if (StorageUtil.GetIntValue(none, "_SLP_autoRemoveWings" )==1) && (StorageUtil.GetIntValue(none, "_SLP_AnimatedWingsEquipped")==1)
+ 		Potion DragonWingsCurePotion = None 
+		
+		debug.trace("[SLH]   Removing Animated Wings " )
+
+		if (StorageUtil.GetIntValue(none, "_SLP_isAnimatedWingsUltimate")==1)
+			DragonWingsCurePotion = StorageUtil.GetFormValue(none, "_SLH_getWingsCurePotion") as Potion
+			debug.trace("[SLH]   Real Flying Cure Potion: " + DragonWingsCurePotion)
+			PlayerActorRef.AddItem(DragonWingsCurePotion, 1, true)
+			PlayerActor.EquipItem(DragonWingsCurePotion,abPreventRemoval = false, abSilent = true)
+			StorageUtil.SetIntValue(none, "_SLP_AnimatedWingsEquipped", 0 )
+			
+		elseif (StorageUtil.GetIntValue(none, "_SLP_isRealFlying")==1)
+			DragonWingsCurePotion = StorageUtil.GetFormValue(none, "_SLH_getWingsCurePotion") as Potion
+			debug.trace("[SLH]   Real Flying Cure Potion: " + DragonWingsCurePotion)
+			PlayerActorRef.AddItem(DragonWingsCurePotion, 1, true)
+			PlayerActor.EquipItem(DragonWingsCurePotion,abPreventRemoval = false, abSilent = true)
+			StorageUtil.SetIntValue(none, "_SLP_AnimatedWingsEquipped", 0 )
+			
+		elseif (StorageUtil.GetIntValue(none, "_SLP_isAnimatedDragonWings")==1) 
+			DragonWingsCurePotion = StorageUtil.GetFormValue(none, "_SLH_getWingsCurePotion"  ) as Potion
+			debug.trace("[SLH]   Dragon Wings Cure Potion: " + DragonWingsCurePotion)
+			PlayerActorRef.AddItem(DragonWingsCurePotion, 1, true)
+			PlayerActor.EquipItem(DragonWingsCurePotion,abPreventRemoval = false, abSilent = true)
+			StorageUtil.SetIntValue(none, "_SLP_AnimatedWingsEquipped", 0 )
+			
+		endif
+	endif
+ 
+	StorageUtil.SetIntValue(none, "_SLH_SuccubusBodyEquipped", 0 )
+Endfunction

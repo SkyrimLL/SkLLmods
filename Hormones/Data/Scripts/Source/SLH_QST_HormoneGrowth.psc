@@ -74,6 +74,7 @@ SPELL Property _SLH_DaedricInfluence  Auto
 SPELL Property _SLH_PolymorphBimbo Auto
 SPELL Property _SLH_Masturbation  Auto  
 SPELL Property _SLH_Undress  Auto  
+SPELL Property _SLH_SuccubusBody  Auto  
 
 Race Property _SLH_DremoraRace  Auto  
 Race Property _SLH_DremoraOutcastRace  Auto  
@@ -237,6 +238,10 @@ Function Maintenance()
 	; StorageUtil.SetIntValue(PlayerActor, "_SLH_iDaysSinceLastSex", iDaysSinceLastSex)
 	StorageUtil.SetIntValue(PlayerActor, "_SLH_iDaysSinceLastCheck", iDaysSinceLastCheck)
 
+	StorageUtil.SetIntValue(none, "_SLP_isAnimatedDragonWings",  0) 
+	StorageUtil.SetIntValue(none, "_SLP_isRealFlying",  0) 
+	StorageUtil.SetIntValue(none, "_SLP_isAnimatedWingsUltimate", 0) 
+
 	int idx = Game.GetModCount()
 	string modName = ""
 	while idx > 0
@@ -253,6 +258,30 @@ Function Maintenance()
 		elseif modName == "CagedFollowers.esp"
 			StorageUtil.SetIntValue(none, "_SLS_isCagedFollowerON",  1) 
 			StorageUtil.SetFormValue(none, "_SLS_getCagedFollowerQuestKeyword",  Game.GetFormFromFile(0x0000184d, modName)) ; as Keyword
+
+		elseif modName == "Animated Dragon Wings.esp"
+			debug.trace("[SLH] 'Animated Dragon Wings.esp' detected")
+			StorageUtil.SetIntValue(none, "_SLP_isAnimatedDragonWings",  1) 
+			debug.trace("[SLH] 		Friendly Wings Potion: " + Game.GetFormFromFile(0x0000388B, modName))
+			debug.trace("[SLH] 		Dispel Wings Potion: " + Game.GetFormFromFile(0x000022F5, modName))
+			StorageUtil.SetFormValue(none, "_SLH_getWingsPotion",  Game.GetFormFromFile(0x0000388B, modName))  
+			StorageUtil.SetFormValue(none, "_SLH_getWingsCurePotion",  Game.GetFormFromFile(0x000022F5, modName))  
+
+		elseif modName == "Real Flying.esp"
+			debug.trace("[SLH] 'Real Flying.esp' detected")
+			StorageUtil.SetIntValue(none, "_SLP_isRealFlying",  1) 
+			debug.trace("[SLH] 		Real Flying Potion: " + Game.GetFormFromFile(0x00000D65, modName))
+			debug.trace("[SLH] 		Real Flying Cure Potion: " + Game.GetFormFromFile(0x000022F2, modName))
+			StorageUtil.SetFormValue(none, "_SLH_getWingsPotion",  Game.GetFormFromFile(0x00000D65, modName))  
+			StorageUtil.SetFormValue(none, "_SLH_getWingsCurePotion",  Game.GetFormFromFile(0x000022F2, modName))  
+
+		elseif modName == "Animated Wings Ultimate.esp"
+			debug.trace("[SLH] 'Animated Wings Ultimate.esp' detected")
+			StorageUtil.SetIntValue(none, "_SLP_isAnimatedWingsUltimate",  1) 
+			debug.trace("[SLH] 		Animated Wings Ultimate Potion: " + Game.GetFormFromFile(0x00000CA2, modName))
+			debug.trace("[SLH] 		Animated Wings Ultimate Cure Potion: " + Game.GetFormFromFile(0x00000B21, modName))
+			StorageUtil.SetFormValue(none, "_SLH_getWingsPotion",  Game.GetFormFromFile(0x00000B26, modName))  
+			StorageUtil.SetFormValue(none, "_SLH_getWingsCurePotion",  Game.GetFormFromFile(0x00000B21, modName))  
 
 		endif
 	endWhile
@@ -996,6 +1025,9 @@ Event OnCastSuccubusCurseEvent(String _eventName, String _args, Float _argc = 1.
 		StorageUtil.SetIntValue(PlayerActor, "_SLH_iDaedricInfluence", 50)
 	Endif
 
+	StorageUtil.SetIntValue(PlayerActor, "_SLH_iSuccubusLevel", 5)
+
+	PlayerActor.AddSpell(_SLH_SuccubusBody)
 	StorageUtil.SetIntValue(PlayerActor, "PSQ_SpellON", 1)
 	ModEvent.Send(ModEvent.Create("HoSLDD_GivePlayerPowers"))
 	_SLH_QST_Succubus.SetStage(50)
@@ -1014,6 +1046,7 @@ Event OnCureSuccubusCurseEvent(String _eventName, String _args, Float _argc = 1.
 	
 
  	if (GV_isSuccubusFinal.GetValue()==0)
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iSuccubusLevel", 0)
 		StorageUtil.SetIntValue(PlayerActor, "_SLH_iDaedricInfluence", 0)
 		StorageUtil.SetIntValue(PlayerActor, "PSQ_SpellON", 0)
 		ModEvent.Send(ModEvent.Create("HoSLDD_TakeAwayPlayerPowers"))
@@ -1654,11 +1687,6 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 					; ModEvent.Send(ModEvent.Create("HoSLDD_GivePlayerPowers"))
 					StorageUtil.SetIntValue(PlayerActor, "_SLH_iSuccubusLevel",  3) 
 
-				elseif (_SLH_QST_Succubus.GetStage()<=30) && (iDaedricInfluence >=30)
-					_SLH_QST_Succubus.SetStage(40)
-					ModEvent.Send(ModEvent.Create("HoSLDD_GivePlayerPowers"))
-					StorageUtil.SetIntValue(PlayerActor, "_SLH_iSuccubusLevel",  4) 
-
 			        ; Do not switch sex for female -> bimbo
 			        If fctUtil.isMale(PlayerActor)
 				        Utility.Wait(1.0)
@@ -1672,6 +1700,11 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 				        StorageUtil.SetFloatValue(PlayerActor, "_SLH_fButt",  0.9)
 				        PlayerActor.SendModEvent("SLHRefresh")
 				    Endif
+
+				elseif (_SLH_QST_Succubus.GetStage()<=30) && (iDaedricInfluence >=30)
+					_SLH_QST_Succubus.SetStage(40)
+					ModEvent.Send(ModEvent.Create("HoSLDD_GivePlayerPowers"))
+					StorageUtil.SetIntValue(PlayerActor, "_SLH_iSuccubusLevel",  4) 
 
 				elseif (_SLH_QST_Succubus.GetStage()<=40) && (iDaedricInfluence >=40) && !fctUtil.isMale(PlayerActor)
 					_SLH_QST_Succubus.SetStage(50)
