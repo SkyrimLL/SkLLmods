@@ -9,6 +9,8 @@ Armor Property Stage3 auto
 Armor Property Stage4 auto
 Armor Property Stage5 auto
 
+Potion Property SLP_CritterFood Auto
+
 Armor aWebType 
 Float fWebDuration = 0.0
 
@@ -32,6 +34,8 @@ Event OnEffectStart(Actor Target, Actor Caster)
 
 		debug.trace("[SLP]    Healing effect")
 		HealEffect.Cast(kPlayer as ObjectReference, kPlayer as ObjectReference)	
+		kPlayer.EquipItem(SLP_CritterFood, true,true)
+		kPlayer.EquipItem(SLP_CritterFood, true,true)
 	else
 		; debug.notification("[SLP]  Target invalid or not dead")	
 
@@ -63,6 +67,8 @@ Event OnEffectStart(Actor Target, Actor Caster)
 			Utility.wait(fWebDuration)
 			self.dispel()	
 		endif
+
+		kPlayer.EquipItem(SLP_CritterFood, true,true)
 
 	endif
 EndEvent
