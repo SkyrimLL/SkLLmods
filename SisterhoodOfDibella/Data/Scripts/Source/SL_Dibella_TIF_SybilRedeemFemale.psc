@@ -6,10 +6,11 @@ Scriptname SL_Dibella_TIF_SybilRedeemFemale Extends TopicInfo Hidden
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
-int marksCount = Game.GetPlayer().GetItemCount(DibellaToken) 
+Actor kPlayer = Game.GetPlayer()
+int marksCount = kPlayer.GetItemCount(DibellaToken) 
 
 if (marksCount > 0)
-	Game.GetPlayer().RemoveItem(DibellaToken, marksCount )
+	kPlayer.RemoveItem(DibellaToken, marksCount )
  
 EndIf
  
@@ -19,10 +20,13 @@ MarksBuffer.SetValue( MarksBuffer.GetValue() + marksCount)
 
 While ( MarksBuffer.GetValue() >= 5)
 	InitiationLevelBuffer.SetValue( InitiationLevelBuffer.GetValue() + 1)
-
 	Debug.Notification("Dibella's Grace is with you.." )
-	Game.AddPerkPoints(1)
-	RedeemFX.Cast(Game.GetPlayer(),Game.GetPlayer())
+
+	If (StorageUtil.GetIntValue( kPlayer, "_SLSD_iTogglePerkPoints")==0)
+		Game.AddPerkPoints(1)
+	endif
+
+	RedeemFX.Cast(kPlayer,kPlayer)
 	MarksBuffer.SetValue( MarksBuffer.GetValue() - 5)
 
 	Debug.Trace("Sybil initiation buffer: " + InitiationLevelBuffer.GetValue())

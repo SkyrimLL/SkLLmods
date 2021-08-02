@@ -1,6 +1,6 @@
 ;BEGIN FRAGMENT CODE - Do not edit anything between this and the end comment
 ;NEXT FRAGMENT INDEX 1
-Scriptname SL_Dibella_TIF_Donation03 Extends TopicInfo Hidden
+Scriptname SL_Dibella_TIF_Donation03d Extends TopicInfo Hidden
 
 ;BEGIN FRAGMENT Fragment_0
 Function Fragment_0(ObjectReference akSpeakerRef)
@@ -12,15 +12,15 @@ Int randomNum = Utility.RandomInt(0,100)
 ActorBase aBase = akSpeaker.GetBaseObject() as ActorBase
 Int actorGender = aBase.GetSex() ; 0 = Male ; 1 = Female
 
-; If (randomNum >=10)
-;	kSatchel.AddItem(DibellaDonationGift)
-;	kSatchel.AddItem(DibellaDonationGift)
-; EndIf
+If (randomNum >=10)
+	kSatchel.AddItem(DibellaDonationGift)
+	kSatchel.AddItem(DibellaDonationGift)
+EndIf
 
-; kSatchel.AddItem(Gold, Utility.RandomInt(20,50) )
-; SatchelItemsCount.SetValue( kSatchel.GetNumItems() )  
+kSatchel.AddItem(Gold, Utility.RandomInt(20,50) )
+SatchelItemsCount.SetValue( kSatchel.GetNumItems() )  
 
-; Debug.Notification("You have " + SatchelItemsCount.GetValue() as Int + " items for the Temple.")
+Debug.Notification("You have " + SatchelItemsCount.GetValue() as Int + " items for the Temple.")
 ; TempleDonations.SetValue( TempleDonations.GetValue( ) + 1)
 Self.GetOwningQuest().ModObjectiveGlobal( 1, TempleDonations, 10, 10, True, True, True )
 

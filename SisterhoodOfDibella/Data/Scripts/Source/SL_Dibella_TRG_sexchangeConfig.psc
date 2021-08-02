@@ -45,6 +45,16 @@ Event OnActivate(ObjectReference akActionRef)
 			Debug.Notification("[SL Dibella] Mara's Love quest disabled")
 			_SLSD_GV_MaraLoveQuestON.SetValue(0)
 		Endif
+
+	ElseIf (IButton == 4 ) 
+		If (StorageUtil.GetIntValue( akActor, "_SLSD_iTogglePerkPoints")==0)
+			Debug.Notification("[SL Dibella] Perk points for Dibella tokens enabled")
+			StorageUtil.SetIntValue( akActor, "_SLSD_iTogglePerkPoints", 1 )
+
+		Else
+			Debug.Notification("[SL Dibella] Perk points for Dibella tokens disabled")
+			StorageUtil.SetIntValue( akActor, "_SLSD_iTogglePerkPoints", 0 )
+		Endif
 	Endif
 
 endevent

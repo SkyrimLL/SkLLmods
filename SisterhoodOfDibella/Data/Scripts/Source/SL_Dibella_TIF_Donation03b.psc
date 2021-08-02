@@ -1,23 +1,24 @@
 ;BEGIN FRAGMENT CODE - Do not edit anything between this and the end comment
 ;NEXT FRAGMENT INDEX 1
-Scriptname SL_Dibella_TIF_Donation03 Extends TopicInfo Hidden
+Scriptname SL_Dibella_TIF_Donation03b Extends TopicInfo Hidden
 
 ;BEGIN FRAGMENT Fragment_0
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
-ObjectReference kSatchel = _SLSD_SisterSatchelRef.GetReference()
+; ObjectReference kSatchel = _SLSD_SisterSatchelRef.GetReference()
+Actor kPlayer = Game.GetPlayer()
 Int randomNum = Utility.RandomInt(0,100)
 
 ActorBase aBase = akSpeaker.GetBaseObject() as ActorBase
 Int actorGender = aBase.GetSex() ; 0 = Male ; 1 = Female
 
-; If (randomNum >=10)
-;	kSatchel.AddItem(DibellaDonationGift)
-;	kSatchel.AddItem(DibellaDonationGift)
-; EndIf
+If (randomNum >=10)
+	kPlayer.AddItem(DibellaDonationGift)
+	kPlayer.AddItem(DibellaDonationGift)
+EndIf
 
-; kSatchel.AddItem(Gold, Utility.RandomInt(20,50) )
+kPlayer.AddItem(Gold, Utility.RandomInt(20,50) )
 ; SatchelItemsCount.SetValue( kSatchel.GetNumItems() )  
 
 ; Debug.Notification("You have " + SatchelItemsCount.GetValue() as Int + " items for the Temple.")
