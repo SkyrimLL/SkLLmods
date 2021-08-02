@@ -801,7 +801,7 @@ function clumsyBimboLegs()
 
 					rollMessage = Utility.RandomInt(0,100)
 
-					if ((bArmorOn && (rollMessage >30)) || (bClothingOn && (rollMessage >90)))
+					if ((bArmorOn && (rollMessage >30)) || (bClothingOn && (rollMessage >60)) || (   (!bArmorOn) && (!bClothingOn) && (rollMessage >90)))
 						bTripped = true
 						Game.ForceThirdPerson()
 						If BimboActor.IsSneaking()
