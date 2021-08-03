@@ -244,8 +244,13 @@ Function updateCowStatus(Actor kActor, String sUpdateMode = "", Int iNumberBottl
 
 	debugTrace(" updateCowStatus - Actor: " + kActor)
 
-	if (kActor == kPlayer) && (isMale(kPlayer))
-		debugTrace(" Actor is Player and Male - Aborting updateCowStatus.")
+	; if (kActor == kPlayer) && (isMale(kPlayer))
+	;	debugTrace(" Actor is Player and Male - Aborting updateCowStatus.")
+	;	Return
+	; endif
+
+	if (!checkHasBreasts(kActor))
+		debugTrace(" Actor doesn't have breasts - Aborting updateCowStatus.")
 		Return
 	endif
 
@@ -405,11 +410,13 @@ Function updateCowStatus(Actor kActor, String sUpdateMode = "", Int iNumberBottl
 		MilkProducedTotal.SetValue((StorageUtil.GetIntValue(kActor, "_SLH_iMilkProducedTotal") as Int) + (StorageUtil.GetIntValue(kActor, "_SLH_iDivineMilkProducedTotal") as Int))
 	Endif
 		
-
-	StorageUtil.SetFormValue( none , "_SD_iLastCowMilked", kActor)
-
 	; Update breast size
-	if hasBreasts(kActor)
+	if checkHasBreasts(kActor)
+		if (!(kActor == kPlayer))
+			; Player has its own status area already in MCM - always set actor to non player
+			StorageUtil.SetFormValue( none , "_SD_iLastCowMilked", kActor)
+		endif
+
 		; Float fBreast  = 1.0 +  (fLactationBase * 0.2) + (fLactationLevel * 0.1) + (fLactationMilkDate * 0.15)
 		Float fBreast  = (fLactationLevel * StorageUtil.GetFloatValue(kPlayer, "_SLS_breastMaxMilkFarm"  )) / 100.0
 
@@ -954,10 +961,6 @@ Function GetMilk(Actor kActor, Int iNumberBottles=1)
 
 EndFunction
 
-Bool Function checkHasBreasts(Actor kActor)
-	Bool bEnableLeftBreast  = NetImmerse.HasNode(kActor, NINODE_LEFT_BREAST, false) as Bool
-	return bEnableLeftBreast
-EndFunction
 
 Function checkIfLactating(Actor kActor)
 	ActorBase pActorBase = kActor.GetActorBase()
@@ -1241,7 +1244,7 @@ Function triggerCard(String sCardEvent)
 			Debug.Notification("You feel dizzy and very hot.")
 			kPlayer.SendModEvent("SLHModHormoneRandom", "Succubus")
 
-		elseif (iNum>60) && hasBreasts(kPlayer)
+		elseif (iNum>60) && checkHasBreasts(kPlayer)
 		; 	max milk level and lactation
 			Debug.Notification("Your chest tingles.")
 
@@ -1352,11 +1355,17 @@ Bool function isMale(actor kActor)
 	return !isFemale(kActor)
 EndFunction
 
+
+; Keeping this for compatibility reasons
 Bool function hasBreasts(actor kActor)
-	return NetImmerse.HasNode(kActor, "NPC L Breast", false)
+	return checkHasBreasts( kActor)
 EndFunction
 
  
+Bool Function checkHasBreasts(Actor kActor)
+	Bool bEnableLeftBreast  = NetImmerse.HasNode(kActor, NINODE_LEFT_BREAST, false) as Bool
+	return bEnableLeftBreast
+EndFunction
 
 Function debugTrace(string traceMsg)
 	if (StorageUtil.GetIntValue(none, "_SLS_debugTraceON")==1)

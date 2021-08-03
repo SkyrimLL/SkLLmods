@@ -107,11 +107,13 @@ Event OnUpdate()
 			; New day, player is in RedWave location -> reset runaway and day pass flags
 			StorageUtil.SetIntValue(PlayerActor, "_SLS_iStoriesRedWaveRunaway", 0)
 			StorageUtil.SetIntValue(PlayerActor, "_SLS_iStoriesRedWaveDayPass", 0)
+			SLS_PlayerRedWaveQuest.SetObjectiveDisplayed(16, false)
 	 		PlayerDayPass.SetValue(daysPassed)
 	 	else	
 			; New day, player is not in RedWave location -> set runaway and revoke day pass flags
 			StorageUtil.SetIntValue(PlayerActor, "_SLS_iStoriesRedWaveRunaway", 1)
 			StorageUtil.SetIntValue(PlayerActor, "_SLS_iStoriesRedWaveDayPass", 0)
+			SLS_PlayerRedWaveQuest.SetObjectiveDisplayed(16, false)
 	 		PlayerDayPass.SetValue(daysPassed)
 
 			Debug.Notification("Run away whores are not looked upon kindly. Return to the Red Wave at once!")
@@ -165,22 +167,23 @@ Event OnLocationChange(Location akOldLoc, Location akNewLoc)
 
 		If (daysSinceLastPass < 1) && (akNewLoc != RedWaveLocation)  
 			; Day pass is active, less than a day has passed, location is outside RedWave -> no change
-			Debug.Notification("Day pass is active, player is away")
+			; Debug.Notification("Day pass is active, player is away")
 			StorageUtil.SetIntValue(akActor, "_SLS_iStoriesRedWaveRunaway", 0) 
 
 		elseIf (daysSinceLastPass < 1) && (akNewLoc == RedWaveLocation)   
 			; Day pass is active, less than a day has passed, location is inside RedWave -> no change
-			Debug.Notification("Day pass is active, player is in range")
+			; Debug.Notification("Day pass is active, player is in range")
 			StorageUtil.SetIntValue(akActor, "_SLS_iStoriesRedWaveRunaway", 0) 
  
 		elseIf (daysSinceLastPass >= 1) && (akNewLoc != RedWaveLocation)   
 			; Day pass is active, more than a day has passed, location is outside RedWave - Become runaway, revoke day pass
-			Debug.Notification("Day pass has expired, player is running away")
+			; Debug.Notification("Your Day Pass has expired and you are too far from the Red Wave.")
 			StorageUtil.SetIntValue(akActor, "_SLS_iStoriesRedWaveRunaway", 1)
 			StorageUtil.SetIntValue(akActor, "_SLS_iStoriesRedWaveDayPass", 0)
+			SLS_PlayerRedWaveQuest.SetObjectiveDisplayed(16, false)
 	 		PlayerDayPass.SetValue(daysPassed)
 			
-			Debug.Notification("Run away whores are not looked upon kindly. Return to the Red Wave at once!")
+			Debug.Notification("Your Day Pass has expired. Return to the Red Wave at once!")
 			if (RedWaveCrimeFaction.GetCrimeGold() < 10000)
 				RedWaveCrimeFaction.ModCrimeGold(100)
 			endif
@@ -188,9 +191,10 @@ Event OnLocationChange(Location akOldLoc, Location akNewLoc)
 
 		elseIf (daysSinceLastPass >= 1) && (akNewLoc == RedWaveLocation)    
 			; Day pass is active, more than a day has passed, location is inside RedWave -> Pay bounty
-			Debug.Notification("Day pass has expired, player is back in range")
+			; Debug.Notification("Day pass has expired, player is back in range")
 			StorageUtil.SetIntValue(akActor, "_SLS_iStoriesRedWaveRunaway", 0)
 			StorageUtil.SetIntValue(akActor, "_SLS_iStoriesRedWaveDayPass", 0)
+			SLS_PlayerRedWaveQuest.SetObjectiveDisplayed(16, false)
 	 		PlayerDayPass.SetValue(daysPassed)
 
 			; Pay bounty and add to debt
@@ -205,13 +209,15 @@ Event OnLocationChange(Location akOldLoc, Location akNewLoc)
 		endif
 
 	else 
+		; Force day pass objective to reset if storageUtil value is 0
+		SLS_PlayerRedWaveQuest.SetObjectiveDisplayed(16, false)
 
 		If (akNewLoc != RedWaveLocation)  
 			; Runaway is active, more than a day has passed, location is outside RedWave - Keep runaway, increase bounty
-			Debug.Notification("Player is running away")
+			Debug.Notification("Run away whores are not looked upon kindly. Return to the Red Wave at once!")
 			Debug.Trace("Player is running away: New location: " + akNewLoc as Form)
 			StorageUtil.SetIntValue(akActor, "_SLS_iStoriesRedWaveRunaway", 1)
-			StorageUtil.SetIntValue(akActor, "_SLS_iStoriesRedWaveDayPass", 0)
+			StorageUtil.SetIntValue(akActor, "_SLS_iStoriesRedWaveDayPass", 0) 
 	 		PlayerDayPass.SetValue(daysPassed)
 			
 			Debug.Notification("Run away whores are not looked upon kindly. Return to the Red Wave at once!")
@@ -222,7 +228,7 @@ Event OnLocationChange(Location akOldLoc, Location akNewLoc)
 
 		elseIf (akNewLoc == RedWaveLocation)    
 			; Runaway is active, location is inside RedWave -> Pay bounty
-			Debug.Notification("Player is back in Red Wave range")
+			; Debug.Notification("Player is back in Red Wave range")
 			StorageUtil.SetIntValue(akActor, "_SLS_iStoriesRedWaveRunaway", 0)
 			StorageUtil.SetIntValue(akActor, "_SLS_iStoriesRedWaveDayPass", 0)
 	 		PlayerDayPass.SetValue(daysPassed)

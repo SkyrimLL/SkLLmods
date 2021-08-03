@@ -10,6 +10,9 @@ Actor kPlayer = Game.GetPlayer()
 
 kPlayer.RemoveItem(Gold001, 100)
 PlayerDayPass.SetValue(Game.QueryStat("Days Passed"))
+StorageUtil.SetIntValue(kPlayer , "_SLS_iStoriesRedWaveDayPass", 1)
+
+self.GetOwningQuest().SetObjectiveDisplayed(16)
 ;END CODE
 EndFunction
 ;END FRAGMENT
