@@ -873,28 +873,28 @@ Event OnUpdate()
 			else
 				; Third person thought
 				If (iVaginalCountToday > 0) 
-					If (iVaginalCountToday > 10) 
+					If (iVaginalCountToday > 5) 
 						Debug.Notification("Your pussy feels sore and slippery.")
-					ElseIf (iVaginalCountToday > 5) 
+					ElseIf (SexLab.CountCum(PlayerActor,  Vaginal = true,  Oral = false,  Anal = false) > 0) 
 						Debug.Notification("Semen runs down your leg slowly.")
 					Else
 						Debug.Notification("Your pussy is moist and throbbing softly.")
 					EndIf
 				EndIf
 				If (iAnalCountToday > 0) 
-					If (iAnalCountToday > 10) 
+					If (iAnalCountToday > 5) 
 						Debug.Notification("Your ass is a painful reminder of your fate.")
-					ElseIf (iAnalCountToday > 5) 
+					ElseIf (SexLab.CountCum(PlayerActor,  Vaginal = false,  Oral = false,  Anal = true) > 0) 
 						Debug.Notification("Your ass feels wet and sticky.")
 					Else
 						Debug.Notification("Your ass is still sore.")
 					EndIf
 				EndIf
 				If (iOralCountToday > 0)
-					If (iOralCountToday > 10) 
+					If (iOralCountToday > 5) 
 						Debug.Notification("The after taste of cum makes you feel dizzy.")
-					ElseIf (iOralCountToday > 5) 
-						Debug.Notification("Your cleavage is still sticky from dripping cum.")
+					ElseIf (SexLab.CountCum(PlayerActor,  Vaginal = false,  Oral = true,  Anal = false) > 0) 
+						Debug.Notification("Your chin is still sticky from dripping cum.")
 					Else
 						Debug.Notification("Saltiness still coats your lips.")
 					EndIf
@@ -2042,6 +2042,7 @@ Function doSoulDevour(Actor[] _actors)
 		
 		if lowCnt > 0
 			idx = Utility.RandomInt(0, lowCnt - 1)
+			idx = skillsDiff[idx] 
 			if sexSkill > 0.0
 				ii = 1 + ((sexSkill / 10.0) as Int )
 			else

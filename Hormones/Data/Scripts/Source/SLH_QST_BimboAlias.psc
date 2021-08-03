@@ -979,6 +979,20 @@ function bimboDailyProgressiveTransformation(int transformationDays, Int transfo
 		BimboTattoo(BimboActor, "bimbo","Pubic Tattoo",false,true,true)
 		BimboTattoo(BimboActor, "bimbo","Permanent Bimbo",true,true,true)
 
+		; wash player automatically if Bathing in Skyrim is on (remove dirt)'
+		Int WashActor = ModEvent.Create("BiS_WashActor")
+		if (WashActor)
+			Debug.notification("[SLH] Washing Bimbo")
+			ModEvent.PushForm(WashActor, (BimboActor as Form))
+			ModEvent.PushBool(WashActor, false) ; animate
+			ModEvent.PushBool(WashActor, true) ; full clean
+			ModEvent.PushBool(WashActor, false) ; soap
+			ModEvent.Send(WashActor)
+		else
+			Debug.notification("[SLH] Washing Succubus - FAILED")
+
+	    endIf
+
 	ElseIf StorageUtil.GetIntValue(BimboActor, "_SLH_bimboTransformFinal") == 1
 		; RemoveBimboTattoo(BimboActor, "bimbo", true, true)
 		BimboTattoo(BimboActor, "bimbo","Tramp Stamp",false,true,true)

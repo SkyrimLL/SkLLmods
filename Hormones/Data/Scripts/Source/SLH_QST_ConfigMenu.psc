@@ -292,6 +292,16 @@ endEvent
 event OnPageReset(string a_page)
 	{Called when a new page is selected, including the initial empty page}
 
+	; workaround to force a refresh for first version change
+	Debug.Notification("[SLH] Updating MCM to version 2021")
+	Debug.Trace(self + ": Updating script to version 2021")
+	Debug.Trace(self + ": CurrentVersion = " + CurrentVersion)
+	Pages = new string[5]
+	Pages[0] = "$SLH_pHormonelevels"
+	Pages[1] = "$SLH_pBodyChanges"
+	Pages[2] = "$SLH_pTriggers"
+	Pages[3] = "$SLH_pCurses"
+	Pages[4] = "$SLH_pDebug"
 
 	If (!StorageUtil.HasIntValue(none, "_SLH_iHormones"))
 		SLH_Control.initHormones()
@@ -711,8 +721,9 @@ event OnPageReset(string a_page)
  		AddTextOption("$ Days as a Bimbo: {" + StorageUtil.GetIntValue(PlayerActor, "_SLH_bimboTransformGameDays")  as Int +"}", "", OPTION_FLAG_DISABLED)
 		AddTextOption("$ Cycles as a Bimbo: {" + StorageUtil.GetIntValue(PlayerActor, "_SLH_bimboTransformCycle")  as Int +"}", "", OPTION_FLAG_DISABLED)
 		AddTextOption("$ Bimbo Level: {" + StorageUtil.GetIntValue(PlayerActor, "_SLH_bimboTransformLevel")  as Int +"}", "", OPTION_FLAG_DISABLED)		
+		AddTextOption("$ Milk Level: {" + StorageUtil.GetIntValue(PlayerActor, "_SLH_iMilkLevel")  as Int +"}", "", OPTION_FLAG_DISABLED)		
 		AddEmptyOption()
-		
+
 		AddTextOption("$ Daedric Influence: {" +  StorageUtil.GetIntValue(PlayerActor, "_SLH_iDaedricInfluence")   as Int +"}", "", OPTION_FLAG_DISABLED)
 		AddTextOption("$ Succubus Level: {" +  StorageUtil.GetIntValue(PlayerActor, "_SLH_iSuccubusLevel")   as Int +"}", "", OPTION_FLAG_DISABLED)
 
