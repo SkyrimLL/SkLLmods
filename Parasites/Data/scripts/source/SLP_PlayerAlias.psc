@@ -880,7 +880,8 @@ Function _doOrgasm(int threadID, Actor kActor)
 		fctParasites.cureParasiteByString( kActor, "ChaurusWormVag")
 	EndIf
 
- 	if (StorageUtil.GetIntValue(PlayerActor, "_SLP_toggleChaurusQueenInfectNPCs" )==1)
+	; Exclude solo animations from parasite transfer
+ 	if (StorageUtil.GetIntValue(PlayerActor, "_SLP_toggleChaurusQueenInfectNPCs" )==1) && (!(animation.HasTag("Masturbation") || animation.HasTag("Solo") ))  
 		If (fctParasites.isInfectedByString(kActor, "TentacleMonster" )) && (Utility.RandomInt(1,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceTentacleMonster" ) / 4)) 
 
 			if (kActor == PlayerActor)
