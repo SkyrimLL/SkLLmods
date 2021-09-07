@@ -75,7 +75,7 @@ Function Execute(actor akActor)
 			libs.SexlabMoan(akActor)	
 
 		Else
-			libs.NotifyPlayer("Suction cups pull at your tenter nipples.")
+			libs.NotifyPlayer("Suction cups pull at your tender nipples.")
 			libs.Pant(akActor)	
 		EndIf
 

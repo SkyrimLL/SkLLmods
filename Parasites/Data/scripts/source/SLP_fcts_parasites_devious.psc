@@ -242,7 +242,7 @@ Bool Function equipParasiteDD ( Actor akActor, Armor ddArmorInventory, Armor ddA
 	if (ddArmorKeyword != None)
 		if (!akActor.WornHasKeyword(ddArmorKeyword))
 
-			bDeviceEquipSuccess = libs.equipDevice(akActor, ddArmorInventory , ddArmorRendered , ddArmorKeyword)
+			bDeviceEquipSuccess = libs.LockDevice(akActor, ddArmorInventory)
 			bDeviceEquipSuccess = True
 		Else
 			libs.Log("[SLP]  	skipped - device already equipped " )
@@ -266,7 +266,7 @@ Bool Function clearParasiteDD ( Actor akActor, Armor ddArmorInventory, Armor ddA
 	endIf
 
 	; RemoveDevice(actor akActor, armor deviceInventory, armor deviceRendered, keyword zad_DeviousDevice, bool destroyDevice=false, bool skipEvents=false, bool skipMutex=false)
-	libs.RemoveDevice(akActor, ddArmorInventory , ddArmorRendered , ddArmorKeyword, bDestroy, False, True)
+	libs.UnlockDevice(akActor, ddArmorInventory , ddArmorRendered , ddArmorKeyword, bDestroy )
  
 	bDeviceRemoveSuccess = True
  

@@ -81,7 +81,7 @@ Function DeviceMenu(Int msgChoice = 0)
         msgChoice = zad_DeviceMsg.Show() ; display menu
 	if msgChoice==0 ; Not wearing a belt, no plugs
 		Debug.Notification("You choose to insert the eggs inside you.")
-		libs.EquipDevice(libs.PlayerRef, deviceInventory, deviceRendered, zad_DeviousDevice)
+		libs.LockDevice(libs.PlayerRef, deviceInventory )
 	elseif msgChoice==1 ; Wearing a belt, no plugs
 		Debug.MessageBox(strFailEquip)
 	elseif msgChoice==2 ; Not wearing a belt, plugs
