@@ -120,7 +120,7 @@ Function PlayerReceivedCowharness(Actor kActor )
 	endif
 
 	; EquipDevice(actor akActor, armor deviceInventory, armor deviceRendered, keyword zad_DeviousDevice, bool skipEvents=false, bool skipMutex=false)
-	libs.EquipDevice(kActor, cowHarnessInventory , cowHarnessRendered , SLS_CowHarness)
+	libs.LockDevice(kActor, cowHarnessInventory )
 	; StorageUtil.SetIntValue(none, "_SLH_iLactating", 1)
 
 	; SetStage(10)
@@ -138,7 +138,7 @@ Function PlayerRemovedCowharness( Actor kActor )
 	endif
 
 	; EquipDevice(actor akActor, armor deviceInventory, armor deviceRendered, keyword zad_DeviousDevice, bool skipEvents=false, bool skipMutex=false)
-	libs.RemoveDevice(kActor, cowHarnessInventory , cowHarnessRendered , SLS_CowHarness)
+	libs.UnlockDevice(kActor, cowHarnessInventory , cowHarnessRendered , SLS_CowHarness)
 	; StorageUtil.SetIntValue(none, "_SLH_iLactating", 0)
 
 	; SetStage(10)
@@ -156,7 +156,7 @@ Function PlayerReceivedAutoCowharness( Actor kActor )
 	endif
 
 	; EquipDevice(actor akActor, armor deviceInventory, armor deviceRendered, keyword zad_DeviousDevice, bool skipEvents=false, bool skipMutex=false)
-	libs.EquipDevice(kActor, autoCowHarnessInventory , autoCowHarnessRendered , SLS_CowMilker)
+	libs.LockDevice(kActor, autoCowHarnessInventory )
 	; StorageUtil.SetIntValue(none, "_SLH_iLactating", 1)
 
 	; SetStage(10)
@@ -174,7 +174,7 @@ Function PlayerRemovedAutoCowharness( Actor kActor )
 	endif
 
 	; EquipDevice(actor akActor, armor deviceInventory, armor deviceRendered, keyword zad_DeviousDevice, bool skipEvents=false, bool skipMutex=false)
-	libs.RemoveDevice(kActor, autoCowHarnessInventory , autoCowHarnessRendered , SLS_CowMilker)
+	libs.UnlockDevice(kActor, autoCowHarnessInventory , autoCowHarnessRendered , SLS_CowMilker)
 	; StorageUtil.SetIntValue(none, "_SLH_iLactating", 0)
 
 	; SetStage(10)
