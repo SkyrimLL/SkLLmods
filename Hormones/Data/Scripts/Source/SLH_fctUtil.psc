@@ -405,6 +405,11 @@ function manageSexLabAroused(Actor kActor, int aiModRank = -1)
 	; Arousal modifier is modulated by Libido 
 	fArousalRateMod = fArousalRateMod * (fLibido / 100.0)
 
+	; Block arousal mod with max value set in MCM
+	if (fArousalRateMod > StorageUtil.GetFloatValue(none, "_SLH_fArousalModMax"))
+		fArousalRateMod = StorageUtil.GetFloatValue(none, "_SLH_fArousalModMax")
+	Endif
+
 	; Debug.Notification("[SLH] UpdateActorExposureRate:" + fArousalRateMod)
 	Debug.Trace("[SLH] >>> UpdateActorExposureRate:" + fArousalRateMod)
 	Debug.Trace("[SLH] >>> 		fLibido:" + fLibido)

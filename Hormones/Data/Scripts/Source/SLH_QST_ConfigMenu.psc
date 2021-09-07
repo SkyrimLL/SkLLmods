@@ -152,6 +152,8 @@ bool 		_bimboClumsinessDrop    = true
 float 		_bimboClumsinessMod		= 1.0; 0.1  
 float 		_bimboThoughtsDelay	= 1.0; 0.1  
 
+float 		_arousalModMax     		= 10.0
+
 float 		_breastMax      		= 4.0
 float 		_bellyMax       		= 8.0
 float 		_buttMax       			= 4.0
@@ -351,6 +353,8 @@ event OnPageReset(string a_page)
 	_hornyBegArousal  = GV_hornyBegArousal.GetValue()    as Float
 	_hornyGrab  = StorageUtil.GetFloatValue(none, "_SLH_fHornyGrab")
 	_bimboClumsinessDrop  = GV_bimboClumsinessDrop.GetValue()    as Int
+
+	_arousalModMax = StorageUtil.GetFloatValue(none, "_SLH_fArousalModMax")
 
 	_breastMax = GV_breastMax.GetValue()  as Float
 	_bellyMax = GV_bellyMax.GetValue()  as Float 
@@ -594,11 +598,6 @@ event OnPageReset(string a_page)
 		; AddSliderOptionST("STATE_LIBIDO","Starting libido", _startingLibido as Float) 
 		AddSliderOptionST("STATE_SEX_TRIGGER","$SLH_sSEX_TRIGGER", _sexActivityThreshold as Float)		
 		AddSliderOptionST("STATE_SEX_BUFFER","$SLH_sSEX_BUFFER", _sexActivityBuffer as Float)
-		AddToggleOptionST("STATE_HORNY_BEG","$SLH_bHORNY_BEG", _hornyBegON   as Bool)
-		AddSliderOptionST("STATE_BEG_TRIGGER","$SLH_sBEG_TRIGGER", _hornyBegArousal  as Float,"{1}")
-		AddSliderOptionST("STATE_GRAB_TRIGGER","$SLH_sGRAB_TRIGGER", _hornyGrab  as Float,"{1}")
-		AddToggleOptionST("STATE_EXHIBITIONIST","$SLH_bEXHIBITIONIST", _allowExhibitionist as Float)
-		AddSliderOptionST("STATE_COMMENTS_FREQUENCY","$SLH_sCOMMENTS_FREQUENCY", _commentsFrequency as Float,"{1} %")
 
 		AddEmptyOption()
 		SetCursorPosition(1)
@@ -666,6 +665,15 @@ event OnPageReset(string a_page)
 		AddToggleOptionST("STATE_SET_SEX_CHANGE","$SLH_bSET_SEX_CHANGE", _setHRT as Float)
 		AddToggleOptionST("STATE_SET_TG","$SLH_sSET_TG", _setTG as Float)
 		AddToggleOptionST("STATE_SET_BIMBO","$SLH_bSET_BIMBO", _setBimbo as Float)
+		
+		AddHeaderOption("$SLH_hSexLabAroused")
+		AddSliderOptionST("STATE_AROUSAL_MAX","$SLH_sAROUSAL_MAX", _arousalModMax as Float,"{1}")
+		AddToggleOptionST("STATE_HORNY_BEG","$SLH_bHORNY_BEG", _hornyBegON   as Bool)
+		AddSliderOptionST("STATE_BEG_TRIGGER","$SLH_sBEG_TRIGGER", _hornyBegArousal  as Float,"{1}")
+		AddSliderOptionST("STATE_GRAB_TRIGGER","$SLH_sGRAB_TRIGGER", _hornyGrab  as Float,"{1}")
+		AddToggleOptionST("STATE_EXHIBITIONIST","$SLH_bEXHIBITIONIST", _allowExhibitionist as Float)
+		AddSliderOptionST("STATE_COMMENTS_FREQUENCY","$SLH_sCOMMENTS_FREQUENCY", _commentsFrequency as Float,"{1} %")
+
 
 
 
@@ -1447,6 +1455,33 @@ state STATE_CLOTH_MOD ; SLIDER
 
 	event OnHighlightST()
 		SetInfoText("$SLH_sCLOTH_MOD_DESC")
+	endEvent
+endState
+; AddSliderOptionST("STATE_AROUSAL_MAX","$SLH_sAROUSAL_MAX", _arousalModMax as Float,"{1}")
+state STATE_AROUSAL_MAX ; SLIDER
+	event OnSliderOpenST()
+		SetSliderDialogStartValue(  StorageUtil.GetFloatValue(none, "_SLH_fArousalModMax") )
+		SetSliderDialogDefaultValue( 10.0 )
+		SetSliderDialogRange( 0.0, 10.0 )
+		SetSliderDialogInterval( 0.1 )
+	endEvent
+
+	event OnSliderAcceptST(float value)
+		float thisValue = value 
+		StorageUtil.SetFloatValue(none, "_SLH_fArousalModMax", thisValue)
+		SetSliderOptionValueST( thisValue, "{1}" )
+
+		refreshStorageFromGlobals()
+
+	endEvent
+
+	event OnDefaultST()
+		GV_breastMax.SetValue( 10.0 )
+		SetSliderOptionValueST( 10.0, "{1}" )
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("$SLH_sAROUSAL_MAX_DESC")
 	endEvent
 endState
 ; AddSliderOptionST("STATE_BREAST_SWELL","Breast swell modifier", _breastSwellMod)

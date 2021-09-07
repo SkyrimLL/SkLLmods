@@ -293,13 +293,13 @@ Function maintenanceVersionEvents()
 	pActorBase = PlayerActor.GetActorBase()
 	Int iBimbo = StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo") 
  
-	Int iCurrentVersionNumber = 20210107
+	Int iCurrentVersionNumber = 20210903
 	Int iVersionNumber = StorageUtil.GetIntValue(none, "_SLH_iHormonesVersion")	
 	
 	If (iVersionNumber != iCurrentVersionNumber)
 		Debug.Notification("[SLH] Upgrading Hormones to " + iCurrentVersionNumber)
 
-		If (iVersionNumber <= 20181214)
+		If (iVersionNumber < 20181214)
 			; debug.MessageBox("[Hormones] This is a major update. Check your menu settings for changes to color swatches and NiNode updates options.")
 			StorageUtil.SetIntValue(none, "_SLH_NiNodeOverrideON", 1)
 			StorageUtil.SetIntValue(PlayerActor, "_SLH_iDefaultSkinColor", -1)
@@ -309,19 +309,22 @@ Function maintenanceVersionEvents()
 			StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBaseSwellFactor",GV_baseSwellFactor.GetValue() as Float) 
 			StorageUtil.SetIntValue(none, "_SLH_debugTraceON", 1)
 		Endif
-		If (iVersionNumber <= 20191019)
+		If (iVersionNumber < 20191019)
 			StorageUtil.SetFloatValue(PlayerActor, "_SLH_fHormoneSuccubus", StorageUtil.GetIntValue(PlayerActor, "_SLH_iDaedricInfluence") as Float ) 
 		Endif
-		If (iVersionNumber <= 20191026)
+		If (iVersionNumber < 20191026)
 			StorageUtil.SetIntValue(PlayerActor, "_SLH_iAllowBimboThoughts", iBimbo)
 		endif
-		If 	(StorageUtil.GetIntValue(PlayerActor, "_SLH_iHormoneLevelsInit") != 1) 
-			fctHormones.initHormonesLevels(PlayerActor)
-		EndIf
-		If (iVersionNumber <= 20210107)
+		If (iVersionNumber < 20210107)
 			debug.MessageBox("[Hormones] To prevent unwanted changes on a first start Hormones changes have been stopped until you first sleep.")
 			StorageUtil.SetIntValue(none, "_SLH_iHormonesSleepInit", 0)
 		endif
+		If (iVersionNumber < 20210903)
+			StorageUtil.SetFloatValue(none, "_SLH_fArousalModMax", 10.0 ) 
+		Endif
+		If 	(StorageUtil.GetIntValue(PlayerActor, "_SLH_iHormoneLevelsInit") != 1) 
+			fctHormones.initHormonesLevels(PlayerActor)
+		EndIf
 		StorageUtil.SetIntValue(none, "_SLH_iHormonesVersion", iCurrentVersionNumber)	
 	Endif
 
