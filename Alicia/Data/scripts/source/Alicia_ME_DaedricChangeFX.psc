@@ -137,7 +137,7 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
                         if (StorageUtil.GetIntValue(none, "_SD_iSanguine")==1)
                             Debug.Trace("[Alicia] SD+ detected - equip devices")
                             If (Utility.RandomInt(0,100)> 90)
-                            ;    AliciaActor.SendModEvent("SDEquipDevice",   "Blindfold|blindfold,leather,zap")
+                            ;    AliciaActor.SendModEvent("SDEquipDevice",   "Blindfold|Dremora")
                             Else
                             ;   AliciaActor.SendModEvent("SDClearDevice",   "Blindfold")
                             endif
@@ -152,16 +152,16 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
                                 AliciaActor.SendModEvent("SDClearDevice",   "VaginalPiercing")
                             endif
                             If (Utility.RandomInt(0,100)> 60)
-                                AliciaActor.SendModEvent("SDEquipDevice",   "PlugAnal|plug,anal,heretic,ddx")
-                                AliciaActor.SendModEvent("SDEquipDevice",   "Plugvaginal|plug,vaginal,heretic,ddx")
-                                AliciaActor.SendModEvent("SDEquipDevice",   "Belt|belt,metal,iron") 
+                                AliciaActor.SendModEvent("SDEquipDevice",   "PlugAnal|Dremora")
+                                AliciaActor.SendModEvent("SDEquipDevice",   "PlugVaginal|Dremora")
+                                AliciaActor.SendModEvent("SDEquipDevice",   "Belt|Dremora") 
                             Else
                                 AliciaActor.SendModEvent("SDClearDevice",   "Belt")
                                 AliciaActor.SendModEvent("SDClearDevice",   "Plugvaginal")
                                 AliciaActor.SendModEvent("SDClearDevice",   "PlugAnal")
                             Endif
                             If (Utility.RandomInt(0,100)> 30)
-                                AliciaActor.SendModEvent("SDEquipDevice",   "Gag|gag,heretic,ddx")
+                                AliciaActor.SendModEvent("SDEquipDevice",   "Gag|Dremora")
                             Else
                                 AliciaActor.SendModEvent("SDClearDevice",   "Gag")
                             endif
