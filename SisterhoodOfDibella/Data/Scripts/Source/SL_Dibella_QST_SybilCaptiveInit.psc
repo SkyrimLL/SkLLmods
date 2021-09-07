@@ -22,13 +22,13 @@ Event OnTriggerEnter(ObjectReference akActionRef)
                   ;      SybilActor.SendModEvent("SDEquipDevice",   "Blindfold|blindfold,leather,zap")
                   endif
                   If (Utility.RandomInt(0,100)> 60)
-                    SybilActor.SendModEvent("SDEquipDevice",   "PlugAnal|plug,anal,heretic,ddx")
-                    SybilActor.SendModEvent("SDEquipDevice",   "PlugVaginal|plug,vaginal,heretic,ddx")
-                    SybilActor.SendModEvent("SDEquipDevice",   "Belt|belt,metal,iron") 
+                    SybilActor.SendModEvent("SDEquipDevice",   "PlugAnal|Breton")
+                    SybilActor.SendModEvent("SDEquipDevice",   "PlugVaginal|Breton")
+                    SybilActor.SendModEvent("SDEquipDevice",   "Belt|Breton") 
                   Endif
-                  SybilActor.SendModEvent("SDEquipDevice",   "WristRestraint|heretic,ddx")
-                  SybilActor.SendModEvent("SDEquipDevice",   "Gag|gag,heretic,ddx")
-                  SybilActor.SendModEvent("SDEquipDevice",   "Collar|collar,heretic,ddx")
+                  SybilActor.SendModEvent("SDEquipDevice",   "WristRestraint|Breton")
+                  SybilActor.SendModEvent("SDEquipDevice",   "Gag|Breton")
+                  SybilActor.SendModEvent("SDEquipDevice",   "Collar|Breton")
             else
 
                   SybilREF.additem(BondageItem  )
