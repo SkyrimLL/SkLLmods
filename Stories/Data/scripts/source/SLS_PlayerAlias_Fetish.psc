@@ -138,6 +138,7 @@ Function _Maintenance()
 	; Mod detection / compatibility
 	StorageUtil.SetIntValue(none, "_SLS_isEstrusChaurusON",  0) 
 	StorageUtil.SetIntValue(none, "_SLS_isBeeingFemaleON",  0) 
+	StorageUtil.SetIntValue(none, "_SLS_isFertitiltyModeON",  0) 
 	StorageUtil.SetIntValue(none, "_SLS_isCagedFollowerON",  0) 
 
 	int idx = Game.GetModCount()
@@ -153,6 +154,18 @@ Function _Maintenance()
 			StorageUtil.SetIntValue(none, "_SLS_isBeeingFemaleON",  1) 
 			StorageUtil.SetFormValue(none, "_SLS_getBeeingFemalePregnancySpell",  Game.GetFormFromFile(0x000028A0, modName)) ; as Spell
 
+		elseif modName == "Fertility Mode.esm"
+			StorageUtil.SetIntValue(none, "_SLS_isFertitiltyModeON",  1) 
+			StorageUtil.SetFormValue(none, "_SLS_getFertilityModePregnancySpell1",  Game.GetFormFromFile(0x0001B816, modName)) ; as Spell
+			StorageUtil.SetFormValue(none, "_SLS_getFertilityModePregnancySpell2",  Game.GetFormFromFile(0x001Bf816, modName)) ; as Spell
+			StorageUtil.SetFormValue(none, "_SLS_getFertilityModePregnancySpell3",  Game.GetFormFromFile(0x0001B81A, modName)) ; as Spell
+
+		elseif modName == "Fertility Mode 3 Fixes and Updates.esp"
+			StorageUtil.SetIntValue(none, "_SLS_isFertitiltyModeON",  1) 
+			StorageUtil.SetFormValue(none, "_SLS_getFertilityModePregnancySpell1",  Game.GetFormFromFile(0x000EE81D, modName)) ; as Spell
+			StorageUtil.SetFormValue(none, "_SLS_getFertilityModePregnancySpell2",  Game.GetFormFromFile(0x000EE81E, modName)) ; as Spell
+			StorageUtil.SetFormValue(none, "_SLS_getFertilityModePregnancySpell3",  Game.GetFormFromFile(0x000EE81F, modName)) ; as Spell
+			
 		elseif modName == "CagedFollowers.esp"
 			StorageUtil.SetIntValue(none, "_SLS_isCagedFollowerON",  1) 
 			StorageUtil.SetFormValue(none, "_SLS_getCagedFollowerQuestKeyword",  Game.GetFormFromFile(0x0000184d, modName)) ; as Keyword
@@ -916,7 +929,7 @@ EndFunction
 
 
 bool function isPregnantBySoulGemOven(actor kActor) 
-  	return (StorageUtil.GetIntValue(Game.GetPlayer(), "sgo_IsBellyScaling") == 1) || (StorageUtil.GetIntValue(Game.GetPlayer(), "sgo_IsBreastScaling ") == 1)
+  	return (StorageUtil.GetIntValue(kActor, "sgo_IsBellyScaling") == 1) || (StorageUtil.GetIntValue(kActor, "sgo_IsBreastScaling ") == 1)
 
 endFunction
 
@@ -932,6 +945,20 @@ bool function isPregnantByBeeingFemale(actor kActor)
   return false
 endFunction
  
+bool function isPregnantByFertilityMode(actor kActor)
+	if kActor && kActor != none
+		if (StorageUtil.GetIntValue(none, "_SLS_isFertitiltyModeON") ==  1) 
+			spell FertilityModePregnancySpell1 = StorageUtil.GetFormValue(none, "_SLS_getFertilityModePregnancySpell1") as Spell
+			spell FertilityModePregnancySpell2 = StorageUtil.GetFormValue(none, "_SLS_getFertilityModePregnancySpell2") as Spell
+			spell FertilityModePregnancySpell3 = StorageUtil.GetFormValue(none, "_SLS_getFertilityModePregnancySpell3") as Spell
+			if (FertilityModePregnancySpell1 != none)
+				return kActor.HasSpell(FertilityModePregnancySpell1) || kActor.HasSpell(FertilityModePregnancySpell2) || kActor.HasSpell(FertilityModePregnancySpell3)
+			endif
+		endIf
+	endIf
+	return false
+endFunction
+
 bool function isPregnantByEstrusChaurus(actor kActor)
   spell  ChaurusBreeder 
   if (StorageUtil.GetIntValue(none, "_SLS_isCagedFollowerON") ==  1) 
@@ -944,7 +971,7 @@ bool function isPregnantByEstrusChaurus(actor kActor)
 endFunction
 
 bool function isPregnant(actor kActor)
-	bIsPregnant = ( isPregnantBySoulGemOven(kActor) || isPregnantBySimplePregnancy(kActor) || isPregnantByBeeingFemale(kActor) || isPregnantByEstrusChaurus(kActor) || ((StorageUtil.GetIntValue(Game.GetPlayer(), "PSQ_SuccubusON") == 1) && (StorageUtil.GetIntValue(Game.GetPlayer(), "PSQ_SoulGemPregnancyON") == 1)) )
+	bIsPregnant = ( isPregnantBySoulGemOven(kActor) || isPregnantBySimplePregnancy(kActor) || isPregnantByBeeingFemale(kActor)  || isPregnantByFertilityMode(kActor) || isPregnantByEstrusChaurus(kActor) || ((StorageUtil.GetIntValue(Game.GetPlayer(), "PSQ_SuccubusON") == 1) && (StorageUtil.GetIntValue(Game.GetPlayer(), "PSQ_SoulGemPregnancyON") == 1)) )
 EndFunction
 
 Bool function isFemale(actor kActor)
