@@ -240,6 +240,10 @@ Function Maintenance()
 
 	StorageUtil.SetIntValue(none, "_SLP_isAnimatedDragonWings",  0) 
 	StorageUtil.SetIntValue(none, "_SLP_isRealFlying",  0) 
+	StorageUtil.SetIntValue(none, "_SLS_isCagedFollowerON",  0) 
+	StorageUtil.SetIntValue(none, "_SLS_isEstrusChaurusON",  0) 
+	StorageUtil.SetIntValue(none, "_SLS_isBeeingFemaleON",  0) 
+	StorageUtil.SetIntValue(none, "_SLS_isFertitiltyModeON",  0) 
 	StorageUtil.SetIntValue(none, "_SLP_isAnimatedWingsUltimate", 0) 
 
 	int idx = Game.GetModCount()
@@ -254,6 +258,18 @@ Function Maintenance()
 		elseif modName == "BeeingFemale.esm"
 			StorageUtil.SetIntValue(none, "_SLS_isBeeingFemaleON",  1) 
 			StorageUtil.SetFormValue(none, "_SLS_getBeeingFemalePregnancySpell",  Game.GetFormFromFile(0x000028A0, modName)) ; as Spell
+
+		elseif modName == "Fertility Mode.esm"
+			StorageUtil.SetIntValue(none, "_SLS_isFertitiltyModeON",  1) 
+			StorageUtil.SetFormValue(none, "_SLS_getFertilityModePregnancySpell1",  Game.GetFormFromFile(0x0001B816, modName)) ; as Spell
+			StorageUtil.SetFormValue(none, "_SLS_getFertilityModePregnancySpell2",  Game.GetFormFromFile(0x001Bf816, modName)) ; as Spell
+			StorageUtil.SetFormValue(none, "_SLS_getFertilityModePregnancySpell3",  Game.GetFormFromFile(0x0001B81A, modName)) ; as Spell
+
+		elseif modName == "Fertility Mode 3 Fixes and Updates.esp"
+			StorageUtil.SetIntValue(none, "_SLS_isFertitiltyModeON",  1) 
+			StorageUtil.SetFormValue(none, "_SLS_getFertilityModePregnancySpell1",  Game.GetFormFromFile(0x000EE81D, modName)) ; as Spell
+			StorageUtil.SetFormValue(none, "_SLS_getFertilityModePregnancySpell2",  Game.GetFormFromFile(0x000EE81E, modName)) ; as Spell
+			StorageUtil.SetFormValue(none, "_SLS_getFertilityModePregnancySpell3",  Game.GetFormFromFile(0x000EE81F, modName)) ; as Spell
 
 		elseif modName == "CagedFollowers.esp"
 			StorageUtil.SetIntValue(none, "_SLS_isCagedFollowerON",  1) 
@@ -362,6 +378,7 @@ Function maintenanceVersionEvents()
 	RegisterForModEvent("SLHCastTGCurse",    "OnCastTGCurseEvent")
 	RegisterForModEvent("SLHCureTGCurse",    "OnCureTGCurseEvent") 
 	RegisterForModEvent("SLHBimboThoughts",    "OnBimboThoughts") 
+	RegisterForModEvent("SLHForceRemoveCurse",    "OnForceRemoveCurseEvent") 
 
 	if (GV_allowSelfSpells.GetValue() == 1)
 		debugTrace("  Add spells")
@@ -1193,6 +1210,60 @@ Event OnCureHRTCurseEvent(String _eventName, String _args, Float _argc = 1.0, Fo
 
 endEvent
 
+Event OnForceRemoveCurseEvent(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+
+ 	if (kActor == None)
+ 		kActor = Game.GetPlayer()
+ 	EndIf
+
+	fctUtil.checkGender(kActor) 
+	Bool fromMale = fctUtil.isMale(kActor)
+
+ 	if (_args == "Succubus") || (_args == "All")
+		debugTrace(" Cure Succubus Curse event" )	
+  
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iSuccubusLevel", 0)
+		StorageUtil.SetIntValue(PlayerActor, "_SLH_iDaedricInfluence", 0)
+		StorageUtil.SetIntValue(PlayerActor, "PSQ_SpellON", 0)
+		ModEvent.Send(ModEvent.Create("HoSLDD_TakeAwayPlayerPowers"))
+		; _SLH_QST_Succubus.SetStage(90)
+		GV_isSuccubusFinal.SetValue(0) 
+		setSuccubusState(PlayerActor, FALSE)
+	endif
+
+ 	if (_args == "Bimbo") || (_args == "All")
+		debugTrace(" Cure Bimbo Curse event" )	  
+
+		GV_isBimboFinal.SetValue(0)
+		fctPolymorph.bimboTransformEffectOFF(kActor)
+	endif
+
+ 	if (_args == "TG") || (_args == "All")
+
+		debugTrace(" Cure TG Curse event" )	  
+
+		GV_isTGFinal.SetValue(0)
+		fctPolymorph.TGEffectOFF(kActor)
+
+	endif
+
+ 	if (_args == "HRT") || (_args == "All")
+
+		debugTrace(" Cure HRT Curse event" )	  
+
+		GV_isHRTFinal.SetValue(0)
+		fctPolymorph.HRTEffectOFF(kActor)
+	
+	endif
+
+	utility.Wait(1.0)
+
+	if fromMale != fctUtil.isMale(kActor)
+		Game.ShowRaceMenu()
+	endif
+
+endEvent
 
 Event OnBimboThoughts(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor

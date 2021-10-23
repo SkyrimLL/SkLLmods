@@ -299,12 +299,12 @@ Bool function isSameSex(actor kActor1, actor kActor2)
 EndFunction
 
 bool function isFHUCumFilledEnabled(actor kActor) 
-  	return (StorageUtil.GetIntValue(Game.GetPlayer(), "CI_CumInflation_ON") == 1) 
+  	return (StorageUtil.GetIntValue(kActor, "CI_CumInflation_ON") == 1) 
 
 endFunction
 
 bool function isPregnantBySoulGemOven(actor kActor) 
-  	return (StorageUtil.GetIntValue(Game.GetPlayer(), "sgo_IsBellyScaling") == 1) || (StorageUtil.GetIntValue(Game.GetPlayer(), "sgo_IsBreastScaling ") == 1)
+  	return (StorageUtil.GetIntValue(kActor, "sgo_IsBellyScaling") == 1) || (StorageUtil.GetIntValue(kActor, "sgo_IsBreastScaling ") == 1)
 
 endFunction
 
@@ -319,7 +319,21 @@ bool function isPregnantByBeeingFemale(actor kActor)
   endIf
   return false
 endFunction
- 
+
+bool function isPregnantByFertilityMode(actor kActor)
+	if kActor && kActor != none
+		if (StorageUtil.GetIntValue(none, "_SLS_isFertitiltyModeON") ==  1) 
+			spell FertilityModePregnancySpell1 = StorageUtil.GetFormValue(none, "_SLS_getFertilityModePregnancySpell1") as Spell
+			spell FertilityModePregnancySpell2 = StorageUtil.GetFormValue(none, "_SLS_getFertilityModePregnancySpell2") as Spell
+			spell FertilityModePregnancySpell3 = StorageUtil.GetFormValue(none, "_SLS_getFertilityModePregnancySpell3") as Spell
+			if (FertilityModePregnancySpell1 != none)
+				return kActor.HasSpell(FertilityModePregnancySpell1) || kActor.HasSpell(FertilityModePregnancySpell2) || kActor.HasSpell(FertilityModePregnancySpell3)
+			endif
+		endIf
+	endIf
+	return false
+endFunction
+
 bool function isPregnantByEstrusChaurus(actor kActor)
 	if kActor && kActor != none
 		if (StorageUtil.GetIntValue(none, "_SLS_isEstrusChaurusON") ==  1) 
@@ -338,7 +352,7 @@ bool function isExternalChangeModActive(actor kActor)
 	if kActor && kActor != none
 		ActorBase pActorBase = kActor.GetActorBase()
 		Float fCurrentWeight = pActorBase.GetWeight()
-		bIsPregnant = ( isPregnantBySoulGemOven(kActor) || isPregnantBySimplePregnancy(kActor) || isPregnantByBeeingFemale(kActor) || isPregnantByEstrusChaurus(kActor))
+		bIsPregnant = ( isPregnantBySoulGemOven(kActor) || isPregnantBySimplePregnancy(kActor) || isPregnantByBeeingFemale(kActor)  || isPregnantByFertilityMode(kActor) || isPregnantByEstrusChaurus(kActor))
 		bIsActorWeigth = ((fCurrentWeight!=StorageUtil.GetFloatValue(kActor, "_SLH_fWeight")) && (StorageUtil.GetFloatValue(kActor, "_SLH_fManualWeightChange") == -1))
 	endIf
 	Actor kPlayer = Game.GetPlayer()
