@@ -157,7 +157,7 @@ Function _Maintenance()
 		elseif modName == "Fertility Mode.esm"
 			StorageUtil.SetIntValue(none, "_SLS_isFertitiltyModeON",  1) 
 			StorageUtil.SetFormValue(none, "_SLS_getFertilityModePregnancySpell1",  Game.GetFormFromFile(0x0001B816, modName)) ; as Spell
-			StorageUtil.SetFormValue(none, "_SLS_getFertilityModePregnancySpell2",  Game.GetFormFromFile(0x001Bf816, modName)) ; as Spell
+			StorageUtil.SetFormValue(none, "_SLS_getFertilityModePregnancySpell2",  Game.GetFormFromFile(0x0001B818, modName)) ; as Spell
 			StorageUtil.SetFormValue(none, "_SLS_getFertilityModePregnancySpell3",  Game.GetFormFromFile(0x0001B81A, modName)) ; as Spell
 
 		elseif modName == "Fertility Mode 3 Fixes and Updates.esp"
@@ -165,7 +165,7 @@ Function _Maintenance()
 			StorageUtil.SetFormValue(none, "_SLS_getFertilityModePregnancySpell1",  Game.GetFormFromFile(0x000EE81D, modName)) ; as Spell
 			StorageUtil.SetFormValue(none, "_SLS_getFertilityModePregnancySpell2",  Game.GetFormFromFile(0x000EE81E, modName)) ; as Spell
 			StorageUtil.SetFormValue(none, "_SLS_getFertilityModePregnancySpell3",  Game.GetFormFromFile(0x000EE81F, modName)) ; as Spell
-			
+
 		elseif modName == "CagedFollowers.esp"
 			StorageUtil.SetIntValue(none, "_SLS_isCagedFollowerON",  1) 
 			StorageUtil.SetFormValue(none, "_SLS_getCagedFollowerQuestKeyword",  Game.GetFormFromFile(0x0000184d, modName)) ; as Keyword
