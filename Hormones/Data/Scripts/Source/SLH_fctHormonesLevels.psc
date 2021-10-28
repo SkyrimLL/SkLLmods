@@ -299,7 +299,7 @@ Float function updateActorLibido(Actor kActor)
 
 		fLibido = fLibido - 10.0
 
-		iDaedricInfluence   = fctUtil.iMax(0, iDaedricInfluence   - 1 )
+		iDaedricInfluence   = fctUtil.iMax(0, iDaedricInfluence   - 20 )
 
 	ElseIf ( iSexCountToday >1) && ( (iSexCountToday >= sexActivityThreshold) || (iDaysSinceLastSex <= sexActivityBuffer ) ) 
 	; Increase

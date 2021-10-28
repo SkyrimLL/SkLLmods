@@ -5,15 +5,27 @@ Keyword Property SuccubusBodyKeyword Auto
 
 Event OnEffectStart(Actor ckTarget, Actor ckCaster)
 	Actor PlayerActor = Game.GetPlayer()
+	Int iDaedricInfluence = StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneSuccubus") as Int
 	; debug.notification("[SLH]   SLH_ME_SuccubusBody -  OnEffectStart" )
 
 	; if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iSuccubusLevel") >=4)
-	if (StorageUtil.GetIntValue(none, "_SLH_SuccubusBodyEquipped") == 0 ) && (!PlayerActor.WornHasKeyword(SuccubusBodyKeyword) )
-		; debug.notification("[SLH]   EQUIP body" )
-		equipBody()
+	if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iSuccubusLevel") >=5)
+		if (iDaedricInfluence>70)
+			if (StorageUtil.GetIntValue(none, "_SLH_SuccubusBodyEquipped") == 0 ) && (!PlayerActor.WornHasKeyword(SuccubusBodyKeyword) )
+				; debug.notification("[SLH]   EQUIP body" )
+				PlayerActor.SendModEvent("SLHModHormone","Succubus", -40.0)
+				equipBody()
+			else
+				; debug.notification("[SLH]   REMOVE body" )
+				PlayerActor.SendModEvent("SLHModHormone","Succubus", -40.0)
+				removeBody()
+			endif
+		else
+			debug.notification("Your sexual energy is depleted." )
+
+		endif
 	else
-		; debug.notification("[SLH]   REMOVE body" )
-		removeBody()
+		debug.notification("You are not powerful enough to change shape." )
 	endif
 
 	; endif
@@ -70,14 +82,14 @@ Function equipBody()
 	; wash player automatically if Bathing in Skyrim is on (remove dirt)'
 	Int WashActor = ModEvent.Create("BiS_WashActor")
 	if (WashActor)
-		Debug.notification("[SLH] Washing Succubus")
+		Debug.trace("[SLH] Washing Succubus")
 		ModEvent.PushForm(WashActor, (PlayerActor as Form))
 		ModEvent.PushBool(WashActor, false) ; animate
 		ModEvent.PushBool(WashActor, true) ; full clean
 		ModEvent.PushBool(WashActor, false) ; soap
 		ModEvent.Send(WashActor)
 	else
-		Debug.notification("[SLH] Washing Succubus - FAILED")
+		Debug.trace("[SLH] Washing Succubus - FAILED")
 
     endIf
 

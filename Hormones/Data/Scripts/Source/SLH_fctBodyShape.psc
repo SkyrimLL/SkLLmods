@@ -377,10 +377,12 @@ function SLIF_inflateMax(Actor kActor, String sKey, float value, float maximum, 
 				SLIF_inflate(kActor, "NipplePerkiness", value, NiOString)
 				SLIF_inflate(kActor, "NippleLength", value, NiOString)
 				SLIF_inflate(kActor, "BreastsTogether", value, NiOString)
+
 			ElseIf sKey == "slif_belly"
 				SLIF_inflate(kActor, "Belly", value, NiOString)
 				SLIF_inflate(kActor, "BigBelly", value, NiOString)
 				SLIF_inflate(kActor, "HipsUpperWidth", value, NiOString)
+
 			ElseIf sKey == "slif_butt"
 				SLIF_inflate(kActor, "Butt", value, NiOString)
 				SLIF_inflate(kActor, "BigButt", value, NiOString)
@@ -389,8 +391,9 @@ function SLIF_inflateMax(Actor kActor, String sKey, float value, float maximum, 
 				SLIF_inflate(kActor, "AppleCheeks", value, NiOString)
 			EndIf
 		;I don't care about it setting the max as I beleive that can be controled in the SLIF MCM menu, but you would need to do the same as above for each node
-		SLIF_setMax(kActor, "Breasts", maximum)
+		; SLIF_setMax(kActor, "Breasts", maximum)
 	else
+		; Defaults to normal SLIF process if Bodymorph option is not checked
 		SLIF_setMax(kActor, sKey, maximum)
 		SLIF_inflate(kActor, sKey, value, NiOString)
 	endif	
@@ -404,7 +407,8 @@ function alterBodyAfterRest(Actor kActor)
 	Race thisRace = pActorBase.GetRace()
 	Bool bArmorOn = kActor.WornHasKeyword(ArmorOn)
 	Bool bClothingOn = kActor.WornHasKeyword(ClothingOn)
-	Int iSuccubus
+	Int iSuccubusLevel
+	Float fSuccubusMod
 	Float fNodeMax
 	Bool bExternalChangeModActive = fctUtil.isExternalChangeModActive(kActor)
 	Int iSexActivityBuffer = StorageUtil.GetIntValue(kActor, "_SLH_iSexActivityBuffer")
@@ -469,19 +473,32 @@ function alterBodyAfterRest(Actor kActor)
 	iDaysSinceLastSex = (Game.QueryStat("Days Passed") - iGameDateLastSex ) as Int
 	StorageUtil.SetIntValue(kActor, "_SLH_iDaysSinceLastSex", iDaysSinceLastSex)
 
-	iSuccubus = StorageUtil.GetIntValue(kActor, "_SLH_iSuccubus") 
+	iSuccubusLevel = StorageUtil.GetIntValue(kActor, "_SLH_iSuccubusLevel") 
 	iDaedricInfluence = StorageUtil.GetIntValue(kActor, "_SLH_iDaedricInfluence") 
+
+	; Amplify changes as a Succubus
+	if (iSuccubusLevel>=2)
+		fSuccubusMod = (iSuccubusLevel as Float)
+	else
+		fSuccubusMod = 1.0
+	Endif
+
+	fWeightSwellMod = fWeightSwellMod * fSuccubusMod
+	fBreastSwellMod = fBreastSwellMod * fSuccubusMod
+	fButtSwellMod = fButtSwellMod * fSuccubusMod
+	fBellySwellMod = fBellySwellMod * fSuccubusMod
+	fSchlongSwellMod = fSchlongSwellMod * fSuccubusMod 
 
 
 	if (iDaysSinceLastSex >= iSexActivityThreshold + iSexActivityThresholdPlus )
 		StorageUtil.SetIntValue(kActor, "_SLH_iSexActivityThresholdPlus",iSexActivityThresholdPlus+1)
 		; invert body changes if sex activity below threshold
 		debugTrace("  invert body changes - sex activity below threshold")
-		fWeightSwellMod = -1.0 * fWeightSwellMod
-		fBreastSwellMod = -1.0 * fBreastSwellMod
-		fButtSwellMod = -1.0 * fButtSwellMod
-		fBellySwellMod = -1.0 * fBellySwellMod
-		fSchlongSwellMod = -1.0 * fSchlongSwellMod 
+		fWeightSwellMod = -1.0 * fWeightSwellMod 
+		fBreastSwellMod = -1.0 * fBreastSwellMod 
+		fButtSwellMod = -1.0 * fButtSwellMod 
+		fBellySwellMod = -1.0 * fBellySwellMod 
+		fSchlongSwellMod = -1.0 * fSchlongSwellMod  
 
 	elseIf (iSexCountToday < iSexActivityBuffer)
 		StorageUtil.UnsetIntValue(kActor, "_SLH_iSexActivityThresholdPlus")
@@ -494,6 +511,7 @@ function alterBodyAfterRest(Actor kActor)
 	; debug.notification( "[SLP] Applying body changes " )
 	debugTrace( ">>>>> alterBodyAfterRest detected " )
 	debugTrace( "fSwellFactor: " + fSwellFactor)
+	debugTrace( "fSuccubusMod: " + fSuccubusMod)
 	debugTrace( "isSlifInstalled: " + isSlifInstalled)
 	debugTrace( "_SLH_BasicNetImmerseON: " + StorageUtil.GetIntValue(none, "_SLH_BasicNetImmerseON"))
 	debugTrace( "isNiOInstalled: " + isNiOInstalled)
@@ -1615,7 +1633,7 @@ EndFunction
 
 Bool function trySuccubusEvent(Actor kActor) ; succubus corruption
 	Bool bEventTriggered = False
-	Int iSuccubus = StorageUtil.GetIntValue(kActor, "_SLH_iSuccubus") 
+	Int iSuccubusLevel = StorageUtil.GetIntValue(kActor, "_SLH_iSuccubusLevel") 
 	Int iBimbo = StorageUtil.GetIntValue(kActor, "_SLH_iBimbo") 
 	Int _allowSuccubus = StorageUtil.GetIntValue(kActor, "_SLH_allowSuccubus")
 
@@ -1632,7 +1650,7 @@ Bool function tryTGEvent(Actor kActor, float fHoursSleep) ; trans gender
 	Bool bEventTriggered = False
 	ActorBase pActorBase = kActor.GetActorBase()
 	String sMessage = ""
-	Int iSuccubus = StorageUtil.GetIntValue(kActor, "_SLH_iSuccubus") 
+	Int iSuccubusLevel = StorageUtil.GetIntValue(kActor, "_SLH_iSuccubusLevel") 
 	Int iBimbo = StorageUtil.GetIntValue(kActor, "_SLH_iBimbo") 
 	Int _allowTG = StorageUtil.GetIntValue(kActor, "_SLH_allowTG")
 	Float fHormoneBimbo = StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneBimbo" ) 	
@@ -1771,7 +1789,7 @@ Bool function tryHRTEvent(Actor kActor, float fHoursSleep) ; sex change
 	Bool bEventTriggered = False
 	ActorBase pActorBase = kActor.GetActorBase()
 	String sMessage = ""
-	Int iSuccubus = StorageUtil.GetIntValue(kActor, "_SLH_iSuccubus") 
+	Int iSuccubusLevel = StorageUtil.GetIntValue(kActor, "_SLH_iSuccubusLevel") 
 	Int iBimbo = StorageUtil.GetIntValue(kActor, "_SLH_iBimbo") 
 	Int _allowHRT = StorageUtil.GetIntValue(kActor, "_SLH_allowHRT")
 	Float fHormoneBimbo = StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneBimbo" ) 	
@@ -1908,7 +1926,7 @@ Bool function tryBimboEvent(Actor kActor, float fHoursSleep) ; bimbo curse
 	Bool bEventTriggered = False
 	ActorBase pActorBase = kActor.GetActorBase()
 	String sMessage = ""
-	Int iSuccubus = StorageUtil.GetIntValue(kActor, "_SLH_iSuccubus") 
+	Int iSuccubusLevel = StorageUtil.GetIntValue(kActor, "_SLH_iSuccubusLevel") 
 	Int iBimbo = StorageUtil.GetIntValue(kActor, "_SLH_iBimbo") 
 	Int _allowBimbo = StorageUtil.GetIntValue(kActor, "_SLH_allowBimbo")
 	Float fHormoneBimbo = StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneBimbo" ) 	
@@ -2739,6 +2757,6 @@ EndFunction
 Function debugTrace(string traceMsg)
 	if (StorageUtil.GetIntValue(none, "_SLH_debugTraceON")==1)
 		; Disabled for body shape feedback
-		; Debug.Trace("[SLH_fctBodyShape] " + traceMsg)
+		Debug.Trace("[SLH_fctBodyShape] " + traceMsg)
 	endif
 endFunction

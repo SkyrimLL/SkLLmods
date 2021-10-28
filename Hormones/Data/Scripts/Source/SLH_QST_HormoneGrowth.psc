@@ -262,7 +262,7 @@ Function Maintenance()
 		elseif modName == "Fertility Mode.esm"
 			StorageUtil.SetIntValue(none, "_SLS_isFertitiltyModeON",  1) 
 			StorageUtil.SetFormValue(none, "_SLS_getFertilityModePregnancySpell1",  Game.GetFormFromFile(0x0001B816, modName)) ; as Spell
-			StorageUtil.SetFormValue(none, "_SLS_getFertilityModePregnancySpell2",  Game.GetFormFromFile(0x001Bf816, modName)) ; as Spell
+			StorageUtil.SetFormValue(none, "_SLS_getFertilityModePregnancySpell2",  Game.GetFormFromFile(0x0001B818, modName)) ; as Spell
 			StorageUtil.SetFormValue(none, "_SLS_getFertilityModePregnancySpell3",  Game.GetFormFromFile(0x0001B81A, modName)) ; as Spell
 
 		elseif modName == "Fertility Mode 3 Fixes and Updates.esp"
@@ -1042,17 +1042,31 @@ Event OnCastSuccubusCurseEvent(String _eventName, String _args, Float _argc = 1.
 	
 	If ( StorageUtil.GetIntValue(PlayerActor, "_SLH_iDaedricInfluence") <5) 
 		; Most likely event was sent at a player start or from mod trying to make player a succubus
+		; Fallback in case curse is called from CCAS
+		; debug.notification("[SLH] Succubus curse event on player start" )	  
+		StorageUtil.SetIntValue(none, "_SLH_iHormonesSleepInit", 1)
 		StorageUtil.SetIntValue(PlayerActor, "_SLH_iDaedricInfluence", 50)
 	Endif
 
 	StorageUtil.SetIntValue(PlayerActor, "_SLH_iSuccubusLevel", 5)
 
+	; set hormone level high to allow transformation to occur
+	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fHormoneSuccubus", 100.0)
+
 	PlayerActor.AddSpell(_SLH_SuccubusBody)
+	_SLH_SuccubusBody.Cast(PlayerActor,PlayerActor)
+	StorageUtil.SetIntValue(none, "_SLP_autoRemoveWings", 1 )
+
+	; set hormone level lower to force player to play as a succubus for a while
+	Utility.Wait(1.0)
+	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fHormoneSuccubus", 40.0)
+
 	StorageUtil.SetIntValue(PlayerActor, "PSQ_SpellON", 1)
 	ModEvent.Send(ModEvent.Create("HoSLDD_GivePlayerPowers"))
 	_SLH_QST_Succubus.SetStage(50)
 	GV_isSuccubusFinal.SetValue(1)
 	setSuccubusState(PlayerActor, TRUE)
+
 
 endEvent
 
@@ -1068,9 +1082,11 @@ Event OnCureSuccubusCurseEvent(String _eventName, String _args, Float _argc = 1.
  	if (GV_isSuccubusFinal.GetValue()==0)
 		StorageUtil.SetIntValue(PlayerActor, "_SLH_iSuccubusLevel", 0)
 		StorageUtil.SetIntValue(PlayerActor, "_SLH_iDaedricInfluence", 0)
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fHormoneSuccubus", 0.0)
 		StorageUtil.SetIntValue(PlayerActor, "PSQ_SpellON", 0)
 		ModEvent.Send(ModEvent.Create("HoSLDD_TakeAwayPlayerPowers"))
 		; _SLH_QST_Succubus.SetStage(90)
+		PlayerActor.RemoveSpell(_SLH_SuccubusBody)
 		GV_isSuccubusFinal.SetValue(0) 
 		setSuccubusState(PlayerActor, FALSE)
 	Else
@@ -1699,6 +1715,9 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 
 
 		fctHormones.modHormoneLevel(PlayerActor, "Pigmentation", 1.5) 
+		if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iSuccubusLevel")>=3 )
+			fctHormones.modHormoneLevel(PlayerActor, "Succubus", 1.0)
+		endif
 
 		if (StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormonePheromones")>0)
 			fctHormones.modHormoneLevel(PlayerActor, "Pheromones", 0.2)
@@ -1734,7 +1753,7 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 				fctHormones.modHormoneLevel(PlayerActor, "Bimbo", 1.0)
 			endIf
 
-			fctHormones.modHormoneLevel(PlayerActor, "Succubus", 1.0)
+			fctHormones.modHormoneLevel(PlayerActor, "Succubus", 5.0)
 
 			debugTrace(" Daedra sex count:" + iSexDaedraAll + " - influence:" + iDaedricInfluence)
 
@@ -1968,6 +1987,10 @@ Function doOrgasm(String _args)
 		StorageUtil.SetIntValue(PlayerActor, "_SLH_iDaysSinceLastSex", iDaysSinceLastSex) 
 
 		fctHormones.modHormoneLevel(PlayerActor, "Pigmentation", 2.5)
+
+		if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iSuccubusLevel")>=3 )
+			fctHormones.modHormoneLevel(PlayerActor, "Succubus", 2.0)
+		endif
 
 		fctColor.tryHormonesTats(PlayerActor)	
 
