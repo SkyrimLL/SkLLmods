@@ -276,6 +276,7 @@ EndFunction
 
 Float function updateActorLibido(Actor kActor)
 	Float fLibido = StorageUtil.GetFloatValue(kActor, "_SLH_fLibido")
+	Float fLibidoMod = 1.0
 
 	Int iSexCountToday = StorageUtil.GetIntValue(kActor, "_SLH_iSexCountToday") 
 	Int iGameDateLastSex = StorageUtil.GetIntValue(kActor, "_SLH_iGameDateLastSex") 
@@ -290,14 +291,17 @@ Float function updateActorLibido(Actor kActor)
 	Int iDaysSinceLastSex = (Game.QueryStat("Days Passed") - iGameDateLastSex ) as Int
 	StorageUtil.SetIntValue(kActor, "_SLH_iDaysSinceLastSex", iDaysSinceLastSex)
 
-	; from SexLab Aroused
- 	fctUtil.manageSexLabAroused(kActor)
+	; Accelerated libido changes for Succubus
+	if (iSuccubus == 1)
+		fLibidoMod = 5.0
+	endif
+
 
 	If (iSexCountToday <= 1) && (iDaysSinceLastSex >= sexActivityBuffer )
 	; Decrease
 		Debug.Notification("You feel more focused")
 
-		fLibido = fLibido - 10.0
+		fLibido = fLibido - (10.0 * fLibidoMod)
 
 		iDaedricInfluence   = fctUtil.iMax(0, iDaedricInfluence   - 20 )
 
@@ -305,14 +309,14 @@ Float function updateActorLibido(Actor kActor)
 	; Increase
 		Debug.Notification("You feel more voluptuous")
  
-		fLibido = fLibido + 3 + fctUtil.iMin(iOrgasmsCountToday,10) + ( 10 - (Abs(fLibido) / 10) )
+		fLibido = fLibido + (3.0 + fctUtil.iMin(iOrgasmsCountToday,10) + ( 10.0 - (Abs(fLibido) / 10.0) ))  * fLibidoMod
 
 	Else   
 	; Stable
 		Debug.Notification("You feel more balanced")
 		; No change
 
-		fLibido = fLibido  + 2 - Utility.RandomInt(0, 4)
+		fLibido = fLibido  + (2.0 - Utility.RandomInt(0, 4)  * fLibidoMod)
 
 	EndIf	
 	
@@ -321,6 +325,9 @@ Float function updateActorLibido(Actor kActor)
 	If (iBimbo==1)
 		fLibido =  fctUtil.fRange( fLibido + 5.0, 50.0, 100.0)
 	EndIf
+
+	; from SexLab Aroused
+ 	fctUtil.manageSexLabAroused(kActor)
 
 	StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneSuccubus", iDaedricInfluence as Float ) 
 	StorageUtil.SetFloatValue(kActor, "_SLH_fLibido",  fLibido) 

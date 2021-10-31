@@ -11,7 +11,7 @@ SOS_API _SOS
 
 ; String                   Property NINODE_SCHLONG	 	= "NPC Genitals01 [Gen01]" AutoReadOnly
 string                   Property SLH_KEY               = "SexLab_Hormones.esp" AutoReadOnly
-String                   Property NINODE_SCHLONG	 	= "NPC GenitalsBase [GenBase]" AutoReadOnly
+String                   Property NINODE_SCHLONG	 			= "NPC GenitalsBase [GenBase]" AutoReadOnly
 String                   Property NINODE_LEFT_BREAST    = "NPC L Breast" AutoReadOnly
 String                   Property NINODE_LEFT_BREAST01  = "NPC L Breast01" AutoReadOnly
 String                   Property NINODE_LEFT_BUTT      = "NPC L Butt" AutoReadOnly
@@ -195,6 +195,10 @@ HeadPart Property hpEyesSuccubus Auto
 HeadPart Property hpHairSuccubus Auto
 HeadPart Property hpEyesBimbo Auto
 HeadPart Property hpHairBimbo Auto
+
+Armor Property SuccubusSkinSexy Auto
+Armor Property SuccubusSkinStarved Auto
+
 
 Keyword Property ArmorOn  Auto  
 Keyword Property ClothingOn  Auto  
@@ -1536,6 +1540,7 @@ function refreshBodyShape(Actor kActor)
 endFunction
 
 function applyBodyShapeChanges(Actor kActor)
+	Actor PlayerActor = Game.GetPlayer()
 	ObjectReference kActorREF= kActor as ObjectReference
 	ActorBase pActorBase = kActor.GetActorBase()
 	Race thisRace = pActorBase.GetRace()
@@ -1586,6 +1591,13 @@ function applyBodyShapeChanges(Actor kActor)
 		StorageUtil.SetFormValue(kActor, "_SLH_fOrigRace",thisRace) 
 	EndIf
 
+	if (kActor == PlayerActor) && (StorageUtil.GetIntValue(kActor, "_SLH_isSuccubus") == 1)
+		setSuccubusSkin(PlayerActor)
+		refreshBodyShape(PlayerActor) 
+		fctColor.applyColorChanges(PlayerActor)
+
+	endif
+
  	; If (StorageUtil.GetIntValue(none, "_SLH_NiNodeUpdateON") == 1)
 	If ((GV_useNodes.GetValue() == 1) || (GV_useWeight.GetValue() == 1))
 
@@ -1626,6 +1638,31 @@ function alterHeight(Actor kActor, float fNewHeight)
 	kActorREF.SetScale(fNewHeight)
 	fHeight = fNewHeight
 	StorageUtil.SetFloatValue(kActor, "_SLH_fHeight",  fHeight) 
+
+EndFunction
+
+; -------------------------------------------------------------------
+function setSuccubusSkin(Actor kActor) 
+	Actor PlayerActor = Game.GetPlayer()
+ 	ActorBase pActorBase = kActor.GetActorBase()
+	ActorBase pLeveledActorBase = kActor.GetLeveledActorBase()
+	Float Libido  = StorageUtil.GetFloatValue(kActor, "_SLH_fLibido")
+	Float AbsLibido = Math.abs(Libido)
+
+	; Armor Property SuccubusSkinSexy Auto
+	; Armor Property SuccubusSkinStarved Auto
+
+	if (kActor == PlayerActor) && (StorageUtil.GetIntValue(kActor, "_SLH_isSuccubus") == 1)
+		if (Libido > 10) && (StorageUtil.GetIntValue(none, "_SLH_iSuccubusSkinSexy")==1)
+			pActorBase.SetSkin(SuccubusSkinSexy)
+			pLeveledActorBase.SetSkin(SuccubusSkinSexy)
+			kActor.UpdateWeight(0)
+		elseif (StorageUtil.GetIntValue(none, "_SLH_iSuccubusSkinStarved")==1)
+			pActorBase.SetSkin(SuccubusSkinStarved)
+			pLeveledActorBase.SetSkin(SuccubusSkinStarved)
+			kActor.UpdateWeight(0)
+		endif 
+	endif
 
 EndFunction
 

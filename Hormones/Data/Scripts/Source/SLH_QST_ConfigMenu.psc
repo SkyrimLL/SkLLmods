@@ -150,7 +150,10 @@ float 		_hornyBegArousal      	= 60.0
 float 		_hornyGrab      		= -1.0
 bool 		_bimboClumsinessDrop    = true
 float 		_bimboClumsinessMod		= 1.0; 0.1  
-float 		_bimboThoughtsDelay	= 1.0; 0.1  
+float 		_bimboThoughtsDelay		= 1.0; 0.1  
+
+bool 		_succubusSkinSexyON     = false
+bool 		_succubusSkinStarvedON  = false
 
 float 		_arousalModMax     		= 10.0
 
@@ -353,6 +356,9 @@ event OnPageReset(string a_page)
 	_hornyBegArousal  = GV_hornyBegArousal.GetValue()    as Float
 	_hornyGrab  = StorageUtil.GetFloatValue(none, "_SLH_fHornyGrab")
 	_bimboClumsinessDrop  = GV_bimboClumsinessDrop.GetValue()    as Int
+
+	_succubusSkinSexyON  = StorageUtil.GetIntValue(none, "_SLH_iSuccubusSkinSexy")    as Int
+	_succubusSkinStarvedON  = StorageUtil.GetIntValue(none, "_SLH_iSuccubusSkinStarved")    as Int
 
 	_arousalModMax = StorageUtil.GetFloatValue(none, "_SLH_fArousalModMax")
 
@@ -626,6 +632,8 @@ event OnPageReset(string a_page)
 
 		AddHeaderOption("$SLH_hSuccubusCurse")
 		AddToggleOptionST("STATE_SUCCUBUS","$SLH_bSUCCUBUS", _allowSuccubus as Float)
+		AddToggleOptionST("STATE_SUCCUBUS_SKIN_SEXY","$SLH_bSUCCUBUS_SKIN_SEXY", _succubusSkinSexyON     as Bool)
+		AddToggleOptionST("STATE_SUCCUBUS_SKIN_STARVED","$SLH_bSUCCUBUS_SKIN_STARVED", _succubusSkinStarvedON     as Bool)
  
 		AddHeaderOption(" Wings")
 		if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iSuccubusLevel") >=4)
@@ -721,6 +729,10 @@ event OnPageReset(string a_page)
  		AddTextOption("$ Last sex (hour of day): {" +  StorageUtil.GetIntValue(PlayerActor, "_SLH_iHourOfDaySinceLastSex")   as Int +"}", "", OPTION_FLAG_DISABLED)
  		AddTextOption("$ Hours since last sex: {" +  iHoursSinceLastSex  as Int +"}", "", OPTION_FLAG_DISABLED)
  		AddTextOption("$ Days since last sex: {" +  StorageUtil.GetIntValue(PlayerActor, "_SLH_iDaysSinceLastSex")   as Int +"}", "", OPTION_FLAG_DISABLED)
+ 		AddTextOption("$ Libido: {" +  StorageUtil.GetFloatValue(PlayerActor, "_SLH_fLibido")   as Int +"}", "", OPTION_FLAG_DISABLED)
+		AddEmptyOption()
+
+ 
  		AddTextOption("$ StaminaRate = {" + PlayerActor.GetActorValue("StaminaRate")  as Float +"}", "", OPTION_FLAG_DISABLED)
  		AddTextOption("$ HealRate = {" + PlayerActor.GetActorValue("HealRate")  as Float +"}", "", OPTION_FLAG_DISABLED)
  		AddTextOption("$ MagickaRate = {" + PlayerActor.GetActorValue("MagickaRate")  as Float +"}", "", OPTION_FLAG_DISABLED)
@@ -1130,6 +1142,9 @@ state STATE_SUCCUBUS_HORMONE ; SLIDER
 		SetInfoText("$SLH_sSUCCUBUS_HORMONE_DESC")
 	endEvent
 endState
+ 
+
+
 
 ; 	AddToggleOptionST("STATE_RESET_HORMONES","Reset hormone levels", _resetHormonesToggle as Float)
 state STATE_RESET_HORMONES ; TOGGLE
@@ -2473,6 +2488,7 @@ state STATE_SUCCUBUS ; TOGGLE
 		SetInfoText("$SLH_bSUCCUBUS_DESC")
 	endEvent
 endState
+
 state STATE_SET_SUCCUBUS ; TOGGLE
 	event OnSelectST()
 		SetToggleOptionValueST( StorageUtil.GetIntValue(PlayerActor, "_SLH_iSuccubus") as Bool )
@@ -2500,6 +2516,61 @@ state STATE_SET_SUCCUBUS ; TOGGLE
 		SetInfoText("$SLH_bSET_SUCCUBUS_DESC")
 	endEvent
 endState
+
+; AddToggleOptionST("STATE_SUCCUBUS_SKIN_SEXY","$SLH_bSUCCUBUS_SKIN_SEXY", _succubusSkinSexyON     as Bool)
+state STATE_SUCCUBUS_SKIN_SEXY ; TOGGLE
+	event OnSelectST()
+		; DEBUG - Remove before release
+		; StorageUtil.SetFloatValue(PlayerActor, "_SLH_fLibido", 100.0)
+
+		_succubusSkinSexyON  = StorageUtil.GetIntValue(none, "_SLH_iSuccubusSkinSexy")    as Int
+		_succubusSkinSexyON = Math.LogicalXor( 1, _succubusSkinSexyON as Int)
+		StorageUtil.SetIntValue(none, "_SLH_iSuccubusSkinSexy", _succubusSkinSexyON as Int)
+		SetToggleOptionValueST( _succubusSkinSexyON as Bool )
+		ForcePageReset()
+	endEvent
+
+	event OnDefaultST()
+		_succubusSkinSexyON = 0 
+		StorageUtil.SetIntValue(none, "_SLH_iSuccubusSkinSexy", _succubusSkinSexyON as Int)
+		SetToggleOptionValueST( false )
+		ForcePageReset()
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("$SLH_bSUCCUBUS_SKIN_SEXY_DESC")
+	endEvent
+endState
+
+; AddToggleOptionST("STATE_SUCCUBUS_SKIN_STARVED","$SLH_bSUCCUBUS_SKIN_SEXY", _succubusSkinStarvedON     as Bool)
+state STATE_SUCCUBUS_SKIN_STARVED ; TOGGLE
+	event OnSelectST()
+		; DEBUG - Remove before release
+		; StorageUtil.SetFloatValue(PlayerActor, "_SLH_fLibido", -100.0)
+
+		_succubusSkinStarvedON  = StorageUtil.GetIntValue(none, "_SLH_iSuccubusSkinStarved")    as Int
+		_succubusSkinStarvedON = Math.LogicalXor( 1, _succubusSkinStarvedON as Int)
+		StorageUtil.SetIntValue(none, "_SLH_iSuccubusSkinStarved", _succubusSkinStarvedON as Int)
+		SetToggleOptionValueST( _succubusSkinStarvedON as Bool )
+		ForcePageReset()
+	endEvent
+
+	event OnDefaultST()
+		_succubusSkinStarvedON = 0 
+		StorageUtil.SetIntValue(none, "_SLH_iSuccubusSkinStarved", _succubusSkinStarvedON as Int)
+		SetToggleOptionValueST( false )
+		ForcePageReset()
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("$SLH_bSUCCUBUS_SKIN_STARVED_DESC")
+	endEvent
+endState
+
+
+
+
+
 ; AddToggleOptionST("STATE_BIMBO","Sex Change Curse", _allowBimbo)
 state STATE_BIMBO ; TOGGLE
 	event OnSelectST()

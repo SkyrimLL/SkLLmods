@@ -1046,6 +1046,8 @@ Event OnCastSuccubusCurseEvent(String _eventName, String _args, Float _argc = 1.
 		; debug.notification("[SLH] Succubus curse event on player start" )	  
 		StorageUtil.SetIntValue(none, "_SLH_iHormonesSleepInit", 1)
 		StorageUtil.SetIntValue(PlayerActor, "_SLH_iDaedricInfluence", 50)
+		; New succubus starts in starvation mode
+		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fLibido", -100.0)
 	Endif
 
 	StorageUtil.SetIntValue(PlayerActor, "_SLH_iSuccubusLevel", 5)

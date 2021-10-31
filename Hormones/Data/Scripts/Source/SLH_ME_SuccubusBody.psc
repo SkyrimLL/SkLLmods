@@ -10,7 +10,7 @@ Event OnEffectStart(Actor ckTarget, Actor ckCaster)
 
 	; if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iSuccubusLevel") >=4)
 	if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iSuccubusLevel") >=5)
-		if (iDaedricInfluence>70)
+		if (iDaedricInfluence>70) 
 			if (StorageUtil.GetIntValue(none, "_SLH_SuccubusBodyEquipped") == 0 ) && (!PlayerActor.WornHasKeyword(SuccubusBodyKeyword) )
 				; debug.notification("[SLH]   EQUIP body" )
 				PlayerActor.SendModEvent("SLHModHormone","Succubus", -40.0)
