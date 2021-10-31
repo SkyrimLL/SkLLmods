@@ -1668,17 +1668,117 @@ EndFunction
 
 ; -------------------------------------------------------------------
 
-Bool function trySuccubusEvent(Actor kActor) ; succubus corruption
+Bool function trySuccubusEvent(Actor kActor, float fHoursSleep) ; succubus corruption
 	Bool bEventTriggered = False
+	ActorBase pActorBase = kActor.GetActorBase()
+	String sMessage = ""
 	Int iSuccubusLevel = StorageUtil.GetIntValue(kActor, "_SLH_iSuccubusLevel") 
 	Int iBimbo = StorageUtil.GetIntValue(kActor, "_SLH_iBimbo") 
+	Float fWeight = StorageUtil.GetFloatValue(kActor, "_SLH_fWeight")
+	Float fHormoneSuccubus = StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneSuccubus" ) 	
+	Float fHormoneBimbo = StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneBimbo" ) 	
+	Float fHormoneMetabolism = StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneMetabolism" ) 	
+	Float fHormoneSexDrive = StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneSexDrive" ) 	
+	Float fHormoneFemale = StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneFemale" ) 	
+	Float fHormoneMale = StorageUtil.GetFloatValue(kActor, "_SLH_fHormoneMale" ) 		
+	Float fSchlong = StorageUtil.GetFloatValue(kActor, "_SLH_fSchlong")
+	Float fSchlongMax 		= StorageUtil.GetFloatValue(kActor, "_SLH_fSchlongMax")
+	Float fSchlongMin 		= StorageUtil.GetFloatValue(kActor, "_SLH_fSchlongMin")
 	Int _allowSuccubus = StorageUtil.GetIntValue(kActor, "_SLH_allowSuccubus")
+	Int rollFirstPerson = Utility.RandomInt(0,100)
 
+	if (_allowSuccubus==0)	
+		; Transformation disabled
+		Return False
+	endIf
 	; --------
 	; Male
+	if (fctUtil.isMale(kActor))
+		if (fHormoneSuccubus>=50.0) && (fHormoneMetabolism>=50)
+			debugTrace("	 Succubus transformation - stage 1 passed")
+			If (rollFirstPerson <= (fHormoneBimbo as Int))
+				sMessage = "I could swear I am losing weight!"
+			else
+				sMessage = "Hey.. you are losing weight!"
+			Endif
 
+			fctHormones.modHormoneLevel(kActor, "Metabolism", 2.0 * fHoursSleep) ; accelerate path to transformation
+			fctHormones.modHormoneLevel(kActor, "Growth", -2.0 * fHoursSleep) ; make actor lose weight
+			fctHormones.modHormoneLevel(kActor, "Male", -2.0 * fHoursSleep) ; accelerate path to transformation
+			fctHormones.modHormoneLevel(kActor, "Female", 2.0 * fHoursSleep) ; accelerate path to transformation
+			alterBodyByPercent(kActor, "Weight", -2.0 * fHoursSleep * (1.0 + (fHormoneMetabolism / 100.0)))
+			fWeight = StorageUtil.GetFloatValue(kActor, "_SLH_fWeight")
+		endif
+
+		if (fHormoneSuccubus>=80.0) && (fHormoneMetabolism>=80) && (fWeight < 10)  
+			debugTrace("	 Succubus transformation - stage 2 passed")
+			If (rollFirstPerson <= (fHormoneBimbo as Int))
+				sMessage = "My cock! it's shrinking!"
+			else
+				sMessage = "Your cock is getting smaller every day."
+			Endif
+			alterBodyByPercent(kActor, "Schlong", -4.0 * fHoursSleep)
+			
+			fSchlong = StorageUtil.GetFloatValue(kActor, "_SLH_fSchlong")
+			if (fSchlong <= (fSchlongMin + 0.1) )
+				debugTrace("	 Succubus transformation - stage 3 passed")
+				If (rollFirstPerson <= (fHormoneBimbo as Int))
+					sMessage = "My cock turned into a large clit!"
+				else
+					sMessage = "Your features have become decidedly female."
+				Endif
+
+				bEventTriggered = True
+				fctHormones.modHormoneLevel(kActor, "Metabolism", -100.0) ; 
+
+				; No TG option for male yet - will try later with SoS compatible vagina
+				; For now, forcing a sex change to Female + Schlong
+
+			else
+				debugTrace("	 Casting Succubus curse failed - Schlong not small enough")
+				sMessage = sMessage + " Your cravings for sex fill your mind with irresistible images."
+			endif
+			 
+		endif
+
+	else
 	; --------
-	; Female
+	; Female 
+		if (fHormoneSuccubus>=50.0) && (fHormoneMetabolism>=50)
+			debugTrace("	 Succubus transformation - stage 1 passed")
+			If (rollFirstPerson <= (fHormoneBimbo as Int))
+				sMessage = "Why am I feeling so hot!"
+			else
+				sMessage = "Your body is feverish and aching."
+			Endif
+
+			fctHormones.modHormoneLevel(kActor, "Metabolism", 2.0 * fHoursSleep) ; accelerate path to transformation
+			fctHormones.modHormoneLevel(kActor, "Growth", 2.0 * fHoursSleep) ; make actor lose weight
+			fctHormones.modHormoneLevel(kActor, "Male", -2.0 * fHoursSleep) ; accelerate path to transformation
+			fctHormones.modHormoneLevel(kActor, "Female", 2.0 * fHoursSleep) ; accelerate path 
+
+			; alterBodyByPercent(kActor, "Weight", -2.0 * fHoursSleep * (1.0 + (fHormoneMetabolism / 100.0)))
+			; fWeight = StorageUtil.GetFloatValue(kActor, "_SLH_fWeight")	
+		endIf
+
+		if (fHormoneSuccubus>=80.0) && (fHormoneMetabolism>=80) 
+			debugTrace("	 Succubus transformation - stage 2 passed")
+			If (rollFirstPerson <= (fHormoneBimbo as Int))
+				sMessage = "Are my boobs getting bigger?"
+			else
+				sMessage = "Your shape is getting curvier every day."
+			Endif
+			alterBodyByPercent(kActor, "Breast", 4.0 * fHoursSleep)
+			alterBodyByPercent(kActor, "Butt", 4.0 * fHoursSleep)
+
+		Endif
+
+		setSuccubusSkin(kActor) 			 
+	endif
+
+	If (sMessage != "")
+		debug.MessageBox(sMessage + " (Succubus)")
+	Endif
 
 	return 	bEventTriggered 
 EndFunction

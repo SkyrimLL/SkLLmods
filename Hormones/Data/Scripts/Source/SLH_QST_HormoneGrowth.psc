@@ -513,9 +513,13 @@ Event OnSleepStop(bool abInterrupted)
 		bShapeChangeEvent = fctBodyShape.tryHRTEvent(PlayerActor,fHoursSleep)
 	Endif
 
-	if (!bShapeChangeEvent)
+	; if (!bShapeChangeEvent)
 		bShapeChangeEvent = fctBodyShape.tryBimboEvent(PlayerActor,fHoursSleep)
-	Endif
+	; Endif
+
+	; if (!bShapeChangeEvent)
+		bShapeChangeEvent = fctBodyShape.trySuccubusEvent(PlayerActor,fHoursSleep)
+	; Endif
 
 ; See: https://www.creationkit.com/index.php?title=Talk:DamageActorValue_-_Actor
 ;      https://www.creationkit.com/index.php?title=ModActorValue_-_Actor
@@ -1061,7 +1065,7 @@ Event OnCastSuccubusCurseEvent(String _eventName, String _args, Float _argc = 1.
 
 	; set hormone level lower to force player to play as a succubus for a while
 	Utility.Wait(1.0)
-	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fHormoneSuccubus", 40.0)
+	StorageUtil.SetFloatValue(PlayerActor, "_SLH_fHormoneSuccubus", 80.0)
 
 	StorageUtil.SetIntValue(PlayerActor, "PSQ_SpellON", 1)
 	ModEvent.Send(ModEvent.Create("HoSLDD_GivePlayerPowers"))
@@ -2122,7 +2126,7 @@ Function doSoulDevour(Actor[] _actors)
 		debugTrace(" HP: " + statValue)
 	endif
 	
-	if (Libido>= 80.0)  ; skill boost
+	if (Libido>= 0.0)  && (Utility.RandomInt(0,100) <= AbsLibido)  ; skill boost
 		int[] skillsDiff = new Int[18]
 		int   lowCnt
 		int   skillDiff
@@ -2161,7 +2165,7 @@ Function doSoulDevour(Actor[] _actors)
 		EndIf
 	endif
 
-	if (Libido<= -80.0)   ; spell
+	if (Libido<= 0.0)  && (Utility.RandomInt(0,100) <= AbsLibido) ; spell
 		int spellCnt
 		int spellGot
 		ActorBase akBase = target.GetActorBase()

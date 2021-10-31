@@ -276,6 +276,7 @@ EndFunction
 
 Float function updateActorLibido(Actor kActor)
 	Float fLibido = StorageUtil.GetFloatValue(kActor, "_SLH_fLibido")
+	Float fLibidoChange = 0.0
 	Float fLibidoMod = 1.0
 
 	Int iSexCountToday = StorageUtil.GetIntValue(kActor, "_SLH_iSexCountToday") 
@@ -293,7 +294,7 @@ Float function updateActorLibido(Actor kActor)
 
 	; Accelerated libido changes for Succubus
 	if (iSuccubus == 1)
-		fLibidoMod = 5.0
+		fLibidoMod = 2.0
 	endif
 
 
@@ -301,7 +302,7 @@ Float function updateActorLibido(Actor kActor)
 	; Decrease
 		Debug.Notification("You feel more focused")
 
-		fLibido = fLibido - (10.0 * fLibidoMod)
+		fLibidoChange = (10.0 * fLibidoMod)
 
 		iDaedricInfluence   = fctUtil.iMax(0, iDaedricInfluence   - 20 )
 
@@ -309,18 +310,25 @@ Float function updateActorLibido(Actor kActor)
 	; Increase
 		Debug.Notification("You feel more voluptuous")
  
-		fLibido = fLibido + (3.0 + fctUtil.iMin(iOrgasmsCountToday,10) + ( 10.0 - (Abs(fLibido) / 10.0) ))  * fLibidoMod
+		fLibidoChange = (3.0 + fctUtil.iMin(iOrgasmsCountToday,10) + ( 10.0 - (Abs(fLibido) / 10.0) ))  * fLibidoMod
 
 	Else   
 	; Stable
 		Debug.Notification("You feel more balanced")
 		; No change
 
-		fLibido = fLibido  + (2.0 - Utility.RandomInt(0, 4)  * fLibidoMod)
+		fLibidoChange = (2.0 - Utility.RandomInt(0, 4)  * fLibidoMod)
 
 	EndIf	
+
+	debugTrace("  Current Libido: " + fLibido )
+	debugTrace("  Raw Libido Change: " + fLibidoChange )
+
+	fLibidoChange = fctUtil.fRange( fLibidoChange , -10.0, 10.0)
+
+	debugTrace("  Adjusted Libido Change: " + fLibidoChange )
 	
-	fLibido = fctUtil.fRange( fLibido , -100.0, 100.0)
+	fLibido = fctUtil.fRange( fLibido + fLibidoChange , -100.0, 100.0)
 
 	If (iBimbo==1)
 		fLibido =  fctUtil.fRange( fLibido + 5.0, 50.0, 100.0)
@@ -331,7 +339,7 @@ Float function updateActorLibido(Actor kActor)
 
 	StorageUtil.SetFloatValue(kActor, "_SLH_fHormoneSuccubus", iDaedricInfluence as Float ) 
 	StorageUtil.SetFloatValue(kActor, "_SLH_fLibido",  fLibido) 
-
+ 
 	debugTrace("  Set Libido to " + fLibido )
 	return fLibido
 EndFunction
@@ -579,6 +587,6 @@ EndFunction
 
 Function debugTrace(string traceMsg)
 	if (StorageUtil.GetIntValue(none, "_SLH_debugTraceON")==1)
-		; Debug.Trace("[SLH_fctHormonesLevels]" + traceMsg)
+		Debug.Trace("[SLH_fctHormonesLevels]" + traceMsg)
 	endif
 endFunction
