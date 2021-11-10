@@ -1777,7 +1777,7 @@ Bool function trySuccubusEvent(Actor kActor, float fHoursSleep) ; succubus corru
 	endif
 
 	If (sMessage != "")
-		debug.MessageBox(sMessage + " (Succubus)")
+		; debug.MessageBox(sMessage + " (Succubus)")
 	Endif
 
 	return 	bEventTriggered 

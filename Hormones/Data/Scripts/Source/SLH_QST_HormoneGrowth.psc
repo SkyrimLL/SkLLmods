@@ -1794,9 +1794,10 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 				        Utility.Wait(1.0)
 				        fctPolymorph.TGEffectON( PlayerActor)
 
-				        StorageUtil.SetFloatValue(PlayerActor, "_SLH_fWeight",  0.0)
-				        StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast",  0.9)
-				        StorageUtil.SetFloatValue(PlayerActor, "_SLH_fButt",  0.9)
+
+				        StorageUtil.SetFloatValue(PlayerActor, "_SLH_fWeight",  0.0) 
+				        PlayerActor.SendModEvent("SLHSetNiNode","Breast", 0.9 )  
+				        PlayerActor.SendModEvent("SLHSetNiNode","Butt", 0.9 )  
 				        PlayerActor.SendModEvent("SLHRefresh")
 				    Endif
 
