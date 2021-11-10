@@ -295,10 +295,12 @@ Function _doOrgasm(String _args)
 	 		If (iRandomNum > 80) 
 				; Hormones compatibility
 				if (pActorBase.GetSex() == 0)
-					StorageUtil.SetFloatValue(PlayerActor, "_SLH_fSchlong",  StorageUtil.GetFloatValue(PlayerActor, "_SLH_fSchlong")  * 1.5) 	
+				
+					PlayerActor.SendModEvent("SLHSetNiNode","Schlong", StorageUtil.GetFloatValue(PlayerActor, "_SLH_fSchlong")  * 1.5 )  
 				else
-					StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast",  StorageUtil.GetFloatValue(PlayerActor, "_SLH_fBreast")  * 2.0) 	
-					StorageUtil.SetFloatValue(PlayerActor, "_SLH_fButt",  StorageUtil.GetFloatValue(PlayerActor, "_SLH_fButt")  * 1.5) 	
+
+					PlayerActor.SendModEvent("SLHSetNiNode","Breast", StorageUtil.GetFloatValue(PlayerActor, "_SLH_fSchlong")  * 2.0 ) 
+					PlayerActor.SendModEvent("SLHSetNiNode","Butt", StorageUtil.GetFloatValue(PlayerActor, "_SLH_fSchlong")  * 1.5 )  	
 				endIf
 
 				PlayerActor.SendModEvent("SLHRefresh")
