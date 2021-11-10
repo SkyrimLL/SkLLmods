@@ -27,8 +27,8 @@ Keyword Property _SLP_Parasite  Auto
 ImageSpaceModifier Property FalmerBlueImod  Auto  
 
 ; String                   Property NINODE_SCHLONG	 	= "NPC Genitals01 [Gen01]" AutoReadOnly
-string                   Property SLH_KEY               = "SexLab_Hormones.esp" AutoReadOnly
-String                   Property NINODE_SCHLONG	 	= "NPC GenitalsBase [GenBase]" AutoReadOnly
+string                   Property SLH_KEY               = "SexLab-Parasites.esp" AutoReadOnly
+String                   Property NINODE_SCHLONG	 			= "NPC GenitalsBase [GenBase]" AutoReadOnly
 String                   Property NINODE_LEFT_BREAST    = "NPC L Breast" AutoReadOnly
 String                   Property NINODE_LEFT_BREAST01  = "NPC L Breast01" AutoReadOnly
 String                   Property NINODE_LEFT_BUTT      = "NPC L Butt" AutoReadOnly
@@ -99,19 +99,23 @@ Function ApplyBodyChange(Actor kActor, String sParasite, String sBodyPart, Float
 	If (StorageUtil.GetIntValue(none, "_SLH_iHormones")==1) && (kActor == PlayerActor)
 
 		if ( sBodyPart == "Breast"  )
-			StorageUtil.SetFloatValue(kActor, "_SLH_fBreast", fValue )  
+			; StorageUtil.SetFloatValue(kActor, "_SLH_fBreast", fValue )  
+			kActor.SendModEvent("SLHSetNiNode","Breast", fValue )  
 
 		elseif ( sBodyPart == "Belly"  )
-			StorageUtil.SetFloatValue(kActor, "_SLH_fBelly", fValue )  
+			; StorageUtil.SetFloatValue(kActor, "_SLH_fBelly", fValue ) 
+			kActor.SendModEvent("SLHSetNiNode","Belly", fValue ) 
 
 		elseif ( sBodyPart == "Butt"  )
-			StorageUtil.SetFloatValue(kActor, "_SLH_fButt", fValue )
+			; StorageUtil.SetFloatValue(kActor, "_SLH_fButt", fValue )
+			kActor.SendModEvent("SLHSetNiNode","Butt", fValue )
 			  
 		elseif ( sBodyPart == "Schlong"  )
-			StorageUtil.SetFloatValue(kActor, "_SLH_fSchlong", fValue )  
+			; StorageUtil.SetFloatValue(kActor, "_SLH_fSchlong", fValue )  
+			kActor.SendModEvent("SLHSetNiNode","Schlong", fValue )
 		endif
 
-		kActor.SendModEvent("SLHRefresh")
+		; kActor.SendModEvent("SLHRefresh")
 
 	else
 
@@ -396,7 +400,8 @@ Function FalmerBlue(Actor kActor, Actor kTarget)
 
 		if (StorageUtil.GetIntValue(PlayerActor, "_SLP_toggleSkinColorChanges" )==1)
 			StorageUtil.SetIntValue(kTarget, "_SLH_iSkinColor", iFalmerSkinColor ) 
-			StorageUtil.SetFloatValue(kTarget, "_SLH_fBreast", StorageUtil.GetFloatValue(kTarget, "_SLH_fBreast" ) + breastMod ) 
+			; StorageUtil.SetFloatValue(kTarget, "_SLH_fBreast", StorageUtil.GetFloatValue(kTarget, "_SLH_fBreast" ) + breastMod ) 
+			kTarget.SendModEvent("SLHSetNiNode","Breast", StorageUtil.GetFloatValue(kTarget, "_SLH_fBreast" ) + breastMod )  
 			StorageUtil.SetFloatValue(kTarget, "_SLH_fWeight", StorageUtil.GetFloatValue(kTarget, "_SLH_fWeight" ) + weightMod ) 
 			kTarget.SendModEvent("SLHRefresh")
 			kTarget.SendModEvent("SLHRefreshColors")
