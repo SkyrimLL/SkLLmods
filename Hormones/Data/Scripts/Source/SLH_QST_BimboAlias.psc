@@ -144,6 +144,8 @@ Event OnUpdateGameTime()
 	updateClumsyBimbo() ;[mod] clumsy bimbo
 
 	; Compatiblity with Parasites - prevent update when full body armor is worn
+	; Disabled as of 2021-11-20 - Will revisit if that introduces more issues
+	;/
 	if (StorageUtil.GetIntValue(BimboActor, "_SLP_toggleChaurusQueenSkin") == 1)\
 	|| (StorageUtil.GetIntValue(BimboActor, "_SLP_toggleChaurusQueenArmor") == 1)\
 	|| (StorageUtil.GetIntValue(BimboActor, "_SLP_toggleChaurusQueenBody") == 1)\
@@ -152,6 +154,8 @@ Event OnUpdateGameTime()
 		RegisterForSingleUpdateGameTime(6)
 		Return
 	endif
+	/;
+
 	If BimboActor.IsDead()\
 	|| BimboActor.IsOnMount()\
 	|| BimboActor.IsBleedingOut()\
