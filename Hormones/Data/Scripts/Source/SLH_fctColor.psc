@@ -82,6 +82,10 @@ ColorForm Property thisHairColor Auto
 
 function alterColorFromHormone(Actor kActor)				
  	Actor PlayerActor = Game.GetPlayer()
+
+	Float Libido  = StorageUtil.GetFloatValue(kActor, "_SLH_fLibido")
+	Float AbsLibido = Math.abs(Libido)
+
 	int iSuccubus = StorageUtil.GetIntValue(kActor, "_SLH_iSuccubus") 
 	Int iDaedricInfluence = StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneSuccubus" ) as Int
 	Int iSexActivityBuffer = StorageUtil.GetIntValue(PlayerActor, "_SLH_iSexActivityBuffer")
@@ -123,7 +127,8 @@ function alterColorFromHormone(Actor kActor)
 		debugTrace("     fSwellFactor: " + fSwellFactor  )
 		debugTrace("     fPigmentationFactor: " + fPigmentationFactor  )
 
-		if (iDaysSinceLastSex >= iSexActivityThreshold ) 
+		; if (iDaysSinceLastSex >= iSexActivityThreshold ) 
+		if (Libido < -10)
 			; Pale if no sex for more than threshold days
 			; skin
 			debugTrace("     Pale - no sex for more than threshold days"  )
@@ -137,7 +142,8 @@ function alterColorFromHormone(Actor kActor)
 				iSkinColor = alterTintMaskTarget(colorBase = iSkinColor, maskType = 6, maskIndex = 0, colorTarget = iBlueSkinColor, colorMod = fBlueSkinColorMod, alphaLevel = iPigmentationLevel)
 			EndIf
 
-		Elseif ((fSwellFactor >= 40) || (iSexCountToday >= iSexActivityBuffer))
+		; Elseif ((fSwellFactor >= 40) || (iSexCountToday >= iSexActivityBuffer))
+		elseif (Libido > 10) && (iSexCountToday >= iSexActivityBuffer)
 			; Red if high sex drive
 			; Aroused
 			debugTrace("     Red - high sex drive"  )
@@ -852,6 +858,6 @@ EndFunction
 
 Function debugTrace(string traceMsg)
 	if (StorageUtil.GetIntValue(none, "_SLH_debugTraceON")==1)
-		; Debug.Trace("[SLH_fctColor]" + traceMsg)
+		Debug.Trace("[SLH_fctColor]" + traceMsg)
 	endif
 endFunction
