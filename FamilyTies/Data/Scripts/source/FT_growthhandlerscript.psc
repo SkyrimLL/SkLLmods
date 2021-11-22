@@ -1,5 +1,6 @@
 Scriptname FT_growthhandlerscript extends ReferenceAlias  
 
+FT_fctSeasons Property fctSeasons Auto
 
 MusicType Property MUSReward  Auto  
 
@@ -76,6 +77,10 @@ Function _maintenance()
 
 	If (!StorageUtil.HasIntValue(none, "_FT_iFamilyTies"))
 		StorageUtil.SetIntValue(none, "_FT_iFamilyTies", 1)
+	EndIf
+
+	If (!StorageUtil.HasIntValue(none, "_FT_enableSeasons"))
+		StorageUtil.SetIntValue(none, "_FT_enableSeasons", 1)
 	EndIf
 
 	rPlayerCurrentRace = PlayerActor.getrace()
@@ -187,13 +192,65 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 EndEvent
 
 
+Event OnLocationChange(Location akOldLoc, Location akNewLoc)
+	Actor PlayerActor = Game.GetPlayer() as Actor
+	Int iSeason
+	Int iDaysInSeason
+	Int iDaysInSeasonTotal
+	Int iPercentSeason
+	Int iChanceWeatherOverride
+
+  	If (StorageUtil.GetIntValue(none, "_FT_enableSeasons") == 1 )
+		agingFrequency = StorageUtil.GetFloatValue(PlayerActor, "_FT_agingFrequency" ) as Int
+		daysCount = StorageUtil.GetIntValue(PlayerActor, "_FT_iPlayerDaysCount")
+
+		iDaysInSeasonTotal = (agingFrequency / 4)
+		iSeason = daysCount / iDaysInSeasonTotal
+		iDaysInSeason = ( daysCount % iDaysInSeasonTotal)
+
+		iPercentSeason = ( iDaysInSeason * 100) /  iDaysInSeasonTotal
+
+		iChanceWeatherOverride = (100 - ( 2 * Math.abs(50 - iPercentSeason))) as Int
+
+		; cap the chance of weather override to prevent changing weather at every cell location change
+		iChanceWeatherOverride = ( (iChanceWeatherOverride * 80) / 100 )
+
+		if (iChanceWeatherOverride<10)
+			iChanceWeatherOverride = 10
+		endif
+
+
+		; debug.notification("[FT] agingFrequency: " + agingFrequency)
+		; debug.notification("[FT] daysCount: " + daysCount)
+		; debug.notification("[FT] iSeason: " + iSeason)
+		; debug.notification("[FT] iDaysInSeason: " + iDaysInSeason)
+		; debug.notification("[FT] iDaysInSeasonTotal: " + iDaysInSeasonTotal)
+		; debug.notification("[FT] iPercentSeason: " + iPercentSeason)
+		debug.notification("[FT] iChanceWeatherOverride: " + iChanceWeatherOverride)
+
+		;/
+		debug.trace("[FT] agingFrequency: " + agingFrequency)
+		debug.trace("[FT] iSeason: " + iSeason)
+		debug.trace("[FT] iDaysInSeasonTotal: " + iDaysInSeasonTotal)
+		debug.trace("[FT] daysCount: " + daysCount)
+		debug.trace("[FT] iDaysInSeason: " + iDaysInSeason)
+		debug.trace("[FT] iPercentSeason: " + iPercentSeason)
+		debug.trace("[FT] iChanceWeatherOverride: " + iChanceWeatherOverride)
+		/;
+
+		if (Utility.RandomInt(0,100)<iChanceWeatherOverride)
+  			fctSeasons.updateWeather(iSeason)
+  		endif
+
+	EndIf
+endEvent
+
 Function celebrateAnniversary()
-	Actor PlayerActor
+	Actor PlayerActor = Game.GetPlayer() as Actor
 	Form fPlayerRealRace 
 	Form fPlayerCurrentRace 
 	agingFrequency = StorageUtil.GetFloatValue(PlayerActor, "_FT_agingFrequency" ) as Int
-
-	PlayerActor = Game.GetPlayer() as Actor
+ 
 	rPlayerCurrentRace = PlayerActor.getrace()
 
 	StorageUtil.SetFormValue(PlayerActor, "_FT_fPlayerCurrentRace", rPlayerCurrentRace as Form)

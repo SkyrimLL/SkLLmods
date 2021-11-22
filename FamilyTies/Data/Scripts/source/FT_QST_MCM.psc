@@ -9,6 +9,7 @@ int  		baseAge
 int 		yearsCount
 int 		playerAge
 
+bool 		_enableSeasons = false
 bool 		_startAging = false
 bool 		_pauseAging = false
 bool 		_resetRace = false
@@ -87,6 +88,7 @@ event OnPageReset(string a_page)
 
 
 
+	_enableSeasons = StorageUtil.GetIntValue(none, "_FT_enableSeasons" )
 	_startAging = StorageUtil.GetIntValue(none, "_FT_startAging" )
  	_pauseAging = StorageUtil.GetIntValue(none, "_FT_pauseAging" )
  	_resetRace = false ; StorageUtil.GetIntValue(none, "_FT_resetRace" )
@@ -110,6 +112,7 @@ event OnPageReset(string a_page)
 		AddSliderOptionST("STATE_AGING_FREQ","Aging frequency", _agingFrequency,"{0}")
 
 		SetCursorPosition(1)
+		AddToggleOptionST("STATE_SEASONS_TOGGLE","Enable seasonal weather", _enableSeasons as Float)
 		AddToggleOptionST("STATE_AGING_TOGGLE","Start/Stop aging", _startAging as Float)
 		AddToggleOptionST("STATE_AGING_PAUSE","Pause aging", _pauseAging as Float)
 		AddToggleOptionST("STATE_RACE_RESET","Reset Race", _resetRace as Float)
@@ -212,6 +215,31 @@ state STATE_AGING_FREQ ; SLIDER
 	endEvent
 endState
 
+; AddToggleOptionST("STATE_SEASONS_TOGGLE","Enable seasons", _enableSeasons as Float)
+state STATE_SEASONS_TOGGLE ; TOGGLE
+	event OnSelectST()
+		Int toggle = Math.LogicalXor( 1,  StorageUtil.GetIntValue(none, "_FT_enableSeasons" )  )  
+		_enableSeasons = toggle
+		StorageUtil.SetIntValue(none, "_FT_enableSeasons", toggle )
+		SetToggleOptionValueST( toggle as Bool )
+
+		if (_enableSeasons==1)
+			Debug.MessageBox("Family ties: Seasonal weather enabled")
+		else
+			Debug.MessageBox("Family ties: Seasonal weather stopped")
+		Endif
+	endEvent
+
+	event OnDefaultST()
+
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Start/Stop seasonal weather.")
+	endEvent
+
+endState
+
 ; AddToggleOptionST("STATE_AGING_TOGGLE","Start/Stop aging", _startAging as Float)
 state STATE_AGING_TOGGLE ; TOGGLE
 	event OnSelectST()
@@ -278,11 +306,14 @@ state STATE_RACE_RESET ; TOGGLE
 
 		; Add an MCM checkbox later to disable morphs
 		If (playerAge <= 20)
-			StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast", 0.1 ) 
-			StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBelly", 1.5 ) 
-			StorageUtil.SetFloatValue(PlayerActor, "_SLH_fButt", 0.8 ) 
+			; StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast", 0.1 ) 
+			; StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBelly", 1.5 ) 
+			; StorageUtil.SetFloatValue(PlayerActor, "_SLH_fButt", 0.8 ) 
 			StorageUtil.SetFloatValue(PlayerActor, "_SLH_fWeight", 20.0 ) 
 			PlayerActor.SendModEvent("SLHRefresh")
+			PlayerActor.SendModEvent("SLHSetNiNode","Breast", 0.1 )  
+			PlayerActor.SendModEvent("SLHSetNiNode","Belly", 1.5 )  
+			PlayerActor.SendModEvent("SLHSetNiNode","Butt", 0.8 )  
 
 			_changePlayerScale(fMinHeight + ((playerAge - baseAge) * 0.01 ) )
 		endif
