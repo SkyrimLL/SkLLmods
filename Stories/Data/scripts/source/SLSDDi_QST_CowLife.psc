@@ -449,7 +449,7 @@ Function updateCowStatus(Actor kActor, String sUpdateMode = "", Int iNumberBottl
 		 		kActor.SendModEvent("SLHSetNiNode","Breast",fBreast)
 		 	else
 				if (StorageUtil.GetIntValue(none, "_SLH_SlifON")==1)
-					SLIF_inflateMax(kActor, "slif_belly", fBreast, NINODE_MAX_SCALE, SLS_KEY)
+					SLIF_inflateMax(kActor, "slif_breast", fBreast, NINODE_MAX_SCALE, SLS_KEY)
 
 				elseif (bEnableBreast) || (StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON")==1) 
 					XPMSELib.SetNodeScale(kActor, true, NINODE_LEFT_BREAST, fBreast, SLS_KEY)

@@ -433,7 +433,8 @@ Event OnPCStartChaurusQueen(String _eventName, String _args, Float _argc = -1.0,
 		Float weightMod = 0.0
 
 		StorageUtil.SetIntValue(PlayerActor, "_SLH_iSkinColor", iFalmerSkinColor ) 
-		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast", 3.0 ) 
+		; StorageUtil.SetFloatValue(PlayerActor, "_SLH_fBreast", 3.0 ) 
+		PlayerActor.SendModEvent("SLHSetNiNode","Breast", 3.0 )  
 		StorageUtil.SetFloatValue(PlayerActor, "_SLH_fWeight", 100.0 ) 
 		StorageUtil.SetIntValue(PlayerActor, "_SLH_iForcedHairLoss", 1)
 		PlayerActor.SendModEvent("SLHShaveHead")

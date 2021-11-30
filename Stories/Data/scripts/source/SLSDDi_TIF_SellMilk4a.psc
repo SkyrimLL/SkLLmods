@@ -9,6 +9,7 @@ Actor akSpeaker = akSpeakerRef as Actor
 Actor pActor =  SexLab.PlayerRef
 ActorBase pActorBase = pActor.GetActorBase()
 ; Game.GetPlayer().RemoveItem(Milk, 1)
+Actor PlayerActor = Game.GetPlayer()
 
 Debug.Notification( "Leonara opens your top excitedly..." )
 
@@ -16,20 +17,21 @@ Debug.Notification( "Leonara opens your top excitedly..." )
 SendModEvent("_SLSDDi_EquipMilkingDevice")
 
 
-Game.GetPlayer().AddItem(Gold, ( (pActorBase.GetWeight() as Int) + 10 )  )
+PlayerActor.AddItem(Gold, ( (pActorBase.GetWeight() as Int) + 10 )  )
 
 MilkProduced.SetValue( 1 )
 MilkProducedTotal.SetValue( MilkProducedTotal.GetValue() + 1 )
 
 CowCount.SetValue( CowCount.GetValue() + 1 )
 
-	Float fBreastScale = StorageUtil.GetFloatValue(none, "_SLH_fBreast") 
-	StorageUtil.SetFloatValue(none, "_SLH_fBreast",  fBreastScale * 0.6) 
+	Float fBreastScale = StorageUtil.GetFloatValue(PlayerActor, "_SLH_fBreast") 
+	; StorageUtil.SetFloatValue(none, "_SLH_fBreast",  fBreastScale * 0.8) 
+	PlayerActor.SendModEvent("SLHSetNiNode","Breast", fBreastScale * 0.6 )  
 	StorageUtil.SetIntValue(none, "_SLH_iForcedRefresh", 1) 
 
 Utility.Wait(1.0)
 
-If  (SexLab.ValidateActor( Game.GetPlayer() ) > 0) &&  (SexLab.ValidateActor(akSpeaker) > 0) 
+If  (SexLab.ValidateActor(PlayerActor ) > 0) &&  (SexLab.ValidateActor(akSpeaker) > 0) 
 	actor[] sexActors = new actor[2]
 	sexActors[0] = Game.GetPlayer()
 	sexActors[1] = akSpeaker
