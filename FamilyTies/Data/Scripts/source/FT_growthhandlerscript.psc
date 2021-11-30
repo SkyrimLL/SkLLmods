@@ -226,7 +226,7 @@ Event OnLocationChange(Location akOldLoc, Location akNewLoc)
 		; debug.notification("[FT] iDaysInSeason: " + iDaysInSeason)
 		; debug.notification("[FT] iDaysInSeasonTotal: " + iDaysInSeasonTotal)
 		; debug.notification("[FT] iPercentSeason: " + iPercentSeason)
-		debug.notification("[FT] iChanceWeatherOverride: " + iChanceWeatherOverride)
+		; debug.notification("[FT] iChanceWeatherOverride: " + iChanceWeatherOverride)
 
 		;/
 		debug.trace("[FT] agingFrequency: " + agingFrequency)
