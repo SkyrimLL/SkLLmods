@@ -400,7 +400,7 @@ Event OnUpdate()
 			iParasiteDuration = Game.QueryStat("Days Passed") - StorageUtil.GetIntValue(PlayerActor, "_SLP_iFaceHuggerDate")
 			If (iParasiteDuration < 5)
 				Debug.MessageBox("Your belly grows as the critter fills it with thick fluids.")
-				fValue = 1.0 + (iParasiteDuration as Float) / 5.0
+				fValue = 1.5 + (iParasiteDuration as Float) / 5.0
 				fctParasites.ApplyBodyChange( PlayerActor, "FaceHugger", "Belly", fValue, StorageUtil.GetFloatValue(PlayerActor, "_SLP_bellyMaxFaceHugger" ) )
 				PlayerActor.AddItem(SLP_CritterSemen, 2)
 				PlayerActor.EquipItem(SLP_CritterSemen, true,true)
