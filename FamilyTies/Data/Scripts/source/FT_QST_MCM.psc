@@ -107,6 +107,9 @@ event OnPageReset(string a_page)
 		AddHeaderOption(" Days count : " + StorageUtil.GetIntValue(kPlayer, "_FT_iPlayerDaysCount" ) )
 		AddHeaderOption(" Years count : " + StorageUtil.GetIntValue(kPlayer, "_FT_iPlayerYearsCount") )
 		AddHeaderOption(" Days to birthday : " + playerAgeDays as Int )
+		AddTextOption(" Season: " + StorageUtil.GetIntValue(none, "_FT_iSeason") as Int , "", OPTION_FLAG_DISABLED)
+		AddTextOption(" Percent season: " + StorageUtil.GetIntValue(none, "_FT_iPercentSeason") as Int , "", OPTION_FLAG_DISABLED)
+
 		AddSliderOptionST("STATE_BASE_AGE","Base age", _baseAge,"{0}")
 		AddSliderOptionST("STATE_ANNIV_FREQ","Anniversary frequency", _anniversaryFrequency,"{0}")
 		AddSliderOptionST("STATE_AGING_FREQ","Aging frequency", _agingFrequency,"{0}")
@@ -186,7 +189,7 @@ state STATE_ANNIV_FREQ ; SLIDER
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Frequency of anniversary treats (in days)")
+		SetInfoText("Number of days before receiving an extra perk point due to age progression (must be lower than number of days in a year)")
 	endEvent
 endState
 
@@ -211,7 +214,7 @@ state STATE_AGING_FREQ ; SLIDER
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Frequency of age changes (in days)")
+		SetInfoText("Number od days in a year (before triggering an age increase)")
 	endEvent
 endState
 

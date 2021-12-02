@@ -200,46 +200,50 @@ Event OnLocationChange(Location akOldLoc, Location akNewLoc)
 	Int iPercentSeason
 	Int iChanceWeatherOverride
 
+	agingFrequency = StorageUtil.GetFloatValue(PlayerActor, "_FT_agingFrequency" ) as Int
+	daysCount = StorageUtil.GetIntValue(PlayerActor, "_FT_iPlayerDaysCount")
+
+	iDaysInSeasonTotal = (agingFrequency / 4)
+	iSeason = daysCount / iDaysInSeasonTotal
+	iDaysInSeason = ( daysCount % iDaysInSeasonTotal)
+
+	iPercentSeason = ( iDaysInSeason * 100) /  iDaysInSeasonTotal
+
+	StorageUtil.SetIntValue(none, "_FT_iSeason", daysCount)
+	StorageUtil.SetIntValue(none, "_FT_iPercentSeason", daysCount)
+
+	iChanceWeatherOverride = (100 - ( 2 * Math.abs(50 - iPercentSeason))) as Int
+
+	; cap the chance of weather override to prevent changing weather at every cell location change
+	iChanceWeatherOverride = ( (iChanceWeatherOverride * 80) / 100 )
+
+	if (iChanceWeatherOverride<10)
+		iChanceWeatherOverride = 10
+	endif
+
+
+	; debug.notification("[FT] agingFrequency: " + agingFrequency)
+	; debug.notification("[FT] daysCount: " + daysCount)
+	; debug.notification("[FT] iSeason: " + iSeason)
+	; debug.notification("[FT] iDaysInSeason: " + iDaysInSeason)
+	; debug.notification("[FT] iDaysInSeasonTotal: " + iDaysInSeasonTotal)
+	; debug.notification("[FT] iPercentSeason: " + iPercentSeason)
+	; debug.notification("[FT] iChanceWeatherOverride: " + iChanceWeatherOverride)
+
+	;/
+	debug.trace("[FT] agingFrequency: " + agingFrequency)
+	debug.trace("[FT] iSeason: " + iSeason)
+	debug.trace("[FT] iDaysInSeasonTotal: " + iDaysInSeasonTotal)
+	debug.trace("[FT] daysCount: " + daysCount)
+	debug.trace("[FT] iDaysInSeason: " + iDaysInSeason)
+	debug.trace("[FT] iPercentSeason: " + iPercentSeason)
+	debug.trace("[FT] iChanceWeatherOverride: " + iChanceWeatherOverride)
+	/;
+
   	If (StorageUtil.GetIntValue(none, "_FT_enableSeasons") == 1 )
-		agingFrequency = StorageUtil.GetFloatValue(PlayerActor, "_FT_agingFrequency" ) as Int
-		daysCount = StorageUtil.GetIntValue(PlayerActor, "_FT_iPlayerDaysCount")
-
-		iDaysInSeasonTotal = (agingFrequency / 4)
-		iSeason = daysCount / iDaysInSeasonTotal
-		iDaysInSeason = ( daysCount % iDaysInSeasonTotal)
-
-		iPercentSeason = ( iDaysInSeason * 100) /  iDaysInSeasonTotal
-
-		iChanceWeatherOverride = (100 - ( 2 * Math.abs(50 - iPercentSeason))) as Int
-
-		; cap the chance of weather override to prevent changing weather at every cell location change
-		iChanceWeatherOverride = ( (iChanceWeatherOverride * 80) / 100 )
-
-		if (iChanceWeatherOverride<10)
-			iChanceWeatherOverride = 10
-		endif
-
-
-		; debug.notification("[FT] agingFrequency: " + agingFrequency)
-		; debug.notification("[FT] daysCount: " + daysCount)
-		; debug.notification("[FT] iSeason: " + iSeason)
-		; debug.notification("[FT] iDaysInSeason: " + iDaysInSeason)
-		; debug.notification("[FT] iDaysInSeasonTotal: " + iDaysInSeasonTotal)
-		; debug.notification("[FT] iPercentSeason: " + iPercentSeason)
-		; debug.notification("[FT] iChanceWeatherOverride: " + iChanceWeatherOverride)
-
-		;/
-		debug.trace("[FT] agingFrequency: " + agingFrequency)
-		debug.trace("[FT] iSeason: " + iSeason)
-		debug.trace("[FT] iDaysInSeasonTotal: " + iDaysInSeasonTotal)
-		debug.trace("[FT] daysCount: " + daysCount)
-		debug.trace("[FT] iDaysInSeason: " + iDaysInSeason)
-		debug.trace("[FT] iPercentSeason: " + iPercentSeason)
-		debug.trace("[FT] iChanceWeatherOverride: " + iChanceWeatherOverride)
-		/;
 
 		if (Utility.RandomInt(0,100)<iChanceWeatherOverride)
-  			fctSeasons.updateWeather(iSeason)
+  			fctSeasons.updateWeather(iSeason, iPercentSeason)
   		endif
 
 	EndIf
@@ -272,9 +276,9 @@ Function celebrateAnniversary()
 
 		Debug.Messagebox("Anniversary update\nPlayer Level: "+ PlayerActor.getlevel() +"\nPlayer Age : " + age )
 
-		if (Utility.RandomInt(1,agingFrequency)<=anniversaryFrequency)
+		; if (Utility.RandomInt(1,agingFrequency)<=anniversaryFrequency)
 			Game.AddPerkPoints(1)
-		endif
+		; endif
 
      endif
 
