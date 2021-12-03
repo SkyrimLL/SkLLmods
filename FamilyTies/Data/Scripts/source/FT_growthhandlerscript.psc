@@ -1,7 +1,5 @@
 Scriptname FT_growthhandlerscript extends ReferenceAlias  
 
-FT_fctSeasons Property fctSeasons Auto
-
 MusicType Property MUSReward  Auto  
 
 FormList Property VanillaHairRaceList  Auto  
@@ -79,10 +77,6 @@ Function _maintenance()
 		StorageUtil.SetIntValue(none, "_FT_iFamilyTies", 1)
 	EndIf
 
-	If (!StorageUtil.HasIntValue(none, "_FT_enableSeasons"))
-		StorageUtil.SetIntValue(none, "_FT_enableSeasons", 1)
-	EndIf
-
 	rPlayerCurrentRace = PlayerActor.getrace()
 	StorageUtil.SetFormValue(PlayerActor, "_FT_fPlayerCurrentRace", rPlayerCurrentRace as Form)
 	StorageUtil.SetIntValue(PlayerActor, "_FT_iPlayerYearsCount", yearsCount)
@@ -99,6 +93,12 @@ Function _maintenance()
 	_registerNewRacesForHeadparts( VanillaHairRaceList  )
 	_registerNewRacesForHeadparts( CustomHairRaceList  )
 	_registerNewRacesForHeadparts( CustomEyesRaceList  )
+
+
+	; Compatibility with SkyrimImmersionPatch - Seasonal weather
+ 	SendModEvent("SIPSetDaysInYear",  "", StorageUtil.GetFloatValue(PlayerActor, "_FT_agingFrequency" ) as Int)
+ 	SendModEvent("SIPSetDaysCount",   "", StorageUtil.GetIntValue(PlayerActor, "_FT_iPlayerDaysCount") as Int) 
+
 
 	UnregisterForAllModEvents()
 	Debug.Trace("Family ties: Reset events")
@@ -181,6 +181,10 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 
 	iGameDateLastCheck = daysPassed  
 
+	; Compatibility with SkyrimImmersionPatch - Seasonal weather
+ 	SendModEvent("SIPSetDaysInYear",  "", StorageUtil.GetFloatValue(PlayerActor, "_FT_agingFrequency" ) as Int)
+ 	SendModEvent("SIPSetDaysCount",   "", StorageUtil.GetIntValue(PlayerActor, "_FT_iPlayerDaysCount") as Int) 
+
 	Debug.Trace("[FT] age = " + age)
 	Debug.Trace("[FT] yearsCount = " + yearsCount) 
 	Debug.Trace("[FT] daysCount = " + daysCount)
@@ -190,64 +194,6 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 	StorageUtil.SetIntValue(PlayerActor, "_FT_iPlayerYearsCount", yearsCount)
 	StorageUtil.SetIntValue(PlayerActor, "_FT_iPlayerAge", age)
 EndEvent
-
-
-Event OnLocationChange(Location akOldLoc, Location akNewLoc)
-	Actor PlayerActor = Game.GetPlayer() as Actor
-	Int iSeason
-	Int iDaysInSeason
-	Int iDaysInSeasonTotal
-	Int iPercentSeason
-	Int iChanceWeatherOverride
-
-	agingFrequency = StorageUtil.GetFloatValue(PlayerActor, "_FT_agingFrequency" ) as Int
-	daysCount = StorageUtil.GetIntValue(PlayerActor, "_FT_iPlayerDaysCount")
-
-	iDaysInSeasonTotal = (agingFrequency / 4)
-	iSeason = daysCount / iDaysInSeasonTotal
-	iDaysInSeason = ( daysCount % iDaysInSeasonTotal)
-
-	iPercentSeason = ( iDaysInSeason * 100) /  iDaysInSeasonTotal
-
-	StorageUtil.SetIntValue(none, "_FT_iSeason", daysCount)
-	StorageUtil.SetIntValue(none, "_FT_iPercentSeason", daysCount)
-
-	iChanceWeatherOverride = (100 - ( 2 * Math.abs(50 - iPercentSeason))) as Int
-
-	; cap the chance of weather override to prevent changing weather at every cell location change
-	iChanceWeatherOverride = ( (iChanceWeatherOverride * 80) / 100 )
-
-	if (iChanceWeatherOverride<10)
-		iChanceWeatherOverride = 10
-	endif
-
-
-	; debug.notification("[FT] agingFrequency: " + agingFrequency)
-	; debug.notification("[FT] daysCount: " + daysCount)
-	; debug.notification("[FT] iSeason: " + iSeason)
-	; debug.notification("[FT] iDaysInSeason: " + iDaysInSeason)
-	; debug.notification("[FT] iDaysInSeasonTotal: " + iDaysInSeasonTotal)
-	; debug.notification("[FT] iPercentSeason: " + iPercentSeason)
-	; debug.notification("[FT] iChanceWeatherOverride: " + iChanceWeatherOverride)
-
-	;/
-	debug.trace("[FT] agingFrequency: " + agingFrequency)
-	debug.trace("[FT] iSeason: " + iSeason)
-	debug.trace("[FT] iDaysInSeasonTotal: " + iDaysInSeasonTotal)
-	debug.trace("[FT] daysCount: " + daysCount)
-	debug.trace("[FT] iDaysInSeason: " + iDaysInSeason)
-	debug.trace("[FT] iPercentSeason: " + iPercentSeason)
-	debug.trace("[FT] iChanceWeatherOverride: " + iChanceWeatherOverride)
-	/;
-
-  	If (StorageUtil.GetIntValue(none, "_FT_enableSeasons") == 1 )
-
-		if (Utility.RandomInt(0,100)<iChanceWeatherOverride)
-  			fctSeasons.updateWeather(iSeason, iPercentSeason)
-  		endif
-
-	EndIf
-endEvent
 
 Function celebrateAnniversary()
 	Actor PlayerActor = Game.GetPlayer() as Actor

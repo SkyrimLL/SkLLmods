@@ -8,8 +8,7 @@ Scriptname FT_QST_MCM extends SKI_ConfigBase
 int  		baseAge
 int 		yearsCount
 int 		playerAge
-
-bool 		_enableSeasons = false
+ 
 bool 		_startAging = false
 bool 		_pauseAging = false
 bool 		_resetRace = false
@@ -87,8 +86,7 @@ event OnPageReset(string a_page)
 	_agingFrequency = StorageUtil.GetFloatValue(kPlayer, "_FT_agingFrequency" ) 
 
 
-
-	_enableSeasons = StorageUtil.GetIntValue(none, "_FT_enableSeasons" )
+ 
 	_startAging = StorageUtil.GetIntValue(none, "_FT_startAging" )
  	_pauseAging = StorageUtil.GetIntValue(none, "_FT_pauseAging" )
  	_resetRace = false ; StorageUtil.GetIntValue(none, "_FT_resetRace" )
@@ -106,16 +104,13 @@ event OnPageReset(string a_page)
 		AddHeaderOption(" Player age : " + 	playerAge )
 		AddHeaderOption(" Days count : " + StorageUtil.GetIntValue(kPlayer, "_FT_iPlayerDaysCount" ) )
 		AddHeaderOption(" Years count : " + StorageUtil.GetIntValue(kPlayer, "_FT_iPlayerYearsCount") )
-		AddHeaderOption(" Days to birthday : " + playerAgeDays as Int )
-		AddTextOption(" Season: " + StorageUtil.GetIntValue(none, "_FT_iSeason") as Int , "", OPTION_FLAG_DISABLED)
-		AddTextOption(" Percent season: " + StorageUtil.GetIntValue(none, "_FT_iPercentSeason") as Int , "", OPTION_FLAG_DISABLED)
+		AddHeaderOption(" Days to birthday : " + playerAgeDays as Int ) 
 
 		AddSliderOptionST("STATE_BASE_AGE","Base age", _baseAge,"{0}")
 		AddSliderOptionST("STATE_ANNIV_FREQ","Anniversary frequency", _anniversaryFrequency,"{0}")
 		AddSliderOptionST("STATE_AGING_FREQ","Aging frequency", _agingFrequency,"{0}")
 
-		SetCursorPosition(1)
-		AddToggleOptionST("STATE_SEASONS_TOGGLE","Enable seasonal weather", _enableSeasons as Float)
+		SetCursorPosition(1) 
 		AddToggleOptionST("STATE_AGING_TOGGLE","Start/Stop aging", _startAging as Float)
 		AddToggleOptionST("STATE_AGING_PAUSE","Pause aging", _pauseAging as Float)
 		AddToggleOptionST("STATE_RACE_RESET","Reset Race", _resetRace as Float)
@@ -217,31 +212,7 @@ state STATE_AGING_FREQ ; SLIDER
 		SetInfoText("Number od days in a year (before triggering an age increase)")
 	endEvent
 endState
-
-; AddToggleOptionST("STATE_SEASONS_TOGGLE","Enable seasons", _enableSeasons as Float)
-state STATE_SEASONS_TOGGLE ; TOGGLE
-	event OnSelectST()
-		Int toggle = Math.LogicalXor( 1,  StorageUtil.GetIntValue(none, "_FT_enableSeasons" )  )  
-		_enableSeasons = toggle
-		StorageUtil.SetIntValue(none, "_FT_enableSeasons", toggle )
-		SetToggleOptionValueST( toggle as Bool )
-
-		if (_enableSeasons==1)
-			Debug.MessageBox("Family ties: Seasonal weather enabled")
-		else
-			Debug.MessageBox("Family ties: Seasonal weather stopped")
-		Endif
-	endEvent
-
-	event OnDefaultST()
-
-	endEvent
-
-	event OnHighlightST()
-		SetInfoText("Start/Stop seasonal weather.")
-	endEvent
-
-endState
+ 
 
 ; AddToggleOptionST("STATE_AGING_TOGGLE","Start/Stop aging", _startAging as Float)
 state STATE_AGING_TOGGLE ; TOGGLE

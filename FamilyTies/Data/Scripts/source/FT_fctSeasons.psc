@@ -1,16 +1,16 @@
 Scriptname FT_fctSeasons extends Quest  
 
-Weather Property LightRain Auto
-Weather Property HeavyRain Auto
-Weather Property Cloudy Auto
-Weather Property CloudyDark Auto
-Weather Property CloudyFall Auto
-Weather Property TundraSun Auto
-Weather Property TundraCloudy Auto
-Weather Property Fog Auto
-Weather Property HeavyFog Auto
-Weather Property SnowFall Auto
-Weather Property SnowStorm Auto
+Weather Property LightRain Auto 	; SkyrimOvercastRain
+Weather Property HeavyRain Auto 	; SkyrimStormRain
+Weather Property Cloudy Auto 		; SkyrimCloudy
+Weather Property CloudyDark Auto 	; SkyrimOvercastRainMA
+Weather Property CloudyFall Auto 	; SkyrimCloudyFF
+Weather Property TundraSun Auto 	; SkyrimClear
+Weather Property TundraCloudy Auto 	; SkyrimCloudyTU
+Weather Property Fog Auto 			; RiftenOvercastFog
+Weather Property HeavyFog Auto 		; SkyrimFogMA
+Weather Property SnowFall Auto 		; SkyrimOvercastSnow
+Weather Property SnowStorm Auto 	; SkyrimStormSnow
 
 ;/
 :: For each season, pick a preferred weather type and add a chance of transition to that weather with OnLocationChange
@@ -48,11 +48,11 @@ Function updateWeather(Int iSeason, Int iPercentSeason)
 		if (iRandomNum>60) && ( (iPercentSeason<=25) || (iPercentSeason>=75))
 			debug.notification("(Summer Overcast)")
 			Cloudy.SetActive(true)
-		elseif (iRandomNum>80)
+		elseif (iRandomNum>70)
 			debug.notification("(Summer Cloudy)")
 			TundraCloudy.SetActive(true)
 		else
-			debug.notification("(Summer Tundra Sun)")
+			debug.notification("(Summer Sunny)")
 			TundraSun.SetActive(true)
 		endif
 
