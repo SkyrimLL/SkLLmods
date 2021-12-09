@@ -2286,23 +2286,29 @@ endFunction
 
 Function refreshShape(Actor kActor)
 
-	bExternalChangeModActive = fctUtil.isExternalChangeModActive(kActor)
+	if (kActor==Game.GetPlayer())
 
-	debugTrace(" >>> Updating shape" )
-	debugTrace(" 		bExternalChangeModActive: " + bExternalChangeModActive)
-	debugTrace(" 		NextAllowed: " + NextAllowed)
+		bExternalChangeModActive = fctUtil.isExternalChangeModActive(kActor)
 
-	fctBodyShape.getShapeState(kActor)
-	fctBodyShape.refreshBodyShape(kActor)
+		debugTrace(" >>> Updating shape for player" )
+		debugTrace(" 		bExternalChangeModActive: " + bExternalChangeModActive)
+		debugTrace(" 		NextAllowed: " + NextAllowed)
 
-	setHormonesState(kActor)
+		fctBodyShape.getShapeState(kActor)
+		fctBodyShape.refreshBodyShape(kActor)
 
-	If !( bExternalChangeModActive ) && (NextAllowed!= -1)
+		setHormonesState(kActor)
+
+		If !( bExternalChangeModActive ) && (NextAllowed!= -1)
+			fctBodyShape.applyBodyShapeChanges(kActor)
+		EndIf
+		
+		StorageUtil.SetIntValue(kActor, "_SLH_iForcedRefresh", 0) 
+		GV_forcedRefresh.SetValue(0)
+	else
+		debugTrace(" >>> Updating shape for NPC" )
 		fctBodyShape.applyBodyShapeChanges(kActor)
-	EndIf
-	
-	StorageUtil.SetIntValue(kActor, "_SLH_iForcedRefresh", 0) 
-	GV_forcedRefresh.SetValue(0)
+	endif
 
 EndFunction
 

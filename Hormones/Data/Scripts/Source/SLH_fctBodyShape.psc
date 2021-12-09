@@ -1555,6 +1555,11 @@ function applyBodyShapeChanges(Actor kActor)
 		return
 	endif
 
+	; Prevent application of QueueNiNodeUpdate for NPCs
+	if (kActor == PlayerActor) 
+		return
+	endif
+
 	; Wait until menu is closed
 	while ( Utility.IsInMenuMode() )
 		Utility.Wait( 2.0 )
@@ -1582,7 +1587,7 @@ function applyBodyShapeChanges(Actor kActor)
 	Race kOrigRace = StorageUtil.GetFormValue(kActor, "_SLH_fOrigRace") as Race
 
 	
-	If (kOrigRace != None) 
+	If (kOrigRace != None)  
 		If (thisRace != kOrigRace)
 			debugTrace("  QueueNiNodeUpdate - Race change detected - aborting")
 			return
@@ -1591,7 +1596,7 @@ function applyBodyShapeChanges(Actor kActor)
 		StorageUtil.SetFormValue(kActor, "_SLH_fOrigRace",thisRace) 
 	EndIf
 
-	if (kActor == PlayerActor) && (StorageUtil.GetIntValue(kActor, "_SLH_isSuccubus") == 1)
+	if (StorageUtil.GetIntValue(kActor, "_SLH_isSuccubus") == 1)
 		setSuccubusSkin(PlayerActor)
 		refreshBodyShape(PlayerActor) 
 		fctColor.applyColorChanges(PlayerActor)
