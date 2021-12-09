@@ -56,7 +56,14 @@ Event OnTriggerEnter(ObjectReference akActionRef)
 
 		StorageUtil.SetIntValue(kCamillaValerius, "_SD_iRelationshipType" , 10 )
 
-		if ( bBreastEnabled && isNiOInstalled  ) 
+		If (StorageUtil.GetIntValue(none, "_SLH_iHormones")!=1)  
+			; if Hormones is detected, defer to mod event change for Hormones
+			fBreast  = 2.0
+ 
+			kCamillaValerius.SendModEvent("SLHSetNiNode","Breast", fBreast )  
+			kCamillaValerius.SendModEvent("SLHRefresh")
+			
+		elseif ( bBreastEnabled && isNiOInstalled  ) 
 			fBreast  = 2.0
 
 			XPMSELib.SetNodeScale(kCamillaValerius, true, NINODE_LEFT_BREAST, fBreast, SLS_KEY)

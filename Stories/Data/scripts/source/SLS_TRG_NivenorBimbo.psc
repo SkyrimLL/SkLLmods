@@ -54,7 +54,14 @@ Event OnTriggerEnter(ObjectReference akActionRef)
 
 		StorageUtil.SetIntValue(kNivenor, "_SD_iRelationshipType" , 10 )
 
-		if ( bBreastEnabled && isNiOInstalled  ) 
+		If (StorageUtil.GetIntValue(none, "_SLH_iHormones")!=1)  
+			; if Hormones is detected, defer to mod event change for Hormones
+			fBreast  = 2.0
+
+			kNivenor.SendModEvent("SLHSetNiNode","Breast", fBreast )     
+			kNivenor.SendModEvent("SLHRefresh")
+			
+		elseif ( bBreastEnabled && isNiOInstalled  ) 
 			fBreast  = 2.0
 
 			XPMSELib.SetNodeScale(kNivenor, true, NINODE_LEFT_BREAST, fBreast, SLS_KEY)
