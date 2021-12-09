@@ -16,6 +16,8 @@ Self.GetOwningQuest().SetStage(30)
 
  kPlayer.AddItem( TravellingSisterHood  , 1)
 
+kPlayer.AddItem(MarkarthDibellaTempleKey, 1)
+
 InnerSanctumLockList.AddForm( kPlayer as Form)
 
  kPlayer.AddToFaction(MarkarthTempleofDibellaFaction)
@@ -34,3 +36,5 @@ Armor Property TravellingSisterHood  Auto
 FormList Property InnerSanctumLockList  Auto  
 
 Faction Property MarkarthTempleofDibellaFaction  Auto  
+
+Key Property MarkarthDibellaTempleKey  Auto  
