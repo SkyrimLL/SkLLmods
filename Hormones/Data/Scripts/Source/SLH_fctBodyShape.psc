@@ -2285,7 +2285,9 @@ function initShapeConstants(Actor kActor)
 
 	isNiOInstalled =  CheckXPMSERequirements(kActor, fctUtil.isFemale(kActor))
 	debugTrace("  NiOverride detection: " + isNiOInstalled)
-	StorageUtil.SetIntValue(none, "_SLH_NiNodeOverrideON", isNiOInstalled as Int)
+	if (StorageUtil.GetIntValue(none, "_SLH_BodyMorphsON") == 0)
+		StorageUtil.SetIntValue(none, "_SLH_NiNodeOverrideON", isNiOInstalled as Int)
+	endif
 
 	isSlifInstalled = Game.GetModbyName("SexLab Inflation Framework.esp") != 255
 	StorageUtil.SetIntValue(none, "_SLH_SlifON", isSlifInstalled as Int)
