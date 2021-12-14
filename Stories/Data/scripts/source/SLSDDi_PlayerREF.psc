@@ -62,10 +62,12 @@ Function _maintenance()
  	Actor PlayerActor= Game.GetPlayer() as Actor
  	ActorBase pActorBase = PlayerActor.GetActorBase()
 
-	if (!isNiOInstalled)
-		isNiOInstalled = CheckXPMSERequirements(PlayerActor, pActorBase.GetSex())
-		StorageUtil.SetIntValue(none, "_SLH_NiNodeOverrideON", isNiOInstalled as Int)
-	EndIf
+ 	if (StorageUtil.GetIntValue(none, "_SLH_BodyMorphsON") == 0)
+		if (!isNiOInstalled)
+			isNiOInstalled = CheckXPMSERequirements(PlayerActor, pActorBase.GetSex())
+			StorageUtil.SetIntValue(none, "_SLH_NiNodeOverrideON", isNiOInstalled as Int)
+		EndIf
+	endif
 
 
 
