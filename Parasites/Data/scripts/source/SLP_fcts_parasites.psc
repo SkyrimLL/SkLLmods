@@ -1508,7 +1508,9 @@ Function maintenance()
 
 	Bool isNiOInstalled =  fctUtils.CheckXPMSERequirements(PlayerActor, fctUtils.isFemale(PlayerActor))
 	debugTrace("  NiOverride detection: " + isNiOInstalled)
-	StorageUtil.SetIntValue(none, "_SLH_NiNodeOverrideON", isNiOInstalled as Int)
+	if (StorageUtil.GetIntValue(none, "_SLH_BodyMorphsON") == 0)
+		StorageUtil.SetIntValue(none, "_SLH_NiNodeOverrideON", isNiOInstalled as Int)
+	endif
 
 	Bool isSlifInstalled = Game.GetModbyName("SexLab Inflation Framework.esp") != 255
 	debugTrace("  SLIF detection: " + isSlifInstalled)
