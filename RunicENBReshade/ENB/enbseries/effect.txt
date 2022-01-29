@@ -1,0 +1,263 @@
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// http://enbdev.com
+// FNV Enhanced Shaders Cinematic - Beta 0.4 - http://newvegas.nexu...le.php?id=34868
+// An ENBseries adaptation - http://www.enbdev.com
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+//enable blurring, useless, disabled at all
+//#define EBLURRING
+
+//enable sharpening
+#define ESHARPENING
+
+//if defined, color sharpen, otherwise sharp by gray
+#define ESHARPENINGCOLOR
+
+//enable noise in dark areas
+
+bool NoiseEnable <
+	string UIName = "Noise Enable";
+> = {false};
+
+//x=generic timer in range 0..1, period of 16777216 ms (4.6 hours), w=frame time elapsed (in seconds)
+float4    Timer;
+float	ENightDayFactor;
+//changes 0 or 1. 0 means that exterior, 1 - interior
+float	EInteriorFactor;
+
+float	NoiseAmountDay
+<
+	string UIName="Noise Amount Day";
+	string UIWidget="Spinner";
+	float UIMin=0.0;
+	float UIMax=1.0;
+> = {0.5};
+
+float	NoiseAmountNight
+<
+	string UIName="Noise Amount Night";
+	string UIWidget="Spinner";
+	float UIMin=0.0;
+	float UIMax=1.0;
+> = {0.5};
+
+float	NoiseAmountInterior
+<
+	string UIName="Noise Amount Interior";
+	string UIWidget="Spinner";
+	float UIMin=0.0;
+	float UIMax=1.0;
+> = {0.5};
+
+
+float SamplingRange=0.25; //sharpening or blurring range
+float SharpeningAmount=1.0;
+float ScanLineAmount=1.0;
+float ScanLineRepeat=0.5; //0.5, 0.3333, 0.25, 0.125, so on
+//float NoiseAmountDay=1.2;
+//float NoiseAmountNight=1.2;
+//float NoiseAmountInterior=1.2;
+
+#define E_SHADER_3_0
+
+
+//keyboard controled variables
+float tempF1;
+float tempF2;
+float tempF3;
+float tempF4;
+float tempF5;
+float tempF6;
+float tempF7;
+float tempF8;
+float tempF9;
+float tempF0;
+
+
+//global variables, already set before executing this code
+float ScreenSize; //width of the display resolution (1920 f.e.)
+float ScreenScaleY; //screen proportions (1.333 for 1920/1080)
+
+
+
+//textures
+texture2D texColor;
+texture2D texNoise;
+
+sampler2D SamplerColor = sampler_state
+{
+Texture   = <texColor>;
+MinFilter = LINEAR;
+MagFilter = LINEAR;
+MipFilter = NONE;//NONE;
+AddressU  = Clamp;
+AddressV  = Clamp;
+SRGBTexture=FALSE;
+MaxMipLevel=0;
+MipMapLodBias=0;
+};
+
+sampler2D SamplerNoise = sampler_state
+{
+Texture   = <texNoise>;
+MinFilter = POINT;
+MagFilter = POINT;
+MipFilter = NONE;//NONE;
+AddressU  = Wrap;
+AddressV  = Wrap;
+SRGBTexture=FALSE;
+MaxMipLevel=0;
+MipMapLodBias=0;
+};
+
+
+struct VS_OUTPUT_POST {
+float4 vpos  : POSITION;
+float2 txcoord : TEXCOORD0;
+};
+
+struct VS_INPUT_POST {
+float3 pos  : POSITION;
+float2 txcoord : TEXCOORD0;
+};
+
+
+
+
+
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+VS_OUTPUT_POST VS_PostProcess(VS_INPUT_POST IN)
+{
+VS_OUTPUT_POST OUT;
+
+float4 pos=float4(IN.pos.x,IN.pos.y,IN.pos.z,1.0);
+
+OUT.vpos=pos;
+OUT.txcoord.xy=IN.txcoord.xy;
+
+return OUT;
+}
+
+
+
+float4 PS_PostProcess(VS_OUTPUT_POST IN, float2 vPos : VPOS) : COLOR
+{
+float4 res;
+float4 coord=0.0;
+
+coord.xy=IN.txcoord.xy;
+float4 origcolor;
+
+coord.w=0.0;
+
+
+origcolor=tex2Dlod(SamplerColor, coord);
+
+// coord.x=IN.txcoord.x-(1.5/ScreenSize);
+// float4 lshift=tex2Dlod(SamplerColor, coord);
+// coord.x=IN.txcoord.x+(1.5/ScreenSize);
+// float4 rshift=tex2Dlod(SamplerColor, coord);
+
+
+float2 offset[8]=
+{
+ float2(1.0, 1.0),
+ float2(-1.0, -1.0),
+ float2(-1.0, 1.0),
+ float2(1.0, -1.0),
+
+ float2(1.41, 0.0),
+ float2(-1.41, 0.0),
+ float2(0.0, 1.41),
+ float2(0.0, -1.41)
+};
+int i=0;
+
+float4 tcol=origcolor;
+float invscreensize=1.0/ScreenSize;
+//for (i=0; i<8; i++) //higher quality
+for (i=0; i<4; i++)
+{
+ float2 tdir=offset[i].xy;
+ coord.xy=IN.txcoord.xy+tdir.xy*invscreensize*SamplingRange;//*1.0;
+ float4 ct=tex2Dlod(SamplerColor, coord);
+
+ tcol+=ct;
+}
+tcol*=0.2; // 1.0/(4+1)
+//tcol*=0.111; // 1.0/(8+1)  //higher quality
+
+
+/*
+//not interesting
+#ifdef EBLURRING
+//blur
+res=tcol;
+#endif
+*/
+
+//sharp
+#ifdef ESHARPENING
+
+#ifdef ESHARPENINGCOLOR
+//color
+res=origcolor*(1.0+((origcolor-tcol)*SharpeningAmount));
+#else
+ //non color
+float difffact=dot((origcolor.xyz-tcol.xyz), 0.333);
+res=origcolor*(1.0+difffact*SharpeningAmount);
+#endif
+
+//less sharpening for bright pixels
+float rgray=origcolor.z; //blue fit well
+//float rgray=max(origcolor.x, max(origcolor.y, origcolor.z));
+rgray=pow(rgray, 3.0);
+res=lerp(res, origcolor, saturate(rgray));
+
+#endif
+
+
+
+
+//grain noise
+if (NoiseEnable)
+{
+float NoiseAmount=lerp(lerp(NoiseAmountNight, NoiseAmountDay, ENightDayFactor), NoiseAmountInterior, EInteriorFactor);
+float origgray=max(res.x, res.y);//dot(res.xyz, 0.333);
+origgray=max(origgray, res.z);
+coord.xy=IN.txcoord.xy*16.0 + frac(Timer.x * 400000.0 + Timer.x);
+float4 cnoi=tex2Dlod(SamplerNoise, coord);
+res=lerp(res, (cnoi.x+0.5)*res, NoiseAmount*saturate(1.0-origgray*0.5));
+}
+
+
+res.w=1.0;
+return res;
+}
+
+
+
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+//
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+technique PostProcess
+{
+   pass P0
+   {
+
+VertexShader = compile vs_3_0 VS_PostProcess();
+PixelShader  = compile ps_3_0 PS_PostProcess();
+
+DitherEnable=FALSE;
+ZEnable=FALSE;
+CullMode=NONE;
+ALPHATESTENABLE=FALSE;
+SEPARATEALPHABLENDENABLE=FALSE;
+AlphaBlendEnable=FALSE;
+StencilEnable=FALSE;
+FogEnable=FALSE;
+SRGBWRITEENABLE=FALSE;
+}
+}
