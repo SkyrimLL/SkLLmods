@@ -155,7 +155,8 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
  	; Grant perk points based on starting age
  	If (!bGrantStartPerks) && (baseAge>16)
  		bGrantStartPerks = true
- 		Game.AddPerkPoints((baseAge as Int) - 16)
+ 		Game.AddPerkPoints( (baseAge as Int) - 16)
+ 		Game.SetPlayerLevel( ((baseAge as Int) - 16) / 2 )
  	endif
  
 	iDaysSinceLastCheck = (daysPassed - iGameDateLastCheck ) as Int
