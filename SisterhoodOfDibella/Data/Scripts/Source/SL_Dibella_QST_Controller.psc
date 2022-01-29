@@ -63,6 +63,7 @@ Function _Maintenance()
 	RegisterForModEvent("OrgasmStart",    "OnSexLabOrgasm")
 	RegisterForModEvent("SexlabOrgasmSeparate", "OnSexlabOrgasmS")
 	RegisterForModEvent("SLSDMarkOfDibella",   "OnSLSDMarkOfDibella")
+	RegisterForModEvent("SLSDDibellaSex",   "OnSLSDDibellaSex")
 	RegisterForSleep()
 
 	; _SLS_NPCSexCount.SetValue(-1)
@@ -115,7 +116,7 @@ Event OnSLSDMarkOfDibella(String _eventName, String _args, Float _argc = 1.0, Fo
  	Actor kActor = _sender as Actor
 	Actor kPlayer = Game.GetPlayer() as Actor
 
-	; Debug.Notification("[SLSD] Receiving mark of dibella request")
+	Debug.Trace("[SLSD] Receiving OnSLSDMarkOfDibella event")
 	if (kActor == None)
 		Debug.Notification("[SLSD] 		No sender - using player instead")
 		; StorageUtil _SD_TempAggressor is deprecated
@@ -128,6 +129,130 @@ Event OnSLSDMarkOfDibella(String _eventName, String _args, Float _argc = 1.0, Fo
 	; Debug.Notification("[SLSD] 		Amount: " + iAmount)
 	kActor.AddItem(DibellaToken, iAmount )
 EndEvent
+
+Bool Function checkGenderRestriction(Actor kActor, Actor akTarget)
+	Actor kPlayer = Game.GetPlayer() as Actor
+	Int    speakerGender = kActor.GetLeveledActorBase().GetSex() as Int
+	Int    targetGender = akTarget.GetLeveledActorBase().GetSex() as Int
+	Int    genderRestrictions = StorageUtil.GetIntValue(kPlayer, "_SLSD_iSexGenderRestriction") as Int
+	Bool bGenderChecked = false;
+
+	; usually, 'akTarget' is the player
+	; 0 - both genders allowed
+	; 1 - same gender only
+	; 2 - opposite gender only
+	; 3 - use sexlab settings
+
+	if (genderRestrictions <= 2) ; gender restriction system
+		bGenderChecked = (genderRestrictions  == 0) || ( (genderRestrictions  == 1) && (speakerGender  == targetGender ) ) || ( (genderRestrictions  == 2) && (speakerGender  != targetGender ) ) 
+
+	else ; use SexLab gender restriction system
+		bGenderChecked = (SexLab.IsBisexual(akTarget)) || ( (SexLab.IsGay(akTarget)) && (speakerGender  == targetGender ) ) || ( (SexLab.IsStraight(akTarget)) && (speakerGender  != targetGender ) ) 
+	EndIf
+
+	return bGenderChecked
+
+EndFunction
+
+Event OnSLSDDibellaSex(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+	; int iAmount = _argc as Int
+	String SexLabInTags = _args as String
+ 	Actor akTarget = _sender as Actor
+ 	Actor kActor  
+	Actor kPlayer = Game.GetPlayer() as Actor
+
+	Debug.Trace("[SLSD] Receiving OnSLSDDibellaSex event")
+	if (akTarget == None)
+		Debug.Notification("[SLSD] 		No sender - using player instead")
+		; StorageUtil _SD_TempAggressor is deprecated
+		; Use _sender through kActor.SendModEvent("") in priority instead 
+		akTarget = kPlayer
+	EndIf
+
+	Bool bIsTargetVictim = true
+	Bool bIsSpeakerVictim = false
+ 
+	If (!kPlayer && !akTarget) ;Only one actor required (masturbation scene?). 
+		Debug.Trace("[OnSLSDDibellaSex] Sex scene aborted - no actor available")
+		RETURN 
+	EndIf
+
+	Int    speakerGender = kActor.GetLeveledActorBase().GetSex() as Int
+	Int    targetGender = akTarget.GetLeveledActorBase().GetSex() as Int
+	Int    genderRestrictions = StorageUtil.GetIntValue(kPlayer, "_SLSD_iSexGenderRestriction") as Int
+
+
+	; Masturbation scenes
+	If (SexLabInTags == "Masturbation") && ( SexLab.ValidateActor( kActor ) > 0 )
+
+		If (SexLabInTags == "Masturbation")  
+			If (speakerGender  == 0)
+				SexLabInTags = "Masturbation,M"
+			Else
+				SexLabInTags =  "Masturbation,F"
+			EndIf
+
+			actor[] sexActors = new actor[1]
+			sexActors[0] = kActor
+			sslBaseAnimation[] animations = SexLab.GetAnimationsByTags(1,  SexLabInTags, "Estrus,Dwemer")
+			SexLab.StartSex(sexActors, animations)
+
+			; SexLab.QuickStart(kActor, AnimationTags = SexLabInTags)
+
+		EndIf
+
+	; Gender restrictions - 2 actors
+	; In general, Target = Player, speaker = Master
+	ElseIf checkGenderRestriction( kActor,  akTarget)
+
+		If ( (genderRestrictions  == 1) && (speakerGender  == targetGender ) ) 
+			If (speakerGender  == 0)
+				SexLabInTags = "Anal"
+			Else
+				SexLabInTags = "Lesbian"
+			EndIf
+		ElseIf ( (genderRestrictions  != 1) && (speakerGender  != targetGender ) ) 
+				; switching dominant position'
+				
+				If (speakerGender == 1) ; Female Mistress and Male slave
+					SexLabInTags = "Cowgirl"
+					If (utility.RandomInt(0,100)>90)
+						SexLabInTags = "Anal"
+					Endif
+					kActor = akTarget
+					akTarget = kActor
+					kActor = kActor
+				 	bIsTargetVictim = true
+					bIsSpeakerVictim = false
+
+				ElseIf  (speakerGender == 0) ; Male Master and Female slave
+					SexLabInTags = "Doggystyle"
+				 	bIsTargetVictim = true
+					bIsSpeakerVictim = false
+
+				EndIf
+		EndIf
+
+		Debug.Trace("[OnSLSDDibellaSex] Gender check: Restrictions= " + genderRestrictions  + " [ " + kActor + " / " + akTarget + " ] ")
+		Debug.Trace("[OnSLSDDibellaSex] SexLabInTags= " + SexLabInTags )
+ 
+		If  (SexLab.ValidateActor( kActor ) > 0) &&  (SexLab.ValidateActor( akTarget ) > 0) 
+
+			sslThreadModel Thread = SexLab.NewThread()
+			Thread.AddActor(akTarget, bIsTargetVictim) ; IsVictim = true
+			Thread.AddActor(kActor, bIsSpeakerVictim)
+			Thread.SetAnimations(SexLab.GetAnimationsByTags(2, SexLabInTags,  "Solo,Estrus"))
+			((Thread.StartThread() AS BOOL) AS INT)
+		Else
+			Debug.Trace("[OnSLSDDibellaSex] Sex: SexLab Check failed - " + SexLab.ValidateActor( kActor ) + " / " + SexLab.ValidateActor( akTarget ))
+		EndIf
+	Else
+		Debug.Trace("[OnSLSDDibellaSex] Gender check failed: Restrictions= " + genderRestrictions  + " [ " + speakerGender + " / " + targetGender + " ] ")
+	EndIf
+
+ 
+EndEvent
+
 
 Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 	Actor kPlayer = Game.GetPlayer() as Actor

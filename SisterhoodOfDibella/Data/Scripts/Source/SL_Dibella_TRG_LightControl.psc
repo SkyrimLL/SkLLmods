@@ -1,6 +1,7 @@
 Scriptname SL_Dibella_TRG_LightControl extends ObjectReference  
 
 Message Property LightConfigMenu  Auto  
+Message Property GenderConfigMenu  Auto  
 
 ObjectReference Property _SLSD_NaturalLightsMarker Auto
 ObjectReference Property _SLSD_DaedricLightsMarker Auto
@@ -38,6 +39,24 @@ Event OnActivate(ObjectReference akActionRef)
 			_SLSD_TempleDaedricLightsON.SetValue(0)
 		Endif
 
+	ElseIf (IButton == 2 ) 
+		Int IButton2 = GenderConfigMenu.Show()
+		If (IButton2 >= 0 ) && (IButton2 <= 3 ) 
+
+			If (IButton2 == 0 ) 
+				debug.notification("Donations sex - both genders allowed")
+			ElseIf (IButton2 == 1) 
+				debug.notification("Donations sex - same gender only")
+			ElseIf (IButton2 == 2) 
+				debug.notification("Donations sex - opposite gender only")
+			ElseIf (IButton2 == 3) 
+				debug.notification("Donations sex - use sexlab settings")
+		 	Endif
+
+			StorageUtil.SetIntValue(akActor, "_SLSD_iSexGenderRestriction",IButton2)
+
+		Endif
 	Endif
 
 endevent
+

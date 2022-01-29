@@ -26,34 +26,16 @@ Debug.Notification("You have " + SatchelItemsCount.GetValue() as Int + " items f
 ; TempleDonations.SetValue( TempleDonations.GetValue( ) + 1)
 Self.GetOwningQuest().ModObjectiveGlobal( 1, TempleDonations, 10, 10, True, True, True )
 
+String animTag = ""
+if (TempleDonations.GetValue()<=2)
+	animTag = "Foreplay"
+elseif  (TempleDonations.GetValue()<=6)
+	animTag = "Oral"
+elseif  (TempleDonations.GetValue()<=10)
+	animTag = "Vaginal"
+endif
 
-	If  (SexLab.ValidateActor( SexLab.PlayerRef ) > 0) &&  (SexLab.ValidateActor(akSpeaker) > 0) 
-		Debug.MessageBox("You do your duty and let yourself be groped in the name of Dibella.")
-
-		Actor akActor = Game.GetPlayer()
-		String animTag = ""
-		
-		sslThreadModel Thread = SexLab.NewThread()
-		Thread.AddActor(akActor) ; // IsVictim = true
-		Thread.AddActor(akSpeaker) ; // IsVictim = true
-
-		if (TempleDonations.GetValue()<=2)
-			animTag = "Foreplay"
-		elseif  (TempleDonations.GetValue()<=6)
-			animTag = "Oral"
-		elseif  (TempleDonations.GetValue()<=10)
-			animTag = "Vaginal"
-		endif
-
-		If (actorGender == 1)
-			animTag = animTag + ",Lesbian"
-		EndIf
-
-		Thread.SetAnimations(SexLab.GetAnimationsByTags(2, animTag))
-
-		Thread.StartThread()
-
-	EndIf
+akSpeaker.SendModEvent("SLSDDibellaSex",animTag,0.0)
 ;END CODE
 EndFunction
 ;END FRAGMENT
