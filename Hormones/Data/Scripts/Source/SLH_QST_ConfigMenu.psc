@@ -252,6 +252,7 @@ bool 		_resetColorsToggle 		= false
 bool 		_resetSkinColorToggle 	= false
 int 		_applyNodeBalancing     = 0
 
+String sPlayerGender
 
 ObjectReference PlayerREF
 Actor PlayerActor
@@ -512,6 +513,13 @@ event OnPageReset(string a_page)
 		AddToggleOptionST("STATE_CHANGE_WEIGHT","$SLH_bCHANGE_WEIGHT", _useWeight as Float)
 		AddSliderOptionST("STATE_WEIGHT_SWELL","$SLH_sWEIGHT_SWELL", _weightSwellMod as Float,"{1}")
 
+		AddTextOption("Positive Modifier: More weight = Muscle, fitness.", "", OPTION_FLAG_DISABLED)
+		AddTextOption("   Use this for Male characters", "", OPTION_FLAG_DISABLED)
+		AddTextOption("   or if weight means large breasts.", "", OPTION_FLAG_DISABLED)
+		AddTextOption("Negative Modifier: More weight = Fat. ", "", OPTION_FLAG_DISABLED)
+		AddTextOption("   Use this if weight means lack of exercise.", "", OPTION_FLAG_DISABLED)
+
+
 		AddHeaderOption("$SLH_hSkin")
 		AddToggleOptionST("STATE_CHANGE_COLOR","$SLH_bCHANGE_COLOR", _useColors as Float)
 
@@ -724,6 +732,15 @@ event OnPageReset(string a_page)
 
 		AddHeaderOption("$SLH_hPlayerStatus")
 		Int iHoursSinceLastSex = GetCurrentHourOfDay() - StorageUtil.GetIntValue(PlayerActor, "_SLH_iHourOfDaySinceLastSex") 
+
+		if (PlayerActor.GetLeveledActorBase().GetSex() == 1)
+			sPlayerGender = "Female"
+		else
+			sPlayerGender = "Male"
+		endif
+
+ 		AddTextOption("$ Current gender: {" +  sPlayerGender   as String +"}", "", OPTION_FLAG_DISABLED)
+		AddEmptyOption()
 
  		AddTextOption("$ Sex count today: {" +  StorageUtil.GetIntValue(PlayerActor, "_SLH_iSexCountToday")   as Int +"}", "", OPTION_FLAG_DISABLED)
  		AddTextOption("$ Last sex (hour of day): {" +  StorageUtil.GetIntValue(PlayerActor, "_SLH_iHourOfDaySinceLastSex")   as Int +"}", "", OPTION_FLAG_DISABLED)

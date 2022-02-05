@@ -2147,6 +2147,8 @@ Bool function tryBimboEvent(Actor kActor, float fHoursSleep) ; bimbo curse
 					sMessage = "Your cock is getting smaller every day."
 				Endif
 				alterBodyByPercent(kActor, "Schlong", -4.0 * fHoursSleep)
+			else
+				alterBodyByPercent(kActor, "Weight", -4.0 * fHoursSleep * (1.0 + (fHormoneMetabolism / 100.0)))
 			endif
 		endif
 
