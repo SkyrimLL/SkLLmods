@@ -142,13 +142,27 @@ Bool Function checkGenderRestriction(Actor kActor, Actor akTarget)
 	; 1 - same gender only
 	; 2 - opposite gender only
 	; 3 - use sexlab settings
+		
+	Debug.Trace("[SLSD] 		speakerGender: " + speakerGender)
+	Debug.Trace("[SLSD] 		targetGender: " + targetGender)
 
 	if (genderRestrictions <= 2) ; gender restriction system
 		bGenderChecked = (genderRestrictions  == 0) || ( (genderRestrictions  == 1) && (speakerGender  == targetGender ) ) || ( (genderRestrictions  == 2) && (speakerGender  != targetGender ) ) 
 
+		Debug.Trace("[SLSD] 		genderRestrictions: " + genderRestrictions)
+		Debug.Trace("[SLSD] 		bGenderChecked: " + bGenderChecked)
+
 	else ; use SexLab gender restriction system
 		bGenderChecked = (SexLab.IsBisexual(akTarget)) || ( (SexLab.IsGay(akTarget)) && (speakerGender  == targetGender ) ) || ( (SexLab.IsStraight(akTarget)) && (speakerGender  != targetGender ) ) 
+
+		Debug.Trace("[SLSD] 		genderRestrictions: SexLab ")
+		Debug.Trace("[SLSD] 		bGenderChecked: " + bGenderChecked)
 	EndIf
+
+	if !(bGenderChecked)
+		Debug.Notification("Oh no.. your charms won't work with me harlot!")
+		Debug.Trace("[SLSD] 		gender restriction")
+	endif
 
 	return bGenderChecked
 
@@ -157,28 +171,28 @@ EndFunction
 Event OnSLSDDibellaSex(String _eventName, String _args, Float _argc = 1.0, Form _sender)
 	; int iAmount = _argc as Int
 	String SexLabInTags = _args as String
- 	Actor akTarget = _sender as Actor
- 	Actor kActor  
+ 	Actor kActor = _sender as Actor 
 	Actor kPlayer = Game.GetPlayer() as Actor
+	Actor akTarget
 
 	Debug.Trace("[SLSD] Receiving OnSLSDDibellaSex event")
-	if (akTarget == None)
+	if (kActor == None)
 		Debug.Notification("[SLSD] 		No sender - using player instead")
 		; StorageUtil _SD_TempAggressor is deprecated
 		; Use _sender through kActor.SendModEvent("") in priority instead 
-		akTarget = kPlayer
+		kActor = kPlayer
 	EndIf
 
 	Bool bIsTargetVictim = true
 	Bool bIsSpeakerVictim = false
  
-	If (!kPlayer && !akTarget) ;Only one actor required (masturbation scene?). 
+	If (!kPlayer && !kActor) ;Only one actor required (masturbation scene?). 
 		Debug.Trace("[OnSLSDDibellaSex] Sex scene aborted - no actor available")
 		RETURN 
 	EndIf
 
 	Int    speakerGender = kActor.GetLeveledActorBase().GetSex() as Int
-	Int    targetGender = akTarget.GetLeveledActorBase().GetSex() as Int
+	Int    targetGender = kPlayer.GetLeveledActorBase().GetSex() as Int
 	Int    genderRestrictions = StorageUtil.GetIntValue(kPlayer, "_SLSD_iSexGenderRestriction") as Int
 
 
@@ -193,7 +207,7 @@ Event OnSLSDDibellaSex(String _eventName, String _args, Float _argc = 1.0, Form 
 			EndIf
 
 			actor[] sexActors = new actor[1]
-			sexActors[0] = kActor
+			sexActors[0] = kPlayer
 			sslBaseAnimation[] animations = SexLab.GetAnimationsByTags(1,  SexLabInTags, "Estrus,Dwemer")
 			SexLab.StartSex(sexActors, animations)
 
@@ -203,7 +217,9 @@ Event OnSLSDDibellaSex(String _eventName, String _args, Float _argc = 1.0, Form 
 
 	; Gender restrictions - 2 actors
 	; In general, Target = Player, speaker = Master
-	ElseIf checkGenderRestriction( kActor,  akTarget)
+	ElseIf checkGenderRestriction( kActor,  kPlayer)
+
+		akTarget = kPlayer
 
 		If ( (genderRestrictions  == 1) && (speakerGender  == targetGender ) ) 
 			If (speakerGender  == 0)
@@ -219,9 +235,8 @@ Event OnSLSDDibellaSex(String _eventName, String _args, Float _argc = 1.0, Form 
 					If (utility.RandomInt(0,100)>90)
 						SexLabInTags = "Anal"
 					Endif
-					kActor = akTarget
 					akTarget = kActor
-					kActor = kActor
+					kActor = kPlayer
 				 	bIsTargetVictim = true
 					bIsSpeakerVictim = false
 
