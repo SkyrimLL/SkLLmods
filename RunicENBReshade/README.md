@@ -8,8 +8,8 @@ I have been developing it to give Skyrim a rougher, grimier look. The atmosphere
 I started with a combination of these two ENB setups as a base, but I deviated enough from either of them to start calling this setup my own.
 It provides a fast Depth of Field effect for distant landscapes, a weather based configuration on top of global settings, and a good balance between a desaturated atmosphere in rainy weather and a colorful one in sunny weather.
 
-- [VandB ENB Nature](https://href.li/?https://www.nexusmods.com/skyrim/mods/65584?tab=posts)
-- [Rudy ENB](https://href.li/?https://www.nexusmods.com/skyrim/mods/41482)
+- [VandB ENB Nature](https://www.nexusmods.com/skyrim/mods/65584?tab=posts)
+- [Rudy ENB](https://www.nexusmods.com/skyrim/mods/41482)
 
 The ReShade layer is there to add touches I wasn't able to accomplish with the ENB layer (tilt shift effect on the edges, a better HDR glow, a more balanced saturation control and sharpness effect, and a cinematic color grading).
 
@@ -33,6 +33,18 @@ A: ReShade and ENB have a tendency to overwrite each other's libraries, so you h
    That's it. Now you should be the proud owner of both an ENB and ReShade layers.
 
 
+
+## Q: Installation
+
+A: I tried to package what i changed but you will probably need the original files as a base for the proper weather, lighting and esp configurations.
+
+1. Download and install the base ENB files from [VandB ENB Nature](https://www.nexusmods.com/skyrim/mods/65584?tab=posts). Follow the instructions to enable the mod.
+
+2. Install ENB and ReShade (instructions in the question above)
+
+3. Install the files from [RunicENBReshade](https://github.com/SkyrimLL/SkLLmods/tree/master/RunicENBReshade)/**ENB**/ and [RunicENBReshade](https://github.com/SkyrimLL/SkLLmods/tree/master/RunicENBReshade)/**ReShade**/ in your Skyrim folder
+
+   
 
 ## Q: Configuration
 
