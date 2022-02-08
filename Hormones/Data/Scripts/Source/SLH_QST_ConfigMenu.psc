@@ -513,11 +513,11 @@ event OnPageReset(string a_page)
 		AddToggleOptionST("STATE_CHANGE_WEIGHT","$SLH_bCHANGE_WEIGHT", _useWeight as Float)
 		AddSliderOptionST("STATE_WEIGHT_SWELL","$SLH_sWEIGHT_SWELL", _weightSwellMod as Float,"{1}")
 
-		AddTextOption("Positive Modifier: More weight = Muscle, fitness.", "", OPTION_FLAG_DISABLED)
-		AddTextOption("   Use this for Male characters", "", OPTION_FLAG_DISABLED)
-		AddTextOption("   or if weight means large breasts.", "", OPTION_FLAG_DISABLED)
-		AddTextOption("Negative Modifier: More weight = Fat. ", "", OPTION_FLAG_DISABLED)
-		AddTextOption("   Use this if weight means lack of exercise.", "", OPTION_FLAG_DISABLED)
+		AddTextOption("$Positive Modifier: More weight = Muscle, fitness.", "", OPTION_FLAG_DISABLED)
+		AddTextOption("$   Use this for Male characters", "", OPTION_FLAG_DISABLED)
+		AddTextOption("$   or if weight means large breasts.", "", OPTION_FLAG_DISABLED)
+		AddTextOption("$Negative Modifier: More weight = Fat. ", "", OPTION_FLAG_DISABLED)
+		AddTextOption("$   Use this if weight means lack of exercise.", "", OPTION_FLAG_DISABLED)
 
 
 		AddHeaderOption("$SLH_hSkin")
@@ -631,7 +631,7 @@ event OnPageReset(string a_page)
 		AddToggleOptionST("STATE_ENABLE_BASIC_NETIMMERSE","$SLH_bENABLE_BASIC_NETIMMERSE", StorageUtil.GetIntValue(none, "_SLH_BasicNetImmerseON") as Float)
 		AddToggleOptionST("STATE_ENABLE_SLIF_OVERRIDE","$SLH_bENABLE_SLIF_OVERRIDE", StorageUtil.GetIntValue(none, "_SLH_SLIFOverrideON") as Float)
 		AddToggleOptionST("STATE_ENABLE_NODE_OVERRIDE","$SLH_bENABLE_NODE_OVERRIDE", StorageUtil.GetIntValue(none, "_SLH_NiNodeOverrideON") as Float)
-		AddToggleOptionST("STATE_ENABLE_BODYMORPHS","Enable BodyMorphs", StorageUtil.GetIntValue(none, "_SLH_BodyMorphsON") as Float)
+		AddToggleOptionST("STATE_ENABLE_BODYMORPHS","$Enable BodyMorphs", StorageUtil.GetIntValue(none, "_SLH_BodyMorphsON") as Float)
 		
 		; AddToggleOptionST("STATE_BALANCE","$SLH_sBALANCE", _applyNodeBalancing  as Float)
 
@@ -645,21 +645,21 @@ event OnPageReset(string a_page)
  
 		AddHeaderOption(" Wings")
 		if (StorageUtil.GetIntValue(PlayerActor, "_SLH_iSuccubusLevel") >=4)
-			AddToggleOptionST("STATE_AUTO_REMOVE_WINGS","Auto Remove Wings", _autoRemoveDragonWings as Float)
+			AddToggleOptionST("STATE_AUTO_REMOVE_WINGS","$Auto Remove Wings", _autoRemoveDragonWings as Float)
 		else
-			AddToggleOptionST("STATE_AUTO_REMOVE_WINGS","Auto Remove Wings", _autoRemoveDragonWings as Float, OPTION_FLAG_DISABLED)
+			AddToggleOptionST("STATE_AUTO_REMOVE_WINGS","$Auto Remove Wings", _autoRemoveDragonWings as Float, OPTION_FLAG_DISABLED)
 		endif
 
 		if (StorageUtil.GetIntValue(none, "_SLP_isAnimatedDragonWings") ==  1) 
-			AddTextOption("     Animated Dragon Wings detected", "", OPTION_FLAG_DISABLED)
+			AddTextOption("$     Animated Dragon Wings detected", "", OPTION_FLAG_DISABLED)
 		endif
 
 		if (StorageUtil.GetIntValue(none, "_SLP_isRealFlying") ==  1) 
-			AddTextOption("     Real Flying detected", "", OPTION_FLAG_DISABLED)
+			AddTextOption("$     Real Flying detected", "", OPTION_FLAG_DISABLED)
 		endif
 
 		if (StorageUtil.GetIntValue(none, "_SLP_isAnimatedWingsUltimate") ==  1) 
-			AddTextOption("     Animated Wings Ultimate detected", "", OPTION_FLAG_DISABLED)
+			AddTextOption("$     Animated Wings Ultimate detected", "", OPTION_FLAG_DISABLED)
 		endif
 
 		AddHeaderOption("$SLH_hSexChangeCurse")
@@ -700,9 +700,9 @@ event OnPageReset(string a_page)
 
 		If (StorageUtil.GetIntValue(none, "_SLH_iHormonesSleepInit")==0)
 			; Mod Init safety - sleep first
-			AddTextOption("Hormones is inactive (sleep first)", "", OPTION_FLAG_DISABLED)
+			AddTextOption("$Hormones is inactive (sleep first)", "", OPTION_FLAG_DISABLED)
 		Else
-			AddTextOption("Hormones is ACTIVE", "")
+			AddTextOption("$Hormones is ACTIVE", "")
 		Endif
 
 		AddToggleOptionST("STATE_SELF_SPELLS","$SLH_bSELF_SPELLS", _allowSelfSpells as Float)
@@ -2926,7 +2926,7 @@ state STATE_AUTO_REMOVE_WINGS ; TOGGLE
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Automatically remove equipped wings when removing the Queen Body if a compatible mod is detected (unchecked means the wings will remain equipped after the Queen Body is removed).")
+		SetInfoText("$Automatically remove equipped wings when removing the Queen Body if a compatible mod is detected (unchecked means the wings will remain equipped after the Queen Body is removed).")
 	endEvent
 endState
 
