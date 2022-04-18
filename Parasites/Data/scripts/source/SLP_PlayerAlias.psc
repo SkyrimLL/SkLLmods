@@ -10,6 +10,8 @@ ReferenceAlias Property SpiderFollowerAlias  Auto
 
 Quest Property KynesBlessingQuest  Auto 
 
+GlobalVariable Property GameDaysPassed Auto
+
 Location Property SLP_BlackreachLocation Auto
 Keyword Property SLP_DraugrCryptLocType Auto
 Keyword Property SLP_MineLocType Auto
@@ -34,7 +36,6 @@ Potion Property SLP_CritterSemen Auto
 Actor PlayerRef
 int daysPassed
 int iGameDateLastCheck = -1
-int iDaysSinceLastCheck
 int iNextStageTicker = 0
 Int iChaurusQueenStage
 
@@ -57,8 +58,8 @@ Function _maintenance()
 	PlayerRef = GetReference() as Actor
 	iChaurusQueenStage = StorageUtil.GetIntValue(PlayerRef, "_SLP_iChaurusQueenStage")
 
-	Int iCurrentVersionNumber = 20210709
-	Int iVersionNumber = StorageUtil.GetIntValue(none, "_SLP_iParasitesVersion")	
+	Int iCurrentVersionNumber = 20220417
+	Int iVersionNumber = StorageUtil.GetIntValue(none, "_SLP_iParasitesVersion")
 
 	If (iVersionNumber != iCurrentVersionNumber)
 		Debug.Notification("[SLP] Upgrading Parasites to " + iCurrentVersionNumber)
@@ -82,14 +83,22 @@ Function _maintenance()
 			StorageUtil.SetIntValue(PlayerRef, "_SLP_toggleChaurusQueenBaseSkin", 1 )
 			StorageUtil.SetIntValue(PlayerRef, "_SLP_toggleChaurusQueenInfectNPCs", 1 )
 		endif
+		If iVersionNumber <= 20220417
+			GameDaysPassed = Game.GetFormFromFile(0x39, "Skyrim.esm") as GlobalVariable
+		EndIf
 		StorageUtil.SetIntValue(none, "_SLP_iParasitesVersion", iCurrentVersionNumber)	
 	Endif
 
-	fctParasites.maintenance() 
+	; Initial values
+	if (iGameDateLastCheck == -1)
+		iGameDateLastCheck = GameDaysPassed.GetValue() as Int
+	endIf
+
+	fctParasites.maintenance()
 
 	; Set Seed Stone ritual to today if missing
 	if (iChaurusQueenStage==1) && (StorageUtil.GetIntValue(PlayerRef, "_SLP_iChaurusQueenDate")==0)
-		StorageUtil.SetIntValue(PlayerRef, "_SLP_iChaurusQueenDate", Game.QueryStat("Days Passed"))
+		StorageUtil.SetIntValue(PlayerRef, "_SLP_iChaurusQueenDate", GameDaysPassed.GetValue() as Int)
 	endif
 
 	if (iChaurusQueenStage>=1)
@@ -295,14 +304,8 @@ Event OnUpdate()
  	Float fValue
  	Bool isWeatherRainy = false
 
- 	daysPassed = Game.QueryStat("Days Passed")
-
- 	; Initial values
- 	if (iGameDateLastCheck == -1)
- 		iGameDateLastCheck = daysPassed
- 	endIf
- 
-	iDaysSinceLastCheck = (daysPassed - iGameDateLastCheck ) as Int
+ 	daysPassed = GameDaysPassed.GetValue() as Int
+	Int iDaysSinceLastCheck = daysPassed - iGameDateLastCheck
 
 	If (iDaysSinceLastCheck > 0)
 		; New day
@@ -344,7 +347,7 @@ Event OnUpdate()
 		Endif
 
 		If (fctParasites.isInfectedByString( PlayerRef,  "TentacleMonster" ))
-			iParasiteDuration = Game.QueryStat("Days Passed") - StorageUtil.GetIntValue(PlayerRef, "_SLP_iTentacleMonsterDate")
+			iParasiteDuration = daysPassed - StorageUtil.GetIntValue(PlayerRef, "_SLP_iTentacleMonsterDate")
 			If (iParasiteDuration < 10)
 				Debug.MessageBox("Your breasts grow under the influence of the tentacles.")
 				fValue = 1.0 + (iParasiteDuration as Float) / 10.0
@@ -356,7 +359,7 @@ Event OnUpdate()
 			Endif
 		Endif
 		If (fctParasites.isInfectedByString( PlayerRef,  "LivingArmor" ))
-			iParasiteDuration = Game.QueryStat("Days Passed") - StorageUtil.GetIntValue(PlayerRef, "_SLP_iLivingArmorDate")
+			iParasiteDuration = daysPassed - StorageUtil.GetIntValue(PlayerRef, "_SLP_iLivingArmorDate")
 			If (iParasiteDuration < 10)
 				Debug.MessageBox("Your breasts grow under the influence of the tentacles.")
 				fValue = 1.0 + (iParasiteDuration as Float) / 10.0
@@ -369,7 +372,7 @@ Event OnUpdate()
 		Endif
 
 		If (fctParasites.isInfectedByString( PlayerRef,  "FaceHugger" )) || (fctParasites.isInfectedByString( PlayerRef,  "FaceHuggerGag" ))
-			iParasiteDuration = Game.QueryStat("Days Passed") - StorageUtil.GetIntValue(PlayerRef, "_SLP_iFaceHuggerDate")
+			iParasiteDuration = daysPassed - StorageUtil.GetIntValue(PlayerRef, "_SLP_iFaceHuggerDate")
 			If (iParasiteDuration < 5)
 				Debug.MessageBox("Your belly grows as the critter fills it with thick fluids.")
 				fValue = 1.5 + (iParasiteDuration as Float) / 5.0
@@ -380,7 +383,7 @@ Event OnUpdate()
 
 			ElseIf (iParasiteDuration >= 5)
 				Debug.MessageBox("Your belly suddenly expells copious amounts of thick fluids.")
-				StorageUtil.SetIntValue(PlayerRef, "_SLP_iFaceHuggerDate", Game.QueryStat("Days Passed"))
+				StorageUtil.SetIntValue(PlayerRef, "_SLP_iFaceHuggerDate", daysPassed)
 				fValue = 1.0
 				fctParasites.ApplyBodyChange( PlayerRef, "FaceHugger", "Belly", fValue, StorageUtil.GetFloatValue(PlayerRef, "_SLP_bellyMaxFaceHugger" ) )
 				SexLab.AddCum(PlayerRef,  Vaginal = true,  Oral = false,  Anal = true)
@@ -388,7 +391,7 @@ Event OnUpdate()
 		Endif
 
 		If (fctParasites.isInfectedByString( PlayerRef,  "Barnacles" ))
-			iParasiteDuration = Game.QueryStat("Days Passed") - StorageUtil.GetIntValue(PlayerRef, "_SLP_iBarnaclesDate")
+			iParasiteDuration = daysPassed - StorageUtil.GetIntValue(PlayerRef, "_SLP_iBarnaclesDate")
 			If  (iParasiteDuration > 5) && (!kLocation.IsSameLocation(SLP_BlackreachLocation)) && (!kLocation.HasKeyword(SLP_FalmerHiveLocType)) && (!kLocation.HasKeyword(SLP_CaveLocType)) && (!kLocation.HasKeyword(SLP_DwarvenRuinLocType))
 
 	  			fctParasites.tryParasiteNextStage(PlayerRef, "Barnacles")
@@ -405,7 +408,6 @@ Event OnUpdate()
 		endif
 
 		iNextStageTicker = iNextStageTicker + (iNextStageTicker / 2)
-		iGameDateLastCheck = daysPassed
 	else
 		; updates during the day
 		iChaurusQueenStage = StorageUtil.GetIntValue(PlayerRef, "_SLP_iChaurusQueenStage")
@@ -1738,21 +1740,21 @@ Event OnSLPRefreshBodyShape(String _eventName, String _args, Float _argc = 1.0, 
 
 	If (fctParasites.isInfectedByString( kActor,  "TentacleMonster" ))
 		Debug.Trace("[SLP] Refreshing breast shape (tentacle monster)")
-		Int iParasiteDuration = Game.QueryStat("Days Passed") - StorageUtil.GetIntValue(kActor, "_SLP_iTentacleMonsterDate")
+		Int iParasiteDuration = GameDaysPassed.GetValue() as Int - StorageUtil.GetIntValue(kActor, "_SLP_iTentacleMonsterDate")
 		Float fValue = 1.0 + (iParasiteDuration as Float) / StorageUtil.GetFloatValue(PlayerRef, "_SLP_breastMaxTentacleMonster" )
 		fctParasites.ApplyBodyChange( kActor, "TentacleMonster", "Breast", fValue, StorageUtil.GetFloatValue(PlayerRef, "_SLP_breastMaxTentacleMonster" ) )
 	EndIf
 
 	If (fctParasites.isInfectedByString( kActor,  "LivingArmor" ))
 		Debug.Trace("[SLP] Refreshing breast shape (living armor)")
-		Int iParasiteDuration = Game.QueryStat("Days Passed") - StorageUtil.GetIntValue(kActor, "_SLP_iLivingArmorDate")
+		Int iParasiteDuration = GameDaysPassed.GetValue() as Int - StorageUtil.GetIntValue(kActor, "_SLP_iLivingArmorDate")
 		Float fValue = 1.0 + (iParasiteDuration as Float) / StorageUtil.GetFloatValue(PlayerRef, "_SLP_breastMaxLivingArmor" )
 		fctParasites.ApplyBodyChange( kActor, "LivingArmor", "Breast", fValue, StorageUtil.GetFloatValue(PlayerRef, "_SLP_breastMaxLivingArmor" ) )
 	EndIf
 
 	If (fctParasites.isInfectedByString( kActor,  "FaceHugger" )) || (fctParasites.isInfectedByString( kActor,  "FaceHuggerGag" ))
 		Debug.Trace("[SLP] Refreshing belly shape (creepy critter)")
-		Int iParasiteDuration = Game.QueryStat("Days Passed") - StorageUtil.GetIntValue(kActor, "_SLP_iFaceHuggerDate")
+		Int iParasiteDuration = GameDaysPassed.GetValue() as Int - StorageUtil.GetIntValue(kActor, "_SLP_iFaceHuggerDate")
 		Float fValue = 1.0 + (iParasiteDuration as Float) / StorageUtil.GetFloatValue(PlayerRef, "_SLP_bellyMaxFaceHugger" )
 		fctParasites.ApplyBodyChange( kActor, "FaceHugger", "Belly", fValue, StorageUtil.GetFloatValue(PlayerRef, "_SLP_bellyMaxFaceHugger" ) )
 	EndIf
