@@ -390,7 +390,6 @@ Event OnUpdateGameTime()
 EndEvent
 
 Event OnUpdate()
- 	Int iParasiteDuration
  	daysPassed = GameDaysPassed.GetValue() as Int
 
 	; updates during the day
@@ -399,7 +398,7 @@ Event OnUpdate()
 	; Enable Chaurus Queen flares only if player is not Queen and not infected by Spriggan root
 	if (iChaurusQueenStage>=1) && (iChaurusQueenStage<=5)
 		;StorageUtil.GetIntValue(PlayerRef, "_SLP_iChaurusQueenDate")==0
-		iParasiteDuration = daysPassed - StorageUtil.GetIntValue(PlayerRef, "_SLP_iChaurusQueenDate")
+		Int iParasiteDuration = daysPassed - StorageUtil.GetIntValue(PlayerRef, "_SLP_iChaurusQueenDate")
 		If (Utility.RandomInt(0,100) > _getParasiteTickerThreshold(PlayerRef, iNextStageTicker, iParasiteDuration, "ChaurusQueen") )
 			if (fctParasites.tryParasiteNextStage(PlayerRef, "ChaurusQueen"))
 				; next stage happened - reset counter
@@ -410,20 +409,23 @@ Event OnUpdate()
 
 	If (iChaurusQueenStage>=5)
 		; player is Queen and in combat, apply or remove claws automatically
-		if (PlayerRef.IsInCombat()) && (StorageUtil.GetIntValue(PlayerRef, "_SLP_toggleChaurusQueenWeapon")== 0)
-			If (fctParasites.isInfectedByString( PlayerRef,  "ChaurusQueenArmor" ))
-				fctParasites.extendChaurusWeapon( PlayerRef,  "ChaurusBlade") 
-			elseIf (fctParasites.isInfectedByString( PlayerRef,  "ChaurusQueenBody" ))
-				fctParasites.extendChaurusWeapon( PlayerRef,  "ChaurusClaw") 
-			endif
-		elseif  (!PlayerRef.IsInCombat()) && (StorageUtil.GetIntValue(PlayerRef, "_SLP_toggleChaurusQueenWeapon")== 1)
-			If (fctParasites.isInfectedByString( PlayerRef,  "ChaurusQueenArmor" ))
-				fctParasites.retractChaurusWeapon( PlayerRef,  "ChaurusBlade")
-				
-			elseIf (fctParasites.isInfectedByString( PlayerRef,  "ChaurusQueenBody" ))
-				fctParasites.retractChaurusWeapon( PlayerRef,  "ChaurusClaw")
-			endif
-		Endif
+		If PlayerRef.IsInCombat()
+			if StorageUtil.GetIntValue(PlayerRef, "_SLP_toggleChaurusQueenWeapon") == 0
+				If fctParasites.isInfectedByString(PlayerRef, "ChaurusQueenArmor")
+					fctParasites.extendChaurusWeapon(PlayerRef, "ChaurusBlade")
+				elseIf fctParasites.isInfectedByString(PlayerRef, "ChaurusQueenBody")
+					fctParasites.extendChaurusWeapon(PlayerRef, "ChaurusClaw")
+				endif
+			EndIf
+		Else
+			If StorageUtil.GetIntValue(PlayerRef, "_SLP_toggleChaurusQueenWeapon") == 1
+				If fctParasites.isInfectedByString(PlayerRef, "ChaurusQueenArmor")
+					fctParasites.retractChaurusWeapon(PlayerRef, "ChaurusBlade")
+				elseIf fctParasites.isInfectedByString(PlayerRef, "ChaurusQueenBody")
+					fctParasites.retractChaurusWeapon(PlayerRef, "ChaurusClaw")
+				endif
+			EndIf
+		EndIf
 	endif
 
 	; Chance of Living Armor infection when swimming
@@ -440,8 +442,7 @@ Event OnUpdate()
 
 		; Heal while swimming
 		if (fctParasites.isInfectedByString( PlayerRef,  "SprigganRoot" )) || (fctParasites.isInfectedByString( PlayerRef,  "LivingArmor" ))
-			Float playersHealth = PlayerRef.GetActorValuePercentage("health")
-			if (playersHealth < 0.8)  
+			if (PlayerRef.GetActorValuePercentage("health") < 0.8)
 				; Debug.Trace("The player has over half their health left")
 				;_SDSP_heal.RemoteCast(kPlayer, kPlayer, kPlayer)
 				PlayerRef.resethealthandlimbs()
@@ -461,11 +462,9 @@ Event OnUpdate()
 
 			if (PlayerRef.IsSwimming() || isWeatherRainy) 
 				; debug.notification("Player is wet...")
-				if (StorageUtil.GetIntValue(PlayerRef, "_SLP_lastWetDate")!= daysPassed)
-					StorageUtil.SetIntValue(PlayerRef, "_SLP_lastWetDate", daysPassed)
-				endif
+				StorageUtil.SetIntValue(PlayerRef, "_SLP_lastWetDate", daysPassed)
 
-				iParasiteDuration = daysPassed - StorageUtil.GetIntValue(PlayerRef, "_SLP_iSprigganRootArmsDate")
+				Int iParasiteDuration = daysPassed - StorageUtil.GetIntValue(PlayerRef, "_SLP_iSprigganRootArmsDate")
 				If (Utility.RandomInt(0,100) > _getParasiteTickerThreshold(PlayerRef, iNextStageTicker, iParasiteDuration, "SprigganRoot") )
 					if (fctParasites.tryParasiteNextStage(PlayerRef, "SprigganRoot"))
 						; Debug.Notification("[SLP] Next stage ticker RESET!")
@@ -476,7 +475,7 @@ Event OnUpdate()
 		endif
 
 		If (fctParasites.isInfectedByString( PlayerRef,  "SpiderPenis" ))
-			iParasiteDuration = daysPassed - StorageUtil.GetIntValue(PlayerRef, "_SLP_iSpiderPenisDate")
+			Int iParasiteDuration = daysPassed - StorageUtil.GetIntValue(PlayerRef, "_SLP_iSpiderPenisDate")
 			If (Utility.RandomInt(0,100) > _getParasiteTickerThreshold(PlayerRef, iNextStageTicker, iParasiteDuration, "SpiderPenis") )
 				if (fctParasites.tryParasiteNextStage(PlayerRef, "SpiderPenis"))
 					iNextStageTicker /= 2
@@ -484,16 +483,15 @@ Event OnUpdate()
 			endif
 
 		ElseIf (fctParasites.isInfectedByString( PlayerRef,  "SpiderEgg" ))
-			iParasiteDuration = daysPassed - StorageUtil.GetIntValue(PlayerRef, "_SLP_iSpiderEggDate")
+			Int iParasiteDuration = daysPassed - StorageUtil.GetIntValue(PlayerRef, "_SLP_iSpiderEggDate")
 			If (Utility.RandomInt(0,100) > _getParasiteTickerThreshold(PlayerRef, iNextStageTicker, iParasiteDuration, "SpiderEgg") )
 				if (fctParasites.tryParasiteNextStage(PlayerRef, "SpiderEgg"))
 					iNextStageTicker /= 2
 				endif
-
 			endif
 
 		ElseIf (fctParasites.isInfectedByString( PlayerRef,  "ChaurusWorm" )) 
-			iParasiteDuration = daysPassed - StorageUtil.GetIntValue(PlayerRef, "_SLP_iChaurusWormDate")
+			Int iParasiteDuration = daysPassed - StorageUtil.GetIntValue(PlayerRef, "_SLP_iChaurusWormDate")
 			If (Utility.RandomInt(0,100) > _getParasiteTickerThreshold(PlayerRef, iNextStageTicker, iParasiteDuration, "ChaurusWorm") )
 				if (fctParasites.tryParasiteNextStage(PlayerRef, "ChaurusWorm"))
 					iNextStageTicker /= 2
@@ -501,7 +499,7 @@ Event OnUpdate()
 			endif
 
 		ElseIf (fctParasites.isInfectedByString( PlayerRef,  "ChaurusWormVag" ))
-			iParasiteDuration = daysPassed - StorageUtil.GetIntValue(PlayerRef, "_SLP_iChaurusWormVagDate")
+			Int iParasiteDuration = daysPassed - StorageUtil.GetIntValue(PlayerRef, "_SLP_iChaurusWormVagDate")
 			If (Utility.RandomInt(0,100) > _getParasiteTickerThreshold(PlayerRef, iNextStageTicker, iParasiteDuration, "ChaurusWormVag") )
 				if (fctParasites.tryParasiteNextStage(PlayerRef, "ChaurusWormVag"))
 					iNextStageTicker /= 2
@@ -509,7 +507,7 @@ Event OnUpdate()
 			endif 
 
 		ElseIf (fctParasites.isInfectedByString( PlayerRef,  "FaceHugger" ))
-			iParasiteDuration = daysPassed - StorageUtil.GetIntValue(PlayerRef, "_SLP_iFaceHuggerDate")
+			Int iParasiteDuration = daysPassed - StorageUtil.GetIntValue(PlayerRef, "_SLP_iFaceHuggerDate")
 			If (Utility.RandomInt(0,100) > _getParasiteTickerThreshold(PlayerRef, iNextStageTicker, iParasiteDuration, "FaceHugger") )
 				if (fctParasites.tryParasiteNextStage(PlayerRef, "FaceHugger"))
 					iNextStageTicker /= 2
@@ -517,7 +515,7 @@ Event OnUpdate()
 			endif 
 
 		ElseIf (fctParasites.isInfectedByString( PlayerRef,  "FaceHuggerGag" ))
-			iParasiteDuration = daysPassed - StorageUtil.GetIntValue(PlayerRef, "_SLP_iFaceHuggerGagDate")
+			Int iParasiteDuration = daysPassed - StorageUtil.GetIntValue(PlayerRef, "_SLP_iFaceHuggerGagDate")
 			If (Utility.RandomInt(0,100) > _getParasiteTickerThreshold(PlayerRef, iNextStageTicker, iParasiteDuration, "FaceHuggerGag") )
 				if (fctParasites.tryParasiteNextStage(PlayerRef, "FaceHuggerGag"))
 					iNextStageTicker /= 2
@@ -525,7 +523,7 @@ Event OnUpdate()
 			endif 
 
 		ElseIf (fctParasites.isInfectedByString( PlayerRef,  "TentacleMonster" ))
-			iParasiteDuration = daysPassed - StorageUtil.GetIntValue(PlayerRef, "_SLP_iTentacleMonsterDate")
+			Int iParasiteDuration = daysPassed - StorageUtil.GetIntValue(PlayerRef, "_SLP_iTentacleMonsterDate")
 			If (Utility.RandomInt(0,100) > _getParasiteTickerThreshold(PlayerRef, iNextStageTicker, iParasiteDuration, "TentacleMonster") )
 				if (fctParasites.tryParasiteNextStage(PlayerRef, "TentacleMonster"))
 					iNextStageTicker /= 2
