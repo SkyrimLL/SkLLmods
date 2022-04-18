@@ -59,6 +59,11 @@ int iDaysSinceLastCheck
 int iNextStageTicker = 0
 Int iChaurusQueenStage
 
+State Busy
+	Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile, bool abPowerAttack, bool abSneakAttack, bool abBashAttack, bool abHitBlocked)
+	EndEvent
+EndState
+
 Event OnInit()
 	_maintenance()
 EndEvent
@@ -2134,25 +2139,26 @@ Event OnObjectEquipped(Form akBaseObject, ObjectReference akReference)
 endEvent
 
 Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile, bool abPowerAttack, bool abSneakAttack, bool abBashAttack, bool abHitBlocked)
+	GoToState("Busy")
+
 	Actor kPlayer = Game.GetPlayer()
-	Actor kTarget = akAggressor  as Actor
+	Actor kTarget = akAggressor as Actor
 
 	If (kTarget != None) && (kTarget != kPlayer)
-		;  Debug.Trace("We were hit by " + akAggressor)
-		; Debug.Notification("." )
+		;Debug.Trace("We were hit by " + akAggressor)
 
 		if (StorageUtil.GetIntValue(kPlayer, "_SLP_iSpiderPheromoneON") == 1 )
 			fctParasites.tryCharmSpider( kTarget )
 		endif
-
 		if (StorageUtil.GetIntValue(kPlayer, "_SLP_iChaurusPheromoneON") == 1 )
 			fctParasites.tryCharmChaurus( kTarget )
 		endif
-
 		if (StorageUtil.GetFloatValue(kPlayer, "_SLP_chanceSprigganRootArms") > 0.0 )
 			fctParasites.tryPlayerSpriggan( kTarget )
 		endif
 	EndIf
+
+	GoToState("")
 EndEvent
 
 Actor Function _firstNotPlayer(Actor[] _actors)
