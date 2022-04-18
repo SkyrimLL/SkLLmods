@@ -136,7 +136,7 @@ Function _maintenance()
 
 	UnregisterForAllModEvents()
 	Debug.Trace("SexLab Parasites: Reset SexLab events")
-	RegisterForModEvent("HookAnimationStart", "OnSexLabStart")
+	RegisterForModEvent("PlayerTrack_Start", "OnSexLabStart")
 	RegisterForModEvent("HookAnimationEnd",   "OnSexLabEnd")
 	RegisterForModEvent("HookOrgasmStart",    "OnSexLabOrgasm")
  	RegisterForModEvent("SexLabOrgasmSeparate",    "OnSexLabOrgasmSeparate")
@@ -578,35 +578,30 @@ Event OnUpdate()
 	RegisterForSingleUpdate(10)
 EndEvent
 
-Event OnSexLabStart(int threadID, bool HasPlayer)
+Event OnSexLabStart(Form ActorRef, Int threadID)
 	Actor PlayerActor= PlayerAlias.GetReference() as Actor
 	sslBaseAnimation animation = SexLab.GetController(threadID).Animation
 
-	If HasPlayer
+	If (fctParasites.isInfectedByString( PlayerActor,  "SpiderEgg" ))
+		slaUtil.UpdateActorExposure(PlayerActor, 2, "Aroused from sex while carrying spider eggs.")
+	ElseIf (fctParasites.isInfectedByString( PlayerActor,  "SpiderPenis" ))
+		slaUtil.UpdateActorExposure(PlayerActor, 5, "Aroused from sex while carrying spider eggs.")
+	ElseIf (fctParasites.isInfectedByString( PlayerActor,  "ChaurusWorm" )) || (fctParasites.isInfectedByString( PlayerActor,  "ChaurusWormVag" ))
+		slaUtil.UpdateActorExposure(PlayerActor, 10, "Aroused from sex while carrying chaurus worm.")
+	Endif
 
-		If (fctParasites.isInfectedByString( PlayerActor,  "SpiderEgg" ))
-			slaUtil.UpdateActorExposure(PlayerActor, 2, "Aroused from sex while carrying spider eggs.")
-
-		ElseIf (fctParasites.isInfectedByString( PlayerActor,  "SpiderPenis" ))
-			slaUtil.UpdateActorExposure(PlayerActor, 5, "Aroused from sex while carrying spider eggs.")
-
-		ElseIf (fctParasites.isInfectedByString( PlayerActor,  "ChaurusWorm" )) || (fctParasites.isInfectedByString( PlayerActor,  "ChaurusWormVag" ))
-			slaUtil.UpdateActorExposure(PlayerActor, 10, "Aroused from sex while carrying chaurus worm.")
-		Endif
-
-		if animation.HasTag("Chaurus")
-			if (iChaurusQueenStage>=3)
-				fctParasites.forceChaurusQueenStage(340,350)
-			endif
-
-			fctParasites.tryPlayerChaurusStage()
-		elseif animation.HasTag("Spider")
-			if (iChaurusQueenStage>=3)
-				fctParasites.forceChaurusQueenStage(310, 320)
-			endif
-
-			fctParasites.tryPlayerSpiderStage()
+	if animation.HasTag("Chaurus")
+		if (iChaurusQueenStage>=3)
+			fctParasites.forceChaurusQueenStage(340,350)
 		endif
+
+		fctParasites.tryPlayerChaurusStage()
+	elseif animation.HasTag("Spider")
+		if (iChaurusQueenStage>=3)
+			fctParasites.forceChaurusQueenStage(310, 320)
+		endif
+
+		fctParasites.tryPlayerSpiderStage()
 	endif
 EndEvent
 
