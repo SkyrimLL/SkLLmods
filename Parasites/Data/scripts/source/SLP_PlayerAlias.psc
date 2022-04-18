@@ -53,29 +53,23 @@ Ingredient  Property IngredientChaurusEgg Auto
 
 Potion Property SLP_CritterSemen Auto
 
-
 int daysPassed
 int iGameDateLastCheck = -1
 int iDaysSinceLastCheck
 int iNextStageTicker = 0
 
-Int iChaurusQueenStage 
-Int	iChaurusQueenDate
-Int iTickerEventFrequency
+Int iChaurusQueenStage
 
 Event OnInit()
 	_maintenance()
-
 EndEvent
 
 Event OnPlayerLoadGame()
 	_maintenance()
-
 EndEvent
 
 Function _maintenance()
  	Actor PlayerActor= Game.GetPlayer() as Actor
- 	ActorBase pActorBase = PlayerActor.GetActorBase()
  	iChaurusQueenStage = StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusQueenStage")
 
 	Int iCurrentVersionNumber = 20210709
@@ -311,8 +305,6 @@ Int Function _getParasiteTickerThreshold(Actor kActor, Int _iNextStageTicker, In
 		fThreshold = 999
 	endif
 
-
-
 	return (fThreshold as Int)
 EndFunction
 
@@ -434,11 +426,9 @@ Event OnUpdate()
 
 		iNextStageTicker = iNextStageTicker + (iNextStageTicker / 2)
 		iGameDateLastCheck = daysPassed
-
 	else
 		; updates during the day
 		iChaurusQueenStage = StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusQueenStage")
-		iChaurusQueenDate = StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusQueenDate")
 
 		; Enable Chaurus Queen flares only if player is not Queen and not infected by Spriggan root
 		if (iChaurusQueenStage>=1) && (iChaurusQueenStage<=5)
@@ -471,7 +461,6 @@ Event OnUpdate()
 			Endif
 		endif
 
-
 		; Chance of Living Armor infection when swimming
 		if (PlayerActor.IsSwimming()) 
 			; debug.notification("Player is swimming...")
@@ -498,7 +487,6 @@ Event OnUpdate()
 		endif
 
 		if (iNextStageTicker>0)
-
 			; Chance of Spriggan Root growth when player is wet
 			; Spriggan growth is stopped by Seed Stone
 			if (fctParasites.isInfectedByString( PlayerActor,  "SprigganRoot" )) 
@@ -580,11 +568,9 @@ Event OnUpdate()
 					endif
 				endif
 			Endif
-
 		endif
 
 		iNextStageTicker = iNextStageTicker + 1
- 
 	endIf
 
 	iGameDateLastCheck = daysPassed  
@@ -592,12 +578,9 @@ Event OnUpdate()
 	RegisterForSingleUpdate(10)
 EndEvent
 
-
 Event OnSexLabStart(int threadID, bool HasPlayer)
 	Actor PlayerActor= PlayerAlias.GetReference() as Actor
-	ActorBase pActorBase = PlayerActor.GetActorBase()
-	sslThreadController controller = SexLab.GetController(threadID)
-	sslBaseAnimation animation = controller.Animation
+	sslBaseAnimation animation = SexLab.GetController(threadID).Animation
 
 	If HasPlayer
 
@@ -617,7 +600,6 @@ Event OnSexLabStart(int threadID, bool HasPlayer)
 			endif
 
 			fctParasites.tryPlayerChaurusStage()
-
 		elseif animation.HasTag("Spider")
 			if (iChaurusQueenStage>=3)
 				fctParasites.forceChaurusQueenStage(310, 320)
@@ -630,7 +612,6 @@ EndEvent
 
 Event OnSexLabEnd(int threadID, bool HasPlayer)
 	Actor PlayerActor= PlayerAlias.GetReference() as Actor
-	ActorBase pActorBase = PlayerActor.GetActorBase()
 	sslThreadController controller = SexLab.GetController(threadID)
 	sslBaseAnimation animation = controller.Animation
 	Float fBreastScale
@@ -663,14 +644,12 @@ Event OnSexLabEnd(int threadID, bool HasPlayer)
 			fChanceSpiderEgg = fChanceSpiderEgg + 50.0
 			; debug.Notification("The tentacle retracts inside you.")
 			; fctParasites.cureParasiteByString(PlayerActor, "ChaurusQueenVag")
-
 		ElseIf (fctParasites.isInfectedByString(PlayerActor, "ChaurusQueenSkin"))
 			; Player is more receptive if the breast feelers are extended
 			fChanceChaurusWorm = fChanceChaurusWorm + 20.0
 			fChanceChaurusWormVag = fChanceChaurusWormVag + 20.0
 			fChanceSpiderPenis = 0.0
 			fChanceSpiderEgg = fChanceSpiderEgg + 20.0
-
 		elseif (iChaurusQueenStage>=3)
 			; Player is a little more receptive if carrying the Seed Stone
 			fChanceChaurusWorm = fChanceChaurusWorm + 10.0
@@ -707,12 +686,10 @@ Event OnSexLabEnd(int threadID, bool HasPlayer)
 					Endif
 				Endif
 			EndIf
-
 		elseif animation.HasTag("Spider")
 			if (iChaurusQueenStage>=5)
 				Debug.Notification("You skin turns fluids into eggs deep inside you.")
 				StorageUtil.SetIntValue(PlayerActor, "_SLP_iSpiderEggCount", iNumSpiderEggs + (Utility.RandomInt(5,15) ) )
-
 			elseif (iChaurusQueenStage>=2)
 			;	fctParasites.forceChaurusQueenStage(310, 320)
 			endif
@@ -720,7 +697,6 @@ Event OnSexLabEnd(int threadID, bool HasPlayer)
 			; fctParasites.tryPlayerSpiderStage()
 
 			If (!fctParasites.ActorHasKeywordByString(PlayerActor, "Belt")) && (!fctParasites.ActorHasKeywordByString(PlayerActor, "PlugVaginal"))
-
 				if (Utility.RandomInt(1,100)<= (fChanceSpiderPenis as Int) )
 					if (fctParasites.infectParasiteByString(PlayerActor, "SpiderPenis"))
 						iNextStageTicker = (iNextStageTicker / 2)
@@ -735,18 +711,14 @@ Event OnSexLabEnd(int threadID, bool HasPlayer)
 					Endif
 				endif
 			EndIf
-
 		elseif (!animation.HasTag("Masturbation")) && (!animation.HasTag("Solo") )
-
 			if (iChaurusQueenStage>=5)
 				; Int iInventoryChaurusEggs = PlayerActor.GetItemCount(IngredientChaurusEgg)
 				Int iSexLabCumLayers = SexLab.CountCum(PlayerActor,  Vaginal = true,  Oral = true,  Anal = true)
 
 				Debug.Notification("You skin turns fluids into eggs deep inside you.")
 				StorageUtil.SetIntValue(PlayerActor, "_SLP_iChaurusEggCount", iNumChaurusEggs + ((iSexLabCumLayers + 1)*5) )
-
 			endif
-
 		EndIf
 	Endif
 
@@ -776,7 +748,6 @@ Event OnSexLabEnd(int threadID, bool HasPlayer)
 						fctParasites.infectParasiteByString(actors[idx], "SpiderEgg")
 					endif
 				EndIf
-
 			EndIf
 
 			if (iChaurusQueenStage>=5) && (StorageUtil.GetIntValue(PlayerActor, "_SLP_toggleChaurusQueenInfectNPCs" )==1)
@@ -807,48 +778,26 @@ Event OnSexLabEnd(int threadID, bool HasPlayer)
 	endwhile
 EndEvent
 
-
 Event OnSexLabOrgasm(int threadID, bool HasPlayer)
-	Actor PlayerActor = PlayerAlias.GetReference() as Actor
-	sslThreadController controller = SexLab.GetController(threadID)
-	sslBaseAnimation animation = controller.Animation
-
-	Actor[] actors = controller.Positions
-
-	if HasPlayer
-		_doOrgasm( threadID,  PlayerActor)
-	endif
+	Actor[] actors = SexLab.GetController(threadID).Positions
 
 	int idx = 0
 	while idx < actors.Length
-		if (actors[idx] != PlayerActor)
-			_doOrgasm( threadID,  actors[idx])
-		endIf
+		_doOrgasm(threadID, actors[idx])
 		idx += 1
 	endwhile
 EndEvent
 
 Event OnSexLabOrgasmSeparate(Form ActorRef, Int threadID)
-	Actor kActor = ActorRef as actor
-	Actor PlayerActor = PlayerAlias.GetReference() as Actor
-	sslBaseAnimation animation = SexLab.GetController(threadID).Animation
-
-	if kActor == PlayerActor
-		_doOrgasm( threadID,  PlayerActor)
-		
-	Else
-		_doOrgasm( threadID,  kActor)
-	endIf
+	_doOrgasm(threadID, ActorRef as actor)
 EndEvent
 
 Function _doOrgasm(int threadID, Actor kActor)
 	Actor PlayerActor = PlayerAlias.GetReference() as Actor
-	sslThreadController controller = SexLab.GetController(threadID)
-	sslBaseAnimation animation = controller.Animation
+	sslBaseAnimation animation = SexLab.GetController(threadID).Animation
 
 	if animation.HasTag("Spider")
 		if (fctParasites.isInfectedByString( kActor,  "SpiderEgg" )) && (Utility.RandomInt(2,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceSpiderEgg" ) / 2)) 
-
 			if (kActor == PlayerActor)
 				Debug.MessageBox("As you lay on the floor, still panting, you realize the spider extracted the fertilized eggs out of your exhausted body.")
 			else
@@ -861,7 +810,6 @@ Function _doOrgasm(int threadID, Actor kActor)
 	endif
 
 	If (fctParasites.isInfectedByString( kActor, "ChaurusWorm" )) && (Utility.RandomInt(1,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceChaurusWorm" ) / 3)) 
-
 		if (kActor == PlayerActor)
 			Debug.MessageBox("The power of your orgasm is enough to expel the worm from your bowels, making you nearly black out from the added stimulation.")
 		else
@@ -872,7 +820,6 @@ Function _doOrgasm(int threadID, Actor kActor)
 	EndIf
 
 	If (fctParasites.isInfectedByString(kActor, "ChaurusWormVag" )) && (Utility.RandomInt(1,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceChaurusWormVag" ) / 3)) 
-
 		if (kActor == PlayerActor)
 			Debug.MessageBox("The power of your orgasm is enough to expel the worm, making you nearly black out from the added stimulation.")
 		else
@@ -885,21 +832,17 @@ Function _doOrgasm(int threadID, Actor kActor)
 	; Exclude solo animations from parasite transfer
  	if (StorageUtil.GetIntValue(PlayerActor, "_SLP_toggleChaurusQueenInfectNPCs" )==1) && (!(animation.HasTag("Masturbation") || animation.HasTag("Solo") ))  
 		If (fctParasites.isInfectedByString(kActor, "TentacleMonster" )) && (Utility.RandomInt(1,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "_SLP_chanceTentacleMonster" ) / 4)) 
-
 			if (kActor == PlayerActor)
 				Debug.MessageBox("The creature slides around your partner.")
-				
 			else
 				Debug.Notification("The creature slides around another host.")
 			endif
 
 			; NPC is infected -> send parasite to NPC, including player
 			_transferParasiteAfterSex( threadID, kActor, "TentacleMonster", true)
-
 		EndIf
 
 		If (fctParasites.isInfectedByString(kActor, "LivingArmor" )) && (Utility.RandomInt(1,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "LivingArmor" ) / 5)) 
-
 			if (kActor == PlayerActor)
 				Debug.MessageBox("The creature slides around your partner.")
 			else
@@ -908,11 +851,9 @@ Function _doOrgasm(int threadID, Actor kActor)
 
 			; NPC is infected -> send parasite to NPC, including player
 			_transferParasiteAfterSex( threadID, kActor, "LivingArmor", true)
-
 		EndIf
 
 		If (fctParasites.isInfectedByString(kActor, "FaceHugger" )) && (Utility.RandomInt(1,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "FaceHugger" ) / 5)) 
-
 			if (kActor == PlayerActor)
 				Debug.MessageBox("The creature slides around your partner.")
 			else
@@ -921,11 +862,9 @@ Function _doOrgasm(int threadID, Actor kActor)
 
 			; NPC is infected -> send parasite to NPC, including player
 			_transferParasiteAfterSex( threadID, kActor, "FaceHugger", true)
-
 		EndIf
 
 		If (fctParasites.isInfectedByString(kActor, "FaceHuggerGag" )) && (Utility.RandomInt(1,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "FaceHuggerGag" ) / 5)) 
-
 			if (kActor == PlayerActor)
 				Debug.MessageBox("The creature slides around your partner.")
 			else
@@ -934,11 +873,9 @@ Function _doOrgasm(int threadID, Actor kActor)
 
 			; NPC is infected -> send parasite to NPC, including player
 			_transferParasiteAfterSex( threadID, kActor, "FaceHuggerGag", true)
-
 		EndIf
 
 		If (fctParasites.isInfectedByString(kActor, "Barnacles" )) && (Utility.RandomInt(1,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "Barnacles" ) / 5)) 
-
 			if (kActor == PlayerActor)
 				Debug.MessageBox("The spores spread to a new host.")
 			else
@@ -947,11 +884,9 @@ Function _doOrgasm(int threadID, Actor kActor)
 
 			; NPC is infected -> send parasite to NPC, including player
 			_transferParasiteAfterSex( threadID, kActor, "Barnacles", false)
-
 		EndIf
 
 		If (fctParasites.isInfectedByString(kActor, "SprigganRoot" )) && (Utility.RandomInt(1,100)<= (1 + StorageUtil.GetFloatValue(PlayerActor, "SprigganRoot" ) / 5)) 
-
 			if (kActor == PlayerActor)
 				Debug.MessageBox("The spores spread to a new host.")
 			else
@@ -960,17 +895,12 @@ Function _doOrgasm(int threadID, Actor kActor)
 
 			; NPC is infected -> send parasite to NPC, including player
 			_transferParasiteAfterSex( threadID, kActor, "SprigganRootArms", false)
-
 		EndIf
 	EndIf
-
 endfunction
 
 Function _transferParasiteAfterSex(int threadID, Actor kInfectedActor, String sParasite, Bool bCureInfected)
-	Actor PlayerActor = PlayerAlias.GetReference() as Actor
-	sslThreadController controller = SexLab.GetController(threadID)
-	Bool bSuccess = False
-	Actor[] actors = controller.Positions
+	Actor[] actors = SexLab.GetController(threadID).Positions
 
 	Debug.Trace("[SLP] started _transferParasiteAfterSex for " + sParasite)
 
@@ -980,21 +910,18 @@ Function _transferParasiteAfterSex(int threadID, Actor kInfectedActor, String sP
 	endif
 
 	int idx = 0
-	while (idx < actors.Length) && (!bSuccess)
+	while (idx < actors.Length)
 		if (actors[idx] != kInfectedActor) 
 			Debug.Trace("[SLP] found new host: " + actors[idx])
 			fctParasites.infectParasiteByString( actors[idx], sParasite)
-			bSuccess = true
+			Return
 		endIf
 		idx += 1
 	endwhile
-
 endfunction
 
 Event OnArachnophobiaPlayerCaptured(String _eventName, String _args, Float _argc = 1.0, Form _sender)
- 	Actor kActor = _sender as Actor
  	Actor PlayerActor = Game.GetPlayer()
-
  	PlayerActor.SendModEvent("PCSubFree")
 
 	If (!fctParasites.ActorHasKeywordByString(PlayerActor, "Belt")) && (!fctParasites.ActorHasKeywordByString(PlayerActor, "PlugVaginal"))
@@ -1012,8 +939,6 @@ EndEvent
 
 Event OnECBirthCompleted(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
- 	Actor PlayerActor = Game.GetPlayer()
-
 
 	If ( (fctParasites.isInfectedByString( kActor,  "ChaurusWorm" )) || (fctParasites.isInfectedByString( kActor,  "ChaurusWormVag" )) )
 		Debug.MessageBox("The excruciating contractions expelling the eggs out of your body push out your chaurus worms as well.")
@@ -1021,7 +946,6 @@ Event OnECBirthCompleted(String _eventName, String _args, Float _argc = 1.0, For
 		fctParasites.cureParasiteByString(kActor, "ChaurusWorm")
 		fctParasites.cureParasiteByString(kActor, "ChaurusWormVag")
 	Endif
-
 EndEvent
 ;------------------------------------------------------------------------------
 Event OnSLPInfectSpiderEgg(String _eventName, String _args, Float _argc = 1.0, Form _sender)
@@ -1042,7 +966,6 @@ Event OnSLPInfectSpiderEgg(String _eventName, String _args, Float _argc = 1.0, F
 	Endif
 
 	fctParasites.infectParasiteByString(kActor, "SpiderEgg")
-	
 EndEvent
 
 Event OnSLPCureSpiderEgg(String _eventName, String _args, Float _argc = 1.0, Form _sender)
@@ -1054,11 +977,8 @@ Event OnSLPCureSpiderEgg(String _eventName, String _args, Float _argc = 1.0, For
  	Endif
  
 	Debug.Trace("[SLP] Receiving 'cure spider egg' event - Actor: " + kActor)
-
 	fctParasites.cureParasiteByString(kActor, "SpiderEgg", _args )
-	
 EndEvent
-
 
 ;------------------------------------------------------------------------------
 Event OnSLPInfectSpiderPenis(String _eventName, String _args, Float _argc = 1.0, Form _sender)
@@ -1079,8 +999,6 @@ Event OnSLPInfectSpiderPenis(String _eventName, String _args, Float _argc = 1.0,
 	Endif
 
 	fctParasites.infectParasiteByString(kActor, "SpiderPenis")
-
-	
 EndEvent
 
 Event OnSLPCureSpiderPenis(String _eventName, String _args, Float _argc = 1.0, Form _sender)
@@ -1092,9 +1010,7 @@ Event OnSLPCureSpiderPenis(String _eventName, String _args, Float _argc = 1.0, F
  	Endif
 
 	Debug.Trace("[SLP] Receiving 'cure spider penis' event - Actor: " + kActor)
-
 	fctParasites.cureParasiteByString(kActor, "SpiderPenis", _args )
-	
 EndEvent
 
 ;------------------------------------------------------------------------------
@@ -1107,9 +1023,7 @@ Event OnSLPInfectChaurusWorm(String _eventName, String _args, Float _argc = 1.0,
  	Endif
 
 	Debug.Trace("[SLP] Receiving 'infect chaurus worm' event - Actor: " + kActor)
-
 	fctParasites.infectParasiteByString(kActor, "ChaurusWorm")
-	
 EndEvent
 
 Event OnSLPCureChaurusWorm(String _eventName, String _args, Float _argc = 1.0, Form _sender)
@@ -1121,9 +1035,7 @@ Event OnSLPCureChaurusWorm(String _eventName, String _args, Float _argc = 1.0, F
  	Endif
  
 	Debug.Trace("[SLP] Receiving 'cure chaurus worm' event - Actor: " + kActor)
-
 	fctParasites.cureParasiteByString(kActor, "ChaurusWorm", _args )
-
 EndEvent
 
 ;------------------------------------------------------------------------------
@@ -1145,8 +1057,6 @@ Event OnSLPInfectChaurusWormVag(String _eventName, String _args, Float _argc = 1
 	Endif
 
 	fctParasites.infectParasiteByString(kActor, "ChaurusWormVag")
-	
-	
 EndEvent
 
 Event OnSLPCureChaurusWormVag(String _eventName, String _args, Float _argc = 1.0, Form _sender)
@@ -1158,10 +1068,7 @@ Event OnSLPCureChaurusWormVag(String _eventName, String _args, Float _argc = 1.0
  	Endif
  
 	Debug.Trace("[SLP] Receiving 'cure chaurus worm vaginal' event - Actor: " + kActor)
-
 	fctParasites.cureParasiteByString(kActor, "ChaurusWormVag", _args )
-
-
 EndEvent
 
 ;------------------------------------------------------------------------------
@@ -1174,9 +1081,7 @@ Event OnSLPInfectEstrusTentacles(String _eventName, String _args, Float _argc = 
  	Endif
 
 	Debug.Trace("[SLP] Receiving 'infect estrus tentacle' event - Actor: " + kActor)
-	
 	fctParasites.infectParasiteByString(kActor, "EstrusTentacles")
-	
 EndEvent
 
 Event OnSLPInfectTentacleMonster(String _eventName, String _args, Float _argc = 1.0, Form _sender)
@@ -1197,7 +1102,6 @@ Event OnSLPInfectTentacleMonster(String _eventName, String _args, Float _argc = 
 	Endif
 
 	fctParasites.infectParasiteByString(kActor, "TentacleMonster")
-	
 EndEvent
 
 Event OnSLPCureTentacleMonster(String _eventName, String _args, Float _argc = 1.0, Form _sender)
@@ -1209,9 +1113,7 @@ Event OnSLPCureTentacleMonster(String _eventName, String _args, Float _argc = 1.
  	Endif
 
 	Debug.Trace("[SLP] Receiving 'cure tentacle monster' event - Actor: " + kActor)
-
 	fctParasites.cureParasiteByString(kActor, "TentacleMonster", _args )
-
 EndEvent
 
 ;------------------------------------------------------------------------------
@@ -1224,9 +1126,7 @@ Event OnSLPInfectEstrusSlime(String _eventName, String _args, Float _argc = 1.0,
  	Endif
 
 	Debug.Trace("[SLP] Receiving 'infect estrus slime' event - Actor: " + kActor)
-
 	fctParasites.infectParasiteByString(kActor, "EstrusSlime")
-	
 EndEvent
 
 Event OnSLPInfectLivingArmor(String _eventName, String _args, Float _argc = 1.0, Form _sender)
@@ -1247,7 +1147,6 @@ Event OnSLPInfectLivingArmor(String _eventName, String _args, Float _argc = 1.0,
 	Endif
 
 	fctParasites.infectParasiteByString(kActor, "LivingArmor")
-	
 EndEvent
 
 Event OnSLPCureLivingArmor(String _eventName, String _args, Float _argc = 1.0, Form _sender)
@@ -1259,9 +1158,7 @@ Event OnSLPCureLivingArmor(String _eventName, String _args, Float _argc = 1.0, F
  	Endif
 
 	Debug.Trace("[SLP] Receiving 'cure living armor' event - Actor: " + kActor)
-
 	fctParasites.cureParasiteByString(kActor, "LivingArmor", _args )
-
 EndEvent
 
 ;------------------------------------------------------------------------------
@@ -1283,7 +1180,6 @@ Event OnSLPInfectFaceHugger(String _eventName, String _args, Float _argc = 1.0, 
 	Endif
 
 	fctParasites.infectParasiteByString(kActor, "FaceHugger")
-	
 EndEvent
 
 Event OnSLPCureFaceHugger(String _eventName, String _args, Float _argc = 1.0, Form _sender)
@@ -1295,9 +1191,7 @@ Event OnSLPCureFaceHugger(String _eventName, String _args, Float _argc = 1.0, Fo
  	Endif
 
 	Debug.Trace("[SLP] Receiving 'cure face hugger' event - Actor: " + kActor)
-
 	fctParasites.cureParasiteByString(kActor, "FaceHugger", _args )
-
 EndEvent
 
 Event OnSLPInfectFaceHuggerGag(String _eventName, String _args, Float _argc = 1.0, Form _sender)
@@ -1307,12 +1201,9 @@ Event OnSLPInfectFaceHuggerGag(String _eventName, String _args, Float _argc = 1.
  	If (kActor == None)
  		kActor = PlayerActor
  	Endif
- 	
  
 	Debug.Trace("[SLP] Receiving 'infect face hugger (gag)' event - Actor: " + kActor)
-
 	fctParasites.infectParasiteByString(kActor, "FaceHuggerGag")
-	
 EndEvent
 
 Event OnSLPCureFaceHuggerGag(String _eventName, String _args, Float _argc = 1.0, Form _sender)
@@ -1322,12 +1213,9 @@ Event OnSLPCureFaceHuggerGag(String _eventName, String _args, Float _argc = 1.0,
  	If (kActor == None)
  		kActor = PlayerActor
  	Endif
- 	
 
 	Debug.Trace("[SLP] Receiving 'cure face hugger (gag)' event - Actor: " + kActor)
-
 	fctParasites.cureParasiteByString(kActor, "FaceHuggerGag", _args )
-
 EndEvent
 
 ;------------------------------------------------------------------------------
@@ -1338,7 +1226,6 @@ Event OnSLPInfectBarnacles(String _eventName, String _args, Float _argc = 1.0, F
  	If (kActor == None)
  		kActor = PlayerActor
  	Endif
- 	
 
 	Debug.Trace("[SLP] Receiving 'infect barnacles' event - Actor: " + kActor)
 
@@ -1350,7 +1237,6 @@ Event OnSLPInfectBarnacles(String _eventName, String _args, Float _argc = 1.0, F
 	Endif
 
 	fctParasites.infectParasiteByString(kActor, "Barnacles")
-	
 EndEvent
 
 Event OnSLPCureBarnacles(String _eventName, String _args, Float _argc = 1.0, Form _sender)
@@ -1360,13 +1246,9 @@ Event OnSLPCureBarnacles(String _eventName, String _args, Float _argc = 1.0, For
  	If (kActor == None)
  		kActor = PlayerActor
  	Endif
- 	
 
 	Debug.Trace("[SLP] Receiving 'cure barnacles' event - Actor: " + kActor)
-
 	fctParasites.cureParasiteByString(kActor, "Barnacles", _args )
-
-
 EndEvent
 
 ;------------------------------------------------------------------------------
@@ -1377,12 +1259,9 @@ Event OnSLPInfectSprigganRoot(String _eventName, String _args, Float _argc = 1.0
  	If (kActor == None)
  		kActor = PlayerActor
  	Endif
- 	
 
 	Debug.Trace("[SLP] Receiving 'infect SprigganRoot' event - Actor: " + kActor)
-
 	fctParasites.infectParasiteByString(kActor, "SprigganRoot")
-	
 EndEvent
 
 Event OnSLPCureSprigganRoot(String _eventName, String _args, Float _argc = 1.0, Form _sender)
@@ -1392,7 +1271,6 @@ Event OnSLPCureSprigganRoot(String _eventName, String _args, Float _argc = 1.0, 
  	If (kActor == None)
  		kActor = PlayerActor
  	Endif
- 	
 
 	Debug.Trace("[SLP] Receiving 'cure SprigganRoot' event - Actor: " + kActor)
 
@@ -1401,8 +1279,6 @@ Event OnSLPCureSprigganRoot(String _eventName, String _args, Float _argc = 1.0, 
 	else
 		fctParasites.cureParasiteByString(kActor, "SprigganRoot", _args )
 	endif
-
-
 EndEvent
 
 ;------------------------------------------------------------------------------
@@ -1413,12 +1289,9 @@ Event OnSLPInfectSprigganRootGag(String _eventName, String _args, Float _argc = 
  	If (kActor == None)
  		kActor = PlayerActor
  	Endif
- 	
 
 	Debug.Trace("[SLP] Receiving 'infect SprigganRootGag' event - Actor: " + kActor)
-
 	fctParasites.infectParasiteByString(kActor, "SprigganRootGag")
-	
 EndEvent
 
 Event OnSLPCureSprigganRootGag(String _eventName, String _args, Float _argc = 1.0, Form _sender)
@@ -1428,13 +1301,9 @@ Event OnSLPCureSprigganRootGag(String _eventName, String _args, Float _argc = 1.
  	If (kActor == None)
  		kActor = PlayerActor
  	Endif
- 	
 
 	Debug.Trace("[SLP] Receiving 'cure SprigganRootGag' event - Actor: " + kActor)
-
 	fctParasites.cureParasiteByString(kActor, "SprigganRootGag", _args )
-
-
 EndEvent
 
 ;------------------------------------------------------------------------------
@@ -1445,12 +1314,9 @@ Event OnSLPInfectSprigganRootArms(String _eventName, String _args, Float _argc =
  	If (kActor == None)
  		kActor = PlayerActor
  	Endif
- 	
 
 	Debug.Trace("[SLP] Receiving 'infect SprigganRootArms' event - Actor: " + kActor)
-
 	fctParasites.infectParasiteByString(kActor, "SprigganRootArms")
-	
 EndEvent
 
 Event OnSLPCureSprigganRootArms(String _eventName, String _args, Float _argc = 1.0, Form _sender)
@@ -1460,13 +1326,9 @@ Event OnSLPCureSprigganRootArms(String _eventName, String _args, Float _argc = 1
  	If (kActor == None)
  		kActor = PlayerActor
  	Endif
- 	
 
 	Debug.Trace("[SLP] Receiving 'cure SprigganRootArms' event - Actor: " + kActor)
-
 	fctParasites.cureParasiteByString(kActor, "SprigganRootArms", _args )
-
-
 EndEvent
 
 ;------------------------------------------------------------------------------
@@ -1477,12 +1339,9 @@ Event OnSLPInfectSprigganRootFeet(String _eventName, String _args, Float _argc =
  	If (kActor == None)
  		kActor = PlayerActor
  	Endif
- 	
 
 	Debug.Trace("[SLP] Receiving 'infect SprigganRootFeet' event - Actor: " + kActor)
-
 	fctParasites.infectParasiteByString(kActor, "SprigganRootFeet")
-	
 EndEvent
 
 Event OnSLPCureSprigganRootFeet(String _eventName, String _args, Float _argc = 1.0, Form _sender)
@@ -1492,13 +1351,9 @@ Event OnSLPCureSprigganRootFeet(String _eventName, String _args, Float _argc = 1
  	If (kActor == None)
  		kActor = PlayerActor
  	Endif
- 	
 
 	Debug.Trace("[SLP] Receiving 'cure SprigganRootFeet' event - Actor: " + kActor)
-
 	fctParasites.cureParasiteByString(kActor, "SprigganRootFeet", _args )
-
-
 EndEvent
 
 ;------------------------------------------------------------------------------
@@ -1509,12 +1364,9 @@ Event OnSLPInfectSprigganRootBody(String _eventName, String _args, Float _argc =
  	If (kActor == None)
  		kActor = PlayerActor
  	Endif
- 	
 
 	Debug.Trace("[SLP] Receiving 'infect SprigganRootBody' event - Actor: " + kActor)
-
 	fctParasites.infectParasiteByString(kActor, "SprigganRootBody")
-	
 EndEvent
 
 Event OnSLPCureSprigganRootBody(String _eventName, String _args, Float _argc = 1.0, Form _sender)
@@ -1524,16 +1376,10 @@ Event OnSLPCureSprigganRootBody(String _eventName, String _args, Float _argc = 1
  	If (kActor == None)
  		kActor = PlayerActor
  	Endif
- 	
 
 	Debug.Trace("[SLP] Receiving 'cure SprigganRootBody' event - Actor: " + kActor)
-
 	fctParasites.cureParasiteByString(kActor, "SprigganRootBody", _args )
-
-
 EndEvent
-
-
 
 ;------------------------------------------------------------------------------
 Event OnSLPInfectChaurusQueenVag(String _eventName, String _args, Float _argc = 1.0, Form _sender)
@@ -1554,7 +1400,6 @@ Event OnSLPInfectChaurusQueenVag(String _eventName, String _args, Float _argc = 
 	Endif
 
 	fctParasites.infectParasiteByString(kActor, "ChaurusQueenVag")
-	
 EndEvent
 
 Event OnSLPCureChaurusQueenVag(String _eventName, String _args, Float _argc = 1.0, Form _sender)
@@ -1566,9 +1411,7 @@ Event OnSLPCureChaurusQueenVag(String _eventName, String _args, Float _argc = 1.
  	Endif
  
 	Debug.Trace("[SLP] Receiving 'cure chaurus queen vaginal' event - Actor: " + kActor)
-
 	fctParasites.cureParasiteByString(kActor, "ChaurusQueenVag", _args )
-
 EndEvent
 
 ;------------------------------------------------------------------------------
@@ -1590,7 +1433,6 @@ Event OnSLPInfectChaurusQueenGag(String _eventName, String _args, Float _argc = 
 	Endif
 
 	fctParasites.infectParasiteByString(kActor, "ChaurusQueenGag")
-	
 EndEvent
 
 Event OnSLPCureChaurusQueenGag(String _eventName, String _args, Float _argc = 1.0, Form _sender)
@@ -1602,11 +1444,8 @@ Event OnSLPCureChaurusQueenGag(String _eventName, String _args, Float _argc = 1.
  	Endif
  
 	Debug.Trace("[SLP] Receiving 'cure chaurus queen mask' event - Actor: " + kActor)
-
 	fctParasites.cureParasiteByString(kActor, "ChaurusQueenGag", _args )
-
 EndEvent
-
 
 ;------------------------------------------------------------------------------
 Event OnSLPInfectChaurusQueenSkin(String _eventName, String _args, Float _argc = 1.0, Form _sender)
@@ -1627,7 +1466,6 @@ Event OnSLPInfectChaurusQueenSkin(String _eventName, String _args, Float _argc =
 	Endif
 
 	fctParasites.infectParasiteByString(kActor, "ChaurusQueenSkin")
-	
 EndEvent
 
 Event OnSLPCureChaurusQueenSkin(String _eventName, String _args, Float _argc = 1.0, Form _sender)
@@ -1639,11 +1477,8 @@ Event OnSLPCureChaurusQueenSkin(String _eventName, String _args, Float _argc = 1
  	Endif
  
 	Debug.Trace("[SLP] Receiving 'cure chaurus queen skin' event - Actor: " + kActor)
-
 	fctParasites.cureParasiteByString(kActor, "ChaurusQueenSkin", _args )
-
 EndEvent
-
 
 ;------------------------------------------------------------------------------
 Event OnSLPInfectChaurusQueenArmor(String _eventName, String _args, Float _argc = 1.0, Form _sender)
@@ -1664,7 +1499,6 @@ Event OnSLPInfectChaurusQueenArmor(String _eventName, String _args, Float _argc 
 	Endif
 
 	fctParasites.infectParasiteByString(kActor, "ChaurusQueenArmor")
-	
 EndEvent
 
 Event OnSLPCureChaurusQueenArmor(String _eventName, String _args, Float _argc = 1.0, Form _sender)
@@ -1678,7 +1512,6 @@ Event OnSLPCureChaurusQueenArmor(String _eventName, String _args, Float _argc = 
 	Debug.Trace("[SLP] Receiving 'cure chaurus queen armor' event - Actor: " + kActor)
 
 	fctParasites.cureParasiteByString(kActor, "ChaurusQueenArmor", _args )
-
 EndEvent
 
 ;------------------------------------------------------------------------------
@@ -1700,7 +1533,6 @@ Event OnSLPInfectChaurusQueenBody(String _eventName, String _args, Float _argc =
 	Endif
 
 	fctParasites.infectParasiteByString(kActor, "ChaurusQueenBody")
-	
 EndEvent
 
 Event OnSLPCureChaurusQueenBody(String _eventName, String _args, Float _argc = 1.0, Form _sender)
@@ -1714,21 +1546,15 @@ Event OnSLPCureChaurusQueenBody(String _eventName, String _args, Float _argc = 1
 	Debug.Trace("[SLP] Receiving 'cure chaurus queen body' event - Actor: " + kActor)
 
 	fctParasites.cureParasiteByString(kActor, "ChaurusQueenBody", _args )
-
 EndEvent
 ;------------------------------------------------------------------------------
 Event OnSLPInfectEstrusChaurusEgg(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
   	Actor PlayerActor = Game.GetPlayer()
-  	Bool bSilent = false
 
  	If (kActor == None)
  		kActor = PlayerActor
  	Endif
- 	
- 	if (_argc==1.0)
- 		bSilent = true
- 	endif
 
 	Debug.Trace("[SLP] Receiving 'infect estrus chaurus egg' event - Actor: " + kActor)
 
@@ -1740,7 +1566,6 @@ Event OnSLPInfectEstrusChaurusEgg(String _eventName, String _args, Float _argc =
 	Endif
 
 	fctParasites.infectParasiteByString(kActor, "ChaurusEggSilent"  )
-	
 EndEvent
 
 ;------------------------------------------------------------------------------
@@ -1754,33 +1579,21 @@ Event OnSLPTriggerEstrusChaurusBirth(String _eventName, String _args, Float _arg
  		kActor = PlayerActor
  	Endif
 
- 	; (sParasite == "SpiderEgg")
-	; (sParasite == "Barnacles")
-	
 	Debug.Trace("[SLP] Receiving 'trigger estrus chaurus birth' event - Actor: " + kActor)
-
 	fctParasites.triggerEstrusChaurusBirth( kActor, sParasite, iBirthItemCount )
-	
 EndEvent
 
 ;------------------------------------------------------------------------------
 Event OnSLPTriggerFuroTub(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
   	Actor PlayerActor = Game.GetPlayer()
- 	String sParasite = _args
- 	Int iBirthItemCount = _argc as Int
 
  	If (kActor == None)
  		kActor = PlayerActor
  	Endif
 
- 	; (sParasite == "SpiderEgg")
-	; (sParasite == "Barnacles")
-	
 	Debug.Trace("[SLP] Receiving 'trigger furo tub' event - Actor: " + PlayerActor)
-
 	fctParasites.triggerFuroTub( PlayerActor, "" )
-	
 EndEvent
 ;------------------------------------------------------------------------------
 Event OnSLPSexCure(String _eventName, String _args, Float _argc = 0.0, Form _sender)
@@ -1916,7 +1729,6 @@ Event OnSLPSexCure(String _eventName, String _args, Float _argc = 0.0, Form _sen
 		EndIf
 	endif
 
-
 	If (!bIsPlayerHealer)
 		; kActor = kPlayer
 		Debug.Trace("[SLP]  	Player is the patient")
@@ -1932,9 +1744,6 @@ Event OnSLPSexCure(String _eventName, String _args, Float _argc = 0.0, Form _sen
 		Debug.Trace("[SLP]  	Player is the healer")
 		_afterSexCure( kActor, sParasite, bIsPlayerHealer, bHarvestParasite) 
 	Endif
-
-
-
 EndEvent
 
 Function _afterSexCure(Actor kActor, String sParasite, Bool bIsPlayerHealer, Bool bHarvestParasite) 
@@ -2020,15 +1829,12 @@ Event OnSLPClearParasites(String _eventName, String _args, Float _argc = 1.0, Fo
  	; fctParasites.cureParasiteByString(kActor, "SprigganRootArms", bHarvestParasite) 
  	fctParasites.cureParasiteByString(kActor, "SprigganRootFeet", bHarvestParasite) 
  	fctParasites.cureParasiteByString(kActor, "SprigganRootBody", bHarvestParasite) 
-   
-
 EndEvent
 
 Event OnSLPHideParasite(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
   	Actor PlayerActor = Game.GetPlayer()
  	String sParasite = _args
- 	Bool bHarvestParasite = False
 
  	If (kActor == None)
  		kActor = PlayerActor
@@ -2041,14 +1847,12 @@ Event OnSLPHideParasite(String _eventName, String _args, Float _argc = 1.0, Form
 	StorageUtil.SetIntValue(kActor, "_SLP_iHiddenParasite_" + sParasite, 1)
 
 	fctParasites.applyHiddenParasiteEffect(kActor, sParasite) 
-
 EndEvent
 
 Event OnSLPShowParasite(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
   	Actor PlayerActor = Game.GetPlayer()
  	String sParasite = _args
- 	Bool bHarvestParasite = False
 
  	If (kActor == None)
  		kActor = PlayerActor
@@ -2061,23 +1865,18 @@ Event OnSLPShowParasite(String _eventName, String _args, Float _argc = 1.0, Form
 	StorageUtil.SetIntValue(kActor, "_SLP_iHiddenParasite_" + sParasite, 0)
 
 	fctParasites.clearHiddenParasiteEffect(kActor, sParasite) 
-
 EndEvent
-
 
 Event OnSLPRefreshParasites(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
   	Actor PlayerActor = Game.GetPlayer()
- 	Bool bHarvestParasite = False
 
  	If (kActor == None)
  		kActor = PlayerActor
  	Endif
- 	
+
 	Debug.Trace("[SLP] Receiving 'refresh parasites' event - Actor: " + kActor)
-
 	refreshAllPArasites(kActor)
-
 EndEvent
 
 Function refreshAllPArasites(Actor kActor)
@@ -2102,7 +1901,6 @@ Function refreshAllPArasites(Actor kActor)
 	fctParasites.refreshParasite(kActor, "ChaurusQueenBody") 
 	debug.notification("[SLP] Refreshing parasites - done")
 EndFunction
-
 
 Event OnSLPRefreshBodyShape(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
@@ -2148,13 +1946,11 @@ Event OnSLPRefreshBodyShape(String _eventName, String _args, Float _argc = 1.0, 
 		fctParasites.ApplyBodyChange( kActor, "FaceHugger", "Belly", fValue, StorageUtil.GetFloatValue(PlayerActor, "_SLP_bellyMaxFaceHugger" ) )
 	EndIf
 
-
 	If (iChaurusQueenStage >= 5) && (kActor == PlayerActor)
 		Debug.Trace("[SLP] Refreshing belly shape (chaurus queen)")
 		Int iNumChaurusEggs = StorageUtil.GetIntValue(kActor, "_SLP_iChaurusEggCount" )
 		fctParasites.ApplyBodyChange( kActor, "ChaurusQueen", "Belly", 1.0 + (4.0 * (iNumChaurusEggs as Float) / StorageUtil.GetFloatValue(PlayerActor, "_SLP_bellyMaxChaurusQueen" )), StorageUtil.GetFloatValue(PlayerActor, "_SLP_bellyMaxChaurusQueen" ))
 	EndIf
-
 EndEvent
 
 Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
@@ -2320,13 +2116,6 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 	fctParasites.resetOnSleep()
 EndEvent
 
-Event OnSleepStop(bool abInterrupted)
-	If abInterrupted
-
-	EndIf
-EndEvent
- 
-
 Event OnObjectEquipped(Form akBaseObject, ObjectReference akReference)
 	Actor PlayerActor = Game.getPlayer()
 	iChaurusQueenStage = StorageUtil.GetIntValue(PlayerActor, "_SLP_iChaurusQueenStage")
@@ -2374,26 +2163,9 @@ Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile,
 			fctParasites.tryPlayerSpriggan( kTarget )
 		endif
 	EndIf
-
 EndEvent
 
-
-Bool Function _hasPlayer(Actor[] _actors)
-	; ObjectReference PlayerREF= PlayerAlias.GetReference()
-	Actor PlayerREF = Game.GetPlayer()
-
-	int idx = 0
-	while idx < _actors.Length
-		if _actors[idx] == PlayerRef
-			return True
-		endif
-		idx += 1
-	endwhile
-	Return False
-EndFunction
-
 Actor Function _firstNotPlayer(Actor[] _actors)
-	; ObjectReference PlayerREF= PlayerAlias.GetReference()
 	Actor PlayerREF = Game.GetPlayer()
 
 	int idx = 0
@@ -2406,39 +2178,6 @@ Actor Function _firstNotPlayer(Actor[] _actors)
 	Return None
 EndFunction
 
-Bool Function _hasActor(Actor[] _actors, Actor thisActor)
-
-	int idx = 0
-	while idx < _actors.Length
-		if _actors[idx] == thisActor as ObjectReference
-			return True
-		endif
-		idx += 1
-	endwhile
-	Return False
-EndFunction
-
-Bool Function _hasRace(Actor[] _actors, Race thisRace)
-	ActorBase aBase 
-	Race aRace 
-
-	int idx = 0
-	while idx < _actors.Length
-		if (_actors[idx])
-			; aBase = _actors[idx].GetBaseObject() as ActorBase
-			aRace = _actors[idx].GetLeveledActorBase().GetRace()
-			if aRace == thisRace
-				return True
-			endif
-		EndIf
-		idx += 1
-	endwhile
-	Return False
-EndFunction
-
 Bool function isFemale(actor kActor)
 	return (kActor.GetActorBase().GetSex() == 1)
 EndFunction
- 
-
-
