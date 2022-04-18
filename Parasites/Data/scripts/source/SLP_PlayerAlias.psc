@@ -754,16 +754,16 @@ Event OnSexLabEnd(int threadID, bool HasPlayer)
 				If HasPlayer && (!animation.HasTag("Chaurus")) && (!animation.HasTag("Spider")) && ( (fctParasites.ActorHasKeywordByString(PlayerActor, "ChaurusQueenVag")) || (fctParasites.ActorHasKeywordByString(PlayerActor, "ChaurusQueenArmor")) || (fctParasites.ActorHasKeywordByString(PlayerActor, "ChaurusQueenBody")) )
 					Int iRandumNum = Utility.RandomInt(0,100)
 
-					if (iRandumNum > 95) && isFemale(actors[idx])
+					if (iRandumNum > 95) && (actors[idx].GetBaseObject() as ActorBase).GetSex() == 1
 						debug.notification("You push chaurus eggs inside her.")
 						fctParasites.infectParasiteByString(actors[idx], "ChaurusEggSilent")
 
-					elseif (iRandumNum > 90) && fctParasites.ActorHasKeywordByString(PlayerActor, "ChaurusQueenArmor")  && isFemale(actors[idx])
+					elseif (iRandumNum > 90) && fctParasites.ActorHasKeywordByString(PlayerActor, "ChaurusQueenArmor") && (actors[idx].GetBaseObject() as ActorBase).GetSex() == 1
 						debug.notification("You push spider eggs inside her.")
-						fctParasites.infectParasiteByString(actors[idx], "SpiderEgg")	
+						fctParasites.infectParasiteByString(actors[idx], "SpiderEgg")
 
 					elseif (iRandumNum > 80)
-						if (isFemale(actors[idx]))
+						if (actors[idx].GetBaseObject() as ActorBase).GetSex() == 1
 							debug.notification("A chaurus worm crawls inside her.")
 						else
 							debug.notification("A chaurus worm crawls inside him.")
@@ -2176,8 +2176,4 @@ Actor Function _firstNotPlayer(Actor[] _actors)
 		idx += 1
 	endwhile
 	Return None
-EndFunction
-
-Bool function isFemale(actor kActor)
-	return (kActor.GetActorBase().GetSex() == 1)
 EndFunction
