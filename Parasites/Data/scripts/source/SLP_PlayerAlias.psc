@@ -1,34 +1,14 @@
 Scriptname SLP_PlayerAlias extends ReferenceAlias  
 
 SexLabFramework     property SexLab Auto
-zadLibs Property libs Auto
 slaUtilScr Property slaUtil  Auto  
 
 SLP_fcts_parasites Property fctParasites  Auto
 SLP_fcts_outfits Property fctOutfits  Auto
 
-ReferenceAlias Property PlayerAlias  Auto  
-ReferenceAlias Property SpiderEggInfectedAlias  Auto  
-ReferenceAlias Property ChaurusWormInfectedAlias  Auto  
-ReferenceAlias Property BarnaclesInfectedAlias  Auto  
-ReferenceAlias Property TentacleMonsterInfectedAlias  Auto  
-ReferenceAlias Property LivingArmorInfectedAlias  Auto  
-ReferenceAlias Property FaceHuggerInfectedAlias  Auto  
 ReferenceAlias Property SpiderFollowerAlias  Auto  
 
 Quest Property KynesBlessingQuest  Auto 
-
-GlobalVariable Property _SLP_GV_numInfections  Auto 
-GlobalVariable Property _SLP_GV_numSpiderEggInfections  Auto 
-GlobalVariable Property _SLP_GV_numChaurusWormInfections  Auto 
-GlobalVariable Property _SLP_GV_numChaurusWormVagInfections  Auto 
-GlobalVariable Property _SLP_GV_numTentacleMonsterInfections  Auto 
-GlobalVariable Property _SLP_GV_numLivingArmorInfections  Auto 
-GlobalVariable Property _SLP_GV_numFaceHuggerInfections  Auto 
-GlobalVariable Property _SLP_GV_numBarnaclesInfections  Auto 
-
-Faction Property PlayerFollowerFaction Auto
-
 
 Location Property SLP_BlackreachLocation Auto
 Keyword Property SLP_DraugrCryptLocType Auto
@@ -38,8 +18,6 @@ Keyword Property SLP_NordicRuinLocType Auto
 Keyword Property SLP_CaveLocType Auto
 Keyword Property SLP_DwarvenRuinLocType Auto
 Keyword Property SLP_OutdoorLocType Auto
-
-; SPELL Property StomachRot Auto
 
 Container Property EggSac  Auto  
 
