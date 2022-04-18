@@ -57,7 +57,6 @@ int daysPassed
 int iGameDateLastCheck = -1
 int iDaysSinceLastCheck
 int iNextStageTicker = 0
-
 Int iChaurusQueenStage
 
 Event OnInit()
@@ -210,61 +209,57 @@ Function _maintenance()
 	fctOutfits.SetPriestOutfits()
 
 	; Detection of compatible mods
-	; Reset first in case some mods have been removed
-	StorageUtil.SetIntValue(none, "_SLS_isEstrusChaurusON", 0) 
-	StorageUtil.SetIntValue(none, "_SLS_isBeeingFemaleON", 0) 
-	StorageUtil.SetIntValue(none, "_SLS_isCagedFollowerON", 0) 
-	StorageUtil.SetIntValue(none, "_SLP_isAnimatedDragonWings",  0) 
-	StorageUtil.SetIntValue(none, "_SLP_isRealFlying",  0) 
-	StorageUtil.SetIntValue(none, "_SLP_isAnimatedWingsUltimate", 0) 
+	If Game.GetModByName("EstrusChaurus.esp") != 255
+		debug.trace("[SLP] 'EstrusChaurus.esp' detected")
+		StorageUtil.SetIntValue(none, "_SLS_isEstrusChaurusON", 1)
+		StorageUtil.SetFormValue(none, "_SLS_getEstrusChaurusBreederSpell", Game.GetFormFromFile(0x019121, "EstrusChaurus.esp"))
+		StorageUtil.SetFormValue(none, "_SLS_getEstrusChaurusParasiteEgg", Game.GetFormFromFile(0x00EA27, "EstrusChaurus.esp"))
+	Else
+		StorageUtil.SetIntValue(none, "_SLS_isEstrusChaurusON", 0)
+	EndIf
 
-	int idx = Game.GetModCount()
-	string modName = ""
-	while idx > 0
-		idx -= 1
-		modName = Game.GetModName(idx)
-		if modName == "EstrusChaurus.esp"
-			debug.trace("[SLP] 'EstrusChaurus.esp' detected")
-			StorageUtil.SetIntValue(none, "_SLS_isEstrusChaurusON",  1) 
-			StorageUtil.SetFormValue(none, "_SLS_getEstrusChaurusBreederSpell",  Game.GetFormFromFile(0x00019121, modName)) ; as Spell
-			StorageUtil.SetFormValue(none, "_SLS_getEstrusChaurusParasiteEgg",  Game.GetFormFromFile(0x0000EA27, modName)) ; as Ingredient
-			debug.trace("[SLP] 		Chaurus Parasite Eggs: " + Game.GetFormFromFile(0x0000EA27, modName))
+	If Game.GetModByName("BeeingFemale.esm") != 255
+		debug.trace("[SLP] 'BeeingFemale.esm' detected")
+		StorageUtil.SetIntValue(none, "_SLS_isBeeingFemaleON", 1)
+		StorageUtil.SetFormValue(none, "_SLS_getBeeingFemalePregnancySpell", Game.GetFormFromFile(0x0028A0, "BeeingFemale.esm"))
+	Else
+		StorageUtil.SetIntValue(none, "_SLS_isBeeingFemaleON", 0)
+	EndIf
 
-		elseif modName == "BeeingFemale.esm"
-			debug.trace("[SLP] 'BeeingFemale.esm' detected")
-			StorageUtil.SetIntValue(none, "_SLS_isBeeingFemaleON",  1) 
-			StorageUtil.SetFormValue(none, "_SLS_getBeeingFemalePregnancySpell",  Game.GetFormFromFile(0x000028A0, modName)) ; as Spell
+	If Game.GetModByName("CagedFollowers.esp") != 255
+		debug.trace("[SLP] 'CagedFollowers.esp' detected")
+		StorageUtil.SetIntValue(none, "_SLS_isCagedFollowerON", 1)
+		StorageUtil.SetFormValue(none, "_SLS_getCagedFollowerQuestKeyword", Game.GetFormFromFile(0x00184D, "CagedFollowers.esp"))
+	Else
+		StorageUtil.SetIntValue(none, "_SLS_isCagedFollowerON", 0)
+	EndIf
 
-		elseif modName == "CagedFollowers.esp"
-			debug.trace("[SLP] 'CagedFollowers.esp' detected")
-			StorageUtil.SetIntValue(none, "_SLS_isCagedFollowerON",  1) 
-			StorageUtil.SetFormValue(none, "_SLS_getCagedFollowerQuestKeyword",  Game.GetFormFromFile(0x0000184d, modName)) ; as Keyword
+	If Game.GetModByName("Animated Dragon Wings.esp") != 255
+		debug.trace("[SLP] 'Animated Dragon Wings.esp' detected")
+		StorageUtil.SetIntValue(none, "_SLP_isAnimatedDragonWings", 1)
+		StorageUtil.SetFormValue(none, "_SLP_getWingsPotion", Game.GetFormFromFile(0x00388B, "Animated Dragon Wings.esp"))
+		StorageUtil.SetFormValue(none, "_SLP_getWingsCurePotion", Game.GetFormFromFile(0x0022F5, "Animated Dragon Wings.esp"))
+	Else
+		StorageUtil.SetIntValue(none, "_SLP_isAnimatedDragonWings", 0)
+	EndIf
 
-		elseif modName == "Animated Dragon Wings.esp"
-			debug.trace("[SLP] 'Animated Dragon Wings.esp' detected")
-			StorageUtil.SetIntValue(none, "_SLP_isAnimatedDragonWings",  1) 
-			debug.trace("[SLP] 		Friendly Wings Potion: " + Game.GetFormFromFile(0x0000388B, modName))
-			debug.trace("[SLP] 		Dispel Wings Potion: " + Game.GetFormFromFile(0x000022F5, modName))
-			StorageUtil.SetFormValue(none, "_SLP_getWingsPotion",  Game.GetFormFromFile(0x0000388B, modName))  
-			StorageUtil.SetFormValue(none, "_SLP_getWingsCurePotion",  Game.GetFormFromFile(0x000022F5, modName))  
+	If Game.GetModByName("Real Flying.esp") != 255
+		debug.trace("[SLP] 'Real Flying.esp' detected")
+		StorageUtil.SetIntValue(none, "_SLP_isRealFlying", 1)
+		StorageUtil.SetFormValue(none, "_SLP_getWingsPotion", Game.GetFormFromFile(0x000D65, "Real Flying.esp"))
+		StorageUtil.SetFormValue(none, "_SLP_getWingsCurePotion", Game.GetFormFromFile(0x0022F2, "Real Flying.esp"))
+	Else
+		StorageUtil.SetIntValue(none, "_SLP_isRealFlying", 0)
+	EndIf
 
-		elseif modName == "Real Flying.esp"
-			debug.trace("[SLP] 'Real Flying.esp' detected")
-			StorageUtil.SetIntValue(none, "_SLP_isRealFlying",  1) 
-			debug.trace("[SLP] 		Real Flying Potion: " + Game.GetFormFromFile(0x00000D65, modName))
-			debug.trace("[SLP] 		Real Flying Cure Potion: " + Game.GetFormFromFile(0x000022F2, modName))
-			StorageUtil.SetFormValue(none, "_SLP_getWingsPotion",  Game.GetFormFromFile(0x00000D65, modName))  
-			StorageUtil.SetFormValue(none, "_SLP_getWingsCurePotion",  Game.GetFormFromFile(0x000022F2, modName))  
-
-		elseif modName == "Animated Wings Ultimate.esp"
-			debug.trace("[SLP] 'Animated Wings Ultimate.esp' detected")
-			StorageUtil.SetIntValue(none, "_SLP_isAnimatedWingsUltimate",  1) 
-			debug.trace("[SLP] 		Animated Wings Ultimate Potion: " + Game.GetFormFromFile(0x00000CA2, modName))
-			debug.trace("[SLP] 		Animated Wings Ultimate Cure Potion: " + Game.GetFormFromFile(0x00000B21, modName))
-			StorageUtil.SetFormValue(none, "_SLP_getWingsPotion",  Game.GetFormFromFile(0x00000CA2, modName))  
-			StorageUtil.SetFormValue(none, "_SLP_getWingsCurePotion",  Game.GetFormFromFile(0x00000B21, modName))  
-		endif
-	endWhile
+	If Game.GetModByName("Animated Wings Ultimate.esp") != 255
+		debug.trace("[SLP] 'Animated Wings Ultimate.esp' detected")
+		StorageUtil.SetIntValue(none, "_SLP_isAnimatedWingsUltimate", 1)
+		StorageUtil.SetFormValue(none, "_SLP_getWingsPotion", Game.GetFormFromFile(0x000CA2, "Animated Wings Ultimate.esp"))
+		StorageUtil.SetFormValue(none, "_SLP_getWingsCurePotion", Game.GetFormFromFile(0x000B21, "Animated Wings Ultimate.esp"))
+	Else
+		StorageUtil.SetIntValue(none, "_SLP_isAnimatedWingsUltimate", 0)
+	EndIf
 
 	RegisterForSingleUpdate(10)
 EndFunction
