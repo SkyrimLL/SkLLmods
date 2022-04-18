@@ -96,12 +96,11 @@ Function _maintenance()
 
 	fctParasites.maintenance()
 
-	; Set Seed Stone ritual to today if missing
-	if (iChaurusQueenStage==1) && (StorageUtil.GetIntValue(PlayerRef, "_SLP_iChaurusQueenDate")==0)
-		StorageUtil.SetIntValue(PlayerRef, "_SLP_iChaurusQueenDate", GameDaysPassed.GetValue() as Int)
-	endif
-
 	if (iChaurusQueenStage>=1)
+		; Set Seed Stone ritual to today if missing
+		if (iChaurusQueenStage==1) && (StorageUtil.GetIntValue(PlayerRef, "_SLP_iChaurusQueenDate")==0)
+			StorageUtil.SetIntValue(PlayerRef, "_SLP_iChaurusQueenDate", GameDaysPassed.GetValue() as Int)
+		endif
 		if (iChaurusQueenStage>=2)
 			StorageUtil.SetFloatValue(PlayerRef, "_SLP_chanceChaurusQueenVag", 100.0 )
 		endif
@@ -299,10 +298,8 @@ Int Function _getParasiteTickerThreshold(Actor kActor, Int _iNextStageTicker, In
 EndFunction
 
 Event OnUpdate()
-	Location kLocation = PlayerRef.GetCurrentLocation()
  	Int iParasiteDuration
  	Float fValue
- 	Bool isWeatherRainy = false
 
  	daysPassed = GameDaysPassed.GetValue() as Int
 	Int iDaysSinceLastCheck = daysPassed - iGameDateLastCheck
@@ -317,7 +314,7 @@ Event OnUpdate()
 			; Force at least 5 days with the parasite. Increase chance of expelling parasite each day after 5 days
 			If (Utility.RandomInt(0,95) > (100 - (iParasiteDuration / 5) ) )
 				if (fctParasites.tryParasiteNextStage(PlayerRef, "SpiderPenis"))
-					iNextStageTicker = (iNextStageTicker / 2)
+					iNextStageTicker /= 2
 				endif
 			endif
 
@@ -325,7 +322,7 @@ Event OnUpdate()
 			iParasiteDuration = daysPassed - StorageUtil.GetIntValue(PlayerRef, "_SLP_iSpiderEggDate")
 			If (Utility.RandomInt(0,95) > (100 - (iParasiteDuration / 5) ) )
 				if (fctParasites.tryParasiteNextStage(PlayerRef, "SpiderEgg"))
-					iNextStageTicker = (iNextStageTicker / 2)
+					iNextStageTicker /= 2
 				endif
 			endif
 
@@ -333,7 +330,7 @@ Event OnUpdate()
 			iParasiteDuration = daysPassed - StorageUtil.GetIntValue(PlayerRef, "_SLP_iChaurusWormDate")
 			If (Utility.RandomInt(0,95) > (100 - (iParasiteDuration / 5) ) )
 				if (fctParasites.tryParasiteNextStage(PlayerRef, "ChaurusWorm"))
-					iNextStageTicker = (iNextStageTicker / 2)
+					iNextStageTicker /= 2
 				endif
 			endif
 
@@ -341,7 +338,7 @@ Event OnUpdate()
 			iParasiteDuration = daysPassed - StorageUtil.GetIntValue(PlayerRef, "_SLP_iChaurusWormVagDate")
 			If (Utility.RandomInt(0,95) > (100 - (iParasiteDuration / 5) ) )
 				if (fctParasites.tryParasiteNextStage(PlayerRef, "ChaurusWormVag"))
-					iNextStageTicker = (iNextStageTicker / 2)
+					iNextStageTicker /= 2
 				endif
 			endif
 		Endif
@@ -380,7 +377,6 @@ Event OnUpdate()
 				PlayerRef.AddItem(SLP_CritterSemen, 2)
 				PlayerRef.EquipItem(SLP_CritterSemen, true,true)
 				PlayerRef.EquipItem(SLP_CritterSemen, true,true)
-
 			ElseIf (iParasiteDuration >= 5)
 				Debug.MessageBox("Your belly suddenly expells copious amounts of thick fluids.")
 				StorageUtil.SetIntValue(PlayerRef, "_SLP_iFaceHuggerDate", daysPassed)
@@ -391,9 +387,9 @@ Event OnUpdate()
 		Endif
 
 		If (fctParasites.isInfectedByString( PlayerRef,  "Barnacles" ))
+			Location kLocation = PlayerRef.GetCurrentLocation()
 			iParasiteDuration = daysPassed - StorageUtil.GetIntValue(PlayerRef, "_SLP_iBarnaclesDate")
 			If  (iParasiteDuration > 5) && (!kLocation.IsSameLocation(SLP_BlackreachLocation)) && (!kLocation.HasKeyword(SLP_FalmerHiveLocType)) && (!kLocation.HasKeyword(SLP_CaveLocType)) && (!kLocation.HasKeyword(SLP_DwarvenRuinLocType))
-
 	  			fctParasites.tryParasiteNextStage(PlayerRef, "Barnacles")
 			endIf
 		endif
@@ -419,7 +415,7 @@ Event OnUpdate()
 			If (Utility.RandomInt(0,100) > _getParasiteTickerThreshold(PlayerRef, iNextStageTicker, iParasiteDuration, "ChaurusQueen") )
 			 	if (fctParasites.tryParasiteNextStage(PlayerRef, "ChaurusQueen"))
 			 		; next stage happened - reset counter
-			 		iNextStageTicker = (iNextStageTicker / 2)
+			 		iNextStageTicker /= 2
 			 	endif
 			 endif
 		endif
@@ -429,7 +425,6 @@ Event OnUpdate()
 			if (PlayerRef.IsInCombat()) && (StorageUtil.GetIntValue(PlayerRef, "_SLP_toggleChaurusQueenWeapon")== 0)
 				If (fctParasites.isInfectedByString( PlayerRef,  "ChaurusQueenArmor" ))
 					fctParasites.extendChaurusWeapon( PlayerRef,  "ChaurusBlade") 
-					
 				elseIf (fctParasites.isInfectedByString( PlayerRef,  "ChaurusQueenBody" ))
 					fctParasites.extendChaurusWeapon( PlayerRef,  "ChaurusClaw") 
 				endif
@@ -446,14 +441,12 @@ Event OnUpdate()
 		; Chance of Living Armor infection when swimming
 		if (PlayerRef.IsSwimming()) 
 			; debug.notification("Player is swimming...")
-			if (StorageUtil.GetIntValue(PlayerRef, "_SLP_lastSwimDate")!= daysPassed)
-				; Use date later to trigger 'dry tentacles' effect 
-				StorageUtil.SetIntValue(PlayerRef, "_SLP_lastSwimDate", daysPassed)
-			endif
+			; Use date later to trigger 'dry tentacles' effect 
+			StorageUtil.SetIntValue(PlayerRef, "_SLP_lastSwimDate", daysPassed)
 
 			if (!PlayerRef.IsInCombat())
 				if (fctParasites.tryPlayerLivingArmor())
-					iNextStageTicker = (iNextStageTicker / 2)
+					iNextStageTicker /= 2
 				Endif
 			endif
 
@@ -473,6 +466,7 @@ Event OnUpdate()
 			; Spriggan growth is stopped by Seed Stone
 			if (fctParasites.isInfectedByString( PlayerRef,  "SprigganRoot" )) 
 				Weather currentWeather = Weather.GetCurrentWeather()
+				Bool isWeatherRainy = false
 				if (currentWeather.GetClassification() == 2)
 				    isWeatherRainy = true
 				endIf
@@ -487,7 +481,7 @@ Event OnUpdate()
 					If (Utility.RandomInt(0,100) > _getParasiteTickerThreshold(PlayerRef, iNextStageTicker, iParasiteDuration, "SprigganRoot") )
 						if (fctParasites.tryParasiteNextStage(PlayerRef, "SprigganRoot"))
 							; Debug.Notification("[SLP] Next stage ticker RESET!")
-							iNextStageTicker = (iNextStageTicker / 2)
+							iNextStageTicker /= 2
 						Endif
 					endif
 				endif
@@ -497,7 +491,7 @@ Event OnUpdate()
 				iParasiteDuration = daysPassed - StorageUtil.GetIntValue(PlayerRef, "_SLP_iSpiderPenisDate")
 				If (Utility.RandomInt(0,100) > _getParasiteTickerThreshold(PlayerRef, iNextStageTicker, iParasiteDuration, "SpiderPenis") )
 					if (fctParasites.tryParasiteNextStage(PlayerRef, "SpiderPenis"))
-						iNextStageTicker = (iNextStageTicker / 2)
+						iNextStageTicker /= 2
 					endif
 				endif
 
@@ -505,7 +499,7 @@ Event OnUpdate()
 				iParasiteDuration = daysPassed - StorageUtil.GetIntValue(PlayerRef, "_SLP_iSpiderEggDate")
 				If (Utility.RandomInt(0,100) > _getParasiteTickerThreshold(PlayerRef, iNextStageTicker, iParasiteDuration, "SpiderEgg") )
 					if (fctParasites.tryParasiteNextStage(PlayerRef, "SpiderEgg"))
-						iNextStageTicker = (iNextStageTicker / 2)
+						iNextStageTicker /= 2
 					endif
 
 				endif
@@ -514,7 +508,7 @@ Event OnUpdate()
 				iParasiteDuration = daysPassed - StorageUtil.GetIntValue(PlayerRef, "_SLP_iChaurusWormDate")
 				If (Utility.RandomInt(0,100) > _getParasiteTickerThreshold(PlayerRef, iNextStageTicker, iParasiteDuration, "ChaurusWorm") )
 					if (fctParasites.tryParasiteNextStage(PlayerRef, "ChaurusWorm"))
-						iNextStageTicker = (iNextStageTicker / 2)
+						iNextStageTicker /= 2
 					endif
 				endif
 
@@ -522,7 +516,7 @@ Event OnUpdate()
 				iParasiteDuration = daysPassed - StorageUtil.GetIntValue(PlayerRef, "_SLP_iChaurusWormVagDate")
 				If (Utility.RandomInt(0,100) > _getParasiteTickerThreshold(PlayerRef, iNextStageTicker, iParasiteDuration, "ChaurusWormVag") )
 					if (fctParasites.tryParasiteNextStage(PlayerRef, "ChaurusWormVag"))
-						iNextStageTicker = (iNextStageTicker / 2)
+						iNextStageTicker /= 2
 					endif
 				endif 
 
@@ -530,7 +524,7 @@ Event OnUpdate()
 				iParasiteDuration = daysPassed - StorageUtil.GetIntValue(PlayerRef, "_SLP_iFaceHuggerDate")
 				If (Utility.RandomInt(0,100) > _getParasiteTickerThreshold(PlayerRef, iNextStageTicker, iParasiteDuration, "FaceHugger") )
 					if (fctParasites.tryParasiteNextStage(PlayerRef, "FaceHugger"))
-						iNextStageTicker = (iNextStageTicker / 2)
+						iNextStageTicker /= 2
 					endif
 				endif 
 
@@ -538,7 +532,7 @@ Event OnUpdate()
 				iParasiteDuration = daysPassed - StorageUtil.GetIntValue(PlayerRef, "_SLP_iFaceHuggerGagDate")
 				If (Utility.RandomInt(0,100) > _getParasiteTickerThreshold(PlayerRef, iNextStageTicker, iParasiteDuration, "FaceHuggerGag") )
 					if (fctParasites.tryParasiteNextStage(PlayerRef, "FaceHuggerGag"))
-						iNextStageTicker = (iNextStageTicker / 2)
+						iNextStageTicker /= 2
 					endif
 				endif 
 
@@ -546,16 +540,16 @@ Event OnUpdate()
 				iParasiteDuration = daysPassed - StorageUtil.GetIntValue(PlayerRef, "_SLP_iTentacleMonsterDate")
 				If (Utility.RandomInt(0,100) > _getParasiteTickerThreshold(PlayerRef, iNextStageTicker, iParasiteDuration, "TentacleMonster") )
 					if (fctParasites.tryParasiteNextStage(PlayerRef, "TentacleMonster"))
-						iNextStageTicker = (iNextStageTicker / 2)
+						iNextStageTicker /= 2
 					endif
 				endif
 			Endif
 		endif
 
-		iNextStageTicker = iNextStageTicker + 1
+		iNextStageTicker += 1
 	endIf
 
-	iGameDateLastCheck = daysPassed  
+	iGameDateLastCheck = daysPassed
 
 	RegisterForSingleUpdate(10)
 EndEvent
@@ -589,24 +583,16 @@ EndEvent
 Event OnSexLabEnd(int threadID, bool HasPlayer)
 	sslThreadController controller = SexLab.GetController(threadID)
 	sslBaseAnimation animation = controller.Animation
-	Float fChanceChaurusWorm
-	Float fChanceChaurusWormVag
-	Float fChanceSpiderPenis
-	Float fChanceSpiderEgg
-	Actor kSexPartner
-	Int iNumChaurusEggs = StorageUtil.GetIntValue(PlayerRef, "_SLP_iChaurusEggCount" )
-	Int iNumSpiderEggs = StorageUtil.GetIntValue(PlayerRef, "_SLP_iSpiderEggCount" )
-
 	Actor[] actors = controller.Positions
 
 	If HasPlayer
 		Debug.Trace("[SLP] OnSexLabEnd: Player in animation")
 
 		iChaurusQueenStage = StorageUtil.GetIntValue(PlayerRef, "_SLP_iChaurusQueenStage")
-		fChanceChaurusWorm = StorageUtil.GetFloatValue(PlayerRef, "_SLP_chanceChaurusWorm")
-		fChanceChaurusWormVag = StorageUtil.GetFloatValue(PlayerRef, "_SLP_chanceChaurusWormVag")
-		fChanceSpiderPenis = StorageUtil.GetFloatValue(PlayerRef, "_SLP_chanceSpiderPenis")
-		fChanceSpiderEgg = StorageUtil.GetFloatValue(PlayerRef, "_SLP_chanceSpiderEgg")
+		Float fChanceChaurusWorm = StorageUtil.GetFloatValue(PlayerRef, "_SLP_chanceChaurusWorm")
+		Float fChanceChaurusWormVag = StorageUtil.GetFloatValue(PlayerRef, "_SLP_chanceChaurusWormVag")
+		Float fChanceSpiderPenis = StorageUtil.GetFloatValue(PlayerRef, "_SLP_chanceSpiderPenis")
+		Float fChanceSpiderEgg = StorageUtil.GetFloatValue(PlayerRef, "_SLP_chanceSpiderEgg")
 
 		If (fctParasites.isInfectedByString(PlayerRef,  "ChaurusQueenVag"))
 			; Player is more receptive if the vaginal pincer is extended
@@ -634,7 +620,7 @@ Event OnSexLabEnd(int threadID, bool HasPlayer)
 			; check if player reached the Chaurus stage of the Chaurus Queen tranformation
 			if (iChaurusQueenStage>=5)
 				Debug.Notification("You skin turns fluids into eggs deep inside you.")
-				StorageUtil.SetIntValue(PlayerRef, "_SLP_iChaurusEggCount", iNumChaurusEggs + (Utility.RandomInt(10,30) ) )
+				StorageUtil.SetIntValue(PlayerRef, "_SLP_iChaurusEggCount", StorageUtil.GetIntValue(PlayerRef, "_SLP_iChaurusEggCount") + (Utility.RandomInt(10,30) ) )
 			endif
 
 			; fctParasites.tryPlayerChaurusStage()
@@ -658,7 +644,7 @@ Event OnSexLabEnd(int threadID, bool HasPlayer)
 		elseif animation.HasTag("Spider")
 			if (iChaurusQueenStage>=5)
 				Debug.Notification("You skin turns fluids into eggs deep inside you.")
-				StorageUtil.SetIntValue(PlayerRef, "_SLP_iSpiderEggCount", iNumSpiderEggs + (Utility.RandomInt(5,15) ) )
+				StorageUtil.SetIntValue(PlayerRef, "_SLP_iSpiderEggCount", StorageUtil.GetIntValue(PlayerRef, "_SLP_iSpiderEggCount") + (Utility.RandomInt(5,15) ) )
 			endif
 				
 			; fctParasites.tryPlayerSpiderStage()
@@ -667,7 +653,7 @@ Event OnSexLabEnd(int threadID, bool HasPlayer)
 				if (Utility.RandomInt(1,100)<= (fChanceSpiderPenis as Int) )
 					if (fctParasites.infectParasiteByString(PlayerRef, "SpiderPenis"))
 						iNextStageTicker /= 2
-						kSexPartner = _firstNotPlayer(actors)
+						Actor kSexPartner = _firstNotPlayer(actors)
 						SpiderFollowerAlias.ForceRefTo(kSexPartner)
 						Debug.MessageBox("You gasp as the spider fills your womb with a string of slimy eggs. Unfortunately, the penis of the spider remains firmly lodged inside you after the act.")
 					Endif
@@ -684,7 +670,7 @@ Event OnSexLabEnd(int threadID, bool HasPlayer)
 				Int iSexLabCumLayers = SexLab.CountCum(PlayerRef,  Vaginal = true,  Oral = true,  Anal = true)
 
 				Debug.Notification("You skin turns fluids into eggs deep inside you.")
-				StorageUtil.SetIntValue(PlayerRef, "_SLP_iChaurusEggCount", iNumChaurusEggs + ((iSexLabCumLayers + 1)*5) )
+				StorageUtil.SetIntValue(PlayerRef, "_SLP_iChaurusEggCount", StorageUtil.GetIntValue(PlayerRef, "_SLP_iChaurusEggCount") + ((iSexLabCumLayers + 1)*5) )
 			endif
 		EndIf
 	Endif
@@ -1774,9 +1760,9 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 
 	Location kLocation = PlayerRef.GetCurrentLocation()
 	Bool bLocationAllowed = False
-	Cell kActorCell = PlayerRef.GetParentCell()
 
 	if (kLocation)
+		Cell kActorCell = PlayerRef.GetParentCell()
 		If (StorageUtil.GetFloatValue(PlayerRef, "_SLP_chanceBarnacles" )>0.0) 
 			If kLocation.IsSameLocation(SLP_BlackreachLocation) || kLocation.HasKeyword(SLP_FalmerHiveLocType) || kLocation.HasKeyword(SLP_CaveLocType) || kLocation.HasKeyword(SLP_DwarvenRuinLocType)
 				Debug.Trace("[SLP] Good location for Barnacles")
