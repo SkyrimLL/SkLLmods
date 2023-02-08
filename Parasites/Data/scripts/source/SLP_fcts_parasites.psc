@@ -152,7 +152,6 @@ Actor Property EncChaurusFledgelingActor Auto
 Actor Property EncChaurusHunterActor Auto 
 
 SPELL Property StomachRot Auto
-
 ; -------------------------------------------------------
 ; -------------------------------------------------------
 Bool Function infectParasiteByString(Actor kActor, String sParasiteKeyword = ""  )
@@ -1230,10 +1229,12 @@ Function tryCharmChaurus(Actor Target)
 
 		; Add code using Hormones pheromone levels
 		iCharmThreshold = iCharmThreshold + ((StorageUtil.GetFloatValue(kPlayer, "_SLH_fHormonePheromones") as Int) / 2)
+		Debug.Trace("[SLP] Charm Chaurus - Pheromone: " + iCharmThreshold)
+		Debug.Notification("[SLP] Charm Chaurus - Pheromone: " + iCharmThreshold)
 
 		If (Utility.RandomInt(0,100)<=iCharmThreshold)   
-			; Debug.Notification("[SLP] Charm Chaurus" )
-		    ; Debug.Messagebox(" Chaurus Pheromone charm spell started")    
+			Debug.Notification("[SLP] Charm Chaurus - success" )
+		    Debug.Messagebox(" The Chaurus is under your spell")    
 		 	kPlayer.AddToFaction(ChaurusFaction)
 		    Target.StopCombat()   
 		    ; Target.SetPlayerTeammate(true )
@@ -1265,7 +1266,7 @@ Function tryCharmChaurus(Actor Target)
 		endif
 
 	else
-		; Debug.Notification("[SLP] Charm Chaurus - Failed" )
+		Debug.Notification("[SLP] Charm Chaurus - Failed" )
 		debugTrace("[SLP] Charm Chaurus - Failed" )
 
 	endif
