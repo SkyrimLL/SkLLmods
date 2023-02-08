@@ -115,6 +115,7 @@ Float                    Property NINODE_MAX_SCALE      = 2.0 AutoReadOnly
 Float                    Property NINODE_MIN_SCALE      = 0.1 AutoReadOnly
 
 ; NiOverride version data
+int Property SKEE_VERSION = 1 AutoReadOnly
 int Property NIOVERRIDE_VERSION = 4 AutoReadOnly
 int Property NIOVERRIDE_SCRIPT_VERSION = 4 AutoReadOnly
 
@@ -262,7 +263,11 @@ Int PlayerGender
 String tmpText
 
 bool Function CheckXPMSERequirements(Actor akActor, bool isFemale)
-	return XPMSELib.CheckXPMSEVersion(akActor, isFemale, XPMSE_VERSION, true) && XPMSELib.CheckXPMSELibVersion(XPMSELIB_VERSION) && SKSE.GetPluginVersion("NiOverride") >= NIOVERRIDE_VERSION && NiOverride.GetScriptVersion() >= NIOVERRIDE_SCRIPT_VERSION
+    if (SKSE.GetPluginVersion("SKEE") >= SKEE_VERSION) ; SKEE detected - Skyrim SE
+        return XPMSELib.CheckXPMSEVersion(akActor, isFemale, XPMSE_VERSION, true) && XPMSELib.CheckXPMSELibVersion(XPMSELIB_VERSION) && SKSE.GetPluginVersion("SKEE") >= SKEE_VERSION && NiOverride.GetScriptVersion() >= NIOVERRIDE_SCRIPT_VERSION
+    else
+        return XPMSELib.CheckXPMSEVersion(akActor, isFemale, XPMSE_VERSION, true) && XPMSELib.CheckXPMSELibVersion(XPMSELIB_VERSION) && SKSE.GetPluginVersion("NiOverride") >= NIOVERRIDE_VERSION && NiOverride.GetScriptVersion() >= NIOVERRIDE_SCRIPT_VERSION
+    endif
 EndFunction
 
 ; INITIALIZATION ----------------------------------------------------------------------------------

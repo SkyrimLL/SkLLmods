@@ -275,7 +275,7 @@ Endfunction
  
 bool Function CheckXPMSERequirements(Actor akActor, bool isFemale)
     if (SKSE.GetPluginVersion("SKEE") >= SKEE_VERSION) ; SKEE detected - Skyrim SE
-        return XPMSELib.CheckXPMSEVersion(akActor, isFemale, XPMSE_VERSION, true) && XPMSELib.CheckXPMSELibVersion(XPMSELIB_VERSION) && SKSE.GetPluginVersion("SKEE") >= SKEE_VERSION
+        return XPMSELib.CheckXPMSEVersion(akActor, isFemale, XPMSE_VERSION, true) && XPMSELib.CheckXPMSELibVersion(XPMSELIB_VERSION) && SKSE.GetPluginVersion("SKEE") >= SKEE_VERSION && NiOverride.GetScriptVersion() >= NIOVERRIDE_SCRIPT_VERSION
     else
         return XPMSELib.CheckXPMSEVersion(akActor, isFemale, XPMSE_VERSION, true) && XPMSELib.CheckXPMSELibVersion(XPMSELIB_VERSION) && SKSE.GetPluginVersion("NiOverride") >= NIOVERRIDE_VERSION && NiOverride.GetScriptVersion() >= NIOVERRIDE_SCRIPT_VERSION
     endif
@@ -341,7 +341,7 @@ function SLIF_inflate(Actor kActor, String sKey, float value, String NiOString)
 		EndIf
 	else
 
-		int SLIF_event = ModEvent.Create("SLIF_morph")
+		int SLIF_event = ModEvent.Create("SLIF_inflate")
 		If (SLIF_event)
 			ModEvent.PushForm(SLIF_event, kActor)
 			ModEvent.PushString(SLIF_event, "Hormones")
